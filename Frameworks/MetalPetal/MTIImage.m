@@ -9,10 +9,6 @@
 #import "MTIImage.h"
 #import "MTIImagePrivate.h"
 
-@implementation MTIImageResolveResult
-
-@end
-
 @interface MTIImage ()
 
 @end

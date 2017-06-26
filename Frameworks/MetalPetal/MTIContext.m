@@ -26,10 +26,13 @@
 
 @implementation MTIContext
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device {
+- (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     if (self = [super init]) {
         _device = device;
-        _defaultLibrary = [device newDefaultLibrary];
+        _defaultLibrary = [device newDefaultLibraryWithBundle:[NSBundle bundleForClass:self.class] error:error];
+        if (!_defaultLibrary) {
+            return nil;
+        }
         _commandQueue = [device newCommandQueue];
     }
     return self;
@@ -49,6 +52,10 @@
                                                              pixelFormats:(const MTLPixelFormat[])pixelFormats
                                                            vertexFunction:(id<MTLFunction>)vertexFunction
                                                          fragmentFunction:(id<MTLFunction>)fragmentFunction {
+    MTLRenderPipelineReflection *reflection; //get reflection
+    NSError *error;
+    MTLRenderPipelineDescriptor *descriptor;
+    [self.device newRenderPipelineStateWithDescriptor:descriptor options:MTLPipelineOptionArgumentInfo reflection:&reflection error:&error];
     return nil;
 }
 

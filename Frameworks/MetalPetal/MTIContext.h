@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device;
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(__autoreleasing NSError **)error;
 
-- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
+- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(__autoreleasing NSError **)error;
 
 @end
 

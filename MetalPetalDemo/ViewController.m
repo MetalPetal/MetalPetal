@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+@import MetalPetal;
 
 @interface ViewController ()
 
@@ -16,7 +17,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    NSError *error;
+    MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
+    
+    
 }
 
 
