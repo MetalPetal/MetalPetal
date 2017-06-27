@@ -14,7 +14,7 @@
 #import "MTIFilter.h"
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIImage.h"
-#import "MTIImagePrivate.h"
+#import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIStructs.h"
 

@@ -7,28 +7,43 @@
 //
 
 #import "MTIImage.h"
-#import "MTIImagePrivate.h"
 
 @interface MTIImage ()
+
+@property (nonatomic,copy) id<MTIImagePromise> promise;
 
 @end
 
 @implementation MTIImage
 
-- (instancetype)init {
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise {
+    MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
+    samplerDescriptor.minFilter = MTLSamplerMipFilterLinear;
+    samplerDescriptor.magFilter = MTLSamplerMipFilterLinear;
+    samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
+    samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
+    return [self initWithPromise:promise samplerDescriptor:samplerDescriptor];
+}
+
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
-        MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
-        samplerDescriptor.minFilter = MTLSamplerMipFilterLinear;
-        samplerDescriptor.magFilter = MTLSamplerMipFilterLinear;
-        samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
-        samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
-        _samplerDescriptor = samplerDescriptor;
+        _promise = [promise copyWithZone:nil];
+        _extent = CGRectMake(0, 0, _promise.outputTextureDescriptor.width, _promise.outputTextureDescriptor.height);
+        _samplerDescriptor = [samplerDescriptor copy];
     }
     return self;
 }
 
 - (instancetype)imageWithSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
-    return nil;
+    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise];
+    if (image) {
+        image -> _samplerDescriptor = samplerDescriptor;
+    }
+    return image;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
 }
 
 @end
