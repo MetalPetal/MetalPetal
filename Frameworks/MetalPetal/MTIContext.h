@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) id<MTLLibrary> defaultLibrary;
 
 @property (nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
+
+@property (nonatomic, strong, readonly) MTKTextureLoader *textureLoader;
+
+@property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(__autoreleasing NSError **)error;
 

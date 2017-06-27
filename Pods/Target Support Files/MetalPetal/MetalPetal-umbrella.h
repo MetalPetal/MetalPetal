@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "MTIColorInvertFilter.h"
 #import "MTIContext.h"
 #import "MTIFilter.h"
 #import "MTIFilterFunctionDescriptor.h"

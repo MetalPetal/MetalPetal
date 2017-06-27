@@ -26,6 +26,13 @@
 
 @implementation MTIContext
 
+- (void)dealloc {
+    if (_coreVideoTextureCache) {
+        CVMetalTextureCacheFlush(_coreVideoTextureCache, 0);
+        CFRelease(_coreVideoTextureCache);
+    }
+}
+
 - (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     if (self = [super init]) {
         _device = device;
@@ -34,6 +41,9 @@
             return nil;
         }
         _commandQueue = [device newCommandQueue];
+        _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
+        CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
+        NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
     }
     return self;
 }

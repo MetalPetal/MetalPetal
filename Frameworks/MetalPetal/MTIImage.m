@@ -10,8 +10,6 @@
 
 @interface MTIImage ()
 
-@property (nonatomic,copy) id<MTIImagePromise> promise;
-
 @end
 
 @implementation MTIImage
@@ -40,6 +38,10 @@
         image -> _samplerDescriptor = samplerDescriptor;
     }
     return image;
+}
+
+- (CGSize)size {
+    return self.extent.size;
 }
 
 - (id)copyWithZone:(NSZone *)zone {

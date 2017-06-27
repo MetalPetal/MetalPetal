@@ -8,16 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MTIImage, MTIFilterFunctionDescriptor;
+
 @interface MTIFilter : NSObject
 
-@property (nonatomic, strong, readonly, nullable) MTIImage *inputImage;
-
 @property (nonatomic, strong, readonly, nullable) MTIImage *outputImage;
+
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
+                      fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor NS_DESIGNATED_INITIALIZER;
+
+- (MTIImage *)applyWithInputImages:(NSArray<MTIImage *> *)images
+                        parameters:(NSArray *)parameters
+           outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
 
 @end
 

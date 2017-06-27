@@ -8,11 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIImageRenderingContext.h"
-#import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class MTIImage, MTIImageRenderingContext, MTIFilterFunctionDescriptor;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
@@ -49,6 +48,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy,readonly) MTLTextureDescriptor *outputTextureDescriptor;
 
 - (instancetype)initWithBuilder:(MTIImageRenderingReceiptBuilder *)builder;
+
+@end
+
+@interface MTIPixelBufferImagePromise : NSObject <MTIImagePromise>
+
+@property (nonatomic,copy,readonly) MTLTextureDescriptor *outputTextureDescriptor;
+
+- (instancetype)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+
+@end
+
+@interface MTICGImagePromise : NSObject <MTIImagePromise>
+
+@property (nonatomic,copy,readonly) MTLTextureDescriptor *outputTextureDescriptor;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage;
 
 @end
 
