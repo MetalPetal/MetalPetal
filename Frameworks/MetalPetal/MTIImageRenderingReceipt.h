@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy) NSArray *fragmentFunctionParameters;
 
-@property (nonatomic,copy) MTLTextureDescriptor *outputTextureDescriptor;
+@property (nonatomic,copy) MTLTextureDescriptor *textureDescriptor;
 
 @end
 
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,readonly) NSArray *fragmentFunctionParameters;
 
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *outputTextureDescriptor;
+@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
 
 - (instancetype)initWithBuilder:(MTIImageRenderingReceiptBuilder *)builder;
 

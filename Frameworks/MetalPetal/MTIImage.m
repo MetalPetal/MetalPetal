@@ -26,7 +26,7 @@
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
-        _extent = CGRectMake(0, 0, _promise.outputTextureDescriptor.width, _promise.outputTextureDescriptor.height);
+        _extent = CGRectMake(0, 0, _promise.textureDescriptor.width, _promise.textureDescriptor.height);
         _samplerDescriptor = [samplerDescriptor copy];
     }
     return self;

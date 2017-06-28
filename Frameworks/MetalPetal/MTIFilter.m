@@ -48,7 +48,7 @@
     builder.vertexFunctionDescriptor = self.vertexFunctionDescriptor;
     builder.fragmentFunctionDescriptor = self.fragmentFunctionDescriptor;
     builder.fragmentFunctionParameters = parameters;
-    builder.outputTextureDescriptor = outputTextureDescriptor;
+    builder.textureDescriptor = outputTextureDescriptor;
     return [[MTIImage alloc] initWithPromise:[[MTIImageRenderingReceipt alloc] initWithBuilder:builder]];
 }
 

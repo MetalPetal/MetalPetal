@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 @import MetalPetal;
+@import MetalKit;
 
 @interface ViewController ()
 
@@ -17,22 +18,29 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    UIImage *image = [UIImage imageNamed:@"P1040602.jpg"];
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
-    MTIImage *mtiImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
+    UIImage *image = [UIImage imageNamed:@"P1040602.jpg"];
+    
+    MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
+    id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
+    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture]];
+    
     MTIColorInvertFilter *filter = [[MTIColorInvertFilter alloc] init];
-    filter.inputImage = mtiImage;
-    mtiImage = filter.outputImage;
+    filter.inputImage = mtiImageFromTexture;
+    MTIImage *outputImage = filter.outputImage;
     
     CVPixelBufferRef pixelBuffer;
-    CVPixelBufferCreate(kCFAllocatorDefault, mtiImage.size.width, mtiImage.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef _Nullable)(@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}}), &pixelBuffer);
+    CVPixelBufferCreate(kCFAllocatorDefault, outputImage.size.width, outputImage.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef _Nullable)(@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}}), &pixelBuffer);
     
-    {
-        CFAbsoluteTime renderPass1Start = CFAbsoluteTimeGetCurrent();
-        MTIImageRenderingContext *imageRenderingContext = [[MTIImageRenderingContext alloc] initWithContext:context];
-        [imageRenderingContext renderImage:mtiImage toPixelBuffer:pixelBuffer error:&error];
-        NSLog(@"Pass 1 time: %@", @(CFAbsoluteTimeGetCurrent() - renderPass1Start));
+    while (true) {
+        @autoreleasepool {
+            CFAbsoluteTime renderPass1Start = CFAbsoluteTimeGetCurrent();
+            MTIImageRenderingContext *imageRenderingContext = [[MTIImageRenderingContext alloc] initWithContext:context];
+            [imageRenderingContext renderImage:outputImage toPixelBuffer:pixelBuffer error:&error];
+            NSLog(@"Time: %@", @(CFAbsoluteTimeGetCurrent() - renderPass1Start));
+        }
+        [NSThread sleepForTimeInterval:1.0/60.0];
     }
     
 }

@@ -88,7 +88,7 @@
         }
         return nil;
     }
-    MTIRenderPipelineInfo *renderPipelineInfo = [context.context renderPipelineInfoWithColorAttachmentPixelFormats:self.outputTextureDescriptor.pixelFormat vertexFunction:vertextFunction fragmentFunction:fragmentFunction error:&error];
+    MTIRenderPipelineInfo *renderPipelineInfo = [context.context renderPipelineInfoWithColorAttachmentPixelFormats:self.textureDescriptor.pixelFormat vertexFunction:vertextFunction fragmentFunction:fragmentFunction error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -96,7 +96,7 @@
         return nil;
     }
     
-    id<MTLTexture> renderTarget = [context.context.device newTextureWithDescriptor:self.outputTextureDescriptor];
+    id<MTLTexture> renderTarget = [context.context.device newTextureWithDescriptor:self.textureDescriptor];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget;
@@ -139,7 +139,7 @@
         _vertexFunctionDescriptor = builder.vertexFunctionDescriptor;
         _fragmentFunctionDescriptor = builder.fragmentFunctionDescriptor;
         _fragmentFunctionParameters = builder.fragmentFunctionParameters;
-        _outputTextureDescriptor = builder.outputTextureDescriptor;
+        _textureDescriptor = builder.textureDescriptor;
     }
     return self;
 }
