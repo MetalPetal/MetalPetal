@@ -22,4 +22,27 @@
     return self;
 }
 
+- (BOOL)isEqual:(id)object {
+    if (object == self) {
+        return YES;
+    }
+    if (![object isKindOfClass:[MTIFilterFunctionDescriptor class]]) {
+        return NO;
+    }
+    MTIFilterFunctionDescriptor *descriptor = object;
+    if ([descriptor.name isEqualToString:self.name] && [descriptor.libraryURL isEqual:self.libraryURL]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (NSUInteger)hash {
+    return self.name.hash & self.libraryURL.hash;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
 @end

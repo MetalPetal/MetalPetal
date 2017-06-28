@@ -17,6 +17,7 @@
 #import "MTIImage.h"
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
+#import "MTIImageRenderingReceipt.h"
 #import "MTIStructs.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;

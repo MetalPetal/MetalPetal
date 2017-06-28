@@ -11,6 +11,7 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIImage.h"
 #import "MTIFilterFunctionDescriptor.h"
+#import "MTIImageRenderingReceipt.h"
 
 @interface MTIFilter ()
 

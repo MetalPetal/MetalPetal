@@ -20,8 +20,17 @@
     return self;
 }
 
-- (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    id<MTLTexture> texture = [image.promise resolveWithContext:self error:error];
+- (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    
+    NSError *error = nil;
+#warning fetch texture from cache
+    id<MTLTexture> texture = [image.promise resolveWithContext:self error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return;
+    }
     size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
     size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
     
@@ -36,6 +45,7 @@
                                                              0,
                                                              &renderTexture);
     if (!texture || err) {
+#warning error handling
         NSLog( @"CVMetalTextureCacheCreateTextureFromImage failed (error: %d)", err);
         return;
     }

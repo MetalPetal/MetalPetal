@@ -37,11 +37,18 @@ vertex VertexOut image_vertex(
 
 fragment float4 image_fragment(
 	VertexOut vertexIn [[ stage_in ]],
-	constant Uniforms & uniforms [[ buffer(0) ]],
+	//constant Uniforms & uniforms [[ buffer(0) ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
 ) {
-	float3 color = colorTexture.sample(colorSampler, vertexIn.texcoords).rgb;
-	return float4(color, 1);
+	return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
 
+fragment float4 image_color_invert(
+    VertexOut vertexIn [[ stage_in ]],
+    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+    sampler colorSampler [[ sampler(0) ]]
+) {
+    float3 color = float3(1.0) - colorTexture.sample(colorSampler, vertexIn.texcoords).rgb;
+    return float4(color, 1.0);
+}

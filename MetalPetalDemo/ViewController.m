@@ -21,15 +21,21 @@
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
     MTIImage *mtiImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
-    MTIImageRenderingContext *imageRenderingContext = [[MTIImageRenderingContext alloc] initWithContext:context];
+    MTIColorInvertFilter *filter = [[MTIColorInvertFilter alloc] init];
+    filter.inputImage = mtiImage;
+    mtiImage = filter.outputImage;
     
     CVPixelBufferRef pixelBuffer;
     CVPixelBufferCreate(kCFAllocatorDefault, mtiImage.size.width, mtiImage.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef _Nullable)(@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}}), &pixelBuffer);
-    CFAbsoluteTime blitStart = CFAbsoluteTimeGetCurrent();
-    [imageRenderingContext renderImage:mtiImage toPixelBuffer:pixelBuffer error:nil];
-    NSLog(@"Load and blit time: %@", @(CFAbsoluteTimeGetCurrent() - blitStart));
+    
+    {
+        CFAbsoluteTime renderPass1Start = CFAbsoluteTimeGetCurrent();
+        MTIImageRenderingContext *imageRenderingContext = [[MTIImageRenderingContext alloc] initWithContext:context];
+        [imageRenderingContext renderImage:mtiImage toPixelBuffer:pixelBuffer error:&error];
+        NSLog(@"Pass 1 time: %@", @(CFAbsoluteTimeGetCurrent() - renderPass1Start));
+    }
+    
 }
-
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
