@@ -11,39 +11,7 @@
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIContext.h"
-
-@interface MTIPixelBufferImagePromise ()
-
-@property (nonatomic) CVPixelBufferRef pixelBuffer;
-
-@end
-
-@implementation MTIPixelBufferImagePromise
-
-- (instancetype)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    if (self = [super init]) {
-        _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
-        _textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
-    }
-    return self;
-}
-
-- (void)dealloc {
-    CVPixelBufferRelease(_pixelBuffer);
-}
-
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError * _Nullable __autoreleasing *)error {
-    CIImage *image = [[CIImage alloc] initWithCVPixelBuffer:self.pixelBuffer];
-    id<MTLTexture> texture = [context.context.device newTextureWithDescriptor:self.textureDescriptor];
-    [context.context.coreImageContext render:image toMTLTexture:texture commandBuffer:context.commandBuffer bounds:image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
-    return texture;
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
-@end
+#import "MTITextureDescriptor.h"
 
 @interface MTICGImagePromise ()
 
@@ -56,7 +24,7 @@
 - (instancetype)initWithCGImage:(CGImageRef)cgImage {
     if (self = [super init]) {
         _image = CGImageRetain(cgImage);
-        _textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) mipmapped:NO];
+        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) mipmapped:NO] newMTITextureDescriptor];
     }
     return self;
 }
@@ -100,7 +68,7 @@
         if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_8_x_Max) {
             descriptor.usage = texture.usage;
         }
-        _textureDescriptor = descriptor;
+        _textureDescriptor = [descriptor newMTITextureDescriptor];
         _texture = texture;
     }
     return self;

@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIFilterFunctionDescriptor;
+@class MTIImage, MTIFilterFunctionDescriptor, MTITextureDescriptor;
 
 @interface MTIImageRenderingReceiptBuilder : NSObject
 
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,readonly) NSArray *fragmentFunctionParameters;
 
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
 - (instancetype)initWithBuilder:(MTIImageRenderingReceiptBuilder *)builder;
 

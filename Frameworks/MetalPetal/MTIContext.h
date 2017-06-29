@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFilterFunctionDescriptor;
+@class MTIFilterFunctionDescriptor,MTISamplerDescriptor;
 
 @interface MTIRenderPipelineInfo : NSObject <NSCopying>
 
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 - (nullable id<MTLFunction>)functionWithDescriptor:(MTIFilterFunctionDescriptor *)descriptor error:(__autoreleasing NSError **)error;
 
-- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTLSamplerDescriptor *)descriptor;
+- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
 
 @end
 

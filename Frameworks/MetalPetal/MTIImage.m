@@ -7,6 +7,8 @@
 //
 
 #import "MTIImage.h"
+#import "MTISamplerDescriptor.h"
+#import "MTITextureDescriptor.h"
 
 @interface MTIImage ()
 
@@ -20,10 +22,10 @@
     samplerDescriptor.magFilter = MTLSamplerMipFilterLinear;
     samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
     samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
-    return [self initWithPromise:promise samplerDescriptor:samplerDescriptor];
+    return [self initWithPromise:promise samplerDescriptor:[samplerDescriptor newMTISamplerDescriptor]];
 }
 
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
         _extent = CGRectMake(0, 0, _promise.textureDescriptor.width, _promise.textureDescriptor.height);
@@ -32,7 +34,7 @@
     return self;
 }
 
-- (instancetype)imageWithSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
+- (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise];
     if (image) {
         image -> _samplerDescriptor = samplerDescriptor;

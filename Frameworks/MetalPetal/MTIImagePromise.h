@@ -11,27 +11,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIImageRenderingContext, MTIFilterFunctionDescriptor;
+@class MTIImage, MTIImageRenderingContext, MTIFilterFunctionDescriptor, MTITextureDescriptor;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
 - (nullable id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError **)error;
 
 @end
 
-@interface MTIPixelBufferImagePromise : NSObject <MTIImagePromise>
-
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
-
-- (instancetype)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer;
-
-@end
-
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage;
 
@@ -40,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 #warning debug usage only
 @interface MTITexturePromise : NSObject <MTIImagePromise>
 
-@property (nonatomic,copy,readonly) MTLTextureDescriptor *textureDescriptor;
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture;
 

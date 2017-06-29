@@ -12,13 +12,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MTISamplerDescriptor;
+
 @interface MTIImage : NSObject <NSCopying>
 
 @property (nonatomic,readonly) CGRect extent;
 
 @property (nonatomic,readonly) CGSize size;
 
-@property (nonatomic,copy,readonly) MTLSamplerDescriptor *samplerDescriptor;
+@property (nonatomic,copy,readonly) MTISamplerDescriptor *samplerDescriptor;
 
 @property (nonatomic,copy,readonly) id<MTIImagePromise> promise;
 
@@ -26,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise;
 
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor;
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
-- (instancetype)imageWithSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor;
+- (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
 @end
 

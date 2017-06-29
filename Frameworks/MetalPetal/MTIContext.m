@@ -9,6 +9,7 @@
 #import "MTIContext.h"
 #import "MTIStructs.h"
 #import "MTIFilterFunctionDescriptor.h"
+#import "MTISamplerDescriptor.h"
 
 @implementation MTIRenderPipelineInfo
 
@@ -36,7 +37,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
 @property (nonatomic,copy) NSDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipelineInfo *> *renderPipelineInfoCache;
 
-@property (nonatomic,copy) NSDictionary<MTLSamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
+@property (nonatomic,copy) NSDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
 @end
 
@@ -149,10 +150,10 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return cachedState;
 }
 
-- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTLSamplerDescriptor *)descriptor {
+- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {
     id<MTLSamplerState> cachedState = self.samplerStateCache[descriptor];
     if (!cachedState) {
-        id<MTLSamplerState> state = [self.device newSamplerStateWithDescriptor:descriptor];
+        id<MTLSamplerState> state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
         __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.samplerStateCache];
         cache[descriptor] = state;
         self.samplerStateCache = cache;

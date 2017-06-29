@@ -12,6 +12,7 @@
 #import "MTIStructs.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIFilterFunctionDescriptor.h"
+#import "MTITextureDescriptor.h"
 
 @interface MTIVertices : NSObject
 
@@ -96,7 +97,7 @@
         return nil;
     }
     
-    id<MTLTexture> renderTarget = [context.context.device newTextureWithDescriptor:self.textureDescriptor];
+    id<MTLTexture> renderTarget = [context.context.device newTextureWithDescriptor:[self.textureDescriptor newMTLTextureDescriptor]];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget;
@@ -139,7 +140,7 @@
         _vertexFunctionDescriptor = builder.vertexFunctionDescriptor;
         _fragmentFunctionDescriptor = builder.fragmentFunctionDescriptor;
         _fragmentFunctionParameters = builder.fragmentFunctionParameters;
-        _textureDescriptor = builder.textureDescriptor;
+        _textureDescriptor = [builder.textureDescriptor newMTITextureDescriptor];
     }
     return self;
 }
