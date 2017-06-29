@@ -1,16 +1,20 @@
 PODS:
-  - MetalPetal (1.0)
+  - MetalPetal (1.0):
+    - MetalPetal/Core (= 1.0)
+  - MetalPetal/Core (1.0)
+  - MetalPetal/Swift (1.0)
 
 DEPENDENCIES:
   - MetalPetal (from `Frameworks/MetalPetal`)
+  - MetalPetal/Swift (from `Frameworks/MetalPetal`)
 
 EXTERNAL SOURCES:
   MetalPetal:
     :path: Frameworks/MetalPetal
 
 SPEC CHECKSUMS:
-  MetalPetal: 2bdb516b77ea9ac332c87032571ae6a305ec59f3
+  MetalPetal: 53759ac4f8a9c756cdeb3d48c67b060186db0aa3
 
-PODFILE CHECKSUM: ebe51f65a03661840abf2702a62b38413176b4d2
+PODFILE CHECKSUM: 6321f1c5ebc71202e4827c3cf994f7d4b2f79bb8
 
 COCOAPODS: 1.2.1

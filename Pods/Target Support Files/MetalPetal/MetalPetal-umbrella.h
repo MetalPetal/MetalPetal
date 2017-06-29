@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "MetalPetal.h"
 #import "MTIColorInvertFilter.h"
 #import "MTIContext.h"
 #import "MTIFilter.h"

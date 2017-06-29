@@ -5,5 +5,5 @@ target 'MetalPetalDemo' do
   use_frameworks!
 
   pod 'MetalPetal', :path => 'Frameworks/MetalPetal'
-
+  pod 'MetalPetal/Swift', :path => 'Frameworks/MetalPetal'
 end

@@ -17,5 +17,15 @@
   "platforms": {
     "ios": "9.0"
   },
-  "source_files": "**/*.{h,m,c,mm,metal}"
+  "default_subspecs": "Core",
+  "subspecs": [
+    {
+      "name": "Core",
+      "source_files": "**/*.{h,m,c,mm,metal}"
+    },
+    {
+      "name": "Swift",
+      "source_files": "**/*.{swift}"
+    }
+  ]
 }
