@@ -19,25 +19,20 @@ struct VertexOut {
 	float2 texcoords;
 };
 
-struct Uniforms {
-	float4x4 modelViewProjectionMatrix;
-};
-
 vertex VertexOut image_vertex(
 	device VertexIn * vertices [[ buffer(0) ]],
-	constant Uniforms & uniforms [[ buffer(1) ]],
+	constant float4x4 & modelViewProjectionMatrix [[ buffer(1) ]],
 	uint vid [[ vertex_id ]]
 ) {
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
-	outVertex.position = uniforms.modelViewProjectionMatrix * float4(inVertex.position);
+	outVertex.position = modelViewProjectionMatrix * float4(inVertex.position);
 	outVertex.texcoords = inVertex.texcoords;
 	return outVertex;
 }
 
 fragment float4 image_fragment(
 	VertexOut vertexIn [[ stage_in ]],
-	//constant Uniforms & uniforms [[ buffer(0) ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
 ) {

@@ -18,9 +18,10 @@
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIImageRenderingReceipt.h"
+#import "MTIRenderPipeline.h"
 #import "MTISamplerDescriptor.h"
-#import "MTIStructs.h"
 #import "MTITextureDescriptor.h"
+#import "MTIVertex.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;
 FOUNDATION_EXPORT const unsigned char MetalPetalVersionString[];

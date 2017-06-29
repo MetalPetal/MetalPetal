@@ -7,7 +7,7 @@
 //
 
 #import "MTIFilter.h"
-#import "MTIStructs.h"
+#import "MTIVertex.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIImage.h"
 #import "MTIFilterFunctionDescriptor.h"

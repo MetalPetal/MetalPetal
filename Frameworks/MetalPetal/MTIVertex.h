@@ -9,19 +9,19 @@
 #import <Foundation/Foundation.h>
 #import <Accelerate/Accelerate.h>
 #import <simd/simd.h>
+#import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 struct MTIVertex {
-    float x, y, z, w, u, v;
+    packed_float4 position;
+    packed_float2 textureCoordinate;
 };
 typedef struct MTIVertex MTIVertex;
 
-struct MTIUniforms {
-    matrix_float4x4 modelViewProjectionMatrix;
-};
-typedef struct MTIUniforms MTIUniforms;
+FOUNDATION_EXPORT MTIVertex MTIVertexMake(float x, float y, float z, float w, float u, float v) NS_SWIFT_NAME(MTIVertex(x:y:z:w:u:v:));
 
+FOUNDATION_EXPORT MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void);
 
 @interface MTIVertices : NSObject
 

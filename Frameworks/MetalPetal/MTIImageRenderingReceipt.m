@@ -9,10 +9,11 @@
 #import "MTIImageRenderingReceipt.h"
 #import "MTIImage.h"
 #import "MTIContext.h"
-#import "MTIStructs.h"
+#import "MTIVertex.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTITextureDescriptor.h"
+#import "MTIRenderPipeline.h"
 
 @implementation MTIImageRenderingReceiptBuilder
 
@@ -25,13 +26,14 @@
     CGFloat r = CGRectGetMaxX(rect);
     CGFloat t = CGRectGetMinY(rect);
     CGFloat b = CGRectGetMaxY(rect);
+  
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        {.x = l, .y = t, .z = 0, .w = 1, .u = 0, .v = 1},
-        {.x = l, .y = b, .z = 0, .w = 1, .u = 0, .v = 0},
-        {.x = r, .y = b, .z = 0, .w = 1, .u = 1, .v = 0},
-        {.x = l, .y = t, .z = 0, .w = 1, .u = 0, .v = 1},
-        {.x = r, .y = b, .z = 0, .w = 1, .u = 1, .v = 0},
-        {.x = r, .y = t, .z = 0, .w = 1, .u = 1, .v = 1},
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } }
     } count:6];
 }
 
@@ -48,21 +50,11 @@
 #warning fetch resolve result from cache
         [inputTextures addObject:[image.promise resolveWithContext:renderingContext error:&error]];
     }
-    id<MTLFunction> vertextFunction = [renderingContext.context functionWithDescriptor:self.vertexFunctionDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    id<MTLFunction> fragmentFunction = [renderingContext.context functionWithDescriptor:self.fragmentFunctionDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    MTIRenderPipelineInfo *renderPipelineInfo = [renderingContext.context renderPipelineInfoWithColorAttachmentPixelFormats:self.textureDescriptor.pixelFormat vertexFunction:vertextFunction fragmentFunction:fragmentFunction error:&error];
+    
+    MTIRenderPipeline *renderPipeline = [renderingContext.context renderPipelineWithColorAttachmentPixelFormat:self.textureDescriptor.pixelFormat
+                                                                                      vertexFunctionDescriptor:self.vertexFunctionDescriptor
+                                                                                    fragmentFunctionDescriptor:self.fragmentFunctionDescriptor
+                                                                                                         error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -80,14 +72,13 @@
     
 #warning cache renderPassDescriptor/uniformsBuffer/verticesBuffer
     matrix_float4x4 transform = matrix_identity_float4x4;
-    MTIUniforms uniforms = (MTIUniforms){ .modelViewProjectionMatrix = transform };
-    id<MTLBuffer> uniformsBuffer = [renderingContext.context.device newBufferWithBytes:&uniforms length:sizeof(uniforms) options:0];
+    id<MTLBuffer> uniformsBuffer = [renderingContext.context.device newBufferWithBytes:&transform length:sizeof(transform) options:0];
     
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
     id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-    [commandEncoder setRenderPipelineState:renderPipelineInfo.pipelineState];
+    [commandEncoder setRenderPipelineState:renderPipeline.state];
     [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
     [commandEncoder setVertexBuffer:uniformsBuffer offset:0 atIndex:1];
     

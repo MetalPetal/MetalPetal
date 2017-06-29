@@ -13,19 +13,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFilterFunctionDescriptor,MTISamplerDescriptor;
-
-@interface MTIRenderPipelineInfo : NSObject <NSCopying>
-
-@property (nonatomic,strong,readonly) id<MTLRenderPipelineState> pipelineState;
-@property (nonatomic,strong,readonly) MTLRenderPipelineReflection *pipelineReflection;
-
-@end
+@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline;
 
 FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
 typedef NS_ENUM(NSInteger, MTIContextError) {
-    MTIContextErrorFunctionNotFound = 1000
+    MTIContextErrorFunctionNotFound = 1000,
+    MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 10001
 };
 
 @interface MTIContext : NSObject
@@ -42,19 +36,24 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 @property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
 
-- (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(__autoreleasing NSError **)error;
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
 
-- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(__autoreleasing NSError **)error;
+#pragma mark - Cache
 
-- (nullable MTIRenderPipelineInfo *)renderPipelineInfoWithColorAttachmentPixelFormats:(MTLPixelFormat)pixelFormat
-                                                                       vertexFunction:(id<MTLFunction>)vertexFunction
-                                                                     fragmentFunction:(id<MTLFunction>)fragmentFunction
-                                                                                error:(NSError **)error;
+- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
 
-- (nullable id<MTLFunction>)functionWithDescriptor:(MTIFilterFunctionDescriptor *)descriptor error:(__autoreleasing NSError **)error;
+- (nullable id<MTLFunction>)functionWithDescriptor:(MTIFilterFunctionDescriptor *)descriptor error:(NSError **)error;
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
 
+- (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
+
+- (nullable MTIRenderPipeline *)renderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat
+                                                    vertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
+                                                  fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
+                                                                       error:(NSError **)error;
+
 @end
+
 
 NS_ASSUME_NONNULL_END

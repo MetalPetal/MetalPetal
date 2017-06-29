@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) id<MTLCommandBuffer> commandBuffer;
 
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 @interface MTIContext (Rendering)

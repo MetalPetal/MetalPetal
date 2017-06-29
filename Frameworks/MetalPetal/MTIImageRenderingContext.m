@@ -50,8 +50,10 @@
                                                              0,
                                                              &renderTexture);
     if (!texture || err) {
-#warning error handling
-        NSLog( @"CVMetalTextureCacheCreateTextureFromImage failed (error: %d)", err);
+        NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil]}];
+        if (inOutError) {
+            *inOutError = error;
+        }
         return;
     }
     
