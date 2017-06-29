@@ -37,9 +37,9 @@
     return self;
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     CFAbsoluteTime loadStart = CFAbsoluteTimeGetCurrent();
-    id<MTLTexture> texture = [context.context.textureLoader newTextureWithCGImage:self.image options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:error];
     NSLog(@"%@ load time: %@", self, @(CFAbsoluteTimeGetCurrent() - loadStart));
     return texture;
 }
@@ -78,7 +78,7 @@
     return self;
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     return self.texture;
 }
 

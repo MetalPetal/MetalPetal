@@ -14,33 +14,6 @@
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTITextureDescriptor.h"
 
-@interface MTIVertices : NSObject
-
-@property (nonatomic,readonly) MTIVertex *buffer NS_RETURNS_INNER_POINTER;
-
-@property (nonatomic,readonly) NSInteger count;
-
-@end
-
-@implementation MTIVertices
-
-- (instancetype)initWithVertices:(MTIVertex *)vertices count:(NSInteger)count {
-    if (self = [super init]) {
-        _count = count;
-        _buffer = calloc(count, sizeof(MTIVertex));
-        memcpy(_buffer, vertices, count * sizeof(MTIVertex));
-    }
-    return self;
-}
-
-- (void)dealloc {
-    if (_buffer) {
-        free(_buffer);
-    }
-}
-
-@end
-
 @implementation MTIImageRenderingReceiptBuilder
 
 @end
@@ -62,7 +35,7 @@
     } count:6];
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
     NSMutableArray<id<MTLTexture>> *inputTextures = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
@@ -73,23 +46,23 @@
             return nil;
         }
 #warning fetch resolve result from cache
-        [inputTextures addObject:[image.promise resolveWithContext:context error:&error]];
+        [inputTextures addObject:[image.promise resolveWithContext:renderingContext error:&error]];
     }
-    id<MTLFunction> vertextFunction = [context.context functionWithDescriptor:self.vertexFunctionDescriptor error:&error];
+    id<MTLFunction> vertextFunction = [renderingContext.context functionWithDescriptor:self.vertexFunctionDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
         }
         return nil;
     }
-    id<MTLFunction> fragmentFunction = [context.context functionWithDescriptor:self.fragmentFunctionDescriptor error:&error];
+    id<MTLFunction> fragmentFunction = [renderingContext.context functionWithDescriptor:self.fragmentFunctionDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
         }
         return nil;
     }
-    MTIRenderPipelineInfo *renderPipelineInfo = [context.context renderPipelineInfoWithColorAttachmentPixelFormats:self.textureDescriptor.pixelFormat vertexFunction:vertextFunction fragmentFunction:fragmentFunction error:&error];
+    MTIRenderPipelineInfo *renderPipelineInfo = [renderingContext.context renderPipelineInfoWithColorAttachmentPixelFormats:self.textureDescriptor.pixelFormat vertexFunction:vertextFunction fragmentFunction:fragmentFunction error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -97,7 +70,7 @@
         return nil;
     }
     
-    id<MTLTexture> renderTarget = [context.context.device newTextureWithDescriptor:[self.textureDescriptor newMTLTextureDescriptor]];
+    id<MTLTexture> renderTarget = [renderingContext.context.device newTextureWithDescriptor:[self.textureDescriptor newMTLTextureDescriptor]];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget;
@@ -108,19 +81,19 @@
 #warning cache renderPassDescriptor/uniformsBuffer/verticesBuffer
     matrix_float4x4 transform = matrix_identity_float4x4;
     MTIUniforms uniforms = (MTIUniforms){ .modelViewProjectionMatrix = transform };
-    id<MTLBuffer> uniformsBuffer = [context.context.device newBufferWithBytes:&uniforms length:sizeof(uniforms) options:0];
+    id<MTLBuffer> uniformsBuffer = [renderingContext.context.device newBufferWithBytes:&uniforms length:sizeof(uniforms) options:0];
     
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
-    id<MTLBuffer> verticesBuffer = [context.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
+    id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
     
-    __auto_type commandEncoder = [context.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipelineInfo.pipelineState];
     [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
     [commandEncoder setVertexBuffer:uniformsBuffer offset:0 atIndex:1];
     
     for (NSUInteger index = 0; index < inputTextures.count; index += 1) {
         [commandEncoder setFragmentTexture:inputTextures[index] atIndex:index];
-        id<MTLSamplerState> samplerState = [context.context samplerStateWithDescriptor:self.inputImages[index].samplerDescriptor];
+        id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:self.inputImages[index].samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
     }
     

@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "MetalPetalDemo-Swift.h"
 @import MetalPetal;
 @import MetalKit;
 
@@ -18,6 +19,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [MetalPetalSwiftInterfaceTest test];
+    
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
     UIImage *image = [UIImage imageNamed:@"P1040602.jpg"];
@@ -36,8 +40,7 @@
     while (true) {
         @autoreleasepool {
             CFAbsoluteTime renderPass1Start = CFAbsoluteTimeGetCurrent();
-            MTIImageRenderingContext *imageRenderingContext = [[MTIImageRenderingContext alloc] initWithContext:context];
-            [imageRenderingContext renderImage:outputImage toPixelBuffer:pixelBuffer error:&error];
+            [context renderImage:outputImage toPixelBuffer:pixelBuffer error:&error];
             NSLog(@"Time: %@", @(CFAbsoluteTimeGetCurrent() - renderPass1Start));
         }
         [NSThread sleepForTimeInterval:1.0/60.0];

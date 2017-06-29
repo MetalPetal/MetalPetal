@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import "MTIContext.h"
 
-@class MTIImage, MTIContext;
+@class MTIImage;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) id<MTLCommandBuffer> commandBuffer;
 
-- (instancetype)initWithContext:(MTIContext *)context;
+@end
+
+@interface MTIContext (Rendering)
 
 - (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
 

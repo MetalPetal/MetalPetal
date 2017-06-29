@@ -8,11 +8,15 @@
 
 #import <Metal/Metal.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /// An immutable wrapper for MTLTextureDescriptor
 
 @interface MTITextureDescriptor : NSObject <NSCopying>
 
-- (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor NS_DESIGNATED_INITIALIZER;
 
 - (MTLTextureDescriptor *)newMTLTextureDescriptor;
 
@@ -33,3 +37,5 @@
 - (MTITextureDescriptor *)newMTITextureDescriptor;
 
 @end
+
+NS_ASSUME_NONNULL_END

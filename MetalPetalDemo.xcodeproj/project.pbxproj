@@ -15,6 +15,7 @@
 		9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B81EFF678800BA6B09 /* Assets.xcassets */; };
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
 		9D4F1C361F02B7E700FA48BE /* P1040602.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4F1C351F02B7E700FA48BE /* P1040602.jpg */; };
+		9D9B4DE91F0558C40084ED0D /* SwiftInterfaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		9D3928BB1EFF678800BA6B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D3928BD1EFF678800BA6B09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D4F1C351F02B7E700FA48BE /* P1040602.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040602.jpg; sourceTree = "<group>"; };
+		9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalPetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
+		9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftInterfaceTest.swift; sourceTree = "<group>"; };
 		B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +83,8 @@
 				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
 				9D3928B21EFF678800BA6B09 /* ViewController.h */,
 				9D3928B31EFF678800BA6B09 /* ViewController.m */,
+				9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */,
+				9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */,
 				9D4F1C351F02B7E700FA48BE /* P1040602.jpg */,
 				9D3928B51EFF678800BA6B09 /* Main.storyboard */,
 				9D3928B81EFF678800BA6B09 /* Assets.xcassets */,
@@ -141,6 +146,7 @@
 					9D3928A81EFF678800BA6B09 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = YWAZZNBUPH;
+						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -231,6 +237,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D3928B41EFF678800BA6B09 /* ViewController.m in Sources */,
+				9D9B4DE91F0558C40084ED0D /* SwiftInterfaceTest.swift in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
 				9D3928AE1EFF678800BA6B09 /* main.m in Sources */,
 			);
@@ -355,11 +362,15 @@
 			baseConfigurationReference = 0A8FE4D1B0592FC3147A79BB /* Pods-MetalPetalDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = YWAZZNBUPH;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -368,11 +379,14 @@
 			baseConfigurationReference = B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = YWAZZNBUPH;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
-- (nullable id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)context error:(NSError **)error;
+- (nullable id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
 
 @end
 
@@ -29,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#warning debug usage only
 @interface MTITexturePromise : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;

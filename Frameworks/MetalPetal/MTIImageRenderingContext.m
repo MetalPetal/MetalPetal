@@ -20,11 +20,16 @@
     return self;
 }
 
+@end
+
+@implementation MTIContext (Rendering)
+
 - (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
 #warning fetch texture from cache
-    id<MTLTexture> texture = [image.promise resolveWithContext:self error:&error];
+    id<MTLTexture> texture = [image.promise resolveWithContext:renderingContext error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -36,7 +41,7 @@
     
     CVMetalTextureRef renderTexture = NULL;
     CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                             self.context.coreVideoTextureCache,
+                                                             self.coreVideoTextureCache,
                                                              pixelBuffer,
                                                              NULL,
                                                              MTLPixelFormatBGRA8Unorm_sRGB,
@@ -51,7 +56,7 @@
     }
     
     id<MTLTexture> metalTexture = CVMetalTextureGetTexture(renderTexture);
-    id<MTLBlitCommandEncoder> blitCommandEncoder = [self.commandBuffer blitCommandEncoder];
+    id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
     [blitCommandEncoder copyFromTexture:texture
                             sourceSlice:0
                             sourceLevel:0
@@ -63,10 +68,10 @@
                       destinationOrigin:MTLOriginMake(0, 0, 0)];
     [blitCommandEncoder endEncoding];
     
-    [self.commandBuffer commit];
+    [renderingContext.commandBuffer commit];
     
     CFRelease(renderTexture);
-    CVMetalTextureCacheFlush(self.context.coreVideoTextureCache, 0);
+    CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
 }
 
 @end

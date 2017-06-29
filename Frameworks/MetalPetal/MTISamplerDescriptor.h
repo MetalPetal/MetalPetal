@@ -8,11 +8,15 @@
 
 #import <Metal/Metal.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /// An immutable wrapper for MTLSamplerDescriptor.
 
 @interface MTISamplerDescriptor : NSObject <NSCopying>
 
-- (instancetype)initWithMTLSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithMTLSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor NS_DESIGNATED_INITIALIZER;
 
 - (MTLSamplerDescriptor *)newMTLSamplerDescriptor;
 
@@ -23,3 +27,5 @@
 - (MTISamplerDescriptor *)newMTISamplerDescriptor;
 
 @end
+
+NS_ASSUME_NONNULL_END
