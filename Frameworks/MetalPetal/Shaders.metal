@@ -39,6 +39,8 @@ fragment float4 passthroughFragmentShader(
 	return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
 
+
+
 fragment float4 colorInvert(
     VertexOut vertexIn [[ stage_in ]],
     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
