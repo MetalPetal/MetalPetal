@@ -20,7 +20,7 @@ struct VertexOut {
 };
 
 vertex VertexOut image_vertex(
-	device VertexIn * vertices [[ buffer(0) ]],
+    device VertexIn * vertices [[ buffer(0) ]],
 	constant float4x4 & modelViewProjectionMatrix [[ buffer(1) ]],
 	uint vid [[ vertex_id ]]
 ) {

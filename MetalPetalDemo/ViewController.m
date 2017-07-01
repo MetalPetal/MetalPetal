@@ -11,7 +11,13 @@
 @import MetalPetal;
 @import MetalKit;
 
-@interface ViewController ()
+@interface ViewController () <MTKViewDelegate>
+
+@property (nonatomic, weak) MTKView *renderView;
+
+@property (nonatomic, strong) MTIContext *context;
+
+@property (nonatomic, strong) MTIImage *inputImage;
 
 @end
 
@@ -24,27 +30,37 @@
     
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
+    self.context = context;
+    
     UIImage *image = [UIImage imageNamed:@"P1040602.jpg"];
     
-    MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
+    MTKView *renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:context.device];
+    renderView.delegate = self;
+    renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:renderView];
+    self.renderView = renderView;
+    
+    
+    //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
+    
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture]];
-    
+    self.inputImage = mtiImageFromTexture;
+}
+
+- (void)drawInMTKView:(MTKView *)view {
     MTIColorInvertFilter *filter = [[MTIColorInvertFilter alloc] init];
-    filter.inputImage = mtiImageFromTexture;
+    filter.inputImage = self.inputImage;
     MTIImage *outputImage = filter.outputImage;
-    
-    CVPixelBufferRef pixelBuffer;
-    CVPixelBufferCreate(kCFAllocatorDefault, outputImage.size.width, outputImage.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef _Nullable)(@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}}), &pixelBuffer);
-    
-    while (true) {
-        @autoreleasepool {
-            CFAbsoluteTime renderPass1Start = CFAbsoluteTimeGetCurrent();
-            [context renderImage:outputImage toPixelBuffer:pixelBuffer error:&error];
-            NSLog(@"Time: %@", @(CFAbsoluteTimeGetCurrent() - renderPass1Start));
-        }
-        [NSThread sleepForTimeInterval:1.0/60.0];
-    }
+    [self.context renderImage:outputImage toDrawableWithCallback:^id<MTLDrawable> _Nonnull{
+        return view.currentDrawable;
+    } renderPassDescriptorCallback:^MTLRenderPassDescriptor * _Nonnull{
+        return view.currentRenderPassDescriptor;
+    } error:nil];
+    NSLog(@"draw request");
+}
+
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
 }
 

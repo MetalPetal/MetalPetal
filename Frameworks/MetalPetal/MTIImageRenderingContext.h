@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
 
+- (void)renderImage:(MTIImage *)image toDrawableWithCallback:(id<MTLDrawable> (^)(void))drawableCallback renderPassDescriptorCallback:(MTLRenderPassDescriptor * (^)(void))renderPassDescriptorCallback error:(NSError * _Nullable __autoreleasing *)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
