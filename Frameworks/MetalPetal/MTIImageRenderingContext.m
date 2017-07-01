@@ -13,6 +13,8 @@
 #import "MTIVertex.h"
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
+#import "MTIDrawableRendering.h"
+@import AVFoundation;
 
 @implementation MTIImageRenderingContext
 
@@ -80,7 +82,7 @@
     CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
 }
 
-- (void)renderImage:(MTIImage *)image toDrawableWithCallback:(id<MTLDrawable>  _Nonnull (^)(void))drawableCallback renderPassDescriptorCallback:(MTLRenderPassDescriptor * _Nonnull (^)(void))renderPassDescriptorCallback error:(NSError *__autoreleasing  _Nullable *)inOutError {
+- (void)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
@@ -93,8 +95,36 @@
         return;
     }
     
-    id<MTLDrawable> drawable = drawableCallback();
-    MTLRenderPassDescriptor *renderPassDescriptor = renderPassDescriptorCallback();
+    id<MTLDrawable> drawable = [request.drawableProvider drawableForRequest:request];
+    MTLRenderPassDescriptor *renderPassDescriptor = [request.drawableProvider renderPassDescriptorForRequest:request];
+    
+    float heightScaling = 1.0;
+    float widthScaling = 1.0;
+    CGSize drawableSize = CGSizeMake(renderPassDescriptor.colorAttachments[0].texture.width, renderPassDescriptor.colorAttachments[0].texture.height);
+    CGRect bounds = CGRectMake(0, 0, drawableSize.width, drawableSize.height);
+    CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(image.size, bounds);
+    switch (request.resizingMode) {
+        case MTIDrawableRenderingResizingModeScale: {
+            widthScaling = 1.0;
+            heightScaling = 1.0;
+        }; break;
+        case MTIDrawableRenderingResizingModeAspect:
+        {
+            widthScaling = insetRect.size.width / drawableSize.width;
+            heightScaling = insetRect.size.height / drawableSize.height;
+        }; break;
+        case MTIDrawableRenderingResizingModeAspectFill:
+        {
+            widthScaling = drawableSize.height / insetRect.size.height;
+            heightScaling = drawableSize.width / insetRect.size.width;
+        }; break;
+    }
+    MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {-widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 1, 1 } },
+        { .position = {-widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
+    } count:4];
     
     MTIRenderPipeline *renderPipeline = [renderingContext.context renderPipelineWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat
                                                                                       vertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
@@ -107,22 +137,6 @@
         return;
     }
     
-    CGRect rect = CGRectMake(-1, -1, 2, 2);
-    
-    CGFloat l = CGRectGetMinX(rect);
-    CGFloat r = CGRectGetMaxX(rect);
-    CGFloat t = CGRectGetMinY(rect);
-    CGFloat b = CGRectGetMaxY(rect);
-
-    MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } }
-    } count:6];
-    
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
     [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
@@ -131,13 +145,12 @@
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
     
-    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:vertices.count];
+    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
     
     [renderingContext.commandBuffer presentDrawable:drawable];
     
     [renderingContext.commandBuffer commit];
-
 }
 
 @end

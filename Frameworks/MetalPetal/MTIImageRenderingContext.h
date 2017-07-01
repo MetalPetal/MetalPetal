@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import "MTIContext.h"
+#import "MTIDrawableRendering.h"
 
 @class MTIImage;
 
@@ -24,11 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
 @interface MTIContext (Rendering)
 
 - (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
 
-- (void)renderImage:(MTIImage *)image toDrawableWithCallback:(id<MTLDrawable> (^)(void))drawableCallback renderPassDescriptorCallback:(MTLRenderPassDescriptor * (^)(void))renderPassDescriptorCallback error:(NSError * _Nullable __autoreleasing *)error;
+- (void)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error;
 
 @end
 

@@ -52,11 +52,10 @@
     MTIColorInvertFilter *filter = [[MTIColorInvertFilter alloc] init];
     filter.inputImage = self.inputImage;
     MTIImage *outputImage = filter.outputImage;
-    [self.context renderImage:outputImage toDrawableWithCallback:^id<MTLDrawable> _Nonnull{
-        return view.currentDrawable;
-    } renderPassDescriptorCallback:^MTLRenderPassDescriptor * _Nonnull{
-        return view.currentRenderPassDescriptor;
-    } error:nil];
+    MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
+    request.drawableProvider = self.renderView;
+    request.resizingMode = MTIDrawableRenderingResizingModeAspect;
+    [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
     NSLog(@"draw request");
 }
 

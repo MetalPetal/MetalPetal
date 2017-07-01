@@ -29,12 +29,10 @@
   
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
         { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
         { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } }
-    } count:6];
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
+    } count:4];
 }
 
 - (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
@@ -91,7 +89,7 @@
         [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
     }
     
-    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:vertices.count];
+    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
     
     return renderTarget;
