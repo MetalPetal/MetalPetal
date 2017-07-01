@@ -13,8 +13,8 @@
 @implementation MTIColorInvertFilter
 
 - (instancetype)init {
-    return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_vertex"]
-                       fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_color_invert"]];
+    return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                       fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"colorInvert"]];
 }
 
 - (MTIImage *)outputImage {

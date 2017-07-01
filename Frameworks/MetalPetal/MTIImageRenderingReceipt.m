@@ -62,6 +62,7 @@
         return nil;
     }
     
+#warning use a texture pool
     id<MTLTexture> renderTarget = [renderingContext.context.device newTextureWithDescriptor:[self.textureDescriptor newMTLTextureDescriptor]];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -70,17 +71,19 @@
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
-#warning cache renderPassDescriptor/uniformsBuffer/verticesBuffer
-    matrix_float4x4 transform = matrix_identity_float4x4;
-    id<MTLBuffer> uniformsBuffer = [renderingContext.context.device newBufferWithBytes:&transform length:sizeof(transform) options:0];
-    
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
-    id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
-    [commandEncoder setVertexBuffer:uniformsBuffer offset:0 atIndex:1];
+    
+    if (vertices.count * sizeof(MTIVertex) < 4096) {
+        //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
+        [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
+    } else {
+        #warning cache buffers
+        id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
+        [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
+    }
     
     for (NSUInteger index = 0; index < inputTextures.count; index += 1) {
         [commandEncoder setFragmentTexture:inputTextures[index] atIndex:index];

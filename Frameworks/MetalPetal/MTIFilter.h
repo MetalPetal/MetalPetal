@@ -11,6 +11,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString * const MTIFilterPassthroughVertexFunctionName;
+FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
+
 @class MTIImage, MTIFilterFunctionDescriptor;
 
 @interface MTIFilter : NSObject

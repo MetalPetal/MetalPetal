@@ -19,19 +19,19 @@ struct VertexOut {
 	float2 texcoords;
 };
 
-vertex VertexOut image_vertex(
-    device VertexIn * vertices [[ buffer(0) ]],
-	constant float4x4 & modelViewProjectionMatrix [[ buffer(1) ]],
+vertex VertexOut passthroughVertexShader(
+    const device VertexIn * vertices [[ buffer(0) ]],
+	//constant float4x4 & modelViewProjectionMatrix [[ buffer(1) ]],
 	uint vid [[ vertex_id ]]
 ) {
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
-	outVertex.position = modelViewProjectionMatrix * float4(inVertex.position);
+    outVertex.position = inVertex.position; //modelViewProjectionMatrix * float4(inVertex.position);
 	outVertex.texcoords = inVertex.texcoords;
 	return outVertex;
 }
 
-fragment float4 image_fragment(
+fragment float4 passthroughFragmentShader(
 	VertexOut vertexIn [[ stage_in ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
@@ -39,7 +39,7 @@ fragment float4 image_fragment(
 	return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
 
-fragment float4 image_color_invert(
+fragment float4 colorInvert(
     VertexOut vertexIn [[ stage_in ]],
     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
     sampler colorSampler [[ sampler(0) ]]

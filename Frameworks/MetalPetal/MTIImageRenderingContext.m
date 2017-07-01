@@ -12,6 +12,7 @@
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIVertex.h"
 #import "MTIRenderPipeline.h"
+#import "MTIFilter.h"
 
 @implementation MTIImageRenderingContext
 
@@ -79,23 +80,6 @@
     CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
 }
 
-
-- (MTIVertices *)verticesForRect:(CGRect)rect {
-    CGFloat l = CGRectGetMinX(rect);
-    CGFloat r = CGRectGetMaxX(rect);
-    CGFloat t = CGRectGetMinY(rect);
-    CGFloat b = CGRectGetMaxY(rect);
-    
-    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } }
-    } count:6];
-}
-
 - (void)renderImage:(MTIImage *)image toDrawableWithCallback:(id<MTLDrawable>  _Nonnull (^)(void))drawableCallback renderPassDescriptorCallback:(MTLRenderPassDescriptor * _Nonnull (^)(void))renderPassDescriptorCallback error:(NSError *__autoreleasing  _Nullable *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
@@ -113,8 +97,8 @@
     MTLRenderPassDescriptor *renderPassDescriptor = renderPassDescriptorCallback();
     
     MTIRenderPipeline *renderPipeline = [renderingContext.context renderPipelineWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat
-                                                                                      vertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_vertex"]
-                                                                                    fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_fragment"]
+                                                                                      vertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                                                    fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName]
                                                                                                          error:&error];
     if (error) {
         if (inOutError) {
@@ -123,17 +107,25 @@
         return;
     }
     
-#warning cache renderPassDescriptor/uniformsBuffer/verticesBuffer
-    matrix_float4x4 transform = matrix_identity_float4x4;
-    id<MTLBuffer> uniformsBuffer = [renderingContext.context.device newBufferWithBytes:&transform length:sizeof(transform) options:0];
+    CGRect rect = CGRectMake(-1, -1, 2, 2);
     
-    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
-    id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
+    CGFloat l = CGRectGetMinX(rect);
+    CGFloat r = CGRectGetMaxX(rect);
+    CGFloat t = CGRectGetMinY(rect);
+    CGFloat b = CGRectGetMaxY(rect);
+
+    MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } }
+    } count:6];
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
-    [commandEncoder setVertexBuffer:uniformsBuffer offset:0 atIndex:1];
+    [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
     
     [commandEncoder setFragmentTexture:texture atIndex:0];
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];

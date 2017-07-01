@@ -13,6 +13,9 @@
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIImageRenderingReceipt.h"
 
+NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertexShader";
+NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmentShader";
+
 @interface MTIFilter ()
 
 @property (nonatomic,copy) MTIFilterFunctionDescriptor *vertexFunctionDescriptor;
@@ -24,8 +27,8 @@
 @implementation MTIFilter
 
 - (instancetype)init {
-   return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_vertex"]
-                      fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"image_fragment"]];
+   return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                      fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName]];
 }
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor {
