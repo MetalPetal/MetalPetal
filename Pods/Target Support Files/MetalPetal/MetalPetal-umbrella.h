@@ -22,6 +22,7 @@
 #import "MTIImageRenderingReceipt.h"
 #import "MTIRenderPipeline.h"
 #import "MTISamplerDescriptor.h"
+#import "MTISaturationFilter.h"
 #import "MTITextureDescriptor.h"
 #import "MTIVertex.h"
 

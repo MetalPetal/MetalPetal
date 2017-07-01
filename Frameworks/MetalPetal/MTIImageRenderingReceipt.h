@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy) MTIFilterFunctionDescriptor *fragmentFunctionDescriptor;
 
-@property (nonatomic,copy) NSArray *fragmentFunctionParameters;
+@property (nonatomic,copy) NSDictionary<NSString *, id> *fragmentFunctionParameters;
 
 @property (nonatomic,copy) MTLTextureDescriptor *textureDescriptor;
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,readonly) MTIFilterFunctionDescriptor *fragmentFunctionDescriptor;
 
-@property (nonatomic,copy,readonly) NSArray *fragmentFunctionParameters;
+@property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *fragmentFunctionParameters;
 
 @property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 

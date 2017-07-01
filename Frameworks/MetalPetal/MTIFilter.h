@@ -24,7 +24,7 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
                       fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor NS_DESIGNATED_INITIALIZER;
 
 - (MTIImage *)applyWithInputImages:(NSArray<MTIImage *> *)images
-                        parameters:(NSArray *)parameters
+                        parameters:(NSDictionary<NSString *,id> *)parameters
            outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
 
 @end

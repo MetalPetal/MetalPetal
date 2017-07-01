@@ -47,3 +47,17 @@ fragment float4 colorInvert(
     float3 color = float3(1.0) - colorTexture.sample(colorSampler, vertexIn.texcoords).rgb;
     return float4(color, 1.0);
 }
+
+fragment float4 saturationAdjust(
+    VertexOut vertexIn [[ stage_in ]],
+    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+    sampler colorSampler [[ sampler(0) ]],
+    constant float & saturation [[ buffer(0) ]]
+) {
+    const float3 luminanceWeighting = float3(0.2125, 0.7154, 0.0721);
+    
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float luminance = dot(textureColor.rgb, luminanceWeighting);
+    float3 greyScaleColor = float3(luminance);
+    return float4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.a);
+}

@@ -44,7 +44,7 @@ NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmen
 }
 
 - (MTIImage *)applyWithInputImages:(NSArray<MTIImage *> *)images
-                        parameters:(NSArray *)parameters
+                        parameters:(NSDictionary<NSString *,id> *)parameters
            outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
     MTIImageRenderingReceiptBuilder *builder = [[MTIImageRenderingReceiptBuilder alloc] init];
     builder.inputImages = images;

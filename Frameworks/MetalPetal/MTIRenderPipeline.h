@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MTIRenderPipeline : NSObject <NSCopying>
 
 @property (nonatomic,strong,readonly) id<MTLRenderPipelineState> state;
+
 @property (nonatomic,strong,readonly) MTLRenderPipelineReflection *reflection;
 
 - (instancetype)init NS_UNAVAILABLE;

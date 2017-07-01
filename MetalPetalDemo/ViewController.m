@@ -19,6 +19,8 @@
 
 @property (nonatomic, strong) MTIImage *inputImage;
 
+@property (nonatomic, strong) MTISaturationFilter *saturationFilter;
+
 @end
 
 @implementation ViewController
@@ -40,7 +42,7 @@
     [self.view addSubview:renderView];
     self.renderView = renderView;
     
-    
+    self.saturationFilter = [[MTISaturationFilter alloc] init];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
@@ -49,9 +51,9 @@
 }
 
 - (void)drawInMTKView:(MTKView *)view {
-    MTIColorInvertFilter *filter = [[MTIColorInvertFilter alloc] init];
-    filter.inputImage = self.inputImage;
-    MTIImage *outputImage = filter.outputImage;
+    self.saturationFilter.inputImage = self.inputImage;
+    self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent());
+    MTIImage *outputImage = self.saturationFilter.outputImage;
     MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
     request.drawableProvider = self.renderView;
     request.resizingMode = MTIDrawableRenderingResizingModeAspect;

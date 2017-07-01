@@ -89,6 +89,25 @@
         [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
     }
     
+    //encode parameters
+    if (self.fragmentFunctionParameters.count > 0) {
+        for (NSInteger index = 0; index < renderPipeline.reflection.fragmentArguments.count; index += 1) {
+            MTLArgument *argument = renderPipeline.reflection.fragmentArguments[index];
+            id value = self.fragmentFunctionParameters[argument.name];
+            if (value) {
+                switch (argument.bufferDataType) {
+                    case MTLDataTypeFloat: {
+                        float floatValue = [value floatValue];
+                        [commandEncoder setFragmentBytes:&floatValue length:sizeof(floatValue) atIndex:argument.index];
+                    } break;
+                        
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
     

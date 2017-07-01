@@ -1,20 +1,20 @@
 //
-//  MTIColorInvertFilter.m
+//  MTISaturationFilter.m
 //  Pods
 //
-//  Created by YuAo on 27/06/2017.
+//  Created by YuAo on 01/07/2017.
 //
 //
 
-#import "MTIColorInvertFilter.h"
+#import "MTISaturationFilter.h"
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIImage.h"
 
-@implementation MTIColorInvertFilter
+@implementation MTISaturationFilter
 
 - (instancetype)init {
     return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                       fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"colorInvert"]];
+                       fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"saturationAdjust"]];
 }
 
 - (MTIImage *)outputImage {
@@ -22,7 +22,7 @@
         return nil;
     }
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
-    return [self applyWithInputImages:@[self.inputImage] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
+    return [self applyWithInputImages:@[self.inputImage] parameters:@{@"saturation": @(self.saturation)} outputTextureDescriptor:outputTextureDescriptor];
 }
 
 @end
