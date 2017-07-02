@@ -100,7 +100,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
                                          fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
                                                               error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    //renderPipelineDescriptor.vertexDescriptor = MTIVertexCreateMTLVertexDescriptor();
+    renderPipelineDescriptor.vertexDescriptor = MTIVertexCreateMTLVertexDescriptor();
 
     NSError *error;
     id<MTLFunction> vertextFunction = [self functionWithDescriptor:vertexFunctionDescriptor error:&error];
@@ -130,7 +130,6 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
-    key.vertexDescriptor = [MTLVertexDescriptor vertexDescriptor];
     MTIRenderPipeline *cachedState = self.renderPipelineInfoCache[key];
     if (!cachedState) {
         MTLRenderPipelineReflection *reflection; //get reflection
