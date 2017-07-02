@@ -7,17 +7,10 @@
 //
 
 #include <metal_stdlib>
+#include "MTIShaderTypes.h"
+
 using namespace metal;
-
-struct VertexIn {
-	packed_float4 position [[ attribute(0) ]];
-	packed_float2 texcoords [[ attribute(1) ]];
-};
-
-struct VertexOut {
-	float4 position [[ position ]];
-	float2 texcoords;
-};
+using namespace metalpetal;
 
 vertex VertexOut passthroughVertexShader(
     const device VertexIn * vertices [[ buffer(0) ]],
@@ -38,8 +31,6 @@ fragment float4 passthroughFragmentShader(
 ) {
 	return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
-
-
 
 fragment float4 colorInvert(
     VertexOut vertexIn [[ stage_in ]],
