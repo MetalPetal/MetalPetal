@@ -30,6 +30,7 @@
         return nil;
     }
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
+    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     return [self.class.kernel applyWithInputImages:@[self.inputImage] parameters:@{@"saturation": @(self.saturation)} outputTextureDescriptor:outputTextureDescriptor];
 }
 

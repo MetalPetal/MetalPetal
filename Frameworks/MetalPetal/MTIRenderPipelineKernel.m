@@ -153,7 +153,7 @@
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor colorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
     MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-    colorAttachmentDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+    colorAttachmentDescriptor.pixelFormat = colorAttachmentPixelFormat;
     colorAttachmentDescriptor.blendingEnabled = NO;
     return [self initWithVertexFunctionDescriptor:vertexFunctionDescriptor
                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
@@ -200,6 +200,8 @@
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
     renderPipelineDescriptor.colorAttachments[0] = self.colorAttachmentDescriptor;
+    renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
+    renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
