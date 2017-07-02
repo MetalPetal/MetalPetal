@@ -13,8 +13,6 @@
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-@property (nonatomic, strong) NSMapTable<id<MTIImagePromise>, MTIReusableTexture *> *promiseRenderTargets;
-
 @property (nonatomic, strong) NSMutableDictionary<MTLTextureDescriptor *, NSMutableArray<id<MTLTexture>> *> *textureCache;
 
 - (void)returnTexture:(MTIReusableTexture *)texture;
@@ -69,7 +67,6 @@
     if (self = [super init]) {
         _device = device;
         _textureCache = [NSMutableDictionary dictionary];
-        _promiseRenderTargets = [NSMapTable weakToWeakObjectsMapTable];
     }
     return self;
 }
@@ -131,18 +128,13 @@
 
 @end
 
-
 @implementation MTITexturePool (MTIImagePromiseRenderTarget)
 
-- (id<MTLTexture>)renderTargetForPromise:(id<MTIImagePromise>)promise {
-    MTIReusableTexture *reusableTexture = [self.promiseRenderTargets objectForKey:promise];
-    if (!reusableTexture) {
-        reusableTexture = [self newTextureWithDescriptor:[promise.textureDescriptor newMTLTextureDescriptor]];
-        [[[MTIImagePromiseDeallocationHandler alloc] initWithAction:^{
-            [reusableTexture releaseTexture];
-        }] attachToPromise:promise];
-        [self.promiseRenderTargets setObject:reusableTexture forKey:promise];
-    }
+- (id<MTLTexture>)newRenderTargetForPromise:(id<MTIImagePromise>)promise {
+    MTIReusableTexture *reusableTexture = [self newTextureWithDescriptor:[promise.textureDescriptor newMTLTextureDescriptor]];
+    [[[MTIImagePromiseDeallocationHandler alloc] initWithAction:^{
+        [reusableTexture releaseTexture];
+    }] attachToPromise:promise];
     return reusableTexture.texture;
 }
 

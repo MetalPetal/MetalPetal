@@ -87,9 +87,9 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
             }
             return nil;
         }
-        __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.libraryCache];
+        __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.functionCache];
         cache[descriptor] = function;
-        self.libraryCache = cache;
+        self.functionCache = cache;
         cachedFunction = function;
     }
     return cachedFunction;
@@ -100,8 +100,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
                                          fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
                                                               error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    renderPipelineDescriptor.vertexDescriptor = MTIVertexCreateMTLVertexDescriptor();
-    
+    //renderPipelineDescriptor.vertexDescriptor = MTIVertexCreateMTLVertexDescriptor();
+
     NSError *error;
     id<MTLFunction> vertextFunction = [self functionWithDescriptor:vertexFunctionDescriptor error:&error];
     if (error) {
@@ -129,7 +129,9 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 }
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
-    MTIRenderPipeline *cachedState = self.renderPipelineInfoCache[renderPipelineDescriptor];
+    MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
+    key.vertexDescriptor = [MTLVertexDescriptor vertexDescriptor];
+    MTIRenderPipeline *cachedState = self.renderPipelineInfoCache[key];
     if (!cachedState) {
         MTLRenderPipelineReflection *reflection; //get reflection
         NSError *error = nil;
@@ -137,7 +139,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         if (renderPipelineState && !error) {
             MTIRenderPipeline *state = [[MTIRenderPipeline alloc] initWithState:renderPipelineState reflection:reflection];
             __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.renderPipelineInfoCache];
-            cache[renderPipelineDescriptor] = state;
+            cache[key] = state;
             self.renderPipelineInfoCache = cache;
             cachedState = state;
         } else {

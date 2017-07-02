@@ -61,7 +61,7 @@
         return nil;
     }
     
-    id<MTLTexture> renderTarget = [renderingContext.context.texturePool renderTargetForPromise:self];
+    id<MTLTexture> renderTarget = [renderingContext.context.texturePool newRenderTargetForPromise:self];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget;

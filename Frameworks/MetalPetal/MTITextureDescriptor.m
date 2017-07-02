@@ -41,6 +41,10 @@
     return NO;
 }
 
+- (NSUInteger)hash {
+    return [_metalTextureDescriptor hash];
+}
+
 - (MTLTextureType)textureType {
     return _metalTextureDescriptor.textureType;
 }

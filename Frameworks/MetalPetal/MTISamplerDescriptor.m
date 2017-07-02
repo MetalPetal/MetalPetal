@@ -41,6 +41,10 @@
     return NO;
 }
 
+- (NSUInteger)hash {
+    return [_metalSamplerDescriptor hash];
+}
+
 @end
 
 @implementation MTLSamplerDescriptor (MTISamplerDescriptor)
