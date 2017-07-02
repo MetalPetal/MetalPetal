@@ -12,6 +12,7 @@
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
+#import "MTITexturePool.h"
 
 NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
@@ -46,6 +47,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _coreImageContext = [CIContext contextWithMTLDevice:device options:@{kCIContextWorkingColorSpace: CFBridgingRelease(CGColorSpaceCreateDeviceRGB())}];
         _commandQueue = [device newCommandQueue];
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
+        _texturePool = [[MTITexturePool alloc] initWithDevice:device];
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
     }

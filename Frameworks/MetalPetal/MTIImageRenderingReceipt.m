@@ -14,6 +14,7 @@
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
+#import "MTITexturePool.h"
 
 @implementation MTIImageRenderingReceiptBuilder
 
@@ -60,8 +61,7 @@
         return nil;
     }
     
-#warning use a texture pool
-    id<MTLTexture> renderTarget = [renderingContext.context.device newTextureWithDescriptor:[self.textureDescriptor newMTLTextureDescriptor]];
+    id<MTLTexture> renderTarget = [renderingContext.context.texturePool renderTargetForPromise:self];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget;

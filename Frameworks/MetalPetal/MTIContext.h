@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline;
+@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITexturePool;
 
 FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
@@ -35,6 +35,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
 @property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
+
+@property (nonatomic, strong, readonly) MTITexturePool *texturePool;
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
 

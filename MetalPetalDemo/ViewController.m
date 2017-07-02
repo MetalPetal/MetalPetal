@@ -56,7 +56,14 @@
 - (void)drawInMTKView:(MTKView *)view {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-    MTIImage *outputImage = self.saturationFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    MTIImage *outputImage = self.colorInvertFilter.outputImage;
     MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
     request.drawableProvider = self.renderView;
     request.resizingMode = MTIDrawableRenderingResizingModeAspect;

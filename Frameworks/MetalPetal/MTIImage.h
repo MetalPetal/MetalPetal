@@ -14,7 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTISamplerDescriptor;
 
+typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
+    MTIImageCachePolicyTransient,
+    MTIImageCachePolicyPersistent
+};
+
 @interface MTIImage : NSObject <NSCopying>
+
+@property (nonatomic,readonly) MTIImageCachePolicy cachePolicy;
 
 @property (nonatomic,readonly) CGRect extent;
 

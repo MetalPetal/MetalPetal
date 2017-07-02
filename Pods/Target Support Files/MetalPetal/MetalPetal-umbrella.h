@@ -24,6 +24,7 @@
 #import "MTIRenderPipeline.h"
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
+#import "MTITexturePool.h"
 #import "MTIVertex.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;
