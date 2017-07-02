@@ -82,6 +82,35 @@
     CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
 }
 
+- (nullable MTIRenderPipeline *)passthroughRenderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)inOutError {
+    MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    
+    NSError *error;
+    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    renderPipelineDescriptor.vertexFunction = vertextFunction;
+    renderPipelineDescriptor.fragmentFunction = fragmentFunction;
+    
+    renderPipelineDescriptor.colorAttachments[0].pixelFormat = pixelFormat;
+    renderPipelineDescriptor.colorAttachments[0].blendingEnabled = NO;
+    
+    return [self renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
+}
+
 - (void)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
@@ -126,10 +155,8 @@
         { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
     } count:4];
     
-    MTIRenderPipeline *renderPipeline = [renderingContext.context renderPipelineWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat
-                                                                                      vertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                                                    fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName]
-                                                                                                         error:&error];
+    MTIRenderPipeline *renderPipeline = [self passthroughRenderPipelineWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat error:&error];
+    
     if (error) {
         if (inOutError) {
             *inOutError = error;

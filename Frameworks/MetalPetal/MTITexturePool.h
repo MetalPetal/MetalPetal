@@ -30,8 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 
-- (MTIReusableTexture *)newTextureWithDescriptor:(MTLTextureDescriptor *)textureDescriptor;
-
 @end
 
 @interface MTITexturePool (MTIImagePromiseRenderTarget)

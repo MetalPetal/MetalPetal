@@ -10,6 +10,7 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
+#import "MTIKernel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,10 +51,7 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 - (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
 
-- (nullable MTIRenderPipeline *)renderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat
-                                                    vertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
-                                                  fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
-                                                                       error:(NSError **)error;
+- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError **)error;
 
 @end
 

@@ -14,18 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 FOUNDATION_EXPORT NSString * const MTIFilterPassthroughVertexFunctionName;
 FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 
-@class MTIImage, MTIFilterFunctionDescriptor;
+@class MTIImage;
 
 @interface MTIFilter : NSObject
 
 @property (nonatomic, strong, readonly, nullable) MTIImage *outputImage;
-
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
-                      fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor NS_DESIGNATED_INITIALIZER;
-
-- (MTIImage *)applyWithInputImages:(NSArray<MTIImage *> *)images
-                        parameters:(NSDictionary<NSString *,id> *)parameters
-           outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
 
 @end
 

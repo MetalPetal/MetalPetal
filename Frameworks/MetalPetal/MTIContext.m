@@ -13,6 +13,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTITexturePool.h"
+#import "MTIKernel.h"
 
 NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
@@ -25,6 +26,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 @property (nonatomic,copy) NSDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineInfoCache;
 
 @property (nonatomic,copy) NSDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
+
+@property (nonatomic,strong) NSMapTable<id<MTIKernel>, id> *kernelStateCache;
 
 @end
 
@@ -48,6 +51,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _commandQueue = [device newCommandQueue];
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
+        _kernelStateCache = [NSMapTable weakToWeakObjectsMapTable];
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
     }
@@ -95,39 +99,6 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return cachedFunction;
 }
 
-- (MTIRenderPipeline *)renderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat
-                                           vertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
-                                         fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
-                                                              error:(NSError * __autoreleasing *)inOutError {
-    MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    renderPipelineDescriptor.vertexDescriptor = MTIVertexCreateMTLVertexDescriptor();
-
-    NSError *error;
-    id<MTLFunction> vertextFunction = [self functionWithDescriptor:vertexFunctionDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:fragmentFunctionDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    renderPipelineDescriptor.vertexFunction = vertextFunction;
-    renderPipelineDescriptor.fragmentFunction = fragmentFunction;
-    
-    renderPipelineDescriptor.colorAttachments[0].pixelFormat = pixelFormat;
-    renderPipelineDescriptor.colorAttachments[0].blendingEnabled = NO;
-    
-    return [self renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
-}
-
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
     MTIRenderPipeline *cachedState = self.renderPipelineInfoCache[key];
@@ -150,6 +121,17 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     }
     return cachedState;
 
+}
+
+- (id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError * _Nullable __autoreleasing *)error {
+    id cachedState = [self.kernelStateCache objectForKey:kernel];
+    if (!cachedState) {
+        cachedState = [kernel newKernelStateWithContext:self error:error];
+        if (cachedState) {
+            [self.kernelStateCache setObject:cachedState forKey:kernel];
+        }
+    }
+    return cachedState;
 }
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {

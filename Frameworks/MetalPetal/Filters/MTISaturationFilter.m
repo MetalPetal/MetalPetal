@@ -9,20 +9,28 @@
 #import "MTISaturationFilter.h"
 #import "MTIFilterFunctionDescriptor.h"
 #import "MTIImage.h"
+#import "MTIKernel.h"
+#import "MTIRenderPipelineKernel.h"
 
 @implementation MTISaturationFilter
 
-- (instancetype)init {
-    return [self initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                       fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"saturationAdjust"]];
++ (MTIRenderPipelineKernel *)kernel {
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                        fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"saturationAdjust"]
+                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+    });
+    return kernel;
 }
 
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
-    return [self applyWithInputImages:@[self.inputImage] parameters:@{@"saturation": @(self.saturation)} outputTextureDescriptor:outputTextureDescriptor];
+    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
+    return [self.class.kernel applyWithInputImages:@[self.inputImage] parameters:@{@"saturation": @(self.saturation)} outputTextureDescriptor:outputTextureDescriptor];
 }
 
 @end
