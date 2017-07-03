@@ -28,7 +28,7 @@
 
 @property (nonatomic) NSInteger textureReferenceCount;
 
-@property (nonatomic) os_unfair_lock lock;
+@property (nonatomic,strong) NSLock *lock;
 
 @end
 
@@ -36,7 +36,7 @@
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
-        _lock = OS_UNFAIR_LOCK_INIT;
+        _lock = [[NSLock alloc] init];
         _textureReferenceCount = 1;
         _pool = pool;
         _texture = texture;
@@ -46,16 +46,16 @@
 }
 
 - (void)retainTexture {
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
     _textureReferenceCount += 1;
-    os_unfair_lock_unlock(&_lock);
+    [_lock unlock];
     
 }
 
 - (void)releaseTexture {
     BOOL returnTexture = NO;
     
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
     
     _textureReferenceCount -= 1;
     NSAssert(_textureReferenceCount >= 0, @"Over release a reusable texture.");
@@ -63,7 +63,7 @@
         returnTexture = YES;
     }
     
-    os_unfair_lock_unlock(&_lock);
+    [_lock unlock];
     
     if (returnTexture) {
         [self.pool returnTexture:self];

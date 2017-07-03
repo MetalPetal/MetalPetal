@@ -43,7 +43,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 - (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     if (self = [super init]) {
         _device = device;
-        _defaultLibrary = [device newDefaultLibraryWithBundle:[NSBundle bundleForClass:self.class] error:error];
+        NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"default" withExtension:@"metallib"];
+        _defaultLibrary = [device newLibraryWithFile:url.path error:error];
         if (!_defaultLibrary) {
             return nil;
         }

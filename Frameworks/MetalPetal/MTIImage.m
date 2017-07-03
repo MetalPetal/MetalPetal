@@ -18,8 +18,8 @@
 
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise {
     MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
-    samplerDescriptor.minFilter = MTLSamplerMipFilterLinear;
-    samplerDescriptor.magFilter = MTLSamplerMipFilterLinear;
+    samplerDescriptor.minFilter = MTLSamplerMinMagFilterLinear;
+    samplerDescriptor.magFilter = MTLSamplerMinMagFilterLinear;
     samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
     samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
     return [self initWithPromise:promise samplerDescriptor:[samplerDescriptor newMTISamplerDescriptor]];
