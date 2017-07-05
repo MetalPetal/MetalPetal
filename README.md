@@ -2,7 +2,7 @@
 
 A image processing framework based on Metal.
 
-** MetalPetal is still in its early phase and isn't ready for day-to-day usage. **
+**MetalPetal is still in its early phase and isn't ready for day-to-day usage.**
 
 ## Design
 
