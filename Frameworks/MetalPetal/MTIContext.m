@@ -34,10 +34,12 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 @implementation MTIContext
 
 - (void)dealloc {
+#if COREVIDEO_SUPPORTS_METAL
     if (_coreVideoTextureCache) {
         CVMetalTextureCacheFlush(_coreVideoTextureCache, 0);
         CFRelease(_coreVideoTextureCache);
     }
+#endif
 }
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
@@ -53,8 +55,10 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
         _kernelStateCache = [NSMapTable weakToWeakObjectsMapTable];
+#if COREVIDEO_SUPPORTS_METAL
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
+#endif
     }
     return self;
 }
@@ -121,7 +125,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         }
     }
     return cachedState;
-
+    
 }
 
 - (id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError * _Nullable __autoreleasing *)error {

@@ -10,6 +10,7 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
+#import <CoreVideo/CoreVideo.h>
 #import "MTIKernel.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,7 +21,8 @@ FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
 typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorFunctionNotFound = 1000,
-    MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 10001
+    MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1001,
+    MTIContextErrorCoreVideoDoesNotSupportMetal = 1002
 };
 
 @interface MTIContext : NSObject
@@ -35,7 +37,11 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
+#if COREVIDEO_SUPPORTS_METAL
+
 @property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
+
+#endif
 
 @property (nonatomic, strong, readonly) MTITexturePool *texturePool;
 

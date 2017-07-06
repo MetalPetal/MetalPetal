@@ -31,9 +31,11 @@
 @implementation MTIContext (Rendering)
 
 - (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+#if COREVIDEO_SUPPORTS_METAL
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
+    
 #warning fetch texture from cache
     id<MTLTexture> texture = [image.promise resolveWithContext:renderingContext error:&error];
     if (error) {
@@ -80,6 +82,13 @@
     
     CFRelease(renderTexture);
     CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
+#else
+    NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
+    if (inOutError) {
+        *inOutError = error;
+    }
+    return;
+#endif
 }
 
 - (nullable MTIRenderPipeline *)passthroughRenderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)inOutError {
@@ -133,16 +142,16 @@
     CGRect bounds = CGRectMake(0, 0, drawableSize.width, drawableSize.height);
     CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(image.size, bounds);
     switch (request.resizingMode) {
-        case MTIDrawableRenderingResizingModeScale: {
-            widthScaling = 1.0;
-            heightScaling = 1.0;
-        }; break;
-        case MTIDrawableRenderingResizingModeAspect:
+            case MTIDrawableRenderingResizingModeScale: {
+                widthScaling = 1.0;
+                heightScaling = 1.0;
+            }; break;
+            case MTIDrawableRenderingResizingModeAspect:
         {
             widthScaling = insetRect.size.width / drawableSize.width;
             heightScaling = insetRect.size.height / drawableSize.height;
         }; break;
-        case MTIDrawableRenderingResizingModeAspectFill:
+            case MTIDrawableRenderingResizingModeAspectFill:
         {
             widthScaling = drawableSize.height / insetRect.size.height;
             heightScaling = drawableSize.width / insetRect.size.width;
