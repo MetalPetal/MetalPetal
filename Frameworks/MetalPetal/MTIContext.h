@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 @property (nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
 
+@property (nonatomic, strong, readonly) id<MTLComputePipelineState> computePipelineState;
+
 @property (nonatomic, strong, readonly) MTKTextureLoader *textureLoader;
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
