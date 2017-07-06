@@ -14,6 +14,7 @@ s.subspec 'Core' do |ss|
 end
 
 s.subspec 'Swift' do |ss|
+    ss.dependency 'MetalPetal/Core'
     ss.source_files = '**/*.{swift}'
 end
 
