@@ -14,9 +14,7 @@ A image processing framework based on Metal.
 
 - Support MPS (Metal Performance Shaders)
 
-- Support floating-point texture formats for filters
-
-- Support vertex modification
+- Support both render and compute pipeline
 
 - Swifty
 
@@ -41,3 +39,10 @@ A render receipt builder.
 #### MTIImageRenderingContext
 
 Provides image rendering operations and the required command buffer.
+
+## Install
+
+## Roadmap
+
+## Contribute
+
