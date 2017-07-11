@@ -12,6 +12,7 @@
 #import "MTIImage.h"
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"
+#import "MTITexturePool.h"
 
 @interface MTICGImagePromise ()
 
@@ -84,3 +85,30 @@
 
 @end
 
+@interface MTICIImagePromise ()
+
+@property (nonatomic,strong) CIImage *image;
+
+@end
+
+@implementation MTICIImagePromise
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage {
+    if (self = [super init]) {
+        _image = ciImage;
+        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO] newMTITextureDescriptor];
+    }
+    return self;
+}
+
+- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.texturePool newRenderTargetForPromise:self];
+    [renderingContext.context.coreImageContext render:self.image toMTLTexture:texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
+    return texture;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+@end

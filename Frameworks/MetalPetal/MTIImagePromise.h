@@ -37,5 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface MTICIImagePromise : NSObject <MTIImagePromise>
+
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage;
+
+@end
+
+
 NS_ASSUME_NONNULL_END
 
