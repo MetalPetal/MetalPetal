@@ -1,6 +1,6 @@
 # MetalPetal
 
-A image processing framework based on Metal.
+An image processing framework based on Metal.
 
 **MetalPetal is still in its early phase and isn't ready for day-to-day usage.**
 
@@ -28,7 +28,7 @@ A image processing framework based on Metal.
 
 Provides CommandQueue/TextureLoader/CVMetalTextureCache as well as Texture/RenderPipelineState/Function cache for rendering.
 
-It also provides an evaluation context for `MTIImage`.
+It also provides an evaluation context for `MTIImage`s.
 
 #### MTIImage
 
@@ -40,7 +40,7 @@ A `MTIImage` builder.
 
 #### MTIKernel
 
-The processing routine for `MTIFilter`. `MTIKernel` is responsible for creating cooresponding render/compute pipeline state for the filter, and building the recipe/promise for a `MTIImage`.
+The processing routine for `MTIFilter`. `MTIKernel` is responsible for creating the cooresponding render/compute pipeline state for the filter, and building the recipe/promise for a `MTIImage`.
 
 ### Concurrency Considerations
 
@@ -48,7 +48,7 @@ The processing routine for `MTIFilter`. `MTIKernel` is responsible for creating 
 
 However, `MTIFilter` objects are mutable and thus cannot be shared safely among threads.
 
-`MTIContext` contains a lot of states and caches and cannot be shared safely among threads **currently**.
+`MTIContext` contains a lot of states and caches thus cannot be shared safely among threads **currently**.
 
 ## Install
 
@@ -70,7 +70,7 @@ pod 'MetalPetal/Swift', :git => 'https://github.com/MetalPetal/MetalPetal.git'
 
 We're going to release an alpha version of MetalPetal in Augest 2017 (hopefully).
 
-You can follow the progress on the "Project" page. https://github.com/MetalPetal/MetalPetal/projects/1
+You can follow our progress on the "Project" page. https://github.com/MetalPetal/MetalPetal/projects/1
 
 ## Contribute
 
