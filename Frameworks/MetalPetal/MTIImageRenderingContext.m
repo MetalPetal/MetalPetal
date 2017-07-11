@@ -189,5 +189,19 @@
     [renderingContext.commandBuffer commit];
 }
 
+- (CIImage *)createCIImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    NSError *error = nil;
+#warning fetch texture from cache
+    id<MTLTexture> texture = [image.promise resolveWithContext:renderingContext error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    return [CIImage imageWithMTLTexture:texture options:@{}];
+}
+
 @end
 

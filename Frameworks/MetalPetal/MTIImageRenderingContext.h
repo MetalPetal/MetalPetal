@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error;
 
+- (nullable CIImage *)createCIImage:(MTIImage *)image error:(NSError **)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
