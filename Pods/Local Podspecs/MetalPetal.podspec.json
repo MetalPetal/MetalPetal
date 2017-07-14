@@ -21,10 +21,18 @@
   "subspecs": [
     {
       "name": "Core",
-      "source_files": "**/*.{h,m,c,mm,metal}"
+      "source_files": "**/*.{h,m,c,mm,metal}",
+      "private_header_files": [
+        "MTIImage+Promise.h"
+      ]
     },
     {
       "name": "Swift",
+      "dependencies": {
+        "MetalPetal/Core": [
+
+        ]
+      },
       "source_files": "**/*.{swift}"
     }
   ]

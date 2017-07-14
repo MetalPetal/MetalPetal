@@ -49,7 +49,7 @@
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
-    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture]];
+    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithMTLTexture:texture];
     self.inputImage = mtiImageFromTexture;
 }
 

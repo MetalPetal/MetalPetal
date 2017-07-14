@@ -11,6 +11,9 @@ s.ios.deployment_target = '9.0'
 
 s.subspec 'Core' do |ss|
     ss.source_files = '**/*.{h,m,c,mm,metal}'
+    ss.private_header_files = [
+    'MTIImage+Promise.h'
+    ]
 end
 
 s.subspec 'Swift' do |ss|

@@ -18,6 +18,9 @@
   "subspecs" : [
     {
       "name" : "Core",
+      "private_header_files" : [
+        "Frameworks\/MetalPetal\/MTIImage+Promise.h"
+      ],
       "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}"
     },
     {

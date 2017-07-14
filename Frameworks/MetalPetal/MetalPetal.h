@@ -6,4 +6,12 @@
 //
 //
 
-#import <MetalPetal/MTIVertex.h>
+#if __has_include("MetalPetal-umbrella.h")
+
+#import "MetalPetal-umbrella.h"
+
+#else
+
+#error Umbrella header not found
+
+#endif

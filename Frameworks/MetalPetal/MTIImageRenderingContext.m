@@ -14,6 +14,7 @@
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
+#import "MTIImage+Promise.h"
 @import AVFoundation;
 
 @implementation MTIImageRenderingContext

@@ -29,16 +29,23 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @property (nonatomic,copy,readonly) MTISamplerDescriptor *samplerDescriptor;
 
-@property (nonatomic,copy,readonly) id<MTIImagePromise> promise;
-
 - (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise;
-
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
 @end
+
+@interface MTIImage (Creation)
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage;
+
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture;
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage;
+
+@end
+
 
 NS_ASSUME_NONNULL_END
