@@ -25,7 +25,19 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorCoreVideoDoesNotSupportMetal = 1002
 };
 
+@interface MTIContextOptions : NSObject <NSCopying>
+
+@property (nonatomic,copy,nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
+
+@end
+
 @interface MTIContext : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
+
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(nullable MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
@@ -37,6 +49,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
+#pragma mark - Pool
+
 #if COREVIDEO_SUPPORTS_METAL
 
 @property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
@@ -44,8 +58,6 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 #endif
 
 @property (nonatomic, strong, readonly) MTITexturePool *texturePool;
-
-- (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
 
 #pragma mark - Cache
 

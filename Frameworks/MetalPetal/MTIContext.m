@@ -17,6 +17,24 @@
 
 NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
+@implementation MTIContextOptions
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _coreImageContextOptions = @{kCIContextWorkingColorSpace: CFBridgingRelease(CGColorSpaceCreateDeviceRGB())};
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    MTIContextOptions *options = [[MTIContextOptions allocWithZone:zone] init];
+    options.coreImageContextOptions = self.coreImageContextOptions;
+    return options;
+}
+
+@end
+
+
 @interface MTIContext()
 
 @property (nonatomic,copy) NSDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
@@ -42,7 +60,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 #endif
 }
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)error {
     if (self = [super init]) {
         _device = device;
         NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"default" withExtension:@"metallib"];
@@ -50,7 +68,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         if (!_defaultLibrary) {
             return nil;
         }
-        _coreImageContext = [CIContext contextWithMTLDevice:device options:@{kCIContextWorkingColorSpace: CFBridgingRelease(CGColorSpaceCreateDeviceRGB())}];
+        _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
@@ -61,6 +79,10 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 #endif
     }
     return self;
+}
+
+- (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    return [self initWithDevice:device options:nil error:error];
 }
 
 #pragma mark - Cache
