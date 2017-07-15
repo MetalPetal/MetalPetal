@@ -207,7 +207,7 @@
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
-- (id)applyWithInputImages:(NSArray *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
+- (MTIImage *)applyToInputImages:(NSArray *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
     NSParameterAssert(outputTextureDescriptor.pixelFormat == self.colorAttachmentDescriptor.pixelFormat);
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
                                                                            inputImages:images

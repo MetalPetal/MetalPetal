@@ -31,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,readonly) MTLPixelFormat pixelFormat;
 
-- (MTIImage *)applyWithInputImages:(NSArray<MTIImage *> *)images
-                        parameters:(NSDictionary<NSString *,id> *)parameters
-           outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
+                      parameters:(NSDictionary<NSString *,id> *)parameters
+         outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
 
 @end
 
