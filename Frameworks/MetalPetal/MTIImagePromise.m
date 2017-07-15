@@ -112,3 +112,22 @@
 }
 
 @end
+
+@implementation MTITextureDescriptorPromise
+
+- (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
+    if (self = [super init]) {
+        _textureDescriptor = [[MTITextureDescriptor alloc] initWithMTLTextureDescriptor:textureDescriptor];
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    return [renderingContext.context.texturePool newRenderTargetForPromise:self];
+}
+
+@end

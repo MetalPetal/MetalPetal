@@ -60,7 +60,7 @@
 @implementation MTIImage (Creation)
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    NSAssert(NO, @"not implemented");
+    [NSException raise:NSInternalInconsistencyException format:@"%@: %@ not implemented.",self.class,NSStringFromSelector(_cmd)];
     return nil;
 }
 
@@ -72,8 +72,12 @@
     return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage]];
 }
 
-- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture {
+- (instancetype)initWithTexture:(id<MTLTexture>)texture {
     return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture]];
+}
+
+- (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
+    return [self initWithPromise:[[MTITextureDescriptorPromise alloc] initWithTextureDescriptor:textureDescriptor]];
 }
 
 @end
