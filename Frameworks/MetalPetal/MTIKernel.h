@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIContext;
 
+/// A kernel must be stateless.
+
 @protocol MTIKernel <NSObject>
 
 - (nullable id)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;

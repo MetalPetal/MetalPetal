@@ -36,7 +36,7 @@
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
-        _lock = [[NSLock alloc] init];
+        _lock = [[NSLock alloc] init]; //ensure retain & release operations are thread safe.
         _textureReferenceCount = 1;
         _pool = pool;
         _texture = texture;

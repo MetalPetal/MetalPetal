@@ -76,7 +76,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _functionCache = [NSMutableDictionary dictionary];
         _renderPipelineCache = [NSMutableDictionary dictionary];
         _samplerStateCache = [NSMutableDictionary dictionary];
-        _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableWeakMemory capacity:0];
+        _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory capacity:0];
 #if COREVIDEO_SUPPORTS_METAL
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");

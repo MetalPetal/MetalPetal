@@ -143,10 +143,10 @@
 
 @interface MTIRenderPipelineKernel ()
 
-@property (nonatomic,copy) MTIFilterFunctionDescriptor *vertexFunctionDescriptor;
-@property (nonatomic,copy) MTIFilterFunctionDescriptor *fragmentFunctionDescriptor;
-@property (nonatomic,copy) MTLVertexDescriptor *vertexDescriptor;
-@property (nonatomic,copy) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
+@property (nonatomic,copy,readonly) MTIFilterFunctionDescriptor *vertexFunctionDescriptor;
+@property (nonatomic,copy,readonly) MTIFilterFunctionDescriptor *fragmentFunctionDescriptor;
+@property (nonatomic,copy,readonly) MTLVertexDescriptor *vertexDescriptor;
+@property (nonatomic,copy,readonly) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
 
 @end
 
