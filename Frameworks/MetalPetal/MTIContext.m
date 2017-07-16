@@ -37,15 +37,15 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
 @interface MTIContext()
 
-@property (nonatomic,copy) NSDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
 
-@property (nonatomic,copy) NSDictionary<MTIFilterFunctionDescriptor *, id<MTLFunction>> *functionCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<MTIFilterFunctionDescriptor *, id<MTLFunction>> *functionCache;
 
-@property (nonatomic,copy) NSDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineInfoCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineCache;
 
-@property (nonatomic,copy) NSDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
-@property (nonatomic,strong) NSMapTable<id<MTIKernel>, id> *kernelStateCache;
+@property (nonatomic,strong,readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
 
 @end
 
@@ -72,7 +72,11 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _commandQueue = [device newCommandQueue];
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
-        _kernelStateCache = [NSMapTable weakToWeakObjectsMapTable];
+        _libraryCache = [NSMutableDictionary dictionary];
+        _functionCache = [NSMutableDictionary dictionary];
+        _renderPipelineCache = [NSMutableDictionary dictionary];
+        _samplerStateCache = [NSMutableDictionary dictionary];
+        _kernelStateMap = [NSMapTable weakToWeakObjectsMapTable];
 #if COREVIDEO_SUPPORTS_METAL
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
@@ -88,11 +92,12 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 #pragma mark - Cache
 
 - (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLLibrary> library = [self.device newLibraryWithFile:URL.path error:error];
-    if (library) {
-        NSMutableDictionary *cache = [NSMutableDictionary dictionaryWithDictionary:self.libraryCache];
-        cache[URL] = library;
-        self.libraryCache = cache;
+    id<MTLLibrary> library = self.libraryCache[URL];
+    if (!library) {
+        library = [self.device newLibraryWithFile:URL.path error:error];
+        if (library) {
+            self.libraryCache[URL] = library;
+        }
     }
     return library;
 }
@@ -111,34 +116,28 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
             }
             return nil;
         }
-        id<MTLFunction> function = [library newFunctionWithName:descriptor.name];
-        if (!function) {
+        cachedFunction = [library newFunctionWithName:descriptor.name];
+        if (!cachedFunction) {
             if (inOutError) {
                 *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFunctionNotFound userInfo:@{}];
             }
             return nil;
         }
-        __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.functionCache];
-        cache[descriptor] = function;
-        self.functionCache = cache;
-        cachedFunction = function;
+        self.functionCache[descriptor] = cachedFunction;
     }
     return cachedFunction;
 }
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
-    MTIRenderPipeline *cachedState = self.renderPipelineInfoCache[key];
-    if (!cachedState) {
+    MTIRenderPipeline *renderPipeline = self.renderPipelineCache[key];
+    if (!renderPipeline) {
         MTLRenderPipelineReflection *reflection; //get reflection
         NSError *error = nil;
         id<MTLRenderPipelineState> renderPipelineState = [self.device newRenderPipelineStateWithDescriptor:renderPipelineDescriptor options:MTLPipelineOptionArgumentInfo reflection:&reflection error:&error];
         if (renderPipelineState && !error) {
-            MTIRenderPipeline *state = [[MTIRenderPipeline alloc] initWithState:renderPipelineState reflection:reflection];
-            __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.renderPipelineInfoCache];
-            cache[key] = state;
-            self.renderPipelineInfoCache = cache;
-            cachedState = state;
+            renderPipeline = [[MTIRenderPipeline alloc] initWithState:renderPipelineState reflection:reflection];
+            self.renderPipelineCache[key] = renderPipeline;
         } else {
             if (inOutError) {
                 *inOutError = error;
@@ -146,31 +145,28 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
             return nil;
         }
     }
-    return cachedState;
+    return renderPipeline;
     
 }
 
 - (id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError * _Nullable __autoreleasing *)error {
-    id cachedState = [self.kernelStateCache objectForKey:kernel];
+    id cachedState = [self.kernelStateMap objectForKey:kernel];
     if (!cachedState) {
         cachedState = [kernel newKernelStateWithContext:self error:error];
         if (cachedState) {
-            [self.kernelStateCache setObject:cachedState forKey:kernel];
+            [self.kernelStateMap setObject:cachedState forKey:kernel];
         }
     }
     return cachedState;
 }
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {
-    id<MTLSamplerState> cachedState = self.samplerStateCache[descriptor];
-    if (!cachedState) {
-        id<MTLSamplerState> state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
-        __auto_type cache = [NSMutableDictionary dictionaryWithDictionary:self.samplerStateCache];
-        cache[descriptor] = state;
-        self.samplerStateCache = cache;
-        cachedState = state;
+    id<MTLSamplerState> state = self.samplerStateCache[descriptor];
+    if (!state) {
+        state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
+        self.samplerStateCache[descriptor] = state;
     }
-    return cachedState;
+    return state;
 }
 
 @end
