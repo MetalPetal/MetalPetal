@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "MetalPetalDemo-Swift.h"
+#import "WeakToStrongObjectsMapTableTests.h"
 @import MetalPetal;
 @import MetalKit;
 
@@ -31,6 +32,8 @@
     [super viewDidLoad];
     
     [MetalPetalSwiftInterfaceTest test];
+    
+    [WeakToStrongObjectsMapTableTests test];
     
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
@@ -79,5 +82,5 @@
     // Dispose of any resources that can be recreated.
 }
 
-
 @end
+

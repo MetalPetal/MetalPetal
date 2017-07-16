@@ -28,6 +28,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
 #import "MTIVertex.h"
+#import "MTIWeakToStrongObjectsMapTable.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;
 FOUNDATION_EXPORT const unsigned char MetalPetalVersionString[];
