@@ -31,9 +31,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [MetalPetalSwiftInterfaceTest test];
+    //[MetalPetalSwiftInterfaceTest test];
     
-    [WeakToStrongObjectsMapTableTests test];
+    //[WeakToStrongObjectsMapTableTests test];
     
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
