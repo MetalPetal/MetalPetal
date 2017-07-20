@@ -17,6 +17,28 @@
 
 NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
+float colorConversionVertexData[16] =
+{
+    -1.0, -1.0,  0.0, 1.0,
+    1.0, -1.0,  1.0, 1.0,
+    -1.0,  1.0,  0.0, 0.0,
+    1.0,  1.0,  1.0, 0.0,
+};
+
+typedef struct {
+    matrix_float3x3 matrix;
+    vector_float3 offset;
+} ColorConversion;
+
+ColorConversion colorConversion = {
+    .matrix = {
+        .columns[0] = { 1.164,  1.164, 1.164, },
+        .columns[1] = { 0.000, -0.392, 2.017, },
+        .columns[2] = { 1.596, -0.813, 0.000, },
+    },
+    .offset = { -(16.0/255.0), -0.5, -0.5 },
+};
+
 @implementation MTIContextOptions
 
 - (instancetype)init {
@@ -70,6 +92,15 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         }
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
+        
+        MTLDepthStencilDescriptor *depthStateDesc = [[MTLDepthStencilDescriptor alloc] init];
+        depthStateDesc.depthCompareFunction = MTLCompareFunctionAlways;
+        depthStateDesc.depthWriteEnabled = NO;
+        _depthStencilState = [_device newDepthStencilStateWithDescriptor:depthStateDesc];
+        
+        _colorConversionVertexBuffer = [_device newBufferWithBytes:colorConversionVertexData length:sizeof(colorConversionVertexData) options:MTLResourceCPUCacheModeDefaultCache];
+        _colorConversionFragmentBuffer = [_device newBufferWithBytes:&colorConversion length:sizeof(colorConversion) options:MTLResourceCPUCacheModeDefaultCache];
+        
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];

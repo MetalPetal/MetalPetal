@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "MetalPetalDemo-Swift.h"
 #import "WeakToStrongObjectsMapTableTests.h"
+#import "CameraViewController.h"
 @import MetalPetal;
 @import MetalKit;
 
@@ -33,7 +34,7 @@
     
     [MetalPetalSwiftInterfaceTest test];
     
-    [WeakToStrongObjectsMapTableTests test];
+//    [WeakToStrongObjectsMapTableTests test];
     
     NSError *error;
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
@@ -54,6 +55,12 @@
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture];
     self.inputImage = mtiImageFromTexture;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.navigationController pushViewController:[[CameraViewController alloc] initWithMTIContext:self.context] animated:YES];
 }
 
 - (void)drawInMTKView:(MTKView *)view {

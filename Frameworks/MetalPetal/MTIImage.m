@@ -60,8 +60,7 @@
 @implementation MTIImage (Creation)
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    [NSException raise:NSInternalInconsistencyException format:@"%@: %@ not implemented.",self.class,NSStringFromSelector(_cmd)];
-    return nil;
+    return [self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer]];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage {
