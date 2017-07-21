@@ -10,6 +10,7 @@
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIImage+Promise.h"
+#import "MTICVPixelBufferPromise.h"
 
 @interface MTIImage ()
 

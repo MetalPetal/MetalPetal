@@ -21,14 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface MTICVPixelBufferPromise : NSObject <MTIImagePromise>
-
-@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
-
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
-
-@end
-
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;

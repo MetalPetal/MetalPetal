@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorFunctionNotFound = 1000,
     MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1001,
     MTIContextErrorCoreVideoDoesNotSupportMetal = 1002,
-    MTIContextErrorCoreVideoDoesNotSupportedFormatType = 1003
+    MTIContextErrorUnsupportedCVPixelBufferFormat = 1003
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>
@@ -47,12 +47,6 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 @property (nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
 
 @property (nonatomic, strong, readonly) MTKTextureLoader *textureLoader;
-
-@property (nonatomic, strong, readonly) id<MTLDepthStencilState> depthStencilState;
-
-@property (nonatomic, strong, readonly) id<MTLBuffer> colorConversionVertexBuffer;
-
-@property (nonatomic, strong, readonly) id<MTLBuffer> colorConversionFragmentBuffer;
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 

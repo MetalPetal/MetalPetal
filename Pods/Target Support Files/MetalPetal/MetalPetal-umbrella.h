@@ -14,6 +14,7 @@
 #import "MTISaturationFilter.h"
 #import "MetalPetal.h"
 #import "MTIContext.h"
+#import "MTICVPixelBufferPromise.h"
 #import "MTIDrawableRendering.h"
 #import "MTIFilter.h"
 #import "MTIFilterFunctionDescriptor.h"

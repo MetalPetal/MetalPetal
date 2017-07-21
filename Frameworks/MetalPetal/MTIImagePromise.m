@@ -14,55 +14,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
 
-@interface MTICVPixelBufferPromise ()
-@property (nonatomic) CVPixelBufferRef pixelBuffer;
-@end
-
-@implementation MTICVPixelBufferPromise
-
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
-{
-    if (self = [super init]) {
-        _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
-        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO] newMTITextureDescriptor];
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    CVPixelBufferRelease(_pixelBuffer);
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    return self;
-}
-
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error
-{
-    id<MTLTexture> texture = nil;
-    [renderingContext.context renderCVPixelBuffer:self.pixelBuffer toMTLTexture:&texture error:error];
-    return texture;
-    
-    // CVMetalTextureCache: 420v, 1-2ms, 60fps
-    // CVMetalTextureCache, 420f, 1-2ms, 60fps
-    // CVMetalTextureCache: BGRA, 0.1ms, 60fps
-    
-    // CIImage: 420v, 5ms, 57fps
-    // CIImage: 420f, 5ms, 57fps
-    // CIImage: BGRA, 4ms, 58fps
-    
-    /* core image test
-    id<MTLTexture> texture = [renderingContext.context.texturePool newRenderTargetForPromise:self];
-    CIImage *image = [CIImage imageWithCVPixelBuffer:self.pixelBuffer];
-    [renderingContext.context.coreImageContext render:image toMTLTexture:texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
-    return texture;
-     */
-}
-
-@end
-
 @interface MTICGImagePromise ()
 
 @property (nonatomic) CGImageRef image;

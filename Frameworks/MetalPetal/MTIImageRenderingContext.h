@@ -15,9 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * const MTIColorConversionVertexFunctionName;
-FOUNDATION_EXPORT NSString * const MTIColorConversionFragmentFunctionName;
-
 @interface MTIImageRenderingContext : NSObject
 
 @property (nonatomic, strong, readonly) MTIContext *context;
@@ -31,11 +28,9 @@ FOUNDATION_EXPORT NSString * const MTIColorConversionFragmentFunctionName;
 
 @interface MTIContext (Rendering)
 
-- (void)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
+- (BOOL)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
 
-- (void)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error;
-
-- (void)renderCVPixelBuffer:(CVPixelBufferRef)pixelBuffer toMTLTexture:(id<MTLTexture> _Nonnull* _Nonnull)texture error:(NSError **)error;
+- (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error;
 
 - (nullable CIImage *)createCIImage:(MTIImage *)image error:(NSError **)error;
 
