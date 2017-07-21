@@ -11,6 +11,4 @@
 
 @interface CameraViewController : UIViewController
 
-- (instancetype)initWithMTIContext:(MTIContext *)context;
-
 @end

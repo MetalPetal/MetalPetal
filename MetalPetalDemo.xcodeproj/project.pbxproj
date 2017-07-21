@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */; };
 		81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */; };
+		9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D1FCE3B1F21A99400264194 /* MainTableViewController.m */; };
 		9D3928AE1EFF678800BA6B09 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928AD1EFF678800BA6B09 /* main.m */; };
 		9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928B01EFF678800BA6B09 /* AppDelegate.m */; };
-		9D3928B41EFF678800BA6B09 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928B31EFF678800BA6B09 /* ViewController.m */; };
+		9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */; };
 		9D3928B71EFF678800BA6B09 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B51EFF678800BA6B09 /* Main.storyboard */; };
 		9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B81EFF678800BA6B09 /* Assets.xcassets */; };
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
@@ -26,12 +27,14 @@
 		0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetalPetalDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraViewController.h; sourceTree = "<group>"; };
 		81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraViewController.m; sourceTree = "<group>"; };
+		9D1FCE3A1F21A99400264194 /* MainTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTableViewController.h; sourceTree = "<group>"; };
+		9D1FCE3B1F21A99400264194 /* MainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTableViewController.m; sourceTree = "<group>"; };
 		9D3928A91EFF678800BA6B09 /* MetalPetalDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPetalDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D3928AD1EFF678800BA6B09 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9D3928AF1EFF678800BA6B09 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9D3928B01EFF678800BA6B09 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		9D3928B21EFF678800BA6B09 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9D3928B31EFF678800BA6B09 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9D3928B21EFF678800BA6B09 /* ImageRendererViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageRendererViewController.h; sourceTree = "<group>"; };
+		9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageRendererViewController.m; sourceTree = "<group>"; };
 		9D3928B61EFF678800BA6B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9D3928B81EFF678800BA6B09 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9D3928BB1EFF678800BA6B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -89,8 +92,10 @@
 			children = (
 				9D3928AF1EFF678800BA6B09 /* AppDelegate.h */,
 				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
-				9D3928B21EFF678800BA6B09 /* ViewController.h */,
-				9D3928B31EFF678800BA6B09 /* ViewController.m */,
+				9D1FCE3A1F21A99400264194 /* MainTableViewController.h */,
+				9D1FCE3B1F21A99400264194 /* MainTableViewController.m */,
+				9D3928B21EFF678800BA6B09 /* ImageRendererViewController.h */,
+				9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */,
 				81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */,
 				81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */,
 				9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */,
@@ -250,8 +255,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D3928B41EFF678800BA6B09 /* ViewController.m in Sources */,
+				9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */,
 				9DB41CE71F1B9CB3004B0B30 /* WeakToStrongObjectsMapTableTests.m in Sources */,
+				9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */,
 				9D9B4DE91F0558C40084ED0D /* SwiftInterfaceTest.swift in Sources */,
 				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,

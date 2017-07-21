@@ -6,14 +6,14 @@
 //  Copyright © 2017 MetalPetal. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "ImageRendererViewController.h"
 #import "MetalPetalDemo-Swift.h"
 #import "WeakToStrongObjectsMapTableTests.h"
 #import "CameraViewController.h"
 @import MetalPetal;
 @import MetalKit;
 
-@interface ViewController () <MTKViewDelegate>
+@interface ImageRendererViewController () <MTKViewDelegate>
 
 @property (nonatomic, weak) MTKView *renderView;
 
@@ -27,7 +27,7 @@
 
 @end
 
-@implementation ViewController
+@implementation ImageRendererViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -57,12 +57,6 @@
     self.inputImage = mtiImageFromTexture;
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self.navigationController pushViewController:[[CameraViewController alloc] initWithMTIContext:self.context] animated:YES];
-}
-
 - (void)drawInMTKView:(MTKView *)view {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
@@ -82,11 +76,6 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end

@@ -40,18 +40,12 @@
     }
 }
 
-- (instancetype)initWithMTIContext:(MTIContext *)context
-{
-    self = [super init];
-    if (self) {
-        self.context = context;
-        self.pixelBuffer = NULL;
-    }
-    return self;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    NSError *error;
+    MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
+    self.context = context;
     
     self.renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:self.context.device];
     self.renderView.delegate = self;
@@ -174,11 +168,6 @@
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
     }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end
