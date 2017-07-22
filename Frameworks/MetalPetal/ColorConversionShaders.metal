@@ -26,10 +26,10 @@ typedef struct {
     float2 texcoord;
 } Varyings;
 
-vertex Varyings colorConversionVertex(device Vertex * verticies [[ buffer(0) ]],
+vertex Varyings colorConversionVertex(const device Vertex * verticies [[ buffer(0) ]],
                                       unsigned int vid [[ vertex_id ]]) {
     Varyings out;
-    device Vertex &v = verticies[vid];
+    Vertex v = verticies[vid];
     out.position = float4(float2(v.position), 0.0, 1.0);
     out.texcoord = v.texcoord;
     return out;
