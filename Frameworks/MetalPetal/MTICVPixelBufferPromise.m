@@ -16,10 +16,10 @@
 #import "MTIRenderPipeline.h"
 #import <simd/simd.h>
 
-NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
-NSString * const MTIColorConversionFragmentFunctionName = @"colorConversionFragment";
+static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
+static NSString * const MTIColorConversionFragmentFunctionName = @"colorConversionFragment";
 
-float colorConversionVertexData[16] =
+static const float colorConversionVertexData[16] =
 {
     -1.0, -1.0,  0.0, 1.0,
     1.0, -1.0,  1.0, 1.0,
@@ -27,12 +27,14 @@ float colorConversionVertexData[16] =
     1.0,  1.0,  1.0, 0.0,
 };
 
-typedef struct {
+//Always use "struct X {}; typedef struct X X;" to define a struct, so that the struct can be encoded/archived with NSValue. ref: https://stackoverflow.com/a/12292033/1061004
+struct ColorConversion {
     matrix_float3x3 matrix;
     vector_float3 offset;
-} ColorConversion;
+};
+typedef struct ColorConversion ColorConversion;
 
-ColorConversion colorConversion = {
+static const ColorConversion colorConversion = {
     .matrix = {
         .columns[0] = { 1.164,  1.164, 1.164, },
         .columns[1] = { 0.000, -0.392, 2.017, },
