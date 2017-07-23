@@ -51,6 +51,7 @@
         NSHashTable *dependents = [self.promiseDenpendentsTable objectForKey:dependency.promise];
         if (!dependents) {
             dependents = [NSHashTable hashTableWithOptions:NSMapTableStrongMemory|NSMapTableObjectPointerPersonality];
+            [self.promiseDenpendentsTable setObject:dependents forKey:dependency.promise];
         }
         [dependents addObject:image.promise];
         [self addDependenciesForImage:dependency];
@@ -122,11 +123,16 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
 }
 
 - (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    
+    BOOL isRootImage = NO;
+    
     if (!self.dependencyGraph) {
         //create dependency graph
         MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] initWithContext:self];
         [dependencyGraph addDependenciesForImage:image];
         self.dependencyGraph = dependencyGraph;
+        
+        isRootImage = YES;
     }
     
     MTIImageRenderingDependencyGraph *dependencyGraph = self.dependencyGraph;
@@ -157,13 +163,6 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
         }
         [self.resolvedPromises addObject:promise];
     }
-    
-    BOOL isGraphOutput = NO;
-    NSInteger dependentCount = [self.dependencyGraph dependentCountForPromise:promise];
-    if (dependentCount == 0) {
-        //final output
-        isGraphOutput = YES;
-    }
    
     switch (image.cachePolicy) {
         case MTIImageCachePolicyPersistent: {
@@ -171,7 +170,7 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
             return nil;
         } break;
         case MTIImageCachePolicyTransient: {
-            if (isGraphOutput) {
+            if (isRootImage) {
                 return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer) {
                     [renderTarget releaseTexture];
                 }];
