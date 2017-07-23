@@ -14,8 +14,53 @@
 #import "MTIRenderPipeline.h"
 #import "MTITexturePool.h"
 #import "MTIKernel.h"
+#import "MTIWeakToStrongObjectsMapTable.h"
 
 NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
+
+
+@interface MTIImagePromiseRenderTarget ()
+
+@property (nonatomic,strong) id<MTLTexture> nonreusableTexture;
+
+@property (nonatomic,strong) MTIReusableTexture *resuableTexture;
+
+@end
+
+@implementation MTIImagePromiseRenderTarget
+
+- (instancetype)initWithTexture:(id<MTLTexture>)texture {
+    if (self = [super init]) {
+        _nonreusableTexture = texture;
+        _resuableTexture = nil;
+    }
+    return self;
+}
+
+- (instancetype)initWithResuableTexture:(MTIReusableTexture *)texture {
+    if (self = [super init]) {
+        _nonreusableTexture = nil;
+        _resuableTexture = texture;
+    }
+    return self;
+}
+
+- (id<MTLTexture>)texture {
+    if (_nonreusableTexture) {
+        return _nonreusableTexture;
+    }
+    return _resuableTexture.texture;
+}
+
+- (void)retainTexture {
+    [_resuableTexture retainTexture];
+}
+
+- (void)releaseTexture {
+    [_resuableTexture releaseTexture];
+}
+
+@end
 
 @implementation MTIContextOptions
 
@@ -44,7 +89,12 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
+@property (nonatomic, strong, readonly) MTITexturePool *texturePool;
+
 @property (nonatomic,strong,readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
+
+@property (nonatomic,strong,readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *promiseKeyValueTables;
+@property (nonatomic,strong,readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *imageKeyValueTables;
 
 @end
 
@@ -77,6 +127,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _renderPipelineCache = [NSMutableDictionary dictionary];
         _samplerStateCache = [NSMutableDictionary dictionary];
         _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory capacity:0];
+        _promiseKeyValueTables = [NSMutableDictionary dictionary];
+        _imageKeyValueTables = [NSMutableDictionary dictionary];
 #if COREVIDEO_SUPPORTS_METAL
         CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
         NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
@@ -167,6 +219,41 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         self.samplerStateCache[descriptor] = state;
     }
     return state;
+}
+
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture {
+    return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
+}
+
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor {
+    MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor];
+    return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
+}
+
+- (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName {
+    return [self.promiseKeyValueTables[tableName] objectForKey:promise];
+}
+
+- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName {
+    MTIWeakToStrongObjectsMapTable *table = self.promiseKeyValueTables[tableName];
+    if (!table) {
+        table = [[MTIWeakToStrongObjectsMapTable alloc] init];
+        self.promiseKeyValueTables[tableName] = table;
+    }
+    [table setObject:value forKey:promise];
+}
+
+- (id)valueForImage:(MTIImage *)image inTable:(NSString *)tableName {
+    return [self.imageKeyValueTables[tableName] objectForKey:image];
+}
+
+- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(NSString *)tableName {
+    MTIWeakToStrongObjectsMapTable *table = self.imageKeyValueTables[tableName];
+    if (!table) {
+        table = [[MTIWeakToStrongObjectsMapTable alloc] init];
+        self.imageKeyValueTables[tableName] = table;
+    }
+    [table setObject:value forKey:image];
 }
 
 @end

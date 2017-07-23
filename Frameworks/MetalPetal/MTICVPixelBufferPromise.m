@@ -56,7 +56,9 @@ static const ColorConversion colorConversion = {
 {
     if (self = [super init]) {
         _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
-        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO] newMTITextureDescriptor];
+        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
+        descriptor.usage = MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
+        _textureDescriptor = [descriptor newMTITextureDescriptor];
     }
     return self;
 }
@@ -69,6 +71,10 @@ static const ColorConversion colorConversion = {
 - (id)copyWithZone:(NSZone *)zone
 {
     return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
 }
 
 - (nullable MTIRenderPipeline *)colorConversionRenderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat context:(MTIContext *)context error:(NSError **)inOutError {
@@ -100,7 +106,7 @@ static const ColorConversion colorConversion = {
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     // CVMetalTextureCache: 420v, 1-2ms, 60fps
     // CVMetalTextureCache, 420f, 1-2ms, 60fps
     // CVMetalTextureCache: BGRA, 0.1ms, 60fps
@@ -197,10 +203,10 @@ static const ColorConversion colorConversion = {
                 
                 NSError *error = nil;
                 
-                id<MTLTexture> renderTarget = [renderingContext.context.texturePool newRenderTargetForPromise:self];
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
                 
                 MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-                renderPassDescriptor.colorAttachments[0].texture = renderTarget;
+                renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
                 renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
                 renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
                 renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;

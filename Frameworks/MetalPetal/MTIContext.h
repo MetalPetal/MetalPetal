@@ -12,10 +12,21 @@
 #import <CoreImage/CoreImage.h>
 #import <CoreVideo/CoreVideo.h>
 #import "MTIKernel.h"
+#import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITexturePool;
+@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITextureDescriptor;
+
+@interface MTIImagePromiseRenderTarget : NSObject
+
+@property (nonatomic,strong,readonly,nullable) id<MTLTexture> texture;
+
+- (void)retainTexture;
+
+- (void)releaseTexture;
+
+@end
 
 FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
@@ -23,7 +34,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorFunctionNotFound = 1000,
     MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1001,
     MTIContextErrorCoreVideoDoesNotSupportMetal = 1002,
-    MTIContextErrorUnsupportedCVPixelBufferFormat = 1003
+    MTIContextErrorUnsupportedCVPixelBufferFormat = 1003,
+    MTIContextErrorUnsupportedImageCachePolicy = 1004
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>
@@ -58,8 +70,6 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 #endif
 
-@property (nonatomic, strong, readonly) MTITexturePool *texturePool;
-
 #pragma mark - Cache
 
 - (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
@@ -71,6 +81,19 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 - (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
 
 - (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError **)error;
+
+
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor;
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture;
+
+
+- (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName;
+
+- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName;
+
+- (nullable id)valueForImage:(MTIImage *)image inTable:(NSString *)tableName;
+
+- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(NSString *)tableName;
 
 @end
 
