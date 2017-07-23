@@ -42,11 +42,9 @@
     return @[];
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    CFAbsoluteTime loadStart = CFAbsoluteTimeGetCurrent();
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:error];
-    NSLog(@"%@ load time: %@", self, @(CFAbsoluteTimeGetCurrent() - loadStart));
-    return texture;
+    return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
 @end
