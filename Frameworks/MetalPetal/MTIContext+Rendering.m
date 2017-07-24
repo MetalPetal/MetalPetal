@@ -18,6 +18,7 @@
 #import "MTIImage+Promise.h"
 #import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
+#import <objc/runtime.h>
 @import AVFoundation;
 
 @implementation MTIContext (Rendering)
@@ -196,16 +197,18 @@
 
 - (CIImage *)createCIImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    MTIImage *persistentImage = [image imageWithCachePolicy:MTIImageCachePolicyPersistent];
     NSError *error = nil;
-#warning fix this
-    id<MTLTexture> texture = [image.promise resolveWithContext:renderingContext error:&error];
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:persistentImage error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
         }
         return nil;
     }
-    return [CIImage imageWithMTLTexture:texture options:@{}];
+    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
+    objc_setAssociatedObject(ciImage, (__bridge const void *)(persistentImage), persistentImage, OBJC_ASSOCIATION_RETAIN);
+    return ciImage;
 }
 
 @end
