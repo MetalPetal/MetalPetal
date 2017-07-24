@@ -120,6 +120,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
     [self.captureSession startRunning];
 }
 
@@ -168,6 +169,10 @@
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
     }
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 @end

@@ -57,6 +57,11 @@
     self.inputImage = mtiImageFromTexture;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
 - (void)drawInMTKView:(MTKView *)view {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
@@ -76,6 +81,10 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 @end
