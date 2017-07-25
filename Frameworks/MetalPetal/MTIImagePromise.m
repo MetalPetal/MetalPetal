@@ -12,7 +12,6 @@
 #import "MTIImage.h"
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"
-#import "MTITexturePool.h"
 
 @interface MTIImageURLPromise ()
 
