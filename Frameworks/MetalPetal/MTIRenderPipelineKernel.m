@@ -17,6 +17,8 @@
 #import "MTIRenderPipeline.h"
 #import "MTITexturePool.h"
 #import "MTIImage+Promise.h"
+#import "MTIVector.h"
+#import "MTIVector+Private.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 
@@ -139,8 +141,6 @@
         MTLArgument *argument = arguments[index];
         id value = parameters[argument.name];
         if (value) {
-            void *dataPtr = nil;
-            NSUInteger dataSize = 0;
             if ([value isKindOfClass:[NSValue class]]) {
                 NSValue *nsValue = (NSValue *)value;
                 NSUInteger size;
@@ -148,13 +148,16 @@
                 void *valuePtr = malloc(argument.bufferDataSize);
                 [nsValue getValue:valuePtr];
                 NSAssert(argument.bufferDataSize == size, @"");
-                setEncoderWithBytes(dataPtr, dataSize, argument.index);
+                setEncoderWithBytes(valuePtr, size, argument.index);
                 free(valuePtr);
             }else if ([value isKindOfClass:[NSData class]]) {
                 NSData *data = (NSData *)value;
                 setEncoderWithBytes(data.bytes, data.length, argument.index);
+            }else if ([value isKindOfClass:[MTIVector class]]) {
+                MTIVector *vector = (MTIVector *)value;
+                setEncoderWithBytes(vector.bytes, vector.length, argument.index);
             }else {
-                
+                NSAssert(1, @"data type error");
             }
         }
     }
