@@ -8,17 +8,14 @@
 
 #import "MTIContext+Rendering.h"
 #import "MTIImageRenderingContext.h"
-#import "MTIContext.h"
 #import "MTIImage.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIVertex.h"
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
-#import "MTIImage+Promise.h"
-#import "MTITextureDescriptor.h"
 #import <objc/runtime.h>
-@import AVFoundation;
+#import <AVFoundation/AVFoundation.h>
 
 @implementation MTIContext (Rendering)
 

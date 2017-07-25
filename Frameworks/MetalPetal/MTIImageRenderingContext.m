@@ -9,15 +9,8 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIContext.h"
 #import "MTIImage.h"
-#import "MTIFunctionDescriptor.h"
-#import "MTIVertex.h"
-#import "MTIRenderPipeline.h"
-#import "MTIFilter.h"
-#import "MTIDrawableRendering.h"
 #import "MTIImage+Promise.h"
-#import "MTITextureDescriptor.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
-@import AVFoundation;
 
 @interface MTIImageRenderingDependencyGraph : NSObject
 
