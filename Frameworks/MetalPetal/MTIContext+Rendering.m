@@ -206,6 +206,7 @@
         }
         return nil;
     }
+    [renderingContext.commandBuffer commit];
     CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
     objc_setAssociatedObject(ciImage, (__bridge const void *)(persistentImage), persistentImage, OBJC_ASSOCIATION_RETAIN);
     return ciImage;
