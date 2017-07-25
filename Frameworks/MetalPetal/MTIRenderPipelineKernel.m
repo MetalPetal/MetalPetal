@@ -24,7 +24,7 @@
 
 @property (nonatomic,strong,readonly) MTIRenderPipelineKernel *kernel;
 
-@property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *fragmentFunctionParameters;
+@property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *functionParameters;
 
 @property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
 
@@ -102,22 +102,9 @@
     }
     
     //encode parameters
-    if (self.fragmentFunctionParameters.count > 0) {
-        for (NSInteger index = 0; index < renderPipeline.reflection.fragmentArguments.count; index += 1) {
-            MTLArgument *argument = renderPipeline.reflection.fragmentArguments[index];
-            id value = self.fragmentFunctionParameters[argument.name];
-            if (value) {
-                switch (argument.bufferDataType) {
-                    case MTLDataTypeFloat: {
-                        float floatValue = [value floatValue];
-                        [commandEncoder setFragmentBytes:&floatValue length:sizeof(floatValue) atIndex:argument.index];
-                    } break;
-                        
-                    default:
-                        break;
-                }
-            }
-        }
+    if (self.functionParameters.count > 0) {        
+        [self encodeArguments:renderPipeline.reflection.vertexArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeVertex];
+        [self encodeArguments:renderPipeline.reflection.fragmentArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeFragment];
     }
     
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
@@ -130,18 +117,62 @@
     return renderTarget;
 }
 
+- (void)encodeArguments:(NSArray<MTLArgument *>*)arguments
+             parameters:(NSDictionary<NSString *, id> *)parameters
+            withEncoder:(id<MTLRenderCommandEncoder>)encoder
+            forFunction: (MTLFunctionType)functionType {
+    
+    void (^setEncoderWithBytes)(const void * bytes, NSUInteger length, NSUInteger index) = ^(const void * bytes, NSUInteger length, NSUInteger index) {
+        switch (functionType) {
+            case MTLFunctionTypeFragment:
+                [encoder setFragmentBytes:bytes length:length atIndex:index];
+                break;
+            case MTLFunctionTypeVertex:
+                [encoder setVertexBytes:bytes length:length atIndex:index];
+                break;
+            default:
+                break;
+        }
+    };
+    
+    for (NSInteger index = 0; index < arguments.count; index += 1) {
+        MTLArgument *argument = arguments[index];
+        id value = parameters[argument.name];
+        if (value) {
+            void *dataPtr = nil;
+            NSUInteger dataSize = 0;
+            if ([value isKindOfClass:[NSValue class]]) {
+                NSValue *nsValue = (NSValue *)value;
+                NSUInteger size;
+                NSGetSizeAndAlignment(nsValue.objCType, &size, 0);
+                void *valuePtr = malloc(argument.bufferDataSize);
+                [nsValue getValue:valuePtr];
+                NSAssert(argument.bufferDataSize == size, @"");
+                setEncoderWithBytes(dataPtr, dataSize, argument.index);
+                free(valuePtr);
+            }else if ([value isKindOfClass:[NSData class]]) {
+                NSData *data = (NSData *)value;
+                setEncoderWithBytes(data.bytes, data.length, argument.index);
+            }else {
+                
+            }
+        }
+    }
+
+}
+
 - (id)copyWithZone:(NSZone *)zone {
     return self;
 }
 
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel
                    inputImages:(NSArray<MTIImage *> *)inputImages
-    fragmentFunctionParameters:(NSDictionary<NSString *,id> *)fragmentFunctionParameters
+            functionParameters:(NSDictionary<NSString *,id> *)functionParameters
        outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
-        _fragmentFunctionParameters = fragmentFunctionParameters;
+        _functionParameters = functionParameters;
         _textureDescriptor = [outputTextureDescriptor newMTITextureDescriptor];
     }
     return self;
@@ -219,7 +250,7 @@
     NSParameterAssert(outputTextureDescriptor.pixelFormat == self.colorAttachmentDescriptor.pixelFormat);
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
                                                                            inputImages:images
-                                                            fragmentFunctionParameters:parameters
+                                                                    functionParameters:parameters
                                                                outputTextureDescriptor:outputTextureDescriptor];
     return [[MTIImage alloc] initWithPromise:receipt];
 }
