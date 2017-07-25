@@ -18,7 +18,7 @@
 #import "MTICVPixelBufferPromise.h"
 #import "MTIDrawableRendering.h"
 #import "MTIFilter.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"

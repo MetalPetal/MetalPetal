@@ -8,7 +8,7 @@
 
 #import "MTIContext.h"
 #import "MTIVertex.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
@@ -83,7 +83,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<MTIFilterFunctionDescriptor *, id<MTLFunction>> *functionCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<MTIFunctionDescriptor *, id<MTLFunction>> *functionCache;
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineCache;
 
@@ -154,7 +154,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return library;
 }
 
-- (id<MTLFunction>)functionWithDescriptor:(MTIFilterFunctionDescriptor *)descriptor error:(NSError * __autoreleasing *)inOutError {
+- (id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError * __autoreleasing *)inOutError {
     id<MTLFunction> cachedFunction = self.functionCache[descriptor];
     if (!cachedFunction) {
         NSError *error = nil;

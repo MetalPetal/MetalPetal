@@ -7,7 +7,7 @@
 //
 
 #import "MTISaturationFilter.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIKernel.h"
 #import "MTIRenderPipelineKernel.h"
@@ -18,8 +18,8 @@
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:@"saturationAdjust"]
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"saturationAdjust"]
                                                         colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
     });
     return kernel;

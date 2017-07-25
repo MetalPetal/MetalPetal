@@ -6,13 +6,13 @@
 //
 //
 
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 
-@interface MTIFilterFunctionDescriptor ()
+@interface MTIFunctionDescriptor ()
 
 @end
 
-@implementation MTIFilterFunctionDescriptor
+@implementation MTIFunctionDescriptor
 
 - (instancetype)initWithName:(NSString *)name {
     return [self initWithName:name libraryURL:nil];
@@ -30,10 +30,10 @@
     if (object == self) {
         return YES;
     }
-    if (![object isKindOfClass:[MTIFilterFunctionDescriptor class]]) {
+    if (![object isKindOfClass:[MTIFunctionDescriptor class]]) {
         return NO;
     }
-    MTIFilterFunctionDescriptor *descriptor = object;
+    MTIFunctionDescriptor *descriptor = object;
     if ([descriptor.name isEqualToString:self.name] && ((descriptor.libraryURL == nil && self.libraryURL == nil) || [descriptor.libraryURL isEqual:self.libraryURL])) {
         return YES;
     } else {

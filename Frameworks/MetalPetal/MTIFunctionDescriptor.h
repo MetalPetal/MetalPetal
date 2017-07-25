@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIFilterFunctionDescriptor : NSObject <NSCopying>
+@interface MTIFunctionDescriptor : NSObject <NSCopying>
 
 @property (nonatomic, copy, readonly, nullable) NSURL *libraryURL;
 

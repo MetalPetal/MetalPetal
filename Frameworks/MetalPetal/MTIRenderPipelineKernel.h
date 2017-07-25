@@ -12,19 +12,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipeline, MTIFilterFunctionDescriptor, MTIContext, MTIImage;
+@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage;
 
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
-                      fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
+                      fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor
                                 vertexDescriptor:(nullable MTLVertexDescriptor *)vertexDescriptor
                        colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor
-                      fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
+                      fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor
                       colorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat;
 
 - (nullable MTIRenderPipeline *)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;

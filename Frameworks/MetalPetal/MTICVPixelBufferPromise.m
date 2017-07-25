@@ -8,11 +8,9 @@
 
 #import "MTICVPixelBufferPromise.h"
 #import "MTIImageRenderingContext.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIContext.h"
-#import "MTIFilterFunctionDescriptor.h"
-#import "MTITexturePool.h"
 #import "MTIRenderPipeline.h"
 #import <simd/simd.h>
 
@@ -85,7 +83,7 @@ static const ColorConversion colorConversion = {
 - (nullable MTIRenderPipeline *)colorConversionRenderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat context:(MTIContext *)context error:(NSError **)inOutError {
     
     NSError *error;
-    id<MTLFunction> vertexFunction = [context functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIColorConversionVertexFunctionName] error:&error];
+    id<MTLFunction> vertexFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIColorConversionVertexFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -93,7 +91,7 @@ static const ColorConversion colorConversion = {
         return nil;
     }
     
-    id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIColorConversionFragmentFunctionName] error:&error];
+    id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIColorConversionFragmentFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;

@@ -8,9 +8,8 @@
 
 #import "MTIFilter.h"
 #import "MTIVertex.h"
-#import "MTIImageRenderingContext.h"
 #import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 
 NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertexShader";
 NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmentShader";

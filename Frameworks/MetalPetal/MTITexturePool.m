@@ -8,7 +8,6 @@
 
 #import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
-#import <os/lock.h>
 
 @interface MTITexturePool ()
 

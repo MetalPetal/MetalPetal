@@ -8,14 +8,13 @@
 
 #import "MTIRenderPipelineKernel.h"
 #import "MTIContext.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIImagePromise.h"
 #import "MTIVertex.h"
 #import "MTIImageRenderingContext.h"
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
-#import "MTITexturePool.h"
 #import "MTIImage+Promise.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
@@ -153,8 +152,8 @@
 
 @interface MTIRenderPipelineKernel ()
 
-@property (nonatomic,copy,readonly) MTIFilterFunctionDescriptor *vertexFunctionDescriptor;
-@property (nonatomic,copy,readonly) MTIFilterFunctionDescriptor *fragmentFunctionDescriptor;
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptor;
 @property (nonatomic,copy,readonly) MTLVertexDescriptor *vertexDescriptor;
 @property (nonatomic,copy,readonly) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
 
@@ -162,7 +161,7 @@
 
 @implementation MTIRenderPipelineKernel
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor colorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor colorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
     MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
     colorAttachmentDescriptor.pixelFormat = colorAttachmentPixelFormat;
     colorAttachmentDescriptor.blendingEnabled = NO;
@@ -172,7 +171,7 @@
                         colorAttachmentDescriptor:colorAttachmentDescriptor];
 }
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFilterFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFilterFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor {
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor {
     if (self = [super init]) {
         _vertexFunctionDescriptor = [vertexFunctionDescriptor copy];
         _fragmentFunctionDescriptor = [fragmentFunctionDescriptor copy];

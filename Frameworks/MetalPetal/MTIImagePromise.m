@@ -8,7 +8,7 @@
 
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"

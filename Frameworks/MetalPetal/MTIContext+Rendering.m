@@ -10,13 +10,12 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIContext.h"
 #import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIVertex.h"
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
 #import "MTIImage+Promise.h"
-#import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
 #import <objc/runtime.h>
 @import AVFoundation;
@@ -94,7 +93,7 @@
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     
     NSError *error;
-    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
+    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -102,7 +101,7 @@
         return nil;
     }
     
-    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
