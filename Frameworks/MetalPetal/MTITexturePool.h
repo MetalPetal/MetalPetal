@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
