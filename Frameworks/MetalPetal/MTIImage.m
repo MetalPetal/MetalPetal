@@ -51,7 +51,7 @@
 }
 
 - (CGSize)size {
-    return self.extent.size;
+    return _extent.size;
 }
 
 - (id)copyWithZone:(NSZone *)zone {

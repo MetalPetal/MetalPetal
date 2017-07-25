@@ -9,10 +9,59 @@
 #import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
 #import <os/lock.h>
+#import <pthread/pthread.h>
 
-@interface MTITexturePool () {
-    os_unfair_lock _lock;
+//https://gist.github.com/steipete/36350a8a60693d440954b95ea6cbbafc
+
+@interface MTILock : NSObject {
+    os_unfair_lock _unfairlock;
+    pthread_mutex_t _mutex;
 }
+
+@end
+
+@implementation MTILock
+
+- (instancetype)init {
+    if (self = [super init]) {
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+            _unfairlock = OS_UNFAIR_LOCK_INIT;
+        } else {
+            pthread_mutex_init(&_mutex, nil);
+        }
+    }
+    return self;
+}
+
+- (void)dealloc {
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+        
+    } else {
+        pthread_mutex_destroy(&_mutex);
+    }
+}
+
+- (void)lock {
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+        os_unfair_lock_lock(&_unfairlock);
+    } else {
+        pthread_mutex_lock(&_mutex);
+    }
+}
+
+- (void)unlock {
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+        os_unfair_lock_unlock(&_unfairlock);
+    } else {
+        pthread_mutex_unlock(&_mutex);
+    }
+}
+
+@end
+
+@interface MTITexturePool ()
+
+@property (nonatomic, strong) MTILock *lock;
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
@@ -22,13 +71,13 @@
 
 @end
 
-@interface MTIReusableTexture () {
-    os_unfair_lock _lock;
-}
+@interface MTIReusableTexture ()
 
-@property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
+@property (nonatomic, strong) MTILock *lock;
 
-@property (nonatomic,weak) MTITexturePool *pool;
+@property (nonatomic, copy) MTITextureDescriptor *textureDescriptor;
+
+@property (nonatomic, weak) MTITexturePool *pool;
 
 @property (nonatomic) NSInteger textureReferenceCount;
 
@@ -38,7 +87,7 @@
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
-        _lock = OS_UNFAIR_LOCK_INIT;
+        _lock = [[MTILock alloc] init];
         _textureReferenceCount = 1;
         _pool = pool;
         _texture = texture;
@@ -48,19 +97,18 @@
 }
 
 - (void)retainTexture {
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
     
     NSAssert(_textureReferenceCount > 0, @"");
     _textureReferenceCount += 1;
     
-    os_unfair_lock_unlock(&_lock);
-    
+    [_lock unlock];
 }
 
 - (void)releaseTexture {
     BOOL returnTexture = NO;
     
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
     
     _textureReferenceCount -= 1;
     
@@ -70,7 +118,7 @@
         returnTexture = YES;
     }
     
-    os_unfair_lock_unlock(&_lock);
+    [_lock unlock];
     
     if (returnTexture) {
         [self.pool returnTexture:self];
@@ -90,7 +138,7 @@
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device {
     if (self = [super init]) {
-        _lock = OS_UNFAIR_LOCK_INIT;
+        _lock = [[MTILock alloc] init];
         _device = device;
         _textureCache = [NSMutableDictionary dictionary];
     }
@@ -98,7 +146,7 @@
 }
 
 - (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor {
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
 
     __auto_type avaliableTextures = self.textureCache[textureDescriptor];
     
@@ -109,7 +157,7 @@
         [avaliableTextures removeLastObject];
     }
     
-    os_unfair_lock_unlock(&_lock);
+    [_lock unlock];
     
     if (!texture) {
         NSLog(@"%@: Created a new texture.",self);
@@ -121,7 +169,7 @@
 }
 
 - (void)returnTexture:(MTIReusableTexture *)texture {
-    os_unfair_lock_lock(&_lock);
+    [_lock lock];
     
     __auto_type avaliableTextures = self.textureCache[texture.textureDescriptor];
     if (!avaliableTextures) {
@@ -130,7 +178,7 @@
     }
     [avaliableTextures addObject:texture.texture];
     
-    os_unfair_lock_unlock(&_lock);
+    [_lock unlock];
 }
 
 @end
