@@ -34,10 +34,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface MTITexturePool (MTIImagePromiseRenderTarget)
-
-- (id<MTLTexture>)newRenderTargetForPromise:(id<MTIImagePromise>)promise;
-
-@end
-
 NS_ASSUME_NONNULL_END

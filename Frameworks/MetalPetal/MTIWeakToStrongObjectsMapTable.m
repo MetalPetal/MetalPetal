@@ -33,7 +33,7 @@
 }
 
 - (void)setObject:(id)anObject forKey:(id)aKey {
-    objc_setAssociatedObject(aKey, (__bridge const void *)(self), anObject, OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(aKey, (__bridge const void *)(self), anObject, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (anObject) {
         [self.items addObject:aKey];
     } else {

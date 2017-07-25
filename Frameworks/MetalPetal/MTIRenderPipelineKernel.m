@@ -46,18 +46,23 @@
     } count:4];
 }
 
-- (id<MTLTexture>)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (NSArray<MTIImage *> *)dependencies {
+    return self.inputImages;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
-    NSMutableArray<id<MTLTexture>> *inputTextures = [NSMutableArray array];
+    NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
+        id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
             }
             return nil;
         }
-#warning fetch resolve result from cache
-        [inputTextures addObject:[image.promise resolveWithContext:renderingContext error:&error]];
+        NSAssert(resolution != nil, @"");
+        [inputResolutions addObject:resolution];
     }
     
     MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel error:&error];
@@ -69,10 +74,10 @@
         return nil;
     }
     
-    id<MTLTexture> renderTarget = [renderingContext.context.texturePool newRenderTargetForPromise:self];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    renderPassDescriptor.colorAttachments[0].texture = renderTarget;
+    renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
     renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
@@ -86,13 +91,12 @@
         //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
         [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
     } else {
-#warning cache buffers
         id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
         [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
     }
     
-    for (NSUInteger index = 0; index < inputTextures.count; index += 1) {
-        [commandEncoder setFragmentTexture:inputTextures[index] atIndex:index];
+    for (NSUInteger index = 0; index < inputResolutions.count; index += 1) {
+        [commandEncoder setFragmentTexture:inputResolutions[index].texture atIndex:index];
         id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:self.inputImages[index].samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
     }
@@ -118,6 +122,10 @@
     
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
+    
+    for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
+        [resolution markAsConsumedBy:self];
+    }
     
     return renderTarget;
 }

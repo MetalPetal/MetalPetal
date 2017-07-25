@@ -15,6 +15,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol MTIImagePromiseResolution <NSObject>
+
+@property (nonatomic,readonly) id<MTLTexture> texture;
+
+- (void)markAsConsumedBy:(id)consumer;
+
+@end
+
 @interface MTIImageRenderingContext : NSObject
 
 @property (nonatomic, strong, readonly) MTIContext *context;
@@ -23,16 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@end
+- (instancetype)initWithContext:(MTIContext *)context;
 
-
-@interface MTIContext (Rendering)
-
-- (BOOL)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error;
-
-- (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error;
-
-- (nullable CIImage *)createCIImage:(MTIImage *)image error:(NSError **)error;
+- (nullable id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError **)error;
 
 @end
 

@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTISaturationFilter : MTIFilter
+@interface MTISaturationFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 

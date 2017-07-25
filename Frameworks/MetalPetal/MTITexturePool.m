@@ -46,6 +46,8 @@
 }
 
 - (void)retainTexture {
+    NSAssert(_textureReferenceCount > 0, @"");
+    
     [_lock lock];
     _textureReferenceCount += 1;
     [_lock unlock];
@@ -68,6 +70,12 @@
     if (returnTexture) {
         [self.pool returnTexture:self];
         _texture = nil;
+    }
+}
+
+- (void)dealloc {
+    if (_texture) {
+        [_pool returnTexture:self];
     }
 }
 
@@ -110,45 +118,6 @@
         }
         [avaliableTextures addObject:texture.texture];
     }
-}
-
-@end
-
-#import <objc/runtime.h>
-
-@interface MTIImagePromiseDeallocationHandler : NSObject
-
-@property (nonatomic,copy) void(^action)(void);
-
-@end
-
-@implementation MTIImagePromiseDeallocationHandler
-
-- (instancetype)initWithAction:(void(^)(void))action {
-    if (self = [super init]) {
-        _action = [action copy];
-    }
-    return self;
-}
-
-- (void)attachToPromise:(id<MTIImagePromise>)promise {
-    objc_setAssociatedObject(promise, (__bridge const void *)(self), self, OBJC_ASSOCIATION_RETAIN);
-}
-
-- (void)dealloc {
-    self.action();
-}
-
-@end
-
-@implementation MTITexturePool (MTIImagePromiseRenderTarget)
-
-- (id<MTLTexture>)newRenderTargetForPromise:(id<MTIImagePromise>)promise {
-    MTIReusableTexture *reusableTexture = [self newTextureWithDescriptor:promise.textureDescriptor];
-    [[[MTIImagePromiseDeallocationHandler alloc] initWithAction:^{
-        [reusableTexture releaseTexture];
-    }] attachToPromise:promise];
-    return reusableTexture.texture;
 }
 
 @end
