@@ -31,6 +31,7 @@
 @end
 
 @implementation MTIImageRenderingRecipe
+@synthesize dimensions = _dimensions;
 
 - (MTIVertices *)verticesForRect:(CGRect)rect {
     CGFloat l = CGRectGetMinX(rect);
@@ -143,6 +144,7 @@
         _kernel = kernel;
         _fragmentFunctionParameters = fragmentFunctionParameters;
         _textureDescriptor = [outputTextureDescriptor newMTITextureDescriptor];
+        _dimensions = (MTITextureDimensions){outputTextureDescriptor.width, outputTextureDescriptor.height, outputTextureDescriptor.depth};
     }
     return self;
 }

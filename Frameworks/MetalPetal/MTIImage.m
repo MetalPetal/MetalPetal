@@ -32,7 +32,7 @@
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
-        _extent = CGRectMake(0, 0, _promise.textureDescriptor.width, _promise.textureDescriptor.height);
+        _extent = CGRectMake(0, 0, _promise.dimensions.width, _promise.dimensions.height);
         _samplerDescriptor = [samplerDescriptor copy];
     }
     return self;
@@ -40,17 +40,13 @@
 
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
-    if (image) {
-        image -> _samplerDescriptor = samplerDescriptor;
-    }
+    image -> _samplerDescriptor = samplerDescriptor;
     return image;
 }
 
 - (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy {
     MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
-    if (image) {
-        image -> _cachePolicy = cachePolicy;
-    }
+    image -> _cachePolicy = cachePolicy;
     return image;
 }
 

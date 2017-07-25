@@ -48,14 +48,19 @@ static const ColorConversion colorConversion = {
 
 @property (nonatomic) CVPixelBufferRef pixelBuffer;
 
+@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
+
 @end
 
 @implementation MTICVPixelBufferPromise
+
+@synthesize dimensions = _dimensions;
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
     if (self = [super init]) {
         _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
+        _dimensions = (MTITextureDimensions){CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer), 1};
         MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
         descriptor.usage = MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
         _textureDescriptor = [descriptor newMTITextureDescriptor];

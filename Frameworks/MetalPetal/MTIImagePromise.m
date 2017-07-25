@@ -14,6 +14,44 @@
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
 
+@interface MTIImageURLPromise ()
+
+@property (nonatomic,copy) NSURL *URL;
+
+@property (nonatomic,copy) NSDictionary *options;
+
+@property (nonatomic,strong) MDLURLTexture *texture;
+
+@end
+
+@implementation MTIImageURLPromise
+@synthesize dimensions = _dimensions;
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary *)options {
+    if (self = [super init]) {
+        _URL = [URL copy];
+        _options = [options copy];
+        _texture = [[MDLURLTexture alloc] initWithURL:URL name:URL.lastPathComponent];
+        _dimensions = (MTITextureDimensions){_texture.dimensions.x, _texture.dimensions.y, 1};
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:self.texture options:self.options error:error];
+    return [renderingContext.context newRenderTargetWithTexture:texture];
+}
+
+@end
+
 @interface MTICGImagePromise ()
 
 @property (nonatomic) CGImageRef image;
@@ -21,11 +59,12 @@
 @end
 
 @implementation MTICGImagePromise
+@synthesize dimensions = _dimensions;
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage {
     if (self = [super init]) {
         _image = CGImageRetain(cgImage);
-        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) mipmapped:NO] newMTITextureDescriptor];
+        _dimensions = (MTITextureDimensions){CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 1};
     }
     return self;
 }
@@ -57,21 +96,11 @@
 
 @implementation MTITexturePromise
 
+@synthesize dimensions = _dimensions;
+
 - (instancetype)initWithTexture:(id<MTLTexture>)texture {
     if (self = [super init]) {
-        MTLTextureDescriptor *descriptor = [[MTLTextureDescriptor alloc] init];
-        descriptor.textureType = texture.textureType;
-        descriptor.pixelFormat = texture.pixelFormat;
-        descriptor.width = texture.width;
-        descriptor.height = texture.height;
-        descriptor.depth = texture.depth;
-        descriptor.mipmapLevelCount = texture.mipmapLevelCount;
-        descriptor.sampleCount = texture.sampleCount;
-        descriptor.arrayLength = texture.arrayLength;
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_8_x_Max) {
-            descriptor.usage = texture.usage;
-        }
-        _textureDescriptor = [descriptor newMTITextureDescriptor];
+        _dimensions = (MTITextureDimensions){texture.width, texture.height, texture.depth};
         _texture = texture;
     }
     return self;
@@ -95,13 +124,17 @@
 
 @property (nonatomic,strong) CIImage *image;
 
+@property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
+
 @end
 
 @implementation MTICIImagePromise
+@synthesize dimensions = _dimensions;
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
     if (self = [super init]) {
         _image = ciImage;
+        _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
         _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO] newMTITextureDescriptor];
     }
     return self;
@@ -123,11 +156,20 @@
 
 @end
 
+@interface MTITextureDescriptorPromise ()
+
+@property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
+
+@end
+
 @implementation MTITextureDescriptorPromise
+
+@synthesize dimensions = _dimensions;
 
 - (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
     if (self = [super init]) {
         _textureDescriptor = [[MTITextureDescriptor alloc] initWithMTLTextureDescriptor:textureDescriptor];
+        _dimensions = (MTITextureDimensions){textureDescriptor.width, textureDescriptor.height, textureDescriptor.depth};
     }
     return self;
 }
