@@ -8,8 +8,11 @@
 
 #import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
+#import <os/lock.h>
 
-@interface MTITexturePool ()
+@interface MTITexturePool () {
+    os_unfair_lock _lock;
+}
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
@@ -19,7 +22,9 @@
 
 @end
 
-@interface MTIReusableTexture ()
+@interface MTIReusableTexture () {
+    os_unfair_lock _lock;
+}
 
 @property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
 
@@ -27,15 +32,13 @@
 
 @property (nonatomic) NSInteger textureReferenceCount;
 
-@property (nonatomic,strong) NSLock *lock;
-
 @end
 
 @implementation MTIReusableTexture
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
-        _lock = [[NSLock alloc] init]; //ensure retain & release operations are thread safe.
+        _lock = OS_UNFAIR_LOCK_INIT;
         _textureReferenceCount = 1;
         _pool = pool;
         _texture = texture;
@@ -45,26 +48,29 @@
 }
 
 - (void)retainTexture {
-    NSAssert(_textureReferenceCount > 0, @"");
+    os_unfair_lock_lock(&_lock);
     
-    [_lock lock];
+    NSAssert(_textureReferenceCount > 0, @"");
     _textureReferenceCount += 1;
-    [_lock unlock];
+    
+    os_unfair_lock_unlock(&_lock);
     
 }
 
 - (void)releaseTexture {
     BOOL returnTexture = NO;
     
-    [_lock lock];
+    os_unfair_lock_lock(&_lock);
     
     _textureReferenceCount -= 1;
+    
     NSAssert(_textureReferenceCount >= 0, @"Over release a reusable texture.");
+    
     if (_textureReferenceCount == 0) {
         returnTexture = YES;
     }
     
-    [_lock unlock];
+    os_unfair_lock_unlock(&_lock);
     
     if (returnTexture) {
         [self.pool returnTexture:self];
@@ -80,11 +86,11 @@
 
 @end
 
-
 @implementation MTITexturePool
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device {
     if (self = [super init]) {
+        _lock = OS_UNFAIR_LOCK_INIT;
         _device = device;
         _textureCache = [NSMutableDictionary dictionary];
     }
@@ -92,31 +98,39 @@
 }
 
 - (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor {
-    @synchronized (self) {
-        __auto_type avaliableTextures = self.textureCache[textureDescriptor];
-        if (avaliableTextures.count > 0) {
-            id<MTLTexture> texture = [avaliableTextures lastObject];
-            [avaliableTextures removeLastObject];
-            MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
-            return reusableTexture;
-        } else {
-            NSLog(@"[New Texture]");
-            id<MTLTexture> texture = [self.device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
-            MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
-            return reusableTexture;
-        }
+    os_unfair_lock_lock(&_lock);
+
+    __auto_type avaliableTextures = self.textureCache[textureDescriptor];
+    
+    id<MTLTexture> texture = nil;
+    
+    if (avaliableTextures.count > 0) {
+        texture = [avaliableTextures lastObject];
+        [avaliableTextures removeLastObject];
     }
+    
+    os_unfair_lock_unlock(&_lock);
+    
+    if (!texture) {
+        NSLog(@"%@: Created a new texture.",self);
+        texture = [self.device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
+    }
+    
+    MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
+    return reusableTexture;
 }
 
 - (void)returnTexture:(MTIReusableTexture *)texture {
-    @synchronized (self) {
-        __auto_type avaliableTextures = self.textureCache[texture.textureDescriptor];
-        if (!avaliableTextures) {
-            avaliableTextures = [[NSMutableArray alloc] init];
-            self.textureCache[texture.textureDescriptor] = avaliableTextures;
-        }
-        [avaliableTextures addObject:texture.texture];
+    os_unfair_lock_lock(&_lock);
+    
+    __auto_type avaliableTextures = self.textureCache[texture.textureDescriptor];
+    if (!avaliableTextures) {
+        avaliableTextures = [[NSMutableArray alloc] init];
+        self.textureCache[texture.textureDescriptor] = avaliableTextures;
     }
+    [avaliableTextures addObject:texture.texture];
+    
+    os_unfair_lock_unlock(&_lock);
 }
 
 @end
