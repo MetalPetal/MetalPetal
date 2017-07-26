@@ -7,10 +7,5 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MTIFilter.h"
 
-@interface MTIFilter (Property)
-
-+ (NSSet *)propertyKeys;
-
-@end
+NSDictionary * parametersDictionaryFor(NSObject *object);

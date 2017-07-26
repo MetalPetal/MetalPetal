@@ -36,6 +36,21 @@
     return self;
 }
 
++ (instancetype)vectorWithDoubleValues:(const double *)values count:(size_t)count {
+    return [[self alloc] initWithDoubleValues:values count:count];
+}
+
+- (instancetype)initWithDoubleValues:(const double *)values count:(size_t)count {
+    if (self = [super init]) {
+        _count = count;
+        _ptr = malloc(sizeof(MTIFloat) * count);
+        for (int i = 0; i<count; i++) {
+            _ptr[i] = (MTIFloat)values[i];
+        }
+    }
+    return self;
+}
+
 - (instancetype)copyWithZone:(nullable NSZone *)zone {
     __typeof(self) vector = [[[self class] allocWithZone:zone] initWithValues:self.bytes count:self.count];
     return vector;
@@ -43,6 +58,11 @@
 
 - (instancetype)initWithCGPoint:(CGPoint)p {
     float values[2] = {(float)p.x, (float)p.y};
+    return [self initWithValues: values count: 2];
+}
+
+- (instancetype)initWithCGSize:(CGSize)s {
+    float values[2] = {(float)s.width, (float)s.height};
     return [self initWithValues: values count: 2];
 }
 
@@ -87,6 +107,13 @@
         return CGPointMake(self.bytes[0], self.bytes[1]);
     }
     return CGPointZero;
+}
+
+- (CGSize)CGSizeValue {
+    if (self.count > 1) {
+        return CGSizeMake(self.bytes[0], self.bytes[1]);
+    }
+    return CGSizeZero;
 }
 
 - (CGRect)CGRectValue {

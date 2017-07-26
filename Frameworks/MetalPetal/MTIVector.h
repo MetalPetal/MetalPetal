@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#define MTIFloat float
+typedef float MTIFloat;
 
 @interface MTIVector : NSObject <NSCopying, NSSecureCoding>
 {
@@ -22,13 +22,15 @@
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithValues:(const MTIFloat *)values count:(size_t)count NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithCGPoint:(CGPoint)p NS_AVAILABLE(10_9, 5_0);
-- (instancetype)initWithCGRect:(CGRect)r NS_AVAILABLE(10_9, 5_0);
-- (instancetype)initWithCGAffineTransform:(CGAffineTransform)t NS_AVAILABLE(10_9, 5_0);
+- (instancetype)initWithCGPoint:(CGPoint)p;
+- (instancetype)initWithCGSize:(CGSize)s;
+- (instancetype)initWithCGRect:(CGRect)r;
+- (instancetype)initWithCGAffineTransform:(CGAffineTransform)t;
 
 @property (readonly) NSData *data;
-@property (readonly) CGPoint CGPointValue NS_AVAILABLE(10_9, 5_0);
-@property (readonly) CGRect CGRectValue NS_AVAILABLE(10_9, 5_0);
-@property (readonly) CGAffineTransform CGAffineTransformValue NS_AVAILABLE(10_9, 5_0);
+@property (readonly) CGPoint CGPointValue;
+@property (readonly) CGSize CGSizeValue;
+@property (readonly) CGRect CGRectValue;
+@property (readonly) CGAffineTransform CGAffineTransformValue;
 
 @end

@@ -144,9 +144,10 @@
             if ([value isKindOfClass:[NSValue class]]) {
                 NSValue *nsValue = (NSValue *)value;
                 NSUInteger size;
-                NSGetSizeAndAlignment(nsValue.objCType, &size, 0);
+                NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
                 void *valuePtr = malloc(size);
                 [nsValue getValue:valuePtr];
+                //todo throw error when size != argument.bufferDataSize
                 setEncoderWithBytes(valuePtr, size, argument.index);
                 free(valuePtr);
             }else if ([value isKindOfClass:[NSData class]]) {

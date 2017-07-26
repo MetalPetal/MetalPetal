@@ -27,9 +27,4 @@ NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmen
     return nil;
 }
 
-- (NSDictionary *)parametersDictionary {
-    NSSet *keys = [self.class propertyKeys];
-    return [self dictionaryWithValuesForKeys:keys.allObjects];
-}
-
 @end

@@ -8,6 +8,8 @@
 
 #import "MTIFilter+Property.h"
 #import "MTIUtilities.h"
+#import "MTIVector+Private.h"
+
 @import ObjectiveC;
 
 // Used to cache the reflection performed in +propertyKeys.
@@ -122,17 +124,17 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
     }
     
     const char *typeString = attrString + 1;
-    const char *next = NSGetSizeAndAlignment(typeString, NULL, NULL);
+    const char *next = strchr(typeString, ',');
+    if (next - typeString > 0) {
+        next = NSGetSizeAndAlignment(typeString, NULL, NULL);
+    }
+    
     if (!next) {
-        fprintf(stderr, "ERROR: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+        fprintf(stderr, "WARNING: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
         return NULL;
     }
     
     size_t typeLength = next - typeString;
-    if (!typeLength) {
-        fprintf(stderr, "ERROR: Invalid type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
-        return NULL;
-    }
     
     // allocate enough space for the structure and the type string (plus a NUL)
     MTIPropertyAttributes *attributes = calloc(1, sizeof(MTIPropertyAttributes) + typeLength + 1);
@@ -141,9 +143,13 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
         return NULL;
     }
     
-    // copy the type string
-    strncpy(attributes->type, typeString, typeLength);
-    attributes->type[typeLength] = '\0';
+    if (typeLength > 0) {
+        // copy the type string
+        strncpy(attributes->type, typeString, typeLength);
+        attributes->type[typeLength] = '\0';
+    }else {
+        fprintf(stderr, "WARNING: Invalid type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+    }
     
     // if this is an object type, and immediately followed by a quoted string...
     if (typeString[0] == *(@encode(id)) && typeString[1] == '"') {
@@ -308,39 +314,16 @@ errorOut:
     return NULL;
 }
 
-
-@implementation MTIFilter (Property)
-
-+ (NSSet *)propertyKeys {
-    NSSet *cachedKeys = objc_getAssociatedObject(self, MTIModelCachedPropertyKeysKey);
-    if (cachedKeys != nil) return cachedKeys;
-    
-    NSMutableSet *keys = [NSMutableSet set];
-    
-    [self enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
-        NSString *key = @(property_getName(property));
-        
-        if ([self storageExistForPropertyWithKey:key]) {
-            [keys addObject:key];
-        }
-    }];
-    
-    // It doesn't really matter if we replace another thread's work, since we do
-    // it atomically and the result should be the same.
-    objc_setAssociatedObject(self, MTIModelCachedPropertyKeysKey, keys, OBJC_ASSOCIATION_COPY);
-    
-    return keys;
-}
-
-+ (void)enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
-    Class cls = self;
+typedef void(^PropertiesEnumerateBlock)(objc_property_t property, BOOL *stop);
+void enumerateObjectPropertiesUsingBlock(NSObject *object, PropertiesEnumerateBlock block) {
+    Class cls = object.class;
     BOOL stop = NO;
     
-    while (!stop && ![cls isEqual:MTIFilter.class]) {
+    while (!stop && (cls != Nil && ![cls isEqual:NSObject.class]) ) {
         unsigned count = 0;
         objc_property_t *properties = class_copyPropertyList(cls, &count);
         
-        cls = cls.superclass;
+        cls = class_getSuperclass(cls);
         if (properties == NULL) continue;
         
         @MTI_DEFER {
@@ -354,31 +337,90 @@ errorOut:
     }
 }
 
-+ (BOOL)storageExistForPropertyWithKey:(NSString *)propertyKey {
-    objc_property_t property = class_getProperty(self.class, propertyKey.UTF8String);
+BOOL storageExistInObjectForPropertyWithKey(Class objectClass, NSString *propertyKey) {
+    
+    if (objectClass == Nil) return NO;
+    
+    objc_property_t property = class_getProperty(objectClass, propertyKey.UTF8String);
     
     if (property == NULL) return NO;
     
     MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property);
+    if (attributes == NULL) return YES;
     @MTI_DEFER {
         free(attributes);
     };
     
-    BOOL hasGetter = [self instancesRespondToSelector:attributes->getter];
-    BOOL hasSetter = [self instancesRespondToSelector:attributes->setter];
+    BOOL hasGetter = [objectClass instancesRespondToSelector:attributes->getter];
+    BOOL hasSetter = [objectClass instancesRespondToSelector:attributes->setter];
     if (!attributes->dynamic && attributes->ivar == NULL && !hasGetter && !hasSetter) {
         return NO;
     } else if (attributes->readonly && attributes->ivar == NULL) {
-        if ([self isEqual:MTIFilter.class]) {
-            return NO;
-        } else {
             // Check superclass in case the subclass redeclares a property that
             // falls through
-            return [self.superclass storageExistForPropertyWithKey:propertyKey];
-        }
+        if ([objectClass isEqual: NSObject.class]) return NO;
+        return storageExistInObjectForPropertyWithKey(class_getSuperclass(objectClass), propertyKey);
     } else {
         return YES;
     }
 }
 
-@end
+NSSet * propertyKeysFor(NSObject *object) {
+    NSSet *cachedKeys = objc_getAssociatedObject(object, MTIModelCachedPropertyKeysKey);
+    if (cachedKeys != nil) return cachedKeys;
+    
+    NSMutableSet *keys = [NSMutableSet set];
+    
+    enumerateObjectPropertiesUsingBlock(object, ^(objc_property_t property, BOOL *stop) {
+        NSString *key = @(property_getName(property));
+        
+        if (storageExistInObjectForPropertyWithKey(object.class, key)) {
+            [keys addObject:key];
+        }
+    });
+    
+    // It doesn't really matter if we replace another thread's work, since we do
+    // it atomically and the result should be the same.
+    objc_setAssociatedObject(object, MTIModelCachedPropertyKeysKey, keys, OBJC_ASSOCIATION_COPY);
+    
+    return keys;
+}
+
+NSDictionary * parametersDictionaryFor(NSObject *object) {
+    NSSet *keys = propertyKeysFor(object);
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
+    NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
+    const NSArray *valueTypesNeedsRepresentedByMTIVector = @[@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}"];
+    for (NSString *propertyKey in keys) {
+        objc_property_t property = class_getProperty(object.class, propertyKey.UTF8String);
+        
+        if (property == NULL) continue;
+        
+        MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property);
+        if (attributes == NULL) continue;
+        
+        @MTI_DEFER {
+            free(attributes);
+        };
+        
+        NSString *type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
+        if ([valueTypesNeedsRepresentedByMTIVector containsObject:type]) {
+            NSValue *nsValue = [object valueForKey:propertyKey];
+            NSUInteger size;
+            NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
+            void *valuePtr = malloc(size);
+            @MTI_DEFER {
+                free(valuePtr);
+            };
+            [nsValue getValue:valuePtr];
+            
+            MTIVector *vector = [MTIVector vectorWithDoubleValues:valuePtr count:size/sizeof(double)];
+            [result setObject:vector forKey:propertyKey];
+        }else {
+            [otherKeys addObject:propertyKey];
+        }
+        
+    }
+    [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
+    return result;
+}
