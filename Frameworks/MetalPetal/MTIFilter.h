@@ -20,6 +20,8 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 
 @property (nonatomic, strong, readonly, nullable) MTIImage *outputImage;
 
+- (NSDictionary *)parametersDictionary;
+
 @end
 
 NS_ASSUME_NONNULL_END

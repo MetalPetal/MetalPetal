@@ -65,13 +65,13 @@
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"bytes"];
     NSInteger count = [coder decodeIntegerForKey: @"count"];
-    return [self initWithValues:data.bytes count:count];
+    return [self initWithValues:data.bytes count:(size_t)count];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
     NSData *data = [NSData dataWithBytes:_ptr length:self.length];
     [coder encodeObject:data forKey:@"bytes"];
-    [coder encodeInteger:_count forKey:@"count"];
+    [coder encodeInteger:(NSInteger)_count forKey:@"count"];
 }
 
 + (BOOL)supportsSecureCoding {

@@ -145,9 +145,8 @@
                 NSValue *nsValue = (NSValue *)value;
                 NSUInteger size;
                 NSGetSizeAndAlignment(nsValue.objCType, &size, 0);
-                void *valuePtr = malloc(argument.bufferDataSize);
+                void *valuePtr = malloc(size);
                 [nsValue getValue:valuePtr];
-                NSAssert(argument.bufferDataSize == size, @"");
                 setEncoderWithBytes(valuePtr, size, argument.index);
                 free(valuePtr);
             }else if ([value isKindOfClass:[NSData class]]) {
@@ -157,7 +156,7 @@
                 MTIVector *vector = (MTIVector *)value;
                 setEncoderWithBytes(vector.bytes, vector.length, argument.index);
             }else {
-                NSAssert(1, @"data type error");
+                NSAssert(1, @"argument data type is not supported");
             }
         }
     }

@@ -11,6 +11,8 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIImage.h"
 #import "MTIFilterFunctionDescriptor.h"
+#import "MTIFilter+Property.h"
+
 
 NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertexShader";
 NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmentShader";
@@ -23,6 +25,11 @@ NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmen
 
 - (MTIImage *)outputImage {
     return nil;
+}
+
+- (NSDictionary *)parametersDictionary {
+    NSSet *keys = [self.class propertyKeys];
+    return [self dictionaryWithValuesForKeys:keys.allObjects];
 }
 
 @end
