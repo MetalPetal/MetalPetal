@@ -12,8 +12,22 @@
 
 @import ObjectiveC;
 
-// Used to cache the reflection performed in +propertyKeys.
-static void *MTIModelCachedPropertyKeysKey = &MTIModelCachedPropertyKeysKey;
+#define mti_debug_print(fmt, ...) \
+do { if (DEBUG) NSLog(fmt, __VA_ARGS__); } while (0)
+
+// Used to cache the reflection performed in NSDictionary * parametersDictionaryFor(NSObject *object).
+static void *MTIModelCachedPropertyKeysWithTypeDescriptionKey = &MTIModelCachedPropertyKeysWithTypeDescriptionKey;
+
+NSString * const MTIFilterPropertyErrorDomain = @"MTIFilterPropertyErrorDomain";
+typedef NS_ENUM(NSInteger, MTIFilterPropertyError) {
+    MTIFilterPropertyErrorAttributeStringNotFound = 1000,
+    MTIFilterPropertyErrorInvalidAttributeString = 1001,
+    MTIFilterPropertyErrorMemory = 1002,
+    MTIFilterPropertyErrorInvalidTypeString = 1003,
+    MTIFilterPropertyErrorInvalidFlagString = 1004,
+    MTIFilterPropertyErrorOldStyleEncoding = 1005,
+    MTIFilterPropertyErrorUnparsedLeft = 1006
+};
 
 /**
  * Describes the memory management policy of a property.
@@ -111,15 +125,17 @@ typedef struct {
     char type[];
 } MTIPropertyAttributes;
 
-MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
+MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property, NSError * _Nullable __autoreleasing *inOutError) {
     const char * const attrString = property_getAttributes(property);
     if (!attrString) {
-        fprintf(stderr, "ERROR: Could not get attribute string from property %s\n", property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"ERROR: Could not get attribute string from property %s\n", property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorAttributeStringNotFound userInfo:@{NSLocalizedDescriptionKey:description}];
         return NULL;
     }
     
     if (attrString[0] != 'T') {
-        fprintf(stderr, "ERROR: Expected attribute string \"%s\" for property %s to start with 'T'\n", attrString, property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"ERROR: Expected attribute string \"%s\" for property %s to start with 'T'\n", attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidAttributeString userInfo:@{NSLocalizedDescriptionKey:description}];
         return NULL;
     }
     
@@ -130,7 +146,8 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
     }
     
     if (!next) {
-        fprintf(stderr, "WARNING: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"WARNING: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidAttributeString userInfo:@{NSLocalizedDescriptionKey:description}];
         return NULL;
     }
     
@@ -139,7 +156,8 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
     // allocate enough space for the structure and the type string (plus a NUL)
     MTIPropertyAttributes *attributes = calloc(1, sizeof(MTIPropertyAttributes) + typeLength + 1);
     if (!attributes) {
-        fprintf(stderr, "ERROR: Could not allocate MTIPropertyAttributes structure for attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"ERROR: Could not allocate MTIPropertyAttributes structure for attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorMemory userInfo:@{NSLocalizedDescriptionKey:description}];
         return NULL;
     }
     
@@ -148,7 +166,8 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
         strncpy(attributes->type, typeString, typeLength);
         attributes->type[typeLength] = '\0';
     }else {
-        fprintf(stderr, "WARNING: Invalid type in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"WARNING: Invalid type in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidTypeString userInfo:@{NSLocalizedDescriptionKey:description}];
     }
     
     // if this is an object type, and immediately followed by a quoted string...
@@ -158,7 +177,8 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
         next = strchr(className, '"');
         
         if (!next) {
-            fprintf(stderr, "ERROR: Could not read class name in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+            NSString *description = [NSString stringWithFormat:@"ERROR: Could not read class name in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+            *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidTypeString userInfo:@{NSLocalizedDescriptionKey:description}];
             return NULL;
         }
         
@@ -218,7 +238,9 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
                 } else {
                     size_t selectorLength = nextFlag - next;
                     if (!selectorLength) {
-                        fprintf(stderr, "ERROR: Found zero length selector name in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
+                        NSString *description = [NSString stringWithFormat:@"ERROR: Found zero length selector name in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+                        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidFlagString userInfo:@{NSLocalizedDescriptionKey:description}];
+
                         goto errorOut;
                     }
                     
@@ -265,21 +287,27 @@ MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t property) {
                 break;
                 
             case 't':
-                fprintf(stderr, "ERROR: Old-style type encoding is unsupported in attribute string \"%s\" for property %s\n", attrString, property_getName(property));
-                
+            {
+                NSString *description = [NSString stringWithFormat:@"ERROR: Old-style type encoding is unsupported in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+                *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorOldStyleEncoding userInfo:@{NSLocalizedDescriptionKey:description}];
                 // skip over this type encoding
                 while (*next != ',' && *next != '\0')
                     ++next;
                 
+            }
                 break;
                 
             default:
-                fprintf(stderr, "ERROR: Unrecognized attribute string flag '%c' in attribute string \"%s\" for property %s\n", flag, attrString, property_getName(property));
+            {
+                NSString *description = [NSString stringWithFormat:@"ERROR: Unrecognized attribute string flag '%c' in attribute string \"%s\" for property %s\n", flag, attrString, property_getName(property)];
+                *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidFlagString userInfo:@{NSLocalizedDescriptionKey:description}];
+            }
         }
     }
     
     if (next && *next != '\0') {
-        fprintf(stderr, "Warning: Unparsed data \"%s\" in attribute string \"%s\" for property %s\n", next, attrString, property_getName(property));
+        NSString *description = [NSString stringWithFormat:@"Warning: Unparsed data \"%s\" in attribute string \"%s\" for property %s\n", next, attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorUnparsedLeft userInfo:@{NSLocalizedDescriptionKey:description}];
     }
     
     if (!attributes->getter) {
@@ -345,7 +373,8 @@ BOOL storageExistInObjectForPropertyWithKey(Class objectClass, NSString *propert
     
     if (property == NULL) return NO;
     
-    MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property);
+    NSError *error;
+    MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property, &error);
     if (attributes == NULL) return YES;
     @MTI_DEFER {
         free(attributes);
@@ -365,46 +394,55 @@ BOOL storageExistInObjectForPropertyWithKey(Class objectClass, NSString *propert
     }
 }
 
-NSSet * propertyKeysFor(NSObject *object) {
-    NSSet *cachedKeys = objc_getAssociatedObject(object, MTIModelCachedPropertyKeysKey);
+NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
+    NSDictionary *cachedKeys = objc_getAssociatedObject(object, MTIModelCachedPropertyKeysWithTypeDescriptionKey);
     if (cachedKeys != nil) return cachedKeys;
     
-    NSMutableSet *keys = [NSMutableSet set];
+    NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
     
     enumerateObjectPropertiesUsingBlock(object, ^(objc_property_t property, BOOL *stop) {
-        NSString *key = @(property_getName(property));
+        NSString *propertyKey = @(property_getName(property));
         
-        if (storageExistInObjectForPropertyWithKey(object.class, key)) {
-            [keys addObject:key];
+        if (property == NULL) return;
+        
+        if (storageExistInObjectForPropertyWithKey(object.class, propertyKey)) {
+            NSError *error;
+            MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property, &error);
+            if (error.code == MTIFilterPropertyErrorInvalidTypeString) {
+                mti_debug_print(@"%@use -(id)valueForUndefinedKey:(NSString *)key; to provide an value for %@", error.localizedDescription, propertyKey);
+            }else {
+                mti_debug_print(@"%@", error.localizedDescription);
+            }
+            if (attributes == NULL) return;
+            
+            @MTI_DEFER {
+                free(attributes);
+            };
+
+            NSString *type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
+            [keysWithTypeDescription setObject:type forKey:propertyKey];
         }
     });
     
     // It doesn't really matter if we replace another thread's work, since we do
     // it atomically and the result should be the same.
-    objc_setAssociatedObject(object, MTIModelCachedPropertyKeysKey, keys, OBJC_ASSOCIATION_COPY);
+    objc_setAssociatedObject(object, MTIModelCachedPropertyKeysWithTypeDescriptionKey, keysWithTypeDescription, OBJC_ASSOCIATION_COPY);
     
-    return keys;
+    return keysWithTypeDescription;
+}
+
+NSSet * propertyKeysFor(NSObject *object) {
+    NSDictionary *keysWithTypeDescription = propertyKeysWithTypeDescriptionFor(object);
+    return [NSSet setWithArray:keysWithTypeDescription.allKeys];
 }
 
 NSDictionary * parametersDictionaryFor(NSObject *object) {
-    NSSet *keys = propertyKeysFor(object);
+    NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
     const NSArray *valueTypesNeedsRepresentedByMTIVector = @[@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}"];
-    for (NSString *propertyKey in keys) {
-        objc_property_t property = class_getProperty(object.class, propertyKey.UTF8String);
-        
-        if (property == NULL) continue;
-        
-        MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property);
-        if (attributes == NULL) continue;
-        
-        @MTI_DEFER {
-            free(attributes);
-        };
-        
-        NSString *type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
-        if ([valueTypesNeedsRepresentedByMTIVector containsObject:type]) {
+    [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
+        if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
             NSValue *nsValue = [object valueForKey:propertyKey];
             NSUInteger size;
             NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
@@ -419,8 +457,8 @@ NSDictionary * parametersDictionaryFor(NSObject *object) {
         }else {
             [otherKeys addObject:propertyKey];
         }
-        
-    }
+
+    }];
     [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
     return result;
 }

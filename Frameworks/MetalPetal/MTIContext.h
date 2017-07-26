@@ -35,7 +35,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1001,
     MTIContextErrorCoreVideoDoesNotSupportMetal = 1002,
     MTIContextErrorUnsupportedCVPixelBufferFormat = 1003,
-    MTIContextErrorUnsupportedImageCachePolicy = 1004
+    MTIContextErrorUnsupportedImageCachePolicy = 1004,
+    MTIContextErrorDataBufferSizeMismatch = 1005
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>

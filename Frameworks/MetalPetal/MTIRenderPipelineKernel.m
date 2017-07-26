@@ -105,8 +105,11 @@
     
     //encode parameters
     if (self.functionParameters.count > 0) {        
-        [self encodeArguments:renderPipeline.reflection.vertexArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeVertex];
-        [self encodeArguments:renderPipeline.reflection.fragmentArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeFragment];
+        [self encodeArguments:renderPipeline.reflection.vertexArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeVertex error:&error];
+        [self encodeArguments:renderPipeline.reflection.fragmentArguments parameters:self.functionParameters withEncoder:commandEncoder forFunction:MTLFunctionTypeFragment error: &error];
+        if (inOutError && error != nil) {
+            *inOutError = error;
+        }
     }
     
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
@@ -122,7 +125,8 @@
 - (void)encodeArguments:(NSArray<MTLArgument *>*)arguments
              parameters:(NSDictionary<NSString *, id> *)parameters
             withEncoder:(id<MTLRenderCommandEncoder>)encoder
-            forFunction: (MTLFunctionType)functionType {
+            forFunction: (MTLFunctionType)functionType
+                  error:(NSError * _Nullable __autoreleasing *)inOutError {
     
     void (^setEncoderWithBytes)(const void * bytes, NSUInteger length, NSUInteger index) = ^(const void * bytes, NSUInteger length, NSUInteger index) {
         switch (functionType) {
@@ -147,7 +151,9 @@
                 NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
                 void *valuePtr = malloc(size);
                 [nsValue getValue:valuePtr];
-                //todo throw error when size != argument.bufferDataSize
+                if (argument.bufferDataSize != size) {
+                    *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
+                }
                 setEncoderWithBytes(valuePtr, size, argument.index);
                 free(valuePtr);
             }else if ([value isKindOfClass:[NSData class]]) {
