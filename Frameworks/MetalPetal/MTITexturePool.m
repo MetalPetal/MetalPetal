@@ -8,6 +8,7 @@
 
 #import "MTITexturePool.h"
 #import "MTITextureDescriptor.h"
+#import "MTIPrint.h"
 #import <os/lock.h>
 #import <pthread/pthread.h>
 
@@ -160,8 +161,8 @@
     [_lock unlock];
     
     if (!texture) {
-        NSLog(@"%@: Created a new texture.",self);
         texture = [self.device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
+        MTIPrint(@"%@: New texture created.", self);
     }
     
     MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
