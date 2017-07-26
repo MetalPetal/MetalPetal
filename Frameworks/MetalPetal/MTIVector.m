@@ -78,4 +78,29 @@
     return YES;
 }
 
+- (NSData *)data {
+    return [NSData dataWithBytes:self.bytes length:self.length];
+}
+
+- (CGPoint)CGPointValue {
+    if (self.count > 1) {
+        return CGPointMake(self.bytes[0], self.bytes[1]);
+    }
+    return CGPointZero;
+}
+
+- (CGRect)CGRectValue {
+    if (self.count > 3) {
+        return CGRectMake(self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3]);
+    }
+    return CGRectZero;
+}
+
+- (CGAffineTransform)CGAffineTransformValue {
+    if (self.count > 1) {
+        return CGAffineTransformMake(self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3], self.bytes[4], self.bytes[5]);
+    }
+    return CGAffineTransformIdentity;
+}
+
 @end

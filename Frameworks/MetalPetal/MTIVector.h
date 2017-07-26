@@ -26,4 +26,9 @@
 - (instancetype)initWithCGRect:(CGRect)r NS_AVAILABLE(10_9, 5_0);
 - (instancetype)initWithCGAffineTransform:(CGAffineTransform)t NS_AVAILABLE(10_9, 5_0);
 
+@property (readonly) NSData *data;
+@property (readonly) CGPoint CGPointValue NS_AVAILABLE(10_9, 5_0);
+@property (readonly) CGRect CGRectValue NS_AVAILABLE(10_9, 5_0);
+@property (readonly) CGAffineTransform CGAffineTransformValue NS_AVAILABLE(10_9, 5_0);
+
 @end
