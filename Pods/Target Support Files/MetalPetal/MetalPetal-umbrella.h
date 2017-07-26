@@ -17,6 +17,7 @@
 #import "MTIContext.h"
 #import "MTICVPixelBufferPromise.h"
 #import "MTIDrawableRendering.h"
+#import "MTIFilter+Property.h"
 #import "MTIFilter.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
@@ -29,6 +30,9 @@
 #import "MTIShaderTypes.h"
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
+#import "MTIUtilities.h"
+#import "MTIVector+Private.h"
+#import "MTIVector.h"
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 
