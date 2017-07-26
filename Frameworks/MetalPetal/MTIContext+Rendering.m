@@ -8,17 +8,14 @@
 
 #import "MTIContext+Rendering.h"
 #import "MTIImageRenderingContext.h"
-#import "MTIContext.h"
 #import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
+#import "MTIFunctionDescriptor.h"
 #import "MTIVertex.h"
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
-#import "MTIImage+Promise.h"
-#import "MTITexturePool.h"
-#import "MTITextureDescriptor.h"
-@import AVFoundation;
+#import <objc/runtime.h>
+#import <AVFoundation/AVFoundation.h>
 
 @implementation MTIContext (Rendering)
 
@@ -93,7 +90,7 @@
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     
     NSError *error;
-    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
+    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -101,7 +98,7 @@
         return nil;
     }
     
-    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFilterFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -196,16 +193,19 @@
 
 - (CIImage *)createCIImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    MTIImage *persistentImage = [image imageWithCachePolicy:MTIImageCachePolicyPersistent];
     NSError *error = nil;
-#warning fix this
-    id<MTLTexture> texture = [image.promise resolveWithContext:renderingContext error:&error];
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:persistentImage error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
         }
         return nil;
     }
-    return [CIImage imageWithMTLTexture:texture options:@{}];
+    [renderingContext.commandBuffer commit];
+    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
+    objc_setAssociatedObject(ciImage, (__bridge const void *)(persistentImage), persistentImage, OBJC_ASSOCIATION_RETAIN);
+    return ciImage;
 }
 
 @end

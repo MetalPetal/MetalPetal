@@ -9,20 +9,10 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIContext.h"
 #import "MTIImage.h"
-#import "MTIFilterFunctionDescriptor.h"
-#import "MTIVertex.h"
-#import "MTIRenderPipeline.h"
-#import "MTIFilter.h"
-#import "MTIDrawableRendering.h"
 #import "MTIImage+Promise.h"
-#import "MTITexturePool.h"
-#import "MTITextureDescriptor.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
-@import AVFoundation;
 
 @interface MTIImageRenderingDependencyGraph : NSObject
-
-@property (nonatomic,weak,readonly) MTIImageRenderingContext *renderingContext;
 
 @property (nonatomic,strong) NSMapTable<id<MTIImagePromise>,NSHashTable<id<MTIImagePromise>> *> *promiseDenpendentsTable;
 
@@ -30,19 +20,11 @@
 
 @implementation MTIImageRenderingDependencyGraph
 
-- (instancetype)initWithContext:(MTIImageRenderingContext *)renderingContext {
+- (instancetype)init {
     if (self = [super init]) {
-        _renderingContext = renderingContext;
         _promiseDenpendentsTable = [NSMapTable mapTableWithKeyOptions:NSMapTableStrongMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory];
     }
     return self;
-}
-
-- (void)dealloc {
-#warning not implemented
-    //for promise in resolvedPromise table
-    //if promise.refCount > 1
-    //renderTarget releaseTexture
 }
 
 - (void)addDependenciesForImage:(MTIImage *)image {
@@ -100,8 +82,31 @@
 
 @end
 
+@interface MTIPersistImageResolutionHolder : NSObject
+
+@property (nonatomic,strong) MTIImagePromiseRenderTarget *renderTarget;
+
+@end
+
+@implementation MTIPersistImageResolutionHolder
+
+- (instancetype)initWithRenderTarget:(MTIImagePromiseRenderTarget *)renderTarget {
+    if (self = [super init]) {
+        _renderTarget = renderTarget;
+        [renderTarget retainTexture];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    [_renderTarget releaseTexture];
+}
+
+@end
+
+
 NSString * const MTIContextPromiseRenderTargetTable = @"MTIContextPromiseRenderTargetTable";
-NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePersistentResolutionTable";
+NSString * const MTIContextImagePersistentResolutionHolderTable = @"MTIContextImagePersistentResolutionHolderTable";
 
 @interface MTIImageRenderingContext ()
 
@@ -128,7 +133,7 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
     
     if (!self.dependencyGraph) {
         //create dependency graph
-        MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] initWithContext:self];
+        MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
         [dependencyGraph addDependenciesForImage:image];
         self.dependencyGraph = dependencyGraph;
         
@@ -155,6 +160,12 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
                 if (inOutError) {
                     *inOutError = error;
                 }
+                //clean up
+                [renderTarget releaseTexture];
+                for (id<MTIImagePromise> promise in self.resolvedPromises) {
+                    renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+                    [renderTarget releaseTexture];
+                }
                 return nil;
             }
             NSAssert(renderTarget != nil, @"");
@@ -163,32 +174,26 @@ NSString * const MTIContextImagePersistentResolutionTable = @"MTIContextImagePer
         }
         [self.resolvedPromises addObject:promise];
     }
-   
-    switch (image.cachePolicy) {
-        case MTIImageCachePolicyPersistent: {
-            #warning not implemented
-            return nil;
-        } break;
-        case MTIImageCachePolicyTransient: {
-            if (isRootImage) {
-                return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer) {
-                    [renderTarget releaseTexture];
-                }];
-            } else {
-                return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer){
-                    [dependencyGraph removeDependent:consumer forPromise:promise];
-                    if ([dependencyGraph dependentCountForPromise:promise] == 0) {
-                        [renderTarget releaseTexture];
-                    }
-                }];
+    
+    if (image.cachePolicy == MTIImageCachePolicyPersistent) {
+        MTIPersistImageResolutionHolder *persistResolution = [self.context valueForImage:image inTable:MTIContextImagePersistentResolutionHolderTable];
+        if (!persistResolution) {
+            persistResolution = [[MTIPersistImageResolutionHolder alloc] initWithRenderTarget:renderTarget];
+            [self.context setValue:persistResolution forImage:image inTable:MTIContextImagePersistentResolutionHolderTable];
+        }
+    }
+    
+    if (isRootImage) {
+        return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer) {
+            [renderTarget releaseTexture];
+        }];
+    } else {
+        return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer){
+            [dependencyGraph removeDependent:consumer forPromise:promise];
+            if ([dependencyGraph dependentCountForPromise:promise] == 0) {
+                [renderTarget releaseTexture];
             }
-        } break;
-        default: {
-            if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorUnsupportedImageCachePolicy userInfo:@{}];
-            }
-            return nil;
-        } break;
+        }];
     }
 }
 

@@ -32,22 +32,26 @@
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
-        _extent = CGRectMake(0, 0, _promise.textureDescriptor.width, _promise.textureDescriptor.height);
+        _extent = CGRectMake(0, 0, _promise.dimensions.width, _promise.dimensions.height);
         _samplerDescriptor = [samplerDescriptor copy];
     }
     return self;
 }
 
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
-    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise];
-    if (image) {
-        image -> _samplerDescriptor = samplerDescriptor;
-    }
+    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
+    image -> _samplerDescriptor = samplerDescriptor;
+    return image;
+}
+
+- (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy {
+    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
+    image -> _cachePolicy = cachePolicy;
     return image;
 }
 
 - (CGSize)size {
-    return self.extent.size;
+    return _extent.size;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -61,15 +65,15 @@
 @implementation MTIImage (Creation)
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    return [self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer]];
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage {
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage]];
+    return [[self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
-    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage]];
+    return [[self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture {

@@ -57,6 +57,11 @@
     self.inputImage = mtiImageFromTexture;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
 - (void)drawInMTKView:(MTKView *)view {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
@@ -68,6 +73,7 @@
     self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
     self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
     MTIImage *outputImage = self.colorInvertFilter.outputImage;
+    
     MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
     request.drawableProvider = self.renderView;
     request.resizingMode = MTIDrawableRenderingResizingModeAspect;
@@ -76,6 +82,10 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 @end

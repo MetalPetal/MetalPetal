@@ -15,6 +15,7 @@ MTIVertex MTIVertexMake(float x, float y, float z, float w, float u, float v) {
     };
 }
 
+/*
 MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
     static MTLVertexDescriptor *vertexDescriptor;
     static dispatch_once_t onceToken;
@@ -33,6 +34,7 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
     });
     return [vertexDescriptor copy];
 }
+*/
 
 @interface MTIVertices ()
 

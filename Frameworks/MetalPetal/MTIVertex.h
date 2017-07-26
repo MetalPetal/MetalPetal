@@ -21,7 +21,7 @@ typedef struct MTIVertex MTIVertex;
 
 FOUNDATION_EXPORT MTIVertex MTIVertexMake(float x, float y, float z, float w, float u, float v) NS_SWIFT_NAME(MTIVertex.init(x:y:z:w:u:v:));
 
-FOUNDATION_EXPORT MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void);
+//FOUNDATION_EXPORT MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void);
 
 @interface MTIVertices : NSObject
 

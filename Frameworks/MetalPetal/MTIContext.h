@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFilterFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITextureDescriptor;
+@class MTIFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITextureDescriptor;
 
 @interface MTIImagePromiseRenderTarget : NSObject
 
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 
 - (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
 
-- (nullable id<MTLFunction>)functionWithDescriptor:(MTIFilterFunctionDescriptor *)descriptor error:(NSError **)error;
+- (nullable id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError **)error;
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
 

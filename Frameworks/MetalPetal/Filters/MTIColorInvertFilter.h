@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIColorInvertFilter : MTIFilter
+@interface MTIColorInvertFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 

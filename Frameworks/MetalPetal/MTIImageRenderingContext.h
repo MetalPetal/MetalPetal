@@ -8,10 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIContext.h"
-#import "MTIDrawableRendering.h"
 
-@class MTIImage;
+@class MTIImage, MTIContext;
 
 NS_ASSUME_NONNULL_BEGIN
 

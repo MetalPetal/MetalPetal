@@ -16,9 +16,9 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 
 @class MTIImage;
 
-@interface MTIFilter : NSObject
+@protocol MTIFilter <NSObject>
 
-@property (nonatomic, strong, readonly, nullable) MTIImage *outputImage;
+@property (nonatomic, readonly, nullable) MTIImage *outputImage;
 
 @end
 

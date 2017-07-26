@@ -11,8 +11,6 @@
 
 @interface MTICVPixelBufferPromise : NSObject <MTIImagePromise>
 
-@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
-
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 
 @end
