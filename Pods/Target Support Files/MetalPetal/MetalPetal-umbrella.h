@@ -13,6 +13,7 @@
 #import "MTIColorInvertFilter.h"
 #import "MTISaturationFilter.h"
 #import "MetalPetal.h"
+#import "MTIComputePipeline.h"
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
 #import "MTICVPixelBufferPromise.h"

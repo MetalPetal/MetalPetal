@@ -12,6 +12,7 @@
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
+#import "MTIComputePipeline.h"
 #import "MTITexturePool.h"
 #import "MTIKernel.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
@@ -86,6 +87,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 @property (nonatomic,strong,readonly) NSMutableDictionary<MTIFunctionDescriptor *, id<MTLFunction>> *functionCache;
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineCache;
+@property (nonatomic,strong,readonly) NSMutableDictionary<MTLComputePipelineDescriptor *, MTIComputePipeline *> *computePipelineCache;
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
@@ -125,6 +127,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         _libraryCache = [NSMutableDictionary dictionary];
         _functionCache = [NSMutableDictionary dictionary];
         _renderPipelineCache = [NSMutableDictionary dictionary];
+        _computePipelineCache = [NSMutableDictionary dictionary];
         _samplerStateCache = [NSMutableDictionary dictionary];
         _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory capacity:0];
         _promiseKeyValueTables = [NSMutableDictionary dictionary];
@@ -181,9 +184,9 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 }
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
-    MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
-    MTIRenderPipeline *renderPipeline = self.renderPipelineCache[key];
+    MTIRenderPipeline *renderPipeline = self.renderPipelineCache[renderPipelineDescriptor];
     if (!renderPipeline) {
+        MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
         MTLRenderPipelineReflection *reflection; //get reflection
         NSError *error = nil;
         id<MTLRenderPipelineState> renderPipelineState = [self.device newRenderPipelineStateWithDescriptor:renderPipelineDescriptor options:MTLPipelineOptionArgumentInfo reflection:&reflection error:&error];
@@ -198,7 +201,26 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         }
     }
     return renderPipeline;
-    
+}
+
+- (MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)computePipelineDescriptor error:(NSError * _Nullable __autoreleasing *)inOutError {
+    MTIComputePipeline *computePipeline = self.computePipelineCache[computePipelineDescriptor];
+    if (!computePipeline) {
+        MTLComputePipelineDescriptor *key = [computePipelineDescriptor copy];
+        MTLComputePipelineReflection *reflection; //get reflection
+        NSError *error = nil;
+        id<MTLComputePipelineState> computePipelineState = [self.device newComputePipelineStateWithDescriptor:computePipelineDescriptor options:MTLPipelineOptionArgumentInfo reflection:&reflection error:&error];
+        if (computePipelineState && !error) {
+            computePipeline = [[MTIComputePipeline alloc] initWithState:computePipelineState reflection:reflection];
+            self.computePipelineCache[key] = computePipeline;
+        } else {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+    }
+    return computePipeline;
 }
 
 - (id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError * _Nullable __autoreleasing *)error {
