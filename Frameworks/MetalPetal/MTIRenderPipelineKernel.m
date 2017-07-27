@@ -18,6 +18,7 @@
 #import "MTIImage+Promise.h"
 #import "MTIVector.h"
 #import "MTIVector+Private.h"
+#import "MTIUtilities.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 
@@ -122,7 +123,7 @@
     return renderTarget;
 }
 
-- (void)encodeArguments:(NSArray<MTLArgument *>*)arguments
+- (BOOL)encodeArguments:(NSArray<MTLArgument *>*)arguments
              parameters:(NSDictionary<NSString *, id> *)parameters
             withEncoder:(id<MTLRenderCommandEncoder>)encoder
             forFunction: (MTLFunctionType)functionType
@@ -141,7 +142,7 @@
         }
     };
     
-    for (NSInteger index = 0; index < arguments.count; index += 1) {
+    for (NSUInteger index = 0; index < arguments.count; index += 1) {
         MTLArgument *argument = arguments[index];
         id value = parameters[argument.name];
         if (value) {
@@ -151,11 +152,16 @@
                 NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
                 void *valuePtr = malloc(size);
                 [nsValue getValue:valuePtr];
+                @MTI_DEFER {
+                    free(valuePtr);
+                };
                 if (argument.bufferDataSize != size) {
-                    *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
+                    if (inOutError != nil) {
+                        *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
+                    }
+                    return NO;
                 }
                 setEncoderWithBytes(valuePtr, size, argument.index);
-                free(valuePtr);
             }else if ([value isKindOfClass:[NSData class]]) {
                 NSData *data = (NSData *)value;
                 setEncoderWithBytes(data.bytes, data.length, argument.index);
@@ -167,7 +173,8 @@
             }
         }
     }
-
+    
+    return YES;
 }
 
 - (id)copyWithZone:(NSZone *)zone {

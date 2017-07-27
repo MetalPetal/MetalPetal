@@ -8,4 +8,4 @@
 
 #import <Foundation/Foundation.h>
 
-NSDictionary * parametersDictionaryFor(NSObject *object);
+FOUNDATION_EXPORT NSDictionary * parametersDictionaryFor(NSObject *object);

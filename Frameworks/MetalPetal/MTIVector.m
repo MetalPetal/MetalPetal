@@ -44,7 +44,7 @@
     if (self = [super init]) {
         _count = count;
         _ptr = malloc(sizeof(MTIFloat) * count);
-        for (int i = 0; i<count; i++) {
+        for (size_t i = 0; i<count; i++) {
             _ptr[i] = (MTIFloat)values[i];
         }
     }
