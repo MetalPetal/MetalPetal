@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFunctionDescriptor,MTISamplerDescriptor,MTIRenderPipeline, MTITextureDescriptor;
+@class MTIFunctionDescriptor, MTISamplerDescriptor, MTIRenderPipeline, MTIComputePipeline, MTITextureDescriptor;
 
 @interface MTIImagePromiseRenderTarget : NSObject
 
@@ -80,6 +80,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
 
 - (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
+
+- (nullable MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)descriptor error:(NSError **)error;
 
 - (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError **)error;
 
