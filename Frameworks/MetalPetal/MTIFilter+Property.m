@@ -144,16 +144,22 @@ static MTIPropertyAttributes *mtiCopyPropertyAttributes (objc_property_t propert
     }
     
     const char *typeString = attrString + 1;
-    const char *next = strchr(typeString, ',');
-    if (next - typeString > 0) {
+    const char *next = NULL;
+    @try {
         next = NSGetSizeAndAlignment(typeString, NULL, NULL);
+    } @catch (NSException *exception) {
+        if (inOutError) {
+            NSString *description = [NSString stringWithFormat:@"WARNING: Invalid type in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+            *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidTypeString userInfo:@{NSLocalizedDescriptionKey:description}];
+        }
+        next = strchr(typeString, ',');
+    } @finally {
+        
     }
     
     if (!next) {
-        if (inOutError) {
-            NSString *description = [NSString stringWithFormat:@"WARNING: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
-            *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidAttributeString userInfo:@{NSLocalizedDescriptionKey:description}];
-        }
+        NSString *description = [NSString stringWithFormat:@"WARNING: Could not read past type in attribute string \"%s\" for property %s\n", attrString, property_getName(property)];
+        *inOutError = [NSError errorWithDomain:MTIFilterPropertyErrorDomain code:MTIFilterPropertyErrorInvalidAttributeString userInfo:@{NSLocalizedDescriptionKey:description}];
         return NULL;
     }
     
@@ -433,7 +439,7 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
             NSError *error;
             MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property, &error);
             if (error.code == MTIFilterPropertyErrorInvalidTypeString) {
-                mti_debug_print(@"%@use -(id)valueForUndefinedKey:(NSString *)key; to provide an value for %@", error.localizedDescription, propertyKey);
+                mti_debug_print(@"%@override -(id)valueForKey:(NSString *)key; to provide a value for %@. E.g.: MTIColorMatrixFilter.", error.localizedDescription, propertyKey);
             }else {
                 mti_debug_print(@"%@", error.localizedDescription);
             }

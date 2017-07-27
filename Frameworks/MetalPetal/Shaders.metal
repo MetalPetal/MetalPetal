@@ -53,3 +53,13 @@ fragment float4 saturationAdjust(
     float3 greyScaleColor = float3(luminance);
     return float4(mix(greyScaleColor, textureColor.rgb, saturation), textureColor.a);
 }
+
+fragment float4 colorMatrixProjection(
+                                 VertexOut vertexIn [[ stage_in ]],
+                                 texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                 sampler colorSampler [[ sampler(0) ]],
+                                 constant float4x4 & colorMatrix [[ buffer(0) ]]
+                                 ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return textureColor * colorMatrix;
+}

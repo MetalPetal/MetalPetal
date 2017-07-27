@@ -12,6 +12,7 @@
 
 #import "MTIColorInvertFilter.h"
 #import "MTISaturationFilter.h"
+#import "MTIColorMatrixFilter.h"
 #import "MetalPetal.h"
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
