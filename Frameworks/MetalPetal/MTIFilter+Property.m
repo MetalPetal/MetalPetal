@@ -461,7 +461,9 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
     return keysWithTypeDescription;
 }
 
-NSDictionary * parametersDictionaryFor(NSObject *object) {
+NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
+    NSObject *object = filter;
+    NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
