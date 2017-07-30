@@ -12,8 +12,16 @@
 
 @import ObjectiveC;
 
+#if DEBUG
+
 #define mti_debug_print(fmt, ...) \
-do { if (DEBUG) NSLog(fmt, __VA_ARGS__); } while (0)
+do { NSLog(fmt, __VA_ARGS__); } while (0)
+
+#else
+
+#define mti_debug_print(fmt, ...) do { } while (0)
+
+#endif
 
 // Used to cache the reflection performed in NSDictionary * parametersDictionaryFor(NSObject *object).
 static void *MTIModelCachedPropertyKeysWithTypeDescriptionKey = &MTIModelCachedPropertyKeysWithTypeDescriptionKey;
