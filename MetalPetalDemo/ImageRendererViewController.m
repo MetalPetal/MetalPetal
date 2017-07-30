@@ -10,6 +10,7 @@
 #import "MetalPetalDemo-Swift.h"
 #import "WeakToStrongObjectsMapTableTests.h"
 #import "CameraViewController.h"
+#import <sys/kdebug_signpost.h>
 @import MetalPetal;
 @import MetalKit;
 
@@ -119,11 +120,16 @@
 }
 
 - (void)drawInMTKView:(MTKView *)view {
-    MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
-    MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-    request.drawableProvider = self.renderView;
-    request.resizingMode = MTIDrawableRenderingResizingModeAspect;
-    [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
+    //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
+    @autoreleasepool {
+        kdebug_signpost_start(1, 0, 0, 0, 1);
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
+        request.drawableProvider = self.renderView;
+        request.resizingMode = MTIDrawableRenderingResizingModeAspect;
+        [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
+        kdebug_signpost_start(1, 0, 0, 0, 1);
+    }
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
