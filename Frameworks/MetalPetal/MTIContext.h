@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,strong,readonly,nullable) id<MTLTexture> texture;
 
-- (void)retainTexture;
+- (BOOL)retainTexture;
 
 - (void)releaseTexture;
 

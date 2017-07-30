@@ -53,8 +53,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return _resuableTexture.texture;
 }
 
-- (void)retainTexture {
-    [_resuableTexture retainTexture];
+- (BOOL)retainTexture {
+    return [_resuableTexture retainTexture];
 }
 
 - (void)releaseTexture {
