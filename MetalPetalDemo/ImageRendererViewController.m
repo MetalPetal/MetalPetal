@@ -27,6 +27,10 @@
 
 @property (nonatomic, strong) MTIColorMatrixFilter *colorMatrixFilter;
 
+@property (nonatomic, strong) MTIOverlayBlendFilter *overlayBlendFilter;
+
+@property (nonatomic, strong) MTIImage *cachedImage;
+
 @end
 
 @implementation ImageRendererViewController
@@ -53,6 +57,7 @@
     self.saturationFilter = [[MTISaturationFilter alloc] init];
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.colorMatrixFilter = [[MTIColorMatrixFilter alloc] init];
+    self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
@@ -65,23 +70,56 @@
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
-- (void)drawInMTKView:(MTKView *)view {
+- (MTIImage *)saturationAndInvertTestOutputImage {
+    self.saturationFilter.inputImage = self.inputImage;
+    self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    MTIImage *outputImage = self.colorInvertFilter.outputImage;
+    return outputImage;
+}
+
+- (MTIImage *)colorMatrixTestOutputImage {
     float scale = sin(CFAbsoluteTimeGetCurrent() * 2.0) + 1.0;
-    self.colorMatrixFilter.colorMatrix = matrix_scale(scale, matrix_identity_float4x4);//
-    //vector16(vector8(vector4(scale, 0.f, 0.f, 0.f), vector4(0.f, scale, 0.f, 0.f)), vector8(vector4(0.f, 0.f, scale, 0.f), vector4(0.f, 0.f, 0.f, 1.f)));
+    self.colorMatrixFilter.colorMatrix = matrix_scale(scale, matrix_identity_float4x4);
     self.colorMatrixFilter.inputImage = self.inputImage;
     MTIImage *outputImage = self.colorMatrixFilter.outputImage;
-//    self.saturationFilter.inputImage = self.inputImage;
-//    self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-//    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//    MTIImage *outputImage = self.colorInvertFilter.outputImage;
+    return outputImage;
+}
+
+- (MTIImage *)renderTargetCacheAndReuseTestOutputImage {
+    MTIImage *inputImage = self.inputImage;
+    self.saturationFilter.inputImage = inputImage;
+    self.saturationFilter.saturation = 2.0;
     
+    MTIImage *saturatedImage = self.cachedImage;
+    if (!saturatedImage) {
+        saturatedImage = [self.saturationFilter.outputImage imageWithCachePolicy:MTIImageCachePolicyPersistent];
+        self.cachedImage = saturatedImage;
+    }
+    
+    self.colorInvertFilter.inputImage = saturatedImage;
+    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+    self.saturationFilter.saturation = 0.0;
+    MTIImage *invertedAndDesaturatedImage = self.saturationFilter.outputImage;
+    
+    self.saturationFilter.saturation = 0.0;
+    self.saturationFilter.inputImage = saturatedImage;
+    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    MTIImage *desaturatedAndInvertedImage = self.colorInvertFilter.outputImage;
+    
+    self.overlayBlendFilter.inputBackgroundImage = desaturatedAndInvertedImage;
+    self.overlayBlendFilter.inputForegroundImage = invertedAndDesaturatedImage;
+    return self.overlayBlendFilter.outputImage;
+}
+
+- (void)drawInMTKView:(MTKView *)view {
+    MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
     MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
     request.drawableProvider = self.renderView;
     request.resizingMode = MTIDrawableRenderingResizingModeAspect;
