@@ -7,5 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MTIFilter.h"
 
-FOUNDATION_EXPORT NSDictionary * parametersDictionaryFor(NSObject *object);
+FOUNDATION_EXPORT NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> object);

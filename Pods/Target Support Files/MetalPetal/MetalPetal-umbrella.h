@@ -11,9 +11,10 @@
 #endif
 
 #import "MTIColorInvertFilter.h"
-#import "MTISaturationFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"
+#import "MTIOverlayBlendFilter.h"
+#import "MTISaturationFilter.h"
 #import "MetalPetal.h"
 #import "MTIComputePipeline.h"
 #import "MTIContext+Rendering.h"

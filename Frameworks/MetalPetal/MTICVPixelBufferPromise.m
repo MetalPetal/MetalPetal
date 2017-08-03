@@ -12,10 +12,12 @@
 #import "MTITextureDescriptor.h"
 #import "MTIContext.h"
 #import "MTIRenderPipeline.h"
+#import "MTIComputePipeline.h"
 #import <simd/simd.h>
 
 static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
 static NSString * const MTIColorConversionFragmentFunctionName = @"colorConversionFragment";
+static NSString * const MTIColorConversionKernelFunctionName   = @"colorConversion";
 
 static const float colorConversionVertexData[16] =
 {
@@ -109,21 +111,31 @@ static const ColorConversion colorConversion = {
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
+- (nullable MTIComputePipeline *)colorConversionComputePipelineWithContext:(MTIContext *)context error:(NSError **)inOutError
+{
+    NSError *error;
+    id<MTLFunction> computeFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIColorConversionKernelFunctionName] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    MTLComputePipelineDescriptor *computePipelineDescriptor = [[MTLComputePipelineDescriptor alloc] init];
+    computePipelineDescriptor.computeFunction = computeFunction;
+    
+    return [context computePipelineWithDescriptor:computePipelineDescriptor error:inOutError];
+}
+
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
-    // CVMetalTextureCache: 420v, 1-2ms, 60fps
-    // CVMetalTextureCache, 420f, 1-2ms, 60fps
-    // CVMetalTextureCache: BGRA, 0.1ms, 60fps
     
-    // CIImage: 420v, 5ms, 57fps
-    // CIImage: 420f, 5ms, 57fps
-    // CIImage: BGRA, 4ms, 58fps
-    
-    /* core image test
-     id<MTLTexture> texture = [renderingContext.context.texturePool newRenderTargetForPromise:self];
-     CIImage *image = [CIImage imageWithCVPixelBuffer:self.pixelBuffer];
-     [renderingContext.context.coreImageContext render:image toMTLTexture:texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
-     return texture;
-     */
+    /* Core Image test
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+    CIImage *image = [CIImage imageWithCVPixelBuffer:self.pixelBuffer];
+     [renderingContext.context.coreImageContext render:image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
+    return renderTarget;
+    */
     
 #if COREVIDEO_SUPPORTS_METAL
 
@@ -152,7 +164,8 @@ static const ColorConversion colorConversion = {
                 }
                 return nil;
             }
-            return texture;
+            CVMetalTextureCacheFlush(renderingContext.context.coreVideoTextureCache, 0);
+            return [renderingContext.context newRenderTargetWithTexture:texture];
         } break;
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
@@ -203,7 +216,40 @@ static const ColorConversion colorConversion = {
             CVMetalTextureCacheFlush(renderingContext.context.coreVideoTextureCache, 0);
             
             if (textureY && textureCbCr) {
+            
+                /* Compute Pipeline test
+                NSError *error = nil;
                 
+                size_t width = CVPixelBufferGetWidth(self.pixelBuffer);
+                size_t height = CVPixelBufferGetHeight(self.pixelBuffer);
+                
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+                
+                MTIComputePipeline *computePipeline = [self colorConversionComputePipelineWithContext:renderingContext.context error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
+                
+                __auto_type computeCommandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
+                [computeCommandEncoder setComputePipelineState:computePipeline.state];
+                [computeCommandEncoder setTexture:textureY atIndex:0];
+                [computeCommandEncoder setTexture:textureCbCr atIndex:1];
+                [computeCommandEncoder setTexture:renderTarget.texture atIndex:2];
+                
+                MTLSize threadsPerThreadgroup = MTLSizeMake(8, 8, 1);
+                MTLSize threadgroups = MTLSizeMake(width / threadsPerThreadgroup.width,
+                                                   height / threadsPerThreadgroup.height,
+                                                   1);
+                [computeCommandEncoder dispatchThreadgroups:threadgroups threadsPerThreadgroup:threadsPerThreadgroup];
+                [computeCommandEncoder endEncoding];
+                
+                return renderTarget;
+                */
+                
+                // Render Pipeline
                 NSError *error = nil;
                 
                 MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];

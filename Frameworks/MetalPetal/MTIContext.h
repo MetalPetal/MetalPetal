@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,strong,readonly,nullable) id<MTLTexture> texture;
 
-- (void)retainTexture;
+- (BOOL)retainTexture;
 
 - (void)releaseTexture;
 
@@ -37,7 +37,9 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorUnsupportedCVPixelBufferFormat = 1003,
     MTIContextErrorUnsupportedImageCachePolicy = 1004,
     MTIContextErrorDataBufferSizeMismatch = 1005,
-    MTIContextErrorDataTypeNotSupported = 1006
+    MTIContextErrorDeviceNotFound = 1006,
+    MTIContextErrorEmptyDrawable = 1007,
+    MTIContextErrorDataTypeNotSupported = 1008
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>
