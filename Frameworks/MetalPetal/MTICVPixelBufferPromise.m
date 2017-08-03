@@ -34,7 +34,8 @@ struct ColorConversion {
 };
 typedef struct ColorConversion ColorConversion;
 
-static const ColorConversion colorConversion = {
+// BT.601
+static const ColorConversion kColorConversion601 = {
     .matrix = {
         .columns[0] = { 1.164,  1.164, 1.164, },
         .columns[1] = { 0.000, -0.392, 2.017, },
@@ -43,6 +44,27 @@ static const ColorConversion colorConversion = {
     .offset = { -(16.0/255.0), -0.5, -0.5 },
 };
 
+// BT.601 Full Range
+static const ColorConversion kColorConversion601FullRange = {
+    .matrix = {
+        .columns[0] = { 1.000,  1.000, 1.000, },
+        .columns[1] = { 0.000, -0.343, 1.765, },
+        .columns[2] = { 1.400, -0.711, 0.000, },
+    },
+    .offset = { 0.0, -0.5, -0.5 },
+};
+
+// BT.709
+static const ColorConversion kColorConversion709 = {
+    .matrix = {
+        .columns[0] = { 1.164,  1.164, 1.164, },
+        .columns[1] = { 0.000, -0.213, 2.112, },
+        .columns[2] = { 1.793, -0.533, 0.000, },
+    },
+    .offset = { -(16.0/255.0), -0.5, -0.5 },
+};
+
+// BT.709 Full Range: vacancy
 
 @interface MTICVPixelBufferPromise ()
 
@@ -169,6 +191,29 @@ static const ColorConversion colorConversion = {
         } break;
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
+            
+            BOOL isFullYUVRange = pixelFormatType == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange ? YES : NO;
+            
+            ColorConversion const *preferredConversion = nil;
+            CFTypeRef colorAttachments = CVBufferGetAttachment(self.pixelBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
+            if (colorAttachments != NULL) {
+                if (CFStringCompare(colorAttachments, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
+                    if (isFullYUVRange) {
+                        preferredConversion = &kColorConversion601FullRange;
+                    } else {
+                        preferredConversion = &kColorConversion601;
+                    }
+                } else {
+                    preferredConversion = &kColorConversion709;
+                }
+            } else {
+                if (isFullYUVRange) {
+                    preferredConversion = &kColorConversion601FullRange;
+                } else {
+                    preferredConversion = &kColorConversion601;
+                }
+            }
+            
             id<MTLTexture> textureY = nil;
             id<MTLTexture> textureCbCr = nil;
             
@@ -238,6 +283,7 @@ static const ColorConversion colorConversion = {
                 [computeCommandEncoder setTexture:textureY atIndex:0];
                 [computeCommandEncoder setTexture:textureCbCr atIndex:1];
                 [computeCommandEncoder setTexture:renderTarget.texture atIndex:2];
+                [computeCommandEncoder setBytes:preferredConversion length:sizeof(ColorConversion) atIndex:0];
                 
                 MTLSize threadsPerThreadgroup = MTLSizeMake(8, 8, 1);
                 MTLSize threadgroups = MTLSizeMake(width / threadsPerThreadgroup.width,
@@ -273,8 +319,7 @@ static const ColorConversion colorConversion = {
                 [renderCommandEncoder setVertexBytes:colorConversionVertexData length:16*sizeof(float) atIndex:0];
                 [renderCommandEncoder setFragmentTexture:textureY atIndex:0];
                 [renderCommandEncoder setFragmentTexture:textureCbCr atIndex:1];
-                [renderCommandEncoder setFragmentBytes:&colorConversion length:sizeof(colorConversion) atIndex:0];
-                
+                [renderCommandEncoder setFragmentBytes:preferredConversion length:sizeof(ColorConversion) atIndex:0];
                 [renderCommandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
                 [renderCommandEncoder endEncoding];
                 
