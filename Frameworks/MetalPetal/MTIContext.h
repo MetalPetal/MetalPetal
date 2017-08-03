@@ -38,7 +38,8 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorUnsupportedImageCachePolicy = 1004,
     MTIContextErrorDataBufferSizeMismatch = 1005,
     MTIContextErrorDeviceNotFound = 1006,
-    MTIContextErrorEmptyDrawable = 1007
+    MTIContextErrorEmptyDrawable = 1007,
+    MTIContextErrorMPSKernelInputCountMismatch = 1008
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>

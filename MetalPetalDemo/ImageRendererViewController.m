@@ -32,6 +32,8 @@
 
 @property (nonatomic, strong) MTIImage *cachedImage;
 
+@property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
+
 @end
 
 @implementation ImageRendererViewController
@@ -59,6 +61,7 @@
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.colorMatrixFilter = [[MTIColorMatrixFilter alloc] init];
     self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
+    self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
@@ -123,7 +126,9 @@
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
     @autoreleasepool {
         kdebug_signpost_start(1, 0, 0, 0, 1);
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        self.blurFilter.inputImage = self.inputImage;
+        self.blurFilter.radius = 20.0;
+        MTIImage *outputImage = self.blurFilter.outputImage;
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
