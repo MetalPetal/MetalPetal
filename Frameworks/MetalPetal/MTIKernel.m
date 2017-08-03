@@ -13,7 +13,7 @@
 #import "MTIVector+Private.h"
 #import <Metal/Metal.h>
 
-bool encode(NSArray<MTLArgument *>* arguments,
+bool MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
               NSDictionary<NSString *, id> * parameters,
               id<MTLCommandEncoder> encoder,
               MTLFunctionType functionType,

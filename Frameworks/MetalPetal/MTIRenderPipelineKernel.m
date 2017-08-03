@@ -106,8 +106,8 @@
     
     //encode parameters
     if (self.functionParameters.count > 0) {
-        encode(renderPipeline.reflection.vertexArguments, self.functionParameters, commandEncoder, MTLFunctionTypeVertex, &error);
-        encode(renderPipeline.reflection.fragmentArguments, self.functionParameters, commandEncoder, MTLFunctionTypeFragment, &error);
+        MTIEncodeArgumentsWithEncoder(renderPipeline.reflection.vertexArguments, self.functionParameters, commandEncoder, MTLFunctionTypeVertex, &error);
+        MTIEncodeArgumentsWithEncoder(renderPipeline.reflection.fragmentArguments, self.functionParameters, commandEncoder, MTLFunctionTypeFragment, &error);
         if (inOutError && error != nil) {
             *inOutError = error;
         }

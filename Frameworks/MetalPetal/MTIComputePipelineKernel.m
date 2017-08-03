@@ -73,7 +73,7 @@
     }
     [commandEncoder setTexture:renderTarget.texture atIndex:inputResolutions.count];
     
-    encode(computePipeline.reflection.arguments, self.functionParameters, commandEncoder, MTLFunctionTypeKernel, &error);
+    MTIEncodeArgumentsWithEncoder(computePipeline.reflection.arguments, self.functionParameters, commandEncoder, MTLFunctionTypeKernel, &error);
 
     MTLSize threadGroupCount = MTLSizeMake(8, 8, 1);
     MTLSize threadGroups = MTLSizeMake(self.textureDescriptor.width/threadGroupCount.width,  self.textureDescriptor.height/threadGroupCount.height, 1);

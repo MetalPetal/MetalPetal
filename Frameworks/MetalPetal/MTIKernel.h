@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-FOUNDATION_EXPORT bool encode(NSArray<MTLArgument *>* arguments,
+FOUNDATION_EXPORT bool MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
                               NSDictionary<NSString *, id> * parameters,
                               id<MTLCommandEncoder> encoder,
                               MTLFunctionType functionType,
