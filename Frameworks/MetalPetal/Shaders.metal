@@ -79,3 +79,14 @@ fragment float4 hardlightBlend(VertexOut vertexIn [[ stage_in ]],
     Ct.a = 1.0;
     return mix(Cb, Ct, uCf.a);
 }
+
+kernel void adjustExposure(
+                           texture2d<float, access::read> inTexture [[texture(0)]],
+                           texture2d<float, access::write> outTexture [[texture(1)]],
+                           constant float & exposure [[buffer(0)]],
+                           uint2 gid [[thread_position_in_grid]]
+                           ) {
+    float4 inColor = inTexture.read(gid);
+    float4 outColor = float4(inColor.rgb * pow(2.0, exposure), 1.0);
+    outTexture.write(outColor, gid);
+}

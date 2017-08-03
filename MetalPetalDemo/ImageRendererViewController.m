@@ -28,6 +28,8 @@
 
 @property (nonatomic, strong) MTIColorMatrixFilter *colorMatrixFilter;
 
+@property (nonatomic, strong) MTIExposureFilter *exposureFilter;
+
 @property (nonatomic, strong) MTIOverlayBlendFilter *overlayBlendFilter;
 
 @property (nonatomic, strong) MTIImage *cachedImage;
@@ -60,6 +62,7 @@
     self.saturationFilter = [[MTISaturationFilter alloc] init];
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.colorMatrixFilter = [[MTIColorMatrixFilter alloc] init];
+    self.exposureFilter = [[MTIExposureFilter alloc] init];
     self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
