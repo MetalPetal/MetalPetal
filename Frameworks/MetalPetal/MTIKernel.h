@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
 @class MTIContext;
 
 /// A kernel must be stateless.
@@ -20,4 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+FOUNDATION_EXPORT bool encode(NSArray<MTLArgument *>* arguments,
+                              NSDictionary<NSString *, id> * parameters,
+                              id<MTLCommandEncoder> encoder,
+                              MTLFunctionType functionType,
+                              NSError * _Nullable __autoreleasing *inOutError);
 NS_ASSUME_NONNULL_END
