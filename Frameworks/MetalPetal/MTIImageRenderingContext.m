@@ -151,9 +151,15 @@ NSString * const MTIContextImagePersistentResolutionHolderTable = @"MTIContextIm
         NSAssert(renderTarget.texture != nil, @"");
     } else {
         renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
-        if (renderTarget.texture) {
-            [renderTarget retainTexture];
-        } else {
+        BOOL renderTargetIsValid = NO;
+        if (renderTarget) {
+            if ([renderTarget retainTexture]) {
+                NSAssert(renderTarget != nil, @"");
+                NSAssert(renderTarget.texture != nil, @"");
+                renderTargetIsValid = YES;
+            }
+        }
+        if (!renderTargetIsValid) {
             NSError *error;
             renderTarget = [promise resolveWithContext:self error:&error];
             if (error) {
@@ -163,8 +169,10 @@ NSString * const MTIContextImagePersistentResolutionHolderTable = @"MTIContextIm
                 //clean up
                 [renderTarget releaseTexture];
                 for (id<MTIImagePromise> promise in self.resolvedPromises) {
-                    renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
-                    [renderTarget releaseTexture];
+                    if ([dependencyGraph dependentCountForPromise:promise] != 0) {
+                        MTIImagePromiseRenderTarget *target = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+                        [target releaseTexture];
+                    }
                 }
                 return nil;
             }

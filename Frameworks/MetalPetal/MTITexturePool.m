@@ -60,6 +60,7 @@
 
 @end
 
+
 @interface MTITexturePool ()
 
 @property (nonatomic, strong) MTILock *lock;
@@ -68,9 +69,10 @@
 
 @property (nonatomic, strong) NSMutableDictionary<MTITextureDescriptor *, NSMutableArray<id<MTLTexture>> *> *textureCache;
 
-- (void)returnTexture:(MTIReusableTexture *)texture;
+- (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor;
 
 @end
+
 
 @interface MTIReusableTexture ()
 
@@ -82,9 +84,13 @@
 
 @property (nonatomic) NSInteger textureReferenceCount;
 
+@property (nonatomic) BOOL valid;
+
 @end
 
 @implementation MTIReusableTexture
+
+@synthesize texture = _texture;
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
@@ -93,21 +99,40 @@
         _pool = pool;
         _texture = texture;
         _textureDescriptor = [descriptor copy];
+        _valid = YES;
     }
     return self;
 }
 
-- (void)retainTexture {
+- (id<MTLTexture>)texture {
+    [_lock lock];
+    __auto_type texture = _texture;
+    [_lock unlock];
+    return texture;
+}
+
+- (BOOL)retainTexture {
     [_lock lock];
     
-    NSAssert(_textureReferenceCount > 0, @"");
-    _textureReferenceCount += 1;
-    
-    [_lock unlock];
+    if (_valid) {
+        if (_textureReferenceCount <= 0) {
+            [NSException raise:NSInternalInconsistencyException format:@"Retain a reusable texture after the _textureReferenceCount is less than 1."];
+        }
+        _textureReferenceCount += 1;
+        
+        [_lock unlock];
+        
+        return YES;
+    } else {
+        
+        [_lock unlock];
+        
+        return NO;
+    }
 }
 
 - (void)releaseTexture {
-    BOOL returnTexture = NO;
+    id<MTLTexture> textureToReturn = nil;
     
     [_lock lock];
     
@@ -116,24 +141,26 @@
     NSAssert(_textureReferenceCount >= 0, @"Over release a reusable texture.");
     
     if (_textureReferenceCount == 0) {
-        returnTexture = YES;
+        textureToReturn = _texture;
+        _texture = nil;
+        _valid = NO;
     }
     
     [_lock unlock];
     
-    if (returnTexture) {
-        [self.pool returnTexture:self];
-        _texture = nil;
+    if (textureToReturn) {
+        [self.pool returnTexture:textureToReturn textureDescriptor:_textureDescriptor];
     }
 }
 
 - (void)dealloc {
     if (_texture) {
-        [_pool returnTexture:self];
+        [self.pool returnTexture:_texture textureDescriptor:_textureDescriptor];
     }
 }
 
 @end
+
 
 @implementation MTITexturePool
 
@@ -169,15 +196,15 @@
     return reusableTexture;
 }
 
-- (void)returnTexture:(MTIReusableTexture *)texture {
+- (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor {
     [_lock lock];
     
-    __auto_type avaliableTextures = self.textureCache[texture.textureDescriptor];
+    __auto_type avaliableTextures = self.textureCache[textureDescriptor];
     if (!avaliableTextures) {
         avaliableTextures = [[NSMutableArray alloc] init];
-        self.textureCache[texture.textureDescriptor] = avaliableTextures;
+        self.textureCache[textureDescriptor] = avaliableTextures;
     }
-    [avaliableTextures addObject:texture.texture];
+    [avaliableTextures addObject:texture];
     
     [_lock unlock];
 }

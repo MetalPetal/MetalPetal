@@ -127,8 +127,13 @@
         return NO;
     }
     
-    id<MTLDrawable> drawable = [request.drawableProvider drawableForRequest:request];
     MTLRenderPassDescriptor *renderPassDescriptor = [request.drawableProvider renderPassDescriptorForRequest:request];
+    if (renderPassDescriptor == nil) {
+        if (inOutError) {
+            *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorEmptyDrawable userInfo:nil];
+        }
+        return NO;
+    }
     
     float heightScaling = 1.0;
     float widthScaling = 1.0;
@@ -178,6 +183,7 @@
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
     
+    id<MTLDrawable> drawable = [request.drawableProvider drawableForRequest:request];
     [renderingContext.commandBuffer presentDrawable:drawable];
     
     [renderingContext.commandBuffer commit];

@@ -15,9 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIReusableTexture : NSObject
 
-@property (nonatomic,strong,nullable) id<MTLTexture> texture;
+///Returns the underlining texture. When a reusable texture's texture retain count reachs zero, this method will return nil.
+@property (atomic,strong,nullable,readonly) id<MTLTexture> texture;
 
-- (void)retainTexture;
+///Increase the texture's texture retain count. If the retain operation failed, i.e. the texture is already been reused and no longer valid, this method will return `NO`.
+- (BOOL)retainTexture;
 
 - (void)releaseTexture;
 

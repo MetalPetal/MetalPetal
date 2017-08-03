@@ -53,8 +53,8 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return _resuableTexture.texture;
 }
 
-- (void)retainTexture {
-    [_resuableTexture retainTexture];
+- (BOOL)retainTexture {
+    return [_resuableTexture retainTexture];
 }
 
 - (void)releaseTexture {
@@ -111,14 +111,28 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
 #endif
 }
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)error {
+- (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (self = [super init]) {
-        _device = device;
-        NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"default" withExtension:@"metallib"];
-        _defaultLibrary = [device newLibraryWithFile:url.path error:error];
-        if (!_defaultLibrary) {
+        NSParameterAssert(device != nil);
+        if (!device) {
+            if (inOutError) {
+                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDeviceNotFound userInfo:nil];
+            }
             return nil;
         }
+        
+        NSError *libraryError = nil;
+        NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"default" withExtension:@"metallib"];
+        id<MTLLibrary> defaultLibrary = [device newLibraryWithFile:url.path error:&libraryError];
+        if (!defaultLibrary || libraryError) {
+            if (inOutError) {
+                *inOutError = libraryError;
+            }
+            return nil;
+        }
+        
+        _device = device;
+        _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
         

@@ -63,3 +63,30 @@ fragment float4 colorMatrixProjection(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
     return textureColor * colorMatrix;
 }
+
+fragment float4 hardlightBlend(VertexOut vertexIn [[ stage_in ]],
+                             texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                             sampler colorSampler [[ sampler(0) ]],
+                             texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                             sampler overlaySampler [[ sampler(1) ]]
+                             ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 lt = float4(uCf - 0.5 < float4(0.0f));
+    float4 Ct = clamp(mix(1.0 - 2.0 * (1.0 - uCf) * (1.0 - uCb), 2.0 * uCf * uCb, lt), 0.0, 1.0);
+    float4 Cb = float4(uCb.rgb * uCb.a, uCb.a);
+    Ct = mix(uCf, Ct, uCb.a);
+    Ct.a = 1.0;
+    return mix(Cb, Ct, uCf.a);
+}
+
+kernel void adjustExposure(
+                           texture2d<float, access::read> inTexture [[texture(0)]],
+                           texture2d<float, access::write> outTexture [[texture(1)]],
+                           constant float & exposure [[buffer(0)]],
+                           uint2 gid [[thread_position_in_grid]]
+                           ) {
+    float4 inColor = inTexture.read(gid);
+    float4 outColor = float4(inColor.rgb * pow(2.0, exposure), 1.0);
+    outTexture.write(outColor, gid);
+}

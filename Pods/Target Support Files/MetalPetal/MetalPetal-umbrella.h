@@ -11,10 +11,14 @@
 #endif
 
 #import "MTIColorInvertFilter.h"
-#import "MTISaturationFilter.h"
 #import "MTIColorMatrixFilter.h"
+#import "MTIExposureFilter.h"
+#import "MTIMPSGaussianBlurFilter.h"
+#import "MTIOverlayBlendFilter.h"
+#import "MTISaturationFilter.h"
 #import "MetalPetal.h"
 #import "MTIComputePipeline.h"
+#import "MTIComputePipelineKernel.h"
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
 #import "MTICVPixelBufferPromise.h"
@@ -26,6 +30,7 @@
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIKernel.h"
+#import "MTIMPSKernel.h"
 #import "MTIRenderPipeline.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTISamplerDescriptor.h"
