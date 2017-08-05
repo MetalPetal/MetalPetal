@@ -31,6 +31,7 @@
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIKernel.h"
+#import "MTILock.h"
 #import "MTIMPSKernel.h"
 #import "MTIRenderPipeline.h"
 #import "MTIRenderPipelineKernel.h"

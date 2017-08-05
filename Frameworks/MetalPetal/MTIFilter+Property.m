@@ -449,7 +449,9 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
             if (error.code == MTIFilterPropertyErrorInvalidTypeString) {
                 mti_debug_print(@"%@override -(id)valueForKey:(NSString *)key; to provide a value for %@. E.g.: MTIColorMatrixFilter.", error.localizedDescription, propertyKey);
             }else {
-                mti_debug_print(@"%@", error.localizedDescription);
+                if (error) {
+                    mti_debug_print(@"%@", error.localizedDescription);   
+                }
             }
             if (attributes == NULL) return;
             

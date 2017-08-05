@@ -129,9 +129,7 @@
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
     @autoreleasepool {
         kdebug_signpost_start(1, 0, 0, 0, 1);
-        self.blurFilter.inputImage = self.inputImage;
-        self.blurFilter.radius = 20.0;
-        MTIImage *outputImage = self.blurFilter.outputImage;
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
