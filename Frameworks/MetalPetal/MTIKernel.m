@@ -7,7 +7,7 @@
 //
 
 #import "MTIKernel.h"
-#import "MTIUtilities.h"
+#import "MTIDefer.h"
 #import "MTIContext.h"
 #import "MTIVector.h"
 #import "MTIVector+Private.h"

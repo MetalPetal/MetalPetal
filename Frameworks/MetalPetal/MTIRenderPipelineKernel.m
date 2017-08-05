@@ -18,7 +18,6 @@
 #import "MTIImage+Promise.h"
 #import "MTIVector.h"
 #import "MTIVector+Private.h"
-#import "MTIUtilities.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 

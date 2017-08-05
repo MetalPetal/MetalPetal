@@ -6,7 +6,7 @@
 //
 //
 
-#import "MTIUtilities.h"
+#import "MTIDefer.h"
 
 void MTIExecuteCleanupBlock (__strong MTIDeferBlock *block) {
     (*block)();

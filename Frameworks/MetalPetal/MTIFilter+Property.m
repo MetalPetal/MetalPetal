@@ -7,7 +7,7 @@
 //
 
 #import "MTIFilter+Property.h"
-#import "MTIUtilities.h"
+#import "MTIDefer.h"
 #import "MTIVector+Private.h"
 
 @import ObjectiveC;
