@@ -21,6 +21,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @interface MTIImage : NSObject <NSCopying>
 
+@property (nonatomic,readonly,class) MTISamplerDescriptor *defaultSamplerDescriptor;
+
 @property (nonatomic,readonly) MTIImageCachePolicy cachePolicy;
 
 @property (nonatomic,readonly) CGRect extent;

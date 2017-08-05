@@ -20,34 +20,44 @@
 
 @implementation MTIImage
 
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise {
-    MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
-    samplerDescriptor.minFilter = MTLSamplerMinMagFilterLinear;
-    samplerDescriptor.magFilter = MTLSamplerMinMagFilterLinear;
-    samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
-    samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
-    return [self initWithPromise:promise samplerDescriptor:[samplerDescriptor newMTISamplerDescriptor]];
++ (MTISamplerDescriptor *)defaultSamplerDescriptor {
+    static MTISamplerDescriptor *defaultSamplerDescriptor;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
+        samplerDescriptor.minFilter = MTLSamplerMinMagFilterLinear;
+        samplerDescriptor.magFilter = MTLSamplerMinMagFilterLinear;
+        samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToZero;
+        samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToZero;
+        defaultSamplerDescriptor = [samplerDescriptor newMTISamplerDescriptor];
+    });
+    return defaultSamplerDescriptor;
 }
 
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise {
+    return [self initWithPromise:promise samplerDescriptor:MTIImage.defaultSamplerDescriptor];
+}
+
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor cachePolicy:(MTIImageCachePolicy)cachePolicy {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
         _extent = CGRectMake(0, 0, _promise.dimensions.width, _promise.dimensions.height);
         _samplerDescriptor = [samplerDescriptor copy];
+        _cachePolicy = cachePolicy;
     }
     return self;
 }
 
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
+    return [self initWithPromise:promise samplerDescriptor:samplerDescriptor cachePolicy:MTIImageCachePolicyTransient];
+}
+
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
-    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
-    image -> _samplerDescriptor = samplerDescriptor;
-    return image;
+    return [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:samplerDescriptor cachePolicy:self.cachePolicy];
 }
 
 - (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy {
-    MTIImage *image = [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor];
-    image -> _cachePolicy = cachePolicy;
-    return image;
+    return [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor cachePolicy:cachePolicy];
 }
 
 - (CGSize)size {
