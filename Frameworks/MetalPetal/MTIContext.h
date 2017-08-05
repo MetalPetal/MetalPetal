@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+typedef NSString * MTIContextPromiseAssociatedValueTableName NS_EXTENSIBLE_STRING_ENUM;
+typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_ENUM;
+
 FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
 typedef NS_ENUM(NSInteger, MTIContextError) {
@@ -94,13 +97,13 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture;
 
 
-- (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName;
+- (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName;
+- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
-- (nullable id)valueForImage:(MTIImage *)image inTable:(NSString *)tableName;
+- (nullable id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(NSString *)tableName;
+- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
 
 @end
 

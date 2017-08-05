@@ -266,11 +266,11 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
 }
 
-- (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName {
+- (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
     return [self.promiseKeyValueTables[tableName] objectForKey:promise];
 }
 
-- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(NSString *)tableName {
+- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
     MTIWeakToStrongObjectsMapTable *table = self.promiseKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
@@ -279,11 +279,11 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
     [table setObject:value forKey:promise];
 }
 
-- (id)valueForImage:(MTIImage *)image inTable:(NSString *)tableName {
+- (id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
     return [self.imageKeyValueTables[tableName] objectForKey:image];
 }
 
-- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(NSString *)tableName {
+- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
     MTIWeakToStrongObjectsMapTable *table = self.imageKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];

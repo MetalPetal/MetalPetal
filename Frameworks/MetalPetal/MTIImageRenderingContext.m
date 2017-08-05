@@ -105,8 +105,8 @@
 @end
 
 
-NSString * const MTIContextPromiseRenderTargetTable = @"MTIContextPromiseRenderTargetTable";
-NSString * const MTIContextImagePersistentResolutionHolderTable = @"MTIContextImagePersistentResolutionHolderTable";
+MTIContextPromiseAssociatedValueTableName const MTIContextPromiseRenderTargetTable = @"MTIContextPromiseRenderTargetTable";
+MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutionHolderTable = @"MTIContextImagePersistentResolutionHolderTable";
 
 @interface MTIImageRenderingContext ()
 
