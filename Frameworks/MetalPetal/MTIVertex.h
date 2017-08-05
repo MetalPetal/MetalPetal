@@ -10,14 +10,9 @@
 #import <Accelerate/Accelerate.h>
 #import <simd/simd.h>
 #import <Metal/Metal.h>
+#import "MTIShaderTypes.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-struct MTIVertex {
-    packed_float4 position;
-    packed_float2 textureCoordinate;
-};
-typedef struct MTIVertex MTIVertex;
 
 FOUNDATION_EXPORT MTIVertex MTIVertexMake(float x, float y, float z, float w, float u, float v) NS_SWIFT_NAME(MTIVertex.init(x:y:z:w:u:v:));
 

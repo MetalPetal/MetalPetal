@@ -17,18 +17,38 @@
 
 using namespace metal;
 
+#endif
+
+#endif
+
+#import <simd/simd.h>
+
+struct MTIVertex {
+    packed_float4 position;
+    packed_float2 textureCoordinate;
+};
+typedef struct MTIVertex MTIVertex;
+
+#if defined(__cplusplus)
+
+#if __has_include(<metal_stdlib>)
+
 namespace metalpetal {
     
-    struct VertexIn {
-        packed_float4 position;
-        packed_float2 texcoords;
-    };
+    typedef ::MTIVertex VertexIn;
     
     struct VertexOut {
         float4 position [[ position ]];
         float2 texcoords;
     };
     
+    METAL_FUNC float4 hardLightBlend(float4 uCb, float4 uCf) {
+        float4 Ct = select(1.0 - 2.0 * (1.0 - uCf) * (1.0 - uCb), 2.0 * uCf * uCb, uCf < float4(0.5));
+        float4 Cb = float4(uCb.rgb * uCb.a, uCb.a);
+        Ct = mix(uCf, Ct, uCb.a);
+        Ct.a = 1.0;
+        return mix(Cb, Ct, uCf.a);
+    }
 }
 
 #endif

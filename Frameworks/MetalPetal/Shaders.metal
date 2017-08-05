@@ -20,7 +20,7 @@ vertex VertexOut passthroughVertexShader(
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
     outVertex.position = inVertex.position; //modelViewProjectionMatrix * float4(inVertex.position);
-	outVertex.texcoords = inVertex.texcoords;
+	outVertex.texcoords = inVertex.textureCoordinate;
 	return outVertex;
 }
 
@@ -72,12 +72,7 @@ fragment float4 hardlightBlend(VertexOut vertexIn [[ stage_in ]],
                              ) {
     float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
     float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    float4 lt = float4(uCf - 0.5 < float4(0.0f));
-    float4 Ct = clamp(mix(1.0 - 2.0 * (1.0 - uCf) * (1.0 - uCb), 2.0 * uCf * uCb, lt), 0.0, 1.0);
-    float4 Cb = float4(uCb.rgb * uCb.a, uCb.a);
-    Ct = mix(uCf, Ct, uCb.a);
-    Ct.a = 1.0;
-    return mix(Cb, Ct, uCf.a);
+    return hardLightBlend(uCb, uCf);
 }
 
 kernel void adjustExposure(
