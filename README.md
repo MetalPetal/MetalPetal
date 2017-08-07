@@ -104,7 +104,7 @@ let context = MTIContext()
 let image: MTIImage = ...
 
 do {
-    try context.renderImage(image, to: pixelBuffer) 
+    try context.render(image, to: pixelBuffer) 
     
     //context.makeCIImage(from: image)
     
