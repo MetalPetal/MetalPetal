@@ -78,20 +78,24 @@
     return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage {
-    return [[self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options {
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
-    return [[self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture {
-    return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture]];
+    return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
     return [self initWithPromise:[[MTITextureDescriptorPromise alloc] initWithTextureDescriptor:textureDescriptor]];
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
+    return [self initWithPromise:[[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 @end

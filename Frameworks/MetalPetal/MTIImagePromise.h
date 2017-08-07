@@ -35,13 +35,13 @@ typedef struct MTITextureDimensions MTITextureDimensions;
 
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary *)options;
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary <NSString *, id> *)options;
 
 @end
 
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary <NSString *, id> *)options;
 
 @end
 

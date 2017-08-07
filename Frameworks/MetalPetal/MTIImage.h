@@ -43,13 +43,15 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<NSString *,id> *)options;
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture;
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage;
 
 - (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor;
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<NSString *,id> *)options;
 
 @end
 

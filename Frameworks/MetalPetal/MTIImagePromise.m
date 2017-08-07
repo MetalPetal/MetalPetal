@@ -17,7 +17,7 @@
 
 @property (nonatomic,copy) NSURL *URL;
 
-@property (nonatomic,copy) NSDictionary *options;
+@property (nonatomic,copy) NSDictionary<NSString *, id> *options;
 
 @property (nonatomic,strong) MDLURLTexture *texture;
 
@@ -26,7 +26,7 @@
 @implementation MTIImageURLPromise
 @synthesize dimensions = _dimensions;
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary *)options {
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
     if (self = [super init]) {
         _URL = [URL copy];
         _options = [options copy];
@@ -55,15 +55,18 @@
 
 @property (nonatomic) CGImageRef image;
 
+@property (nonatomic,copy) NSDictionary<NSString *, id> *options;
+
 @end
 
 @implementation MTICGImagePromise
 @synthesize dimensions = _dimensions;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage {
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options {
     if (self = [super init]) {
         _image = CGImageRetain(cgImage);
         _dimensions = (MTITextureDimensions){CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 1};
+        _options = [options copy];
     }
     return self;
 }
@@ -81,7 +84,7 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:self.options error:error];
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
