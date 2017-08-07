@@ -72,7 +72,7 @@ A `MTIContext` contains a lot of states and caches thus cannot be shared safely 
 
 ## Example Code
 
-### Create a `MTIImage`
+#### Create a `MTIImage`
 
 ```Swift
 let imageFromCGImage = MTIImage(cgImage: cgImage)
@@ -84,7 +84,7 @@ let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer)
 let imageFromContentsOfURL = MTIImage(contentsOf: url)
 ```
 
-### Create a filtered image
+#### Create a filtered image
 
 ```Swift
 let inputImage = ...
@@ -96,7 +96,7 @@ filter.inputImage = inputImage
 let outputImage = filter.outputImage
 ```
 
-### Render a `MTIImage`
+#### Render a `MTIImage`
 
 ```Swift
 let context = MTIContext()
