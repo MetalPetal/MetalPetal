@@ -24,8 +24,8 @@ using namespace metal;
 #import <simd/simd.h>
 
 struct MTIVertex {
-    packed_float4 position;
-    packed_float2 textureCoordinate;
+    vector_float4 position;
+    vector_float2 textureCoordinate;
 };
 typedef struct MTIVertex MTIVertex;
 
