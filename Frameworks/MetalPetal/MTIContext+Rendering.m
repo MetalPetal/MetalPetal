@@ -19,7 +19,7 @@
 
 @implementation MTIContext (Rendering)
 
-- (BOOL)renderImage:(MTIImage *)image toPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
 #if COREVIDEO_SUPPORTS_METAL
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
@@ -197,7 +197,7 @@
     return YES;
 }
 
-- (CIImage *)createCIImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     MTIImage *persistentImage = [image imageWithCachePolicy:MTIImageCachePolicyPersistent];
     NSError *error = nil;
@@ -212,6 +212,11 @@
     CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
     objc_setAssociatedObject(ciImage, (__bridge const void *)(persistentImage), persistentImage, OBJC_ASSOCIATION_RETAIN);
     return ciImage;
+}
+
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    [NSException raise:NSInternalInconsistencyException format:@"Not implemented."];
+    return nil;
 }
 
 @end
