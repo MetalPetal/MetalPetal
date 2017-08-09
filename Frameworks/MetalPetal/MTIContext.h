@@ -43,7 +43,9 @@ typedef NS_ENUM(NSInteger, MTIContextError) {
     MTIContextErrorDeviceNotFound = 1006,
     MTIContextErrorEmptyDrawable = 1007,
     MTIContextErrorMPSKernelInputCountMismatch = 1008,
-    MTIContextErrorParameterDataTypeNotSupported = 1009
+    MTIContextErrorParameterDataTypeNotSupported = 1009,
+    MTIContextErrorFailedToCreateCGImageFromCVPixelBuffer = 1010,
+    MTIContextErrorFailedToCreateCVPixelBuffer = 1011
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>

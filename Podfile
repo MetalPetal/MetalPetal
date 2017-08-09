@@ -12,7 +12,8 @@ post_install do |installer|
     installer.pods_project.build_configurations.each do |config|
         config.build_settings['RUN_CLANG_STATIC_ANALYZER'] = 'YES'
         config.build_settings['CLANG_STATIC_ANALYZER_MODE'] = 'deep'
-
+        
+        config.build_settings['CLANG_WARN_UNGUARDED_AVAILABILITY'] = 'YES_AGGRESSIVE'
         config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'YES'
         config.build_settings['CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER'] = 'YES'
         config.build_settings['GCC_WARN_ABOUT_RETURN_TYPE'] = 'YES_ERROR'

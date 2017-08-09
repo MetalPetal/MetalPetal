@@ -11,7 +11,8 @@
 
 //https://gist.github.com/steipete/36350a8a60693d440954b95ea6cbbafc
 
-@interface MTILock : NSObject <NSLocking> {
+OS_UNFAIR_LOCK_AVAILABILITY
+@interface MTILock : NSObject <NSLocking>  {
     os_unfair_lock _unfairlock;
 }
 

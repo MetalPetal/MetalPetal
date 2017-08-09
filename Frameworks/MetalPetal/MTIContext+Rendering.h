@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError **)error NS_SWIFT_NAME(makeCIImage(from:));
 
-- (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError **)error NS_SWIFT_NAME(makeCGImage(from:));
+- (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError **)error CF_RETURNS_RETAINED NS_SWIFT_NAME(makeCGImage(from:));
 
 @end
 

@@ -16,6 +16,7 @@
 #import "MTIDrawableRendering.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
+#import <VideoToolbox/VideoToolbox.h>
 
 @implementation MTIContext (Rendering)
 
@@ -215,8 +216,33 @@
 }
 
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
-    [NSException raise:NSInternalInconsistencyException format:@"Not implemented."];
-    return nil;
+    CVPixelBufferRef pixelBuffer;
+    CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
+    if (pixelBuffer) {
+        NSError *error;
+        [self renderImage:image toCVPixelBuffer:pixelBuffer error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return NULL;
+        }
+        CGImageRef image;
+        OSStatus returnCode = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, NULL, &image);
+        CVPixelBufferRelease(pixelBuffer);
+        if (returnCode != noErr) {
+            if (inOutError) {
+                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToCreateCGImageFromCVPixelBuffer userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:@{}]}];
+            }
+            return NULL;
+        }
+        return image;
+    } else {
+        if (inOutError) {
+            *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToCreateCVPixelBuffer userInfo:@{}];
+        }
+        return NULL;
+    }
 }
 
 @end
