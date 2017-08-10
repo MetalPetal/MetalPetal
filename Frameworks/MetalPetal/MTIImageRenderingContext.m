@@ -128,6 +128,9 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 - (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    if (image == nil) {
+        [NSException raise:NSInvalidArgumentException format:@"%@: Application is requesting a resolution of a nil image.", self];
+    }
     
     BOOL isRootImage = NO;
     
@@ -142,7 +145,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     
     MTIImageRenderingDependencyGraph *dependencyGraph = self.dependencyGraph;
     id<MTIImagePromise> promise = image.promise;
-    
+    NSAssert(image.promise, @"");
+
     MTIImagePromiseRenderTarget *renderTarget = nil;
     if ([self.resolvedPromises containsObject:promise]) {
         //resolved

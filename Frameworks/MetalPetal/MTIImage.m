@@ -95,7 +95,11 @@
 }
 
 - (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
-    return [self initWithPromise:[[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options];
+    if (!urlPromise) {
+        return nil;
+    }
+    return [self initWithPromise:urlPromise samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 @end

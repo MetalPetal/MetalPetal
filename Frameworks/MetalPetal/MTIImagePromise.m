@@ -32,6 +32,9 @@
         _options = [options copy];
         _texture = [[MDLURLTexture alloc] initWithURL:URL name:URL.lastPathComponent];
         _dimensions = (MTITextureDimensions){_texture.dimensions.x, _texture.dimensions.y, 1};
+        if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
+            return nil;
+        }
     }
     return self;
 }
@@ -45,7 +48,18 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:self.texture options:self.options error:error];
+    id<MTLTexture> texture;
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+        texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:self.texture options:self.options error:error];
+    } else {
+        texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];
+    }
+    if (!texture) {
+        if (error) {
+            *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToLoadTexture userInfo:@{}];
+        }
+        return nil;
+    }
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
