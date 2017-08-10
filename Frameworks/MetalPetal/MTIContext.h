@@ -34,19 +34,28 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 FOUNDATION_EXPORT NSString * const MTIContextErrorDomain;
 
 typedef NS_ENUM(NSInteger, MTIContextError) {
-    MTIContextErrorFunctionNotFound = 1000,
-    MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1001,
-    MTIContextErrorCoreVideoDoesNotSupportMetal = 1002,
-    MTIContextErrorUnsupportedCVPixelBufferFormat = 1003,
-    MTIContextErrorUnsupportedImageCachePolicy = 1004,
-    MTIContextErrorDataBufferSizeMismatch = 1005,
-    MTIContextErrorDeviceNotFound = 1006,
-    MTIContextErrorEmptyDrawable = 1007,
-    MTIContextErrorMPSKernelInputCountMismatch = 1008,
-    MTIContextErrorParameterDataTypeNotSupported = 1009,
-    MTIContextErrorFailedToCreateCGImageFromCVPixelBuffer = 1010,
-    MTIContextErrorFailedToCreateCVPixelBuffer = 1011,
-    MTIContextErrorFailedToLoadTexture = 1012
+    //Core errors
+    MTIContextErrorDeviceNotFound = 1001,
+    MTIContextErrorFunctionNotFound = 1002,
+    MTIContextErrorCoreVideoDoesNotSupportMetal = 1003,
+    MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1004,
+    
+    //Texture loading errors
+    MTIContextErrorUnsupportedCVPixelBufferFormat = 2001,
+    MTIContextErrorFailedToLoadTexture = 2002,
+    
+    //Image errors
+    MTIContextErrorUnsupportedImageCachePolicy = 3001,
+    
+    //Kernel errors
+    MTIContextErrorDataBufferSizeMismatch = 4001,
+    MTIContextErrorParameterDataTypeNotSupported = 4002,
+    MTIContextErrorMPSKernelInputCountMismatch = 4003,
+    
+    //Render errors
+    MTIContextErrorEmptyDrawable = 5001,
+    MTIContextErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
+    MTIContextErrorFailedToCreateCVPixelBuffer = 5003,
 };
 
 @interface MTIContextOptions : NSObject <NSCopying>

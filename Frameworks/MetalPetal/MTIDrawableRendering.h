@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTIDrawableProvider <NSObject>
 
-- (id<MTLDrawable>)drawableForRequest:(MTIDrawableRenderingRequest *)request;
+- (nullable id<MTLDrawable>)drawableForRequest:(MTIDrawableRenderingRequest *)request;
 
-- (MTLRenderPassDescriptor *)renderPassDescriptorForRequest:(MTIDrawableRenderingRequest *)request;
+- (nullable MTLRenderPassDescriptor *)renderPassDescriptorForRequest:(MTIDrawableRenderingRequest *)request;
 
 @end
 
