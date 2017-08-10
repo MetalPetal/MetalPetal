@@ -11,7 +11,7 @@
 #import "MTIContext.h"
 #import "MTIVector.h"
 #import "MTIVector+Private.h"
-#import <Metal/Metal.h>
+#import "MTIError.h"
 
 BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
               NSDictionary<NSString *, id> * parameters,
@@ -55,7 +55,7 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
                 };
                 if (argument.bufferDataSize != size) {
                     if (inOutError != nil) {
-                        *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
+                        *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
                     }
                     return NO;
                 }
@@ -68,7 +68,7 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
                 setEncoderWithBytes(vector.bytes, vector.length, argument.index);
             }else {
                 if (inOutError != nil) {
-                    *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorParameterDataTypeNotSupported userInfo:@{@"argument": argument, @"value": value}];
+                    *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorParameterDataTypeNotSupported userInfo:@{@"argument": argument, @"value": value}];
                 }
                 return NO;
             }

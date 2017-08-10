@@ -24,6 +24,7 @@
 #import "MTICVPixelBufferPromise.h"
 #import "MTIDefer.h"
 #import "MTIDrawableRendering.h"
+#import "MTIError.h"
 #import "MTIFilter+Property.h"
 #import "MTIFilter.h"
 #import "MTIFunctionDescriptor.h"

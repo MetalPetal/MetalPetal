@@ -14,6 +14,7 @@
 #import "MTIRenderPipeline.h"
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
+#import "MTIError.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -47,7 +48,7 @@
                                                              0,
                                                              &renderTexture);
     if (!renderTexture || err) {
-        NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil]}];
+        NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil]}];
         if (inOutError) {
             *inOutError = error;
         }
@@ -79,7 +80,7 @@
     }
     return YES;
 #else
-    NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
+    NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
     if (inOutError) {
         *inOutError = error;
     }
@@ -131,7 +132,7 @@
     MTLRenderPassDescriptor *renderPassDescriptor = [request.drawableProvider renderPassDescriptorForRequest:request];
     if (renderPassDescriptor == nil) {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorEmptyDrawable userInfo:nil];
+            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorEmptyDrawable userInfo:nil];
         }
         return NO;
     }
@@ -232,14 +233,14 @@
         CVPixelBufferRelease(pixelBuffer);
         if (returnCode != noErr) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToCreateCGImageFromCVPixelBuffer userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:@{}]}];
+                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToCreateCGImageFromCVPixelBuffer userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:@{}]}];
             }
             return NULL;
         }
         return image;
     } else {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToCreateCVPixelBuffer userInfo:@{}];
+            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToCreateCVPixelBuffer userInfo:@{}];
         }
         return NULL;
     }

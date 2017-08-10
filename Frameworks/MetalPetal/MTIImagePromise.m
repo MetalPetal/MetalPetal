@@ -12,6 +12,7 @@
 #import "MTIImage.h"
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"
+#import "MTIError.h"
 
 @interface MTIImageURLPromise ()
 
@@ -56,7 +57,7 @@
     }
     if (!texture) {
         if (error) {
-            *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFailedToLoadTexture userInfo:@{}];
+            *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToLoadTexture userInfo:@{}];
         }
         return nil;
     }

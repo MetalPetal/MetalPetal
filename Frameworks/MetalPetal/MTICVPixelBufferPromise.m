@@ -13,6 +13,7 @@
 #import "MTIContext.h"
 #import "MTIRenderPipeline.h"
 #import "MTIComputePipeline.h"
+#import "MTIError.h"
 #import <simd/simd.h>
 
 static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
@@ -182,7 +183,7 @@ static const ColorConversion kColorConversion709 = {
                 texture = CVMetalTextureGetTexture(metalTexture);
                 CFRelease(metalTexture);
             } else {
-                NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:nil];
+                NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:nil];
                 if (inOutError) {
                     *inOutError = error;
                 }
@@ -327,7 +328,7 @@ static const ColorConversion kColorConversion709 = {
                 
                 return renderTarget;
             } else {
-                NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:nil];
+                NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:nil];
                 if (inOutError) {
                     *inOutError = error;
                 }
@@ -335,7 +336,7 @@ static const ColorConversion kColorConversion709 = {
             }
         } break;
         default:{
-            NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+            NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
             if (inOutError) {
                 *inOutError = error;
             }
@@ -343,7 +344,7 @@ static const ColorConversion kColorConversion709 = {
         } break;
     }
 #else
-    NSError *error = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
+    NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
     if (inOutError) {
         *inOutError = error;
     }

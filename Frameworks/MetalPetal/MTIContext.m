@@ -16,9 +16,7 @@
 #import "MTITexturePool.h"
 #import "MTIKernel.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
-
-NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
-
+#import "MTIError.h"
 
 @interface MTIImagePromiseRenderTarget ()
 
@@ -116,7 +114,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         NSParameterAssert(device != nil);
         if (!device) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorDeviceNotFound userInfo:nil];
+                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorDeviceNotFound userInfo:nil];
             }
             return nil;
         }
@@ -188,7 +186,7 @@ NSString * const MTIContextErrorDomain = @"MTIContextErrorDomain";
         cachedFunction = [library newFunctionWithName:descriptor.name];
         if (!cachedFunction) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorFunctionNotFound userInfo:@{}];
+                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFunctionNotFound userInfo:@{}];
             }
             return nil;
         }

@@ -11,6 +11,7 @@
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"
 #import "MTIImageRenderingContext.h"
+#import "MTIError.h"
 
 @interface MTIMPSProcessingRecipe : NSObject <MTIImagePromise>
 
@@ -67,7 +68,7 @@
         [encoder encodeToCommandBuffer:renderingContext.commandBuffer primaryTexture:inputResolutions.firstObject.texture secondaryTexture:inputResolutions.lastObject.texture destinationTexture:renderTarget.texture];
     } else {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIContextErrorDomain code:MTIContextErrorMPSKernelInputCountMismatch userInfo:@{}];
+            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorMPSKernelInputCountMismatch userInfo:@{}];
         }
         return nil;
     }
