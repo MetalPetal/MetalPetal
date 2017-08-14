@@ -78,8 +78,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 - (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError **)error;
 
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor;
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture;
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture NS_SWIFT_NAME(makeRenderTarget(texture:));
 
 
 - (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;

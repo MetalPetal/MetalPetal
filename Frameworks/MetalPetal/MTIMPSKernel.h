@@ -18,7 +18,7 @@ typedef MPSKernel * _Nonnull (^MTIMPSKernelBuilder)(id<MTLDevice> device);
 
 @interface MTIMPSKernel : NSObject <MTIKernel>
 
-- (instancetype)initWithMPSKernelBuilder:(MTIMPSKernelBuilder)builder;
+- (instancetype)initWithMPSKernelBuilder:(MTIMPSKernelBuilder)builder NS_SWIFT_NAME(init(builder:));
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters

@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor NS_DESIGNATED_INITIALIZER;
 
-- (MTLTextureDescriptor *)newMTLTextureDescriptor;
+- (MTLTextureDescriptor *)newMTLTextureDescriptor NS_SWIFT_NAME(makeMTLTextureDescriptor());
 
 @property (readonly, nonatomic) MTLTextureType textureType;
 
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTLTextureDescriptor (MTITextureDescriptor)
 
-- (MTITextureDescriptor *)newMTITextureDescriptor;
+- (MTITextureDescriptor *)newMTITextureDescriptor NS_SWIFT_NAME(makeMTITextureDescriptor());;
 
 @end
 

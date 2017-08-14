@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 
-- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor;
+- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeTexture(descriptor:));
 
 @end
 

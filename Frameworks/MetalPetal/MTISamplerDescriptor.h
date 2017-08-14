@@ -18,13 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMTLSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor NS_DESIGNATED_INITIALIZER;
 
-- (MTLSamplerDescriptor *)newMTLSamplerDescriptor;
+- (MTLSamplerDescriptor *)newMTLSamplerDescriptor NS_SWIFT_NAME(makeMTLSamplerDescriptor());
 
 @end
 
 @interface MTLSamplerDescriptor (MTISamplerDescriptor)
 
-- (MTISamplerDescriptor *)newMTISamplerDescriptor;
+- (MTISamplerDescriptor *)newMTISamplerDescriptor NS_SWIFT_NAME(makeMTISamplerDescriptor());
 
 @end
 

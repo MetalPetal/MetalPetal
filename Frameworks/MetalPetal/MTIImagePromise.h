@@ -25,9 +25,9 @@ typedef struct MTITextureDimensions MTITextureDimensions;
 
 @property (nonatomic,readonly) MTITextureDimensions dimensions;
 
-- (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
+@property (nonatomic,readonly,copy) NSArray<MTIImage *> *dependencies;
 
-- (NSArray<MTIImage *> *)dependencies;
+- (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
 
 @end
 

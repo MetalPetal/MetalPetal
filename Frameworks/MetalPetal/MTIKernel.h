@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTIKernel <NSObject>
 
-- (nullable id)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;
+- (nullable id)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error NS_SWIFT_NAME(makeKernelState(context:));
 
 @end
 
