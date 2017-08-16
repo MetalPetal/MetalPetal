@@ -13,6 +13,7 @@
 #import "MTIColorInvertFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"
+#import "MTIMPSConvolutionFilter.h"
 #import "MTIMPSGaussianBlurFilter.h"
 #import "MTIOverlayBlendFilter.h"
 #import "MTISaturationFilter.h"
