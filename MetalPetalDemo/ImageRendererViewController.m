@@ -36,6 +36,8 @@
 
 @property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
 
+@property (nonatomic, strong) MTIMPSImageConvolution   *convolutionFilter;
+
 @end
 
 @implementation ImageRendererViewController
@@ -65,6 +67,12 @@
     self.exposureFilter = [[MTIExposureFilter alloc] init];
     self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
+    float matrix[3][3] = {
+        {-1, 0, 1},
+        {-2, 0, 2},
+        {-1, 0, 1}
+    };
+    self.convolutionFilter = [[MTIMPSImageConvolution alloc] initWithKernelWidth:3 kernelHeight:3 weights:(const float *)matrix];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
@@ -86,7 +94,8 @@
     self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
     self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
     self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.convolutionFilter.inputImage = self.saturationFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.convolutionFilter.outputImage;
     MTIImage *outputImage = self.colorInvertFilter.outputImage;
     return outputImage;
 }
