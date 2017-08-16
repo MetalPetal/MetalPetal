@@ -9,22 +9,16 @@
 #import <Foundation/Foundation.h>
 #import "MTIFilter.h"
 
-@interface ConvolutionInputSets : NSObject<NSCopying>
-@property (nonatomic, assign)    long       width;
-@property (nonatomic, assign)    long       height;
-@property (nonatomic, assign)    float* _Nullable matrixPoint;
-
-- (instancetype _Nonnull )initWithWidth:(NSInteger)width Height:(NSInteger)height Weights:(const float* _Nonnull) matrixPoint;
-@end
+@class MTIConvolutionInputSets;
 
 @interface MTIMPSImageConvolution : NSObject <MTIFilter>
 
-@property (nonatomic, strong)   ConvolutionInputSets* _Nonnull inputSets;
+@property (nonatomic, strong, readonly)   MTIConvolutionInputSets* _Nonnull inputSets;
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
-- (instancetype _Nonnull )init NS_UNAVAILABLE;
+- (nonnull instancetype)init NS_UNAVAILABLE;
 
-- (instancetype _Nullable )initWithWidth:(NSInteger)width Height:(NSInteger)height Weights:(const float* _Nonnull) matrixPoint;
+- (nonnull instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float* __nonnull)kernelWeights NS_DESIGNATED_INITIALIZER;
 
 @end

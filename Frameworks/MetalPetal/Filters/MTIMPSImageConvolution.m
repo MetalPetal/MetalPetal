@@ -12,37 +12,44 @@
 #import <CommonCrypto/CommonCrypto.h>
 #import <zlib.h>
 
+@interface MTIConvolutionInputSets : NSObject<NSCopying>
+@property (nonatomic, assign)               NSUInteger       kernelWidth;
+@property (nonatomic, assign)               NSUInteger       kernelHeight;
+@property (nonatomic, assign, nullable)     float*           kernelWeights;
 
-@implementation ConvolutionInputSets
+- (nonnull instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float* __nonnull)kernelWeights NS_DESIGNATED_INITIALIZER;
+@end
 
-- (instancetype)initWithWidth:(NSInteger)width Height:(NSInteger)height Weights:(const float *)matrixPoint
+@implementation MTIConvolutionInputSets
+
+- (instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float* __nonnull)kernelWeights
 {
     if( self = [super init] ){
-        self.width = width;
-        self.height = height;
-        long matrixSize = self.width*self.height*sizeof(float);
-        self.matrixPoint = malloc(matrixSize);
-        memcpy(self.matrixPoint, matrixPoint, matrixSize);
+        self.kernelWidth = kernelWidth;
+        self.kernelHeight = kernelHeight;
+        long kernelWeightsSize = self.kernelWidth*self.kernelWidth*sizeof(float);
+        self.kernelWeights = malloc(kernelWeightsSize);
+        memcpy(self.kernelWeights, kernelWeights, kernelWeightsSize);
     }
     return self;
 }
 - (void)dealloc{
-    if( self.matrixPoint )
-        free(self.matrixPoint);
+    if( self.kernelWeights ){
+        free(self.kernelWeights);
+    }
 }
 - (id)copyWithZone:(NSZone *)zone
 {
-//    return self;
-    ConvolutionInputSets *aCopy = [[ConvolutionInputSets allocWithZone:zone] initWithWidth:self.width Height:self.height Weights:self.matrixPoint];
-    return aCopy;
+    MTIConvolutionInputSets *deepCopy = [[MTIConvolutionInputSets allocWithZone:zone] initWithKernelWidth:self.kernelWidth kernelHeight:self.kernelHeight weights:self.kernelWeights];
+    return deepCopy;
 }
 
 - (BOOL)isEqual:(id)object
 {
     if( [object isKindOfClass:self.class] ){
-        ConvolutionInputSets* cis = (ConvolutionInputSets*)object;
-        long matrixSize = self.width*self.height*sizeof(float);
-        if( cis.width == self.width && cis.height == self.height && memcmp(cis.matrixPoint, self.matrixPoint, matrixSize)==0 )
+        MTIConvolutionInputSets* mcis = (MTIConvolutionInputSets*)object;
+        long kernelWeightsSize = self.kernelWidth*self.kernelHeight*sizeof(float);
+        if( mcis.kernelWidth == self.kernelWidth && mcis.kernelHeight == self.kernelHeight && memcmp(mcis.kernelWeights, self.kernelWeights, kernelWeightsSize)==0 )
             return YES;
     }
     return NO;
@@ -50,12 +57,12 @@
 - (NSUInteger)hash
 {
     NSUInteger hash = 0;
-    long matrixSize = self.width*self.height*sizeof(float);
+    long kernelWeightsSize = self.kernelWidth*self.kernelHeight*sizeof(float);
 #ifdef CRC_HASH_CONVOLUTION
     uLong crc = crc32(0L, Z_NULL, 0);
-    hash = crc32(crc, self.matrixPoint, mlen);
+    hash = crc32(crc, self.kernelWeights, mlen);
 #else
-    hash = [[[NSData alloc] initWithBytes:self.matrixPoint length:matrixSize] hash];
+    hash = [[[NSData alloc] initWithBytes:self.kernelWeights length:kernelWeightsSize] hash];
 #endif
     return hash;
 }
@@ -64,15 +71,15 @@
 
 @implementation MTIMPSImageConvolution
 
-- (instancetype) initWithWidth:(NSInteger)width Height:(NSInteger)height Weights:(const float* _Nonnull) matrixPoint
+- (instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float* __nonnull)kernelWeights
 {
     if( self = [super init] ){
-        self.inputSets = [[ConvolutionInputSets alloc] initWithWidth:width Height:height Weights:matrixPoint];
+        _inputSets = [[MTIConvolutionInputSets alloc] initWithKernelWidth:kernelWidth kernelHeight:kernelHeight weights:kernelWeights];
     }
     return self;
 }
 
-+ (MTIMPSKernel *)kernelWithInputSets:(ConvolutionInputSets*) inputSets {
++ (MTIMPSKernel *)kernelWithInputSets:(MTIConvolutionInputSets*) inputSets {
     static NSMutableDictionary *kernels;
     static NSLock *kernelsLock;
     static dispatch_once_t onceToken;
@@ -85,7 +92,7 @@
     MTIMPSKernel *kernel = kernels[inputSets];
     if (!kernel) {
         kernel = [[MTIMPSKernel alloc] initWithMPSKernelBuilder:^MPSKernel * _Nonnull(id<MTLDevice>  _Nonnull device) {
-            return [[MPSImageConvolution alloc] initWithDevice:device kernelWidth:inputSets.width kernelHeight:inputSets.height weights:inputSets.matrixPoint];
+            return [[MPSImageConvolution alloc] initWithDevice:device kernelWidth:inputSets.kernelWidth kernelHeight:inputSets.kernelHeight weights:inputSets.kernelWeights];
         }];
         kernels[inputSets] = kernel;
     }
@@ -97,7 +104,7 @@
     if (!self.inputImage) {
         return nil;
     }
-    if (self.inputSets.width <= 0 || self.inputSets.height <= 0 || self.inputSets.matrixPoint == nil ) {
+    if (self.inputSets.kernelWidth <= 0 || self.inputSets.kernelHeight <= 0 || self.inputSets.kernelWeights == nil ) {
         return self.inputImage;
     }
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB

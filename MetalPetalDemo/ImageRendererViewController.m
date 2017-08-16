@@ -72,7 +72,7 @@
         {-2, 0, 2},
         {-1, 0, 1}
     };
-    self.convolutionFilter = [[MTIMPSImageConvolution alloc] initWithWidth:3 Height:3 Weights:(const float*)matrix];
+    self.convolutionFilter = [[MTIMPSImageConvolution alloc] initWithKernelWidth:3 kernelHeight:3 weights:(const float *)matrix];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
