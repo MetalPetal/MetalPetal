@@ -42,7 +42,7 @@
                                                              self.coreVideoTextureCache,
                                                              pixelBuffer,
                                                              NULL,
-                                                             MTLPixelFormatBGRA8Unorm_sRGB,
+                                                             resolution.texture.pixelFormat,
                                                              frameWidth,
                                                              frameHeight,
                                                              0,
