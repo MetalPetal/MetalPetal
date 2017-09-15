@@ -50,7 +50,7 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     id<MTLTexture> texture;
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+    if (@available(iOS 10.0, *)) {
         texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:self.texture options:self.options error:error];
     } else {
         texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];

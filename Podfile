@@ -26,5 +26,11 @@ post_install do |installer|
         config.build_settings['GCC_WARN_UNINITIALIZED_AUTOS'] = 'YES_AGGRESSIVE'
         config.build_settings['ENABLE_STRICT_OBJC_MSGSEND'] = 'YES'
         config.build_settings['GCC_NO_COMMON_BLOCKS'] = 'YES_AGGRESSIVE'
+        config.build_settings['CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING'] = 'YES'
+        config.build_settings['CLANG_WARN_NON_LITERAL_NULL_CONVERSION'] = 'YES'
+        config.build_settings['CLANG_WARN_OBJC_LITERAL_CONVERSION'] = 'YES'
+        config.build_settings['CLANG_WARN_RANGE_LOOP_ANALYSIS'] = 'YES'
+        config.build_settings['CLANG_WARN_STRICT_PROTOTYPES'] = 'YES'
+        config.build_settings['CLANG_WARN_COMMA'] = 'YES'
     end
 end

@@ -17,6 +17,6 @@ MTI_METAMACRO_CONCAT_(A, B)
 try {} @finally {} \
 __strong MTIDeferBlock MTI_METAMACRO_CONCAT(MTIExitBlock_, __LINE__) __attribute__((cleanup(MTIExecuteCleanupBlock), unused)) = ^
 
-typedef void (^MTIDeferBlock)();
+typedef void (^MTIDeferBlock)(void);
 
 void MTIExecuteCleanupBlock (__strong MTIDeferBlock *block);

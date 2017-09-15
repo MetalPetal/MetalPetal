@@ -38,7 +38,7 @@ OS_UNFAIR_LOCK_AVAILABILITY
 @end
 
 id<NSLocking> MTICreateLock(void) {
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_9_x_Max) {
+    if (@available(iOS 10.0, *)) {
         return [[MTILock alloc] init];
     } else {
         return [[NSLock alloc] init];
