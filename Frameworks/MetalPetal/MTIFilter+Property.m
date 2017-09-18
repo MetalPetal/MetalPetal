@@ -8,8 +8,7 @@
 
 #import "MTIFilter+Property.h"
 #import "MTIDefer.h"
-#import "MTIVector+Private.h"
-
+#import "MTIVector.h"
 @import ObjectiveC;
 
 #if DEBUG

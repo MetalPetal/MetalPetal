@@ -16,8 +16,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTIImage+Promise.h"
-#import "MTIVector.h"
-#import "MTIVector+Private.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 

@@ -10,7 +10,6 @@
 #import "MTIDefer.h"
 #import "MTIContext.h"
 #import "MTIVector.h"
-#import "MTIVector+Private.h"
 #import "MTIError.h"
 
 BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
@@ -65,7 +64,7 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
                 setEncoderWithBytes(data.bytes, data.length, argument.index);
             }else if ([value isKindOfClass:[MTIVector class]]) {
                 MTIVector *vector = (MTIVector *)value;
-                setEncoderWithBytes(vector.bytes, vector.length, argument.index);
+                setEncoderWithBytes(vector.data.bytes, vector.data.length, argument.index);
             }else {
                 if (inOutError != nil) {
                     *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorParameterDataTypeNotSupported userInfo:@{@"argument": argument, @"value": value}];

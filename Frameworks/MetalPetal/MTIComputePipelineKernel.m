@@ -16,7 +16,6 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIComputePipeline.h"
 #import "MTIVector.h"
-#import "MTIVector+Private.h"
 
 @interface MTIImageComputeRecipe : NSObject <MTIImagePromise>
 

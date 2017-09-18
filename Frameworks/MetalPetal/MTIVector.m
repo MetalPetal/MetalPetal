@@ -7,99 +7,70 @@
 //
 
 #import "MTIVector.h"
-#import "MTIVector+Private.h"
+@import Accelerate;
 
 @implementation MTIVector
 
-- (MTIFloat *)bytes {
-    return _ptr;
+- (const float *)bytes {
+    return self.data.bytes;
 }
 
-- (size_t)count {
-    return _count;
++ (instancetype)vectorWithValues:(const float *)values count:(NSUInteger)count {
+    return [[self alloc] initWithValues:values count:count];
 }
 
-- (NSUInteger)length {
-    return _count * sizeof(MTIFloat);
++ (instancetype)vectorWithDoubleValues:(const double *)values count:(NSUInteger)count {
+    float result[count];
+    vDSP_vdpsp(values, 1, result, 1, count);
+    return [[self alloc] initWithValues:result count:count];
 }
 
-+ (instancetype)vectorWithValues:(const MTIFloat *)values count:(size_t)count {
-    return [[self alloc] initWithValues: values count: count];
-}
-
-- (instancetype)initWithValues:(const MTIFloat *)values count:(size_t)count {
+- (instancetype)initWithValues:(const float *)values count:(NSUInteger)count {
     if (self = [super init]) {
         _count = count;
-        _ptr = malloc(sizeof(MTIFloat) * count);
-        memcpy(_ptr, values, sizeof(MTIFloat) * count);
+        _data = [NSData dataWithBytes:values length:count * sizeof(float)];
     }
     return self;
 }
 
-+ (instancetype)vectorWithDoubleValues:(const double *)values count:(size_t)count {
-    return [[self alloc] initWithDoubleValues:values count:count];
-}
-
-- (instancetype)initWithDoubleValues:(const double *)values count:(size_t)count {
-    if (self = [super init]) {
-        _count = count;
-        _ptr = malloc(sizeof(MTIFloat) * count);
-        for (size_t i = 0; i<count; i++) {
-            _ptr[i] = (MTIFloat)values[i];
-        }
-    }
+- (id)copyWithZone:(NSZone *)zone {
     return self;
-}
-
-- (instancetype)copyWithZone:(nullable NSZone *)zone {
-    __typeof(self) vector = [[[self class] allocWithZone:zone] initWithValues:self.bytes count:self.count];
-    return vector;
 }
 
 - (instancetype)initWithCGPoint:(CGPoint)p {
     float values[2] = {(float)p.x, (float)p.y};
-    return [self initWithValues: values count: 2];
+    return [self initWithValues:values count:2];
 }
 
 - (instancetype)initWithCGSize:(CGSize)s {
     float values[2] = {(float)s.width, (float)s.height};
-    return [self initWithValues: values count: 2];
+    return [self initWithValues:values count:2];
 }
 
 - (instancetype)initWithCGRect:(CGRect)r {
-    MTIFloat values[4] = {(float)r.origin.x, (float)r.origin.y, (float)r.size.width, (float)r.size.height};
-    return [self initWithValues: values count: 4];
+    float values[4] = {(float)r.origin.x, (float)r.origin.y, (float)r.size.width, (float)r.size.height};
+    return [self initWithValues:values count:4];
 }
 
 - (instancetype)initWithCGAffineTransform:(CGAffineTransform)t {
-    MTIFloat values[6] = {(float)t.a, (float)t.b, (float)t.c, (float)t.d, (float)t.tx, (float)t.ty};
-    return [self initWithValues: values count: 6];
-}
-
-- (void)dealloc {
-    if (_ptr != NULL) {
-        free(_ptr);
-    }
+    float values[6] = {(float)t.a, (float)t.b, (float)t.c, (float)t.d, (float)t.tx, (float)t.ty};
+    return [self initWithValues:values count:6];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
-    NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"bytes"];
-    NSInteger count = [coder decodeIntegerForKey: @"count"];
-    return [self initWithValues:data.bytes count:(size_t)count];
+    NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
+    if (!data) {
+        return nil;
+    }
+    return [self initWithValues:data.bytes count:data.length/sizeof(float)];
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder {
-    NSData *data = [NSData dataWithBytes:_ptr length:self.length];
-    [coder encodeObject:data forKey:@"bytes"];
-    [coder encodeInteger:(NSInteger)_count forKey:@"count"];
+    [coder encodeObject:_data forKey:@"data"];
 }
 
 + (BOOL)supportsSecureCoding {
     return YES;
-}
-
-- (NSData *)data {
-    return [NSData dataWithBytes:self.bytes length:self.length];
 }
 
 - (CGPoint)CGPointValue {
@@ -124,10 +95,29 @@
 }
 
 - (CGAffineTransform)CGAffineTransformValue {
-    if (self.count > 1) {
+    if (self.count > 5) {
         return CGAffineTransformMake(self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3], self.bytes[4], self.bytes[5]);
     }
     return CGAffineTransformIdentity;
+}
+
+- (NSUInteger)hash {
+    return _data.hash;
+}
+
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+    if ([object isKindOfClass:[MTIVector class]]) {
+        MTIVector *other = object;
+        if (self.count != other.count) {
+            return NO;
+        }
+        return [_data isEqual:other -> _data];
+    } else {
+        return NO;
+    }
 }
 
 @end
