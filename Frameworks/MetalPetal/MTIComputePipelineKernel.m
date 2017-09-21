@@ -71,12 +71,27 @@
     }
     [commandEncoder setTexture:renderTarget.texture atIndex:inputResolutions.count];
     
-    MTIEncodeArgumentsWithEncoder(computePipeline.reflection.arguments, self.functionParameters, commandEncoder, MTLFunctionTypeKernel, &error);
-
-    MTLSize threadGroupCount = MTLSizeMake(8, 8, 1);
-    MTLSize threadGroups = MTLSizeMake(self.textureDescriptor.width/threadGroupCount.width,  self.textureDescriptor.height/threadGroupCount.height, 1);
+    [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     
-    [commandEncoder dispatchThreadgroups:threadGroups threadsPerThreadgroup:threadGroupCount];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+
+    NSUInteger w = computePipeline.state.threadExecutionWidth;
+    NSUInteger h = computePipeline.state.maxTotalThreadsPerThreadgroup / w;
+    MTLSize threadsPerGrid = MTLSizeMake(self.textureDescriptor.width,self.textureDescriptor.height,1);
+    MTLSize threadsPerThreadgroup = MTLSizeMake(w, h, 1);
+    MTLSize threadgroupsPerGrid = MTLSizeMake((self.textureDescriptor.width + w - 1) / w, (self.textureDescriptor.height + h - 1) / h, 1);
+    
+    if (@available(iOS 11.0, *)) {
+        [commandEncoder dispatchThreads:threadsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
+    } else {
+        [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
+    }
+    
     [commandEncoder endEncoding];
     
     for (id<MTIImagePromiseResolution> resolution in inputResolutions) {

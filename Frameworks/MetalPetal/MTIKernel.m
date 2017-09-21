@@ -12,13 +12,11 @@
 #import "MTIVector.h"
 #import "MTIError.h"
 
-BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
-              NSDictionary<NSString *, id> * parameters,
-              id<MTLCommandEncoder> encoder,
-              MTLFunctionType functionType,
-              NSError * _Nullable __autoreleasing *inOutError) {
+@implementation MTIArgumentsEncoder
+
++ (BOOL)encodeArguments:(NSArray<MTLArgument *> *)arguments values:(NSDictionary<NSString *,id> *)parameters functionType:(MTLFunctionType)functionType encoder:(id<MTLCommandEncoder>)encoder error:(NSError * _Nullable __autoreleasing *)inOutError {
     
-    void (^setEncoderWithBytes)(const void * bytes, NSUInteger length, NSUInteger index) = ^(const void * bytes, NSUInteger length, NSUInteger index) {
+    void (^encodeBytes)(const void * bytes, NSUInteger length, NSUInteger index) = ^(const void * bytes, NSUInteger length, NSUInteger index) {
         switch (functionType) {
             case MTLFunctionTypeFragment:
                 if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
@@ -33,7 +31,12 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
             case MTLFunctionTypeKernel:
                 if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
                     [(id<MTLComputeCommandEncoder>)encoder setBytes:bytes length:length atIndex:index];
+                } else if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
+                    if (@available(iOS 11.0, *)) {
+                        [(id<MTLRenderCommandEncoder>)encoder setTileBytes:bytes length:length atIndex:index];
+                    }
                 }
+                break;
             default:
                 break;
         }
@@ -58,13 +61,13 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
                     }
                     return NO;
                 }
-                setEncoderWithBytes(valuePtr, size, argument.index);
+                encodeBytes(valuePtr, size, argument.index);
             }else if ([value isKindOfClass:[NSData class]]) {
                 NSData *data = (NSData *)value;
-                setEncoderWithBytes(data.bytes, data.length, argument.index);
+                encodeBytes(data.bytes, data.length, argument.index);
             }else if ([value isKindOfClass:[MTIVector class]]) {
                 MTIVector *vector = (MTIVector *)value;
-                setEncoderWithBytes(vector.data.bytes, vector.data.length, argument.index);
+                encodeBytes(vector.data.bytes, vector.data.length, argument.index);
             }else {
                 if (inOutError != nil) {
                     *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorParameterDataTypeNotSupported userInfo:@{@"argument": argument, @"value": value}];
@@ -76,3 +79,5 @@ BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
     
     return YES;
 }
+
+@end
