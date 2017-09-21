@@ -37,4 +37,5 @@ typedef NS_ENUM(NSInteger, MTIError) {
     MTIErrorEmptyDrawable = 5001,
     MTIErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
+    MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
 };

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIImagePromise.h"
+#import "MTICVPixelBufferPromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,6 +42,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 @interface MTIImage (Creation)
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI;
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<NSString *,id> *)options;
 

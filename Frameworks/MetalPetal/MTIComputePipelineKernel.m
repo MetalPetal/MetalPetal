@@ -151,8 +151,6 @@
         return nil;
     }
     
-//    computePipelineDescriptor.threadGroupSizeIsMultipleOfThreadExecutionWidth = NO;
-#warning stageInputDescriptor not used
     computePipelineDescriptor.computeFunction = computeFunction;
     return [context computePipelineWithDescriptor:computePipelineDescriptor error:inOutError];
 }

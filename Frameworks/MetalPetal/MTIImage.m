@@ -75,7 +75,11 @@
 @implementation MTIImage (Creation)
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:MTICVPixelBufferRenderingAPIDefault]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI {
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:renderingAPI]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options {
