@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 FOUNDATION_EXPORT NSString * const MTIErrorDomain;
 
 typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
@@ -35,3 +37,5 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
 };
+
+NS_ASSUME_NONNULL_END

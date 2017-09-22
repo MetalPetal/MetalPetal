@@ -23,13 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *               Default value is 0.0f.
  */
-@property (readwrite, nonatomic) float bias;
+@property (nonatomic) float bias;
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (nonnull instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float *)kernelWeights NS_DESIGNATED_INITIALIZER;
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float *)kernelWeights NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor pixelFormat:(MTLPixelFormat)pixelFormat NS_DESIGNATED_INITIALIZER;
 
 - (nullable MTIComputePipeline *)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;

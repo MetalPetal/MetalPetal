@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithState:(id<MTLRenderPipelineState>)state reflection:(MTLRenderPipelineReflection *)reflection NS_DESIGNATED_INITIALIZER;
 
 @end

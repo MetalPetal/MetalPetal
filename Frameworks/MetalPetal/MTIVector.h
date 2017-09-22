@@ -15,6 +15,8 @@
 + (instancetype)vectorWithDoubleValues:(const double *)values count:(NSUInteger)count;
 
 - (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithValues:(const float *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCGPoint:(CGPoint)p;

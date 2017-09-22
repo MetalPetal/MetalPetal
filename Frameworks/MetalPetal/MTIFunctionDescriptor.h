@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithName:(NSString *)name;
 
 - (instancetype)initWithName:(NSString *)name libraryURL:( NSURL * _Nullable )URL NS_DESIGNATED_INITIALIZER;

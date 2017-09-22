@@ -33,6 +33,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
 - (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy;
