@@ -470,7 +470,7 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
     return keysWithTypeDescription;
 }
 
-NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
+NSDictionary<NSString *, id> * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
