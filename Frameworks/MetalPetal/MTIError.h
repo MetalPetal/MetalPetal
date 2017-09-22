@@ -10,11 +10,7 @@
 
 FOUNDATION_EXPORT NSString * const MTIErrorDomain;
 
-#ifdef NS_ERROR_ENUM
 typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
-#else
-typedef NS_ENUM(NSInteger, MTIError) {
-#endif
     //Core errors
     MTIErrorDeviceNotFound = 1001,
     MTIErrorFunctionNotFound = 1002,
