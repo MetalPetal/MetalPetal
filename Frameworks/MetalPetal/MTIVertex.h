@@ -26,6 +26,8 @@ FOUNDATION_EXPORT MTIVertex MTIVertexMake(float x, float y, float z, float w, fl
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithVertices:(const MTIVertex * _Nonnull)vertices count:(NSInteger)count NS_DESIGNATED_INITIALIZER;
 
 @end

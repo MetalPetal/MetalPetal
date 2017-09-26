@@ -20,9 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-FOUNDATION_EXPORT BOOL MTIEncodeArgumentsWithEncoder(NSArray<MTLArgument *>* arguments,
-                              NSDictionary<NSString *, id> * parameters,
-                              id<MTLCommandEncoder> encoder,
-                              MTLFunctionType functionType,
-                              NSError * _Nullable __autoreleasing *inOutError);
+@interface MTIArgumentsEncoder : NSObject
+
++ (BOOL)encodeArguments:(NSArray<MTLArgument *>*)arguments
+                 values:(NSDictionary<NSString *, id> *)parameters
+           functionType:(MTLFunctionType)functionType
+                encoder:(id<MTLCommandEncoder>)encoder
+                  error:(NSError **)error;
+
+@end
+
 NS_ASSUME_NONNULL_END

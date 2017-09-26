@@ -16,8 +16,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTIImage+Promise.h"
-#import "MTIVector.h"
-#import "MTIVector+Private.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 
@@ -105,10 +103,20 @@
     
     //encode parameters
     if (self.functionParameters.count > 0) {
-        MTIEncodeArgumentsWithEncoder(renderPipeline.reflection.vertexArguments, self.functionParameters, commandEncoder, MTLFunctionTypeVertex, &error);
-        MTIEncodeArgumentsWithEncoder(renderPipeline.reflection.fragmentArguments, self.functionParameters, commandEncoder, MTLFunctionTypeFragment, &error);
-        if (inOutError && error != nil) {
-            *inOutError = error;
+        [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:self.functionParameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        
+        [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:self.functionParameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
         }
     }
     

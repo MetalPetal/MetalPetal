@@ -152,7 +152,7 @@
 
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-    if (self.renderView.currentDrawable && self.renderView.currentRenderPassDescriptor && self.pixelBuffer) {
+    if (self.pixelBuffer) {
         MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:self.pixelBuffer];
         self.saturationFilter.inputImage = inputImage;
         self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);

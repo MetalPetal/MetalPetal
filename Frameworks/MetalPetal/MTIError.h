@@ -8,13 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 FOUNDATION_EXPORT NSString * const MTIErrorDomain;
 
-#ifdef NS_ERROR_ENUM
 typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
-#else
-typedef NS_ENUM(NSInteger, MTIError) {
-#endif
     //Core errors
     MTIErrorDeviceNotFound = 1001,
     MTIErrorFunctionNotFound = 1002,
@@ -37,4 +35,7 @@ typedef NS_ENUM(NSInteger, MTIError) {
     MTIErrorEmptyDrawable = 5001,
     MTIErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
+    MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
 };
+
+NS_ASSUME_NONNULL_END

@@ -41,7 +41,6 @@
 #import "MTIShaderTypes.h"
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
-#import "MTIVector+Private.h"
 #import "MTIVector.h"
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
