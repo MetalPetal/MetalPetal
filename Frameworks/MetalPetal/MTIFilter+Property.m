@@ -458,7 +458,7 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
             @MTI_DEFER {
                 free(attributes);
             };
-
+            
             NSString *type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
             [keysWithTypeDescription setObject:type forKey:propertyKey];
         }
@@ -474,27 +474,28 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
 NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
+    NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
     NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
     const NSArray *valueTypesNeedsRepresentedByMTIVector = @[@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}"];
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
-        if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
-            NSValue *nsValue = [object valueForKey:propertyKey];
-            NSUInteger size;
-            NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
-            void *valuePtr = malloc(size);
-            @MTI_DEFER {
-                free(valuePtr);
-            };
-            [nsValue getValue:valuePtr];
-            
-            MTIVector *vector = [MTIVector vectorWithDoubleValues:valuePtr count:size/sizeof(double)];
-            [result setObject:vector forKey:propertyKey];
-        }else {
-            [otherKeys addObject:propertyKey];
-        }
-
+        if (![[filter.class propertyNamesToAttributes] containsObject:propertyKey]) return ;
+            if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
+                NSValue *nsValue = [object valueForKey:propertyKey];
+                NSUInteger size;
+                NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
+                void *valuePtr = malloc(size);
+                @MTI_DEFER {
+                    free(valuePtr);
+                };
+                [nsValue getValue:valuePtr];
+                
+                MTIVector *vector = [MTIVector vectorWithDoubleValues:valuePtr count:size/sizeof(double)];
+                [result setObject:vector forKey:propertyKey];
+            }else {
+                [otherKeys addObject:propertyKey];
+            }
     }];
     [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
     return result;

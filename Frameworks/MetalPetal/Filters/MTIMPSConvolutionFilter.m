@@ -107,4 +107,7 @@
                    outputTextureDescriptor:outputTextureDescriptor];
 }
 
++ (NSSet *)propertyNamesToAttributes {
+    return [NSSet setWithObjects:@"bias", nil];
+}
 @end

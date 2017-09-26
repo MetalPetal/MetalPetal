@@ -35,4 +35,8 @@
     return [self.class.kernel applyToInputImages:@[self.inputForegroundImage,self.inputBackgroundImage] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
 }
 
++ (NSSet *)propertyNamesToAttributes {
+    return [NSSet setWithObjects:@"inputBackgroundImage", @"inputBackgroundImage", nil];
+}
+
 @end

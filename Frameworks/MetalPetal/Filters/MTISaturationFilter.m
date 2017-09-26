@@ -35,4 +35,7 @@
     return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIGetParametersDictionaryForFilter(self) outputTextureDescriptor:outputTextureDescriptor];
 }
 
++ (NSSet *)propertyNamesToAttributes {
+    return [NSSet setWithObjects:@"saturation", nil];
+}
 @end

@@ -20,6 +20,10 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 
 @property (nonatomic, readonly, nullable) MTIImage *outputImage;
 
+// return property names
+// * property in NSSet will be coverted as shader parameter
+// * required protocal method
++ (NSSet <NSString *> *)propertyNamesToAttributes;
 @end
 
 NS_ASSUME_NONNULL_END
