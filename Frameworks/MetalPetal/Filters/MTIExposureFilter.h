@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @property (nonatomic) float exposure;
-
+ 
 @end
 
 NS_ASSUME_NONNULL_END

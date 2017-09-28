@@ -431,6 +431,18 @@ static BOOL storageExistInObjectForPropertyWithKey(Class objectClass, NSString *
     }
 }
 
+//static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
+//        NSObject *object = filter;
+//        NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +(void)propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
+//    NSSet *attributeNames = [filter.class propertyNamesToAttributes];
+//    for (NSString *atrributeName in attributeNames) {
+//        if (storageExistInObjectForPropertyWithKey(filter.class, atrributeName)) {
+//            
+//        }
+//    }
+//    return @{};
+//}
+
 static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
     NSDictionary *cachedKeys = objc_getAssociatedObject(object, MTIModelCachedPropertyKeysWithTypeDescriptionKey);
     if (cachedKeys != nil) return cachedKeys;
@@ -473,7 +485,6 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
 NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
-    NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
     NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
@@ -499,3 +510,5 @@ NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
     [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
     return result;
 }
+
+

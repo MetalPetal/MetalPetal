@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) float saturation;
 
-@property(nonatomic) CGSize sizeOTEST;
 @end
 
 NS_ASSUME_NONNULL_END
