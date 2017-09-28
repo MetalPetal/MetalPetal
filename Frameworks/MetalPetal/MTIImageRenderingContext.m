@@ -14,7 +14,7 @@
 
 @interface MTIImageRenderingDependencyGraph : NSObject
 
-@property (nonatomic,strong) NSMapTable<id<MTIImagePromise>,NSHashTable<id<MTIImagePromise>> *> *promiseDenpendentsTable;
+@property (nonatomic,strong) NSMapTable<id<MTIImagePromise>,NSMutableArray<id<MTIImagePromise>> *> *promiseDenpendentsTable;
 
 @end
 
@@ -30,9 +30,9 @@
 - (void)addDependenciesForImage:(MTIImage *)image {
     __auto_type dependencies = image.promise.dependencies;
     for (MTIImage *dependency in dependencies) {
-        NSHashTable *dependents = [self.promiseDenpendentsTable objectForKey:dependency.promise];
+        __auto_type dependents = [self.promiseDenpendentsTable objectForKey:dependency.promise];
         if (!dependents) {
-            dependents = [NSHashTable hashTableWithOptions:NSMapTableStrongMemory|NSMapTableObjectPointerPersonality];
+            dependents = [NSMutableArray array];
             [self.promiseDenpendentsTable setObject:dependents forKey:dependency.promise];
         }
         [dependents addObject:image.promise];
@@ -45,10 +45,11 @@
 }
 
 - (void)removeDependent:(id<MTIImagePromise>)dependent forPromise:(id<MTIImagePromise>)promise {
-    NSHashTable *dependents = [self.promiseDenpendentsTable objectForKey:promise];
+    __auto_type dependents = [self.promiseDenpendentsTable objectForKey:promise];
     NSAssert(dependents, @"");
     NSAssert([dependents containsObject:dependent], @"");
-    [dependents removeObject:dependent];
+    NSUInteger index = [dependents indexOfObject:dependent];
+    [dependents removeObjectAtIndex:index];
 }
 
 @end
