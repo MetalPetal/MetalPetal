@@ -24,6 +24,7 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 // * property in NSSet will be coverted as shader parameter
 // * required protocal method
 + (NSSet <NSString *> *)inputParameterKeys;
+
 @end
 
 NS_ASSUME_NONNULL_END

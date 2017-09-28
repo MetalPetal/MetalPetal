@@ -9,7 +9,7 @@
 #import "MTIExposureFilter.h"
 #import "MTIComputePipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
-#import "MTIFilter+Property.h"
+#import "MTIFilterUtilities.h"
 #import "MTIImage.h"
 
 @implementation MTIExposureFilter

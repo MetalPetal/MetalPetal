@@ -11,7 +11,7 @@
 #import "MTIImage.h"
 #import "MTIKernel.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MTIFilter+Property.h"
+#import "MTIFilterUtilities.h"
 
 @implementation MTIColorInvertFilter
 

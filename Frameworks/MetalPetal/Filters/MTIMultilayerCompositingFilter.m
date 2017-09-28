@@ -22,7 +22,7 @@
     return kernel;
 }
 
-+ (NSSet<NSString *> *)propertyNamesToAttributes {
++ (NSSet<NSString *> *)inputParameterKeys {
     return [NSSet set];
 }
 
