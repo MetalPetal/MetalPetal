@@ -183,7 +183,24 @@
             }
             return nil;
         }
-        cachedFunction = [library newFunctionWithName:descriptor.name];
+        
+        if (@available(iOS 10.0, *)) {
+            if (descriptor.constantValues) {
+                NSError *error = nil;
+                cachedFunction = [library newFunctionWithName:descriptor.name constantValues:descriptor.constantValues error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
+            } else {
+                cachedFunction = [library newFunctionWithName:descriptor.name];
+            }
+        } else {
+            cachedFunction = [library newFunctionWithName:descriptor.name];
+        }
+        
         if (!cachedFunction) {
             if (inOutError) {
                 *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFunctionNotFound userInfo:@{}];
