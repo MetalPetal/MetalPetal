@@ -40,12 +40,12 @@
 #import "MTIRenderPipeline.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTISamplerDescriptor.h"
-#import "MTIShaderTypes.h"
 #import "MTITextureDescriptor.h"
 #import "MTITexturePool.h"
 #import "MTIVector.h"
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
+#import "MTIShaderTypes.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;
 FOUNDATION_EXPORT const unsigned char MetalPetalVersionString[];
