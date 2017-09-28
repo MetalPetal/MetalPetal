@@ -13,15 +13,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIComputePipeline, MTIFunctionDescriptor, MTIImage;
-@interface MTIComputePipelineKernel : NSObject <MTIKernel>
 
-@property (nonatomic, readonly) MTLPixelFormat pixelFormat;
+@interface MTIComputePipelineKernel : NSObject <MTIKernel>
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor pixelFormat:(MTLPixelFormat)pixelFormat NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor NS_DESIGNATED_INITIALIZER;
 
 - (nullable MTIComputePipeline *)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;
 

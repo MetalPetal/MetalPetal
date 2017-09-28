@@ -18,7 +18,7 @@
     static MTIComputePipelineKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        kernel = [[MTIComputePipelineKernel alloc] initWithComputeFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"adjustExposure"] pixelFormat: MTLPixelFormatBGRA8Unorm_sRGB];
+        kernel = [[MTIComputePipelineKernel alloc] initWithComputeFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"adjustExposure"]];
     });
     return kernel;
 }
@@ -27,7 +27,7 @@
     if (!self.inputImage) {
         return nil;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
+    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
     outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
     return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIFilterGetParametersDictionary(self) outputTextureDescriptor:outputTextureDescriptor];
 }

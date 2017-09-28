@@ -124,18 +124,15 @@
 
 @interface MTIComputePipelineKernel()
 
-@property (nonatomic, strong) MTIFunctionDescriptor *computeFunctionDescriptor;
-
-@property (nonatomic, readwrite, assign) MTLPixelFormat pixelFormat;
+@property (nonatomic, copy, readonly) MTIFunctionDescriptor *computeFunctionDescriptor;
 
 @end
 
 @implementation MTIComputePipelineKernel
 
-- (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor pixelFormat:(MTLPixelFormat)pixelFormat {
+- (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor {
     if (self = [super init]) {
         _computeFunctionDescriptor = [computeFunctionDescriptor copy];
-        _pixelFormat = pixelFormat;
     }
     return self;
 }
