@@ -50,7 +50,7 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithColorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPixelFormat:(MTLPixelFormat)format NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic,readonly) MTLPixelFormat pixelFormat;
 

@@ -337,8 +337,11 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 
 @implementation MTIMultilayerCompositeKernel
 
-- (instancetype)initWithColorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor {
+- (instancetype)initWithPixelFormat:(MTLPixelFormat)format {
     if (self = [super init]) {
+        MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+        colorAttachmentDescriptor.pixelFormat = format;
+        colorAttachmentDescriptor.blendingEnabled = NO;
         _colorAttachmentDescriptor = colorAttachmentDescriptor;
     }
     return self;

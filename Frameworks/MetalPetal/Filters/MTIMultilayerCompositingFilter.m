@@ -14,10 +14,7 @@
     static MTIMultilayerCompositeKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-        colorAttachmentDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-        colorAttachmentDescriptor.blendingEnabled = NO;
-        kernel = [[MTIMultilayerCompositeKernel alloc] initWithColorAttachmentDescriptor:colorAttachmentDescriptor];
+        kernel = [[MTIMultilayerCompositeKernel alloc] initWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
     });
     return kernel;
 }
