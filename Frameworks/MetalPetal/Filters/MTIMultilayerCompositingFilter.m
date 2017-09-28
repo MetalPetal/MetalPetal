@@ -22,6 +22,10 @@
     return kernel;
 }
 
++ (NSSet<NSString *> *)propertyNamesToAttributes {
+    return [NSSet set];
+}
+
 - (MTIImage *)outputImage {
     if (!self.inputBackgroundImage) {
         return nil;
