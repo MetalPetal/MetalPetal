@@ -38,4 +38,5 @@
 + (NSSet *)inputParameterKeys {
     return [NSSet setWithObjects:@"saturation", nil];
 }
+
 @end

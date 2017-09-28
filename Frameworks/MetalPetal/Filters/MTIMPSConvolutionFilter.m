@@ -110,4 +110,5 @@
 + (NSSet *)inputParameterKeys {
     return [NSSet setWithObjects:@"bias", nil];
 }
+
 @end
