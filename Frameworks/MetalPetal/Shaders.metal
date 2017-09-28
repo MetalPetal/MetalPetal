@@ -85,3 +85,26 @@ kernel void adjustExposure(
     float4 outColor = float4(inColor.rgb * pow(2.0, exposure), 1.0);
     outTexture.write(outColor, gid);
 }
+
+vertex VertexOut multilayerCompositingVertexShader(
+                                         const device VertexIn * vertices [[ buffer(0) ]],
+                                         constant float4x4 & transformMatrix [[ buffer(1) ]],
+                                         constant float4x4 & orthographicMatrix [[ buffer(2) ]],
+                                         uint vid [[ vertex_id ]]
+                                         ) {
+    VertexOut outVertex;
+    VertexIn inVertex = vertices[vid];
+    outVertex.position = transformMatrix * inVertex.position * orthographicMatrix;
+    outVertex.texcoords = inVertex.textureCoordinate;
+    return outVertex;
+}
+
+fragment float4 multilayerCompositingFragmentShader(VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                   ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return currentColor + textureColor;
+}

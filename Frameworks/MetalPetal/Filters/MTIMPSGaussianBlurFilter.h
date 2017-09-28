@@ -6,8 +6,9 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import "MTIFilter.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIMPSGaussianBlurFilter : NSObject <MTIFilter>
 
@@ -16,3 +17,5 @@
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @end
+
+NS_ASSUME_NONNULL_END

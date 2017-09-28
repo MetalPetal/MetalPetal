@@ -57,6 +57,16 @@
     return [self initWithValues:values count:6];
 }
 
+- (instancetype)initWithCATransform3D:(CATransform3D)t {
+    float values[16] = {
+        (float)t.m11, (float)t.m12, (float)t.m13, (float)t.m14,
+        (float)t.m21, (float)t.m22, (float)t.m23, (float)t.m24,
+        (float)t.m31, (float)t.m32, (float)t.m33, (float)t.m34,
+        (float)t.m41, (float)t.m42, (float)t.m43, (float)t.m44
+    };
+    return [self initWithValues:values count:16];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
     if (!data) {

@@ -38,6 +38,8 @@
 
 @property (nonatomic, strong) MTIMPSConvolutionFilter *convolutionFilter;
 
+@property (nonatomic, strong) MTIMultilayerCompositingFilter *compositingFilter;
+
 @end
 
 @implementation ImageRendererViewController
@@ -67,6 +69,7 @@
     self.exposureFilter = [[MTIExposureFilter alloc] init];
     self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
+    self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
     
     float matrix[9] = {
         -1, 0, 1,
@@ -134,6 +137,33 @@
     return self.overlayBlendFilter.outputImage;
 }
 
+- (MTIImage *)multilayerCompositingTestOutputImage {
+    self.compositingFilter.inputBackgroundImage = self.inputImage;
+    self.compositingFilter.layers = @[
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(900, 900) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal]
+                                      ];
+    return self.compositingFilter.outputImage;
+}
+
 - (void)drawInMTKView:(MTKView *)view {
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
     @autoreleasepool {
@@ -141,7 +171,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
