@@ -43,4 +43,8 @@
     return [super valueForKey:key];
 }
 
++ (NSSet *)propertyNamesToAttributes {
+    return [NSSet setWithObjects:@"colorMatrix", nil];
+}
+
 @end
