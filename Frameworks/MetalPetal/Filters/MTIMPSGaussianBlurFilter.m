@@ -52,7 +52,7 @@
     return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
 }
 
-+ (NSSet *)propertyNamesToAttributes {
++ (NSSet *)inputParameterKeys {
     return [NSSet setWithObjects:@"radius", nil];
 }
 @end

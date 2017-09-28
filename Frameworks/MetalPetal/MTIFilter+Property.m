@@ -457,8 +457,8 @@ static NSString *propertyTypeWithPropertyName(NSObject *object ,NSString *proper
 
 static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
-    NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +(void)propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
-    NSSet *propertyNames = [filter.class propertyNamesToAttributes];
+    NSCAssert([object.class respondsToSelector:@selector(inputParameterKeys)], ([NSString stringWithFormat:@"method: +(void)inputParameterKeys NOT implement， cls %@", NSStringFromClass(object.class)]));
+    NSSet *propertyNames = [filter.class inputParameterKeys];
     NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
     for (NSString *propertyName in propertyNames) {
         NSString *type = propertyTypeWithPropertyName(object, propertyName);

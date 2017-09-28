@@ -32,7 +32,7 @@
     return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIGetParametersDictionaryForFilter(self) outputTextureDescriptor:outputTextureDescriptor];
 }
 
-+ (NSSet *)propertyNamesToAttributes {
++ (NSSet *)inputParameterKeys {
     return [NSSet setWithObjects:@"exposure", nil];
 }
 

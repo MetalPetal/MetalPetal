@@ -43,7 +43,7 @@
     return [super valueForKey:key];
 }
 
-+ (NSSet *)propertyNamesToAttributes {
++ (NSSet *)inputParameterKeys {
     return [NSSet setWithObjects:@"colorMatrix", nil];
 }
 
