@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
 @interface MTIVector : NSObject <NSCopying, NSSecureCoding>
 
@@ -23,6 +24,7 @@
 - (instancetype)initWithCGSize:(CGSize)s;
 - (instancetype)initWithCGRect:(CGRect)r;
 - (instancetype)initWithCGAffineTransform:(CGAffineTransform)t;
+- (instancetype)initWithCATransform3D:(CATransform3D)t;
 
 @property (readonly) NSUInteger count;
 
