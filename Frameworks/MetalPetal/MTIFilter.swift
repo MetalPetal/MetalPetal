@@ -10,7 +10,7 @@ import Foundation
 extension MTIFilter {
     
     public var parameters: Dictionary<String, Any> {
-        return MTIGetParametersDictionaryForFilter(self)
+        return MTIFilterGetParametersDictionary(self)
     }
     
 }

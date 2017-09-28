@@ -32,7 +32,7 @@
     }
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
     outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIGetParametersDictionaryForFilter(self) outputTextureDescriptor:outputTextureDescriptor];
+    return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIFilterGetParametersDictionary(self) outputTextureDescriptor:outputTextureDescriptor];
 }
 
 - (id)valueForKey:(NSString *)key {
