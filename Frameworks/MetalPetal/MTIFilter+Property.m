@@ -431,17 +431,41 @@ static BOOL storageExistInObjectForPropertyWithKey(Class objectClass, NSString *
     }
 }
 
-//static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
-//        NSObject *object = filter;
-//        NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +(void)propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
-//    NSSet *attributeNames = [filter.class propertyNamesToAttributes];
-//    for (NSString *atrributeName in attributeNames) {
-//        if (storageExistInObjectForPropertyWithKey(filter.class, atrributeName)) {
-//            
-//        }
-//    }
-//    return @{};
-//}
+static NSString *propertyTypeWithPropertyName(NSObject *object ,NSString *propertyName) {
+    NSString *type = nil;
+    if (storageExistInObjectForPropertyWithKey(object.class, propertyName)) {
+        NSError *error;
+        objc_property_t property = class_getProperty(object.class, propertyName.UTF8String);
+        MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property, &error);
+        if (error.code == MTIFilterPropertyErrorInvalidTypeString) {
+            mti_debug_print(@"%@override -(id)valueForKey:(NSString *)key; to provide a value for %@. E.g.: MTIColorMatrixFilter.", error.localizedDescription, propertyName);
+        } else {
+            if (error) {
+                mti_debug_print(@"%@", error.localizedDescription);
+            }
+        }
+        if (attributes == NULL) return nil;
+        
+        @MTI_DEFER {
+            free(attributes);
+        };
+        
+         type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
+    }
+    return type;
+}
+
+static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
+    NSObject *object = filter;
+    NSCAssert([object.class respondsToSelector:@selector(propertyNamesToAttributes)], ([NSString stringWithFormat:@"method: +(void)propertyNamesToAttributes NOT implement， cls %@", NSStringFromClass(object.class)]));
+    NSSet *propertyNames = [filter.class propertyNamesToAttributes];
+    NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
+    for (NSString *propertyName in propertyNames) {
+        NSString *type = propertyTypeWithPropertyName(object, propertyName);
+        if (type) [keysWithTypeDescription setObject:type forKey:propertyName];
+    }
+return keysWithTypeDescription;
+}
 
 static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
     NSDictionary *cachedKeys = objc_getAssociatedObject(object, MTIModelCachedPropertyKeysWithTypeDescriptionKey);
@@ -454,25 +478,8 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
         
         if (property == NULL) return;
         
-        if (storageExistInObjectForPropertyWithKey(object.class, propertyKey)) {
-            NSError *error;
-            MTIPropertyAttributes *attributes = mtiCopyPropertyAttributes(property, &error);
-            if (error.code == MTIFilterPropertyErrorInvalidTypeString) {
-                mti_debug_print(@"%@override -(id)valueForKey:(NSString *)key; to provide a value for %@. E.g.: MTIColorMatrixFilter.", error.localizedDescription, propertyKey);
-            }else {
-                if (error) {
-                    mti_debug_print(@"%@", error.localizedDescription);   
-                }
-            }
-            if (attributes == NULL) return;
-            
-            @MTI_DEFER {
-                free(attributes);
-            };
-            
-            NSString *type = [NSString stringWithCString:attributes->type encoding:NSUTF8StringEncoding];
-            [keysWithTypeDescription setObject:type forKey:propertyKey];
-        }
+        NSString *type = propertyTypeWithPropertyName(object, propertyKey);
+        if (type) [keysWithTypeDescription setObject:type forKey:propertyKey];
     });
     
     // It doesn't really matter if we replace another thread's work, since we do
@@ -485,12 +492,11 @@ static NSDictionary *propertyKeysWithTypeDescriptionFor(NSObject *object) {
 NSDictionary * MTIGetParametersDictionaryForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
-    NSDictionary *keys = propertyKeysWithTypeDescriptionFor(object);
+    NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
     const NSArray *valueTypesNeedsRepresentedByMTIVector = @[@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}"];
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
-        if (![[filter.class propertyNamesToAttributes] containsObject:propertyKey]) return ;
             if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
                 NSValue *nsValue = [object valueForKey:propertyKey];
                 NSUInteger size;
