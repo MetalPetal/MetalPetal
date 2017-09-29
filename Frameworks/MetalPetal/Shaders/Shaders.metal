@@ -14,12 +14,11 @@ using namespace metalpetal;
 
 vertex VertexOut passthroughVertexShader(
     const device VertexIn * vertices [[ buffer(0) ]],
-	//constant float4x4 & modelViewProjectionMatrix [[ buffer(1) ]],
 	uint vid [[ vertex_id ]]
 ) {
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
-    outVertex.position = inVertex.position; //modelViewProjectionMatrix * float4(inVertex.position);
+    outVertex.position = inVertex.position;
 	outVertex.texcoords = inVertex.textureCoordinate;
 	return outVertex;
 }
@@ -29,7 +28,7 @@ fragment float4 passthroughFragmentShader(
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
 ) {
-	return colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
 
 fragment float4 colorInvert(
@@ -37,8 +36,9 @@ fragment float4 colorInvert(
     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
     sampler colorSampler [[ sampler(0) ]]
 ) {
-    float3 color = float3(1.0) - colorTexture.sample(colorSampler, vertexIn.texcoords).rgb;
-    return float4(color, 1.0);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float3 color = float3(1.0) - textureColor.rgb;
+    return float4(color, textureColor.a);
 }
 
 fragment float4 saturationAdjust(
@@ -82,7 +82,7 @@ kernel void adjustExposure(
                            uint2 gid [[thread_position_in_grid]]
                            ) {
     float4 inColor = inTexture.read(gid);
-    float4 outColor = float4(inColor.rgb * pow(2.0, exposure), 1.0);
+    float4 outColor = float4(inColor.rgb * pow(2.0, exposure), inColor.a);
     outTexture.write(outColor, gid);
 }
 
