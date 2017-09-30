@@ -19,8 +19,10 @@
 #import "MTIVector.h"
 
 MTIBlendMode const MTIBlendModeNormal = @"Normal";
+MTIBlendMode const MTIBlendModeMultiply = @"Multiply";
 MTIBlendMode const MTIBlendModeOverlay = @"Overlay";
 MTIBlendMode const MTIBlendModeScreen = @"Screen";
+MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
 
 @interface MTIMultilayerCompositeKernelState: NSObject
 
@@ -32,14 +34,8 @@ MTIBlendMode const MTIBlendModeScreen = @"Screen";
 
 @implementation MTIMultilayerCompositeKernelState
 
-+ (NSDictionary<MTIBlendMode, NSNumber *> *)blendModeIDTable {
-    return @{MTIBlendModeNormal: @0,
-             MTIBlendModeOverlay: @1,
-             MTIBlendModeScreen: @2};
-}
-
 + (NSArray<MTIBlendMode> *)supportedBlendModes {
-    return self.blendModeIDTable.allKeys;
+    return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight];
 }
 
 - (instancetype)initWithContext:(MTIContext *)context colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor error:(NSError **)inOutError {
@@ -82,7 +78,7 @@ MTIBlendMode const MTIBlendModeScreen = @"Screen";
             MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
             
             NSError *error = nil;
-            id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositingVertexShader"] error:&error];
+            id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeVertexShader"] error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;
@@ -90,8 +86,7 @@ MTIBlendMode const MTIBlendModeScreen = @"Screen";
                 return nil;
             }
             
-#warning incomplete fragment shaders
-            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositingFragmentShader"] error:&error];
+            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:[NSString stringWithFormat:@"multilayerComposite%@Blend",mode]] error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;

@@ -20,7 +20,7 @@
     dispatch_once(&onceToken, ^{
         //Hard Light is equivalent to Overlay, but with the bottom and top images swapped.
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hardlightBlend"]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hardLightBlend"]
                                                         colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
     });
     return kernel;
@@ -36,7 +36,7 @@
 }
 
 + (NSSet *)inputParameterKeys {
-    return [NSSet setWithObjects:@"inputBackgroundImage", @"inputBackgroundImage", nil];
+    return [NSSet set];
 }
 
 @end

@@ -42,13 +42,30 @@ namespace metalpetal {
         float2 texcoords;
     };
     
-    METAL_FUNC float4 hardLightBlend(float4 uCb, float4 uCf) {
-        float4 Ct = select(1.0 - 2.0 * (1.0 - uCf) * (1.0 - uCb), 2.0 * uCf * uCb, uCf < float4(0.5));
-        float4 Cb = float4(uCb.rgb * uCb.a, uCb.a);
-        Ct = mix(uCf, Ct, uCb.a);
-        Ct.a = 1.0;
-        return mix(Cb, Ct, uCf.a);
+    METAL_FUNC float4 unpremultiply(float4 s) {
+        return s.a > 0.0 ? float4(s.rgb/s.a, s.a) : float4(0);
     }
+    
+    METAL_FUNC float4 premultiply(float4 s) {
+        return float4(s.rgb*s.a, s.a);
+    }
+    
+    //source over blend
+    METAL_FUNC float4 normalBlend(float4 Cb, float4 Cf) {
+        float4 src = premultiply(Cb);
+        float4 dst = premultiply(Cf);
+        return unpremultiply(dst + src * (1.0 - dst.a));
+    }
+    
+    METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
+        float3 B = clamp(Cb.rgb * Cs.rgb, float3(0), float3(1));
+        return normalBlend(Cb, float4(B, Cs.a));
+    }
+    
+    METAL_FUNC float4 hardLightBlend(float4 Cb, float4 Cs) {
+        return Cs;
+    }
+    
 }
 
 #endif

@@ -64,17 +64,6 @@ fragment float4 colorMatrixProjection(
     return textureColor * colorMatrix;
 }
 
-fragment float4 hardlightBlend(VertexOut vertexIn [[ stage_in ]],
-                             texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                             sampler colorSampler [[ sampler(0) ]],
-                             texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
-                             sampler overlaySampler [[ sampler(1) ]]
-                             ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    return hardLightBlend(uCb, uCf);
-}
-
 kernel void adjustExposure(
                            texture2d<float, access::read> inTexture [[texture(0)]],
                            texture2d<float, access::write> outTexture [[texture(1)]],
@@ -84,27 +73,4 @@ kernel void adjustExposure(
     float4 inColor = inTexture.read(gid);
     float4 outColor = float4(inColor.rgb * pow(2.0, exposure), inColor.a);
     outTexture.write(outColor, gid);
-}
-
-vertex VertexOut multilayerCompositingVertexShader(
-                                         const device VertexIn * vertices [[ buffer(0) ]],
-                                         constant float4x4 & transformMatrix [[ buffer(1) ]],
-                                         constant float4x4 & orthographicMatrix [[ buffer(2) ]],
-                                         uint vid [[ vertex_id ]]
-                                         ) {
-    VertexOut outVertex;
-    VertexIn inVertex = vertices[vid];
-    outVertex.position = transformMatrix * inVertex.position * orthographicMatrix;
-    outVertex.texcoords = inVertex.textureCoordinate;
-    return outVertex;
-}
-
-fragment float4 multilayerCompositingFragmentShader(VertexOut vertexIn [[ stage_in ]],
-                                                    float4 currentColor [[color(0)]],
-                                                    constant float & opacity [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]]
-                                                   ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    return currentColor + textureColor;
 }
