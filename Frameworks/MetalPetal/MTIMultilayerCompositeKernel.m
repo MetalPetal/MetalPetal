@@ -229,6 +229,20 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         return nil;
     }
     
+    //calc layerContentResolutions early to avoid recursive command encoding.
+    NSMutableArray<id<MTIImagePromiseResolution>> *layerContentResolutions = [NSMutableArray array];
+    for (MTICompositingLayer *layer in self.layers) {
+        NSError *error = nil;
+        id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        [layerContentResolutions addObject:contentResolution];
+    }
+    
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -248,15 +262,9 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     
     //render layers
-    for (MTICompositingLayer *layer in self.layers) {
-        NSError *error = nil;
-        id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
+    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
+        MTICompositingLayer *layer = self.layers[index];
+        id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
         MTIVertices *vertices = [self verticesForRect:CGRectMake(-layer.size.width/2.0, -layer.size.height/2.0, layer.size.width, layer.size.height)];
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];

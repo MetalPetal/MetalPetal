@@ -43,18 +43,18 @@ namespace metalpetal {
     };
     
     METAL_FUNC float4 unpremultiply(float4 s) {
-        return s.a > 0.0 ? float4(s.rgb/s.a, s.a) : float4(0);
+        return s.a > 0 ? float4(s.rgb/s.a, s.a) : float4(0);
     }
     
     METAL_FUNC float4 premultiply(float4 s) {
-        return float4(s.rgb*s.a, s.a);
+        return float4(s.rgb * s.a, s.a);
     }
     
     //source over blend
     METAL_FUNC float4 normalBlend(float4 Cb, float4 Cf) {
-        float4 src = premultiply(Cb);
-        float4 dst = premultiply(Cf);
-        return unpremultiply(dst + src * (1.0 - dst.a));
+        float4 dst = premultiply(Cb);
+        float4 src = premultiply(Cf);
+        return unpremultiply(src + dst * (1.0 - src.a));
     }
     
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {

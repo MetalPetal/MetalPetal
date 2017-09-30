@@ -41,7 +41,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
-    MTLPixelFormat pixelFormat = MTLPixelFormatRGBA8Unorm_sRGB;
+    MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:image.size.width height:image.size.height mipmapped:NO];
     outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     return [[MTIUnpremultiplyAlphaFilter kernelWithPixelFormat:pixelFormat] applyToInputImages:@[image] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
