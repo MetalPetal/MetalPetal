@@ -8,18 +8,11 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
+#import "MTIBlendModes.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage;
-
-typedef NSString * MTIBlendMode NS_EXTENSIBLE_STRING_ENUM;
-
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeNormal;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeMultiply;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeOverlay;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHardLight;
 
 @interface MTICompositingLayer: NSObject
 

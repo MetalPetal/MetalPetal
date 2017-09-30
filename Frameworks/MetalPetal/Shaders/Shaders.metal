@@ -31,6 +31,15 @@ fragment float4 passthroughFragmentShader(
     return colorTexture.sample(colorSampler, vertexIn.texcoords);
 }
 
+fragment float4 unpremultiplyAlpha(
+                            VertexOut vertexIn [[ stage_in ]],
+                            texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                            sampler colorSampler [[ sampler(0) ]]
+                            ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return unpremultiply(textureColor);
+}
+
 fragment float4 colorInvert(
     VertexOut vertexIn [[ stage_in ]],
     texture2d<float, access::sample> colorTexture [[ texture(0) ]],

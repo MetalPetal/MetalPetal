@@ -63,6 +63,13 @@ typedef struct MTITextureDimensions MTITextureDimensions;
 
 @end
 
+@interface MTIColorImagePromise: NSObject <MTIImagePromise>
+
+@property (nonatomic,readonly) simd_float4 color;
+
+- (instancetype)initWithColor:(simd_float4)color;
+
+@end
 
 NS_ASSUME_NONNULL_END
 

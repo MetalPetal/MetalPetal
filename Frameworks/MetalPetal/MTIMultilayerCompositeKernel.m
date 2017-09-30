@@ -18,12 +18,6 @@
 #import "MTIFilter.h"
 #import "MTIVector.h"
 
-MTIBlendMode const MTIBlendModeNormal = @"Normal";
-MTIBlendMode const MTIBlendModeMultiply = @"Multiply";
-MTIBlendMode const MTIBlendModeOverlay = @"Overlay";
-MTIBlendMode const MTIBlendModeScreen = @"Screen";
-MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
-
 @interface MTIMultilayerCompositeKernelState: NSObject
 
 @property (nonatomic,copy,readonly) NSDictionary<MTIBlendMode, MTIRenderPipeline *> *pipelines;
@@ -33,10 +27,6 @@ MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
 @end
 
 @implementation MTIMultilayerCompositeKernelState
-
-+ (NSArray<MTIBlendMode> *)supportedBlendModes {
-    return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight];
-}
 
 - (instancetype)initWithContext:(MTIContext *)context colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor error:(NSError **)inOutError {
     if (self = [super init]) {
@@ -74,7 +64,7 @@ MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
         }
         
         NSMutableDictionary *pipelines = [NSMutableDictionary dictionary];
-        for (MTIBlendMode mode in self.class.supportedBlendModes) {
+        for (MTIBlendMode mode in MTIBlendModeGetAllModes()) {
             MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
             
             NSError *error = nil;
