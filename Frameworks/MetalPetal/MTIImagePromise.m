@@ -218,9 +218,9 @@
 @implementation MTIColorImagePromise
 @synthesize dimensions = _dimensions;
 
-- (instancetype)initWithColor:(simd_float4)color {
+- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size {
     if (self = [super init]) {
-        _dimensions = (MTITextureDimensions){1,1,1};
+        _dimensions = (MTITextureDimensions){size.width,size.height,1};
         _color = color;
     }
     return self;
@@ -236,9 +236,9 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
-    textureDescriptor.width = _dimensions.width;
-    textureDescriptor.height = _dimensions.height;
-    textureDescriptor.depth = _dimensions.depth;
+    textureDescriptor.width = 1;
+    textureDescriptor.height = 1;
+    textureDescriptor.depth = 1;
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = MTLPixelFormatRGBA8Unorm_sRGB;
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];

@@ -67,7 +67,7 @@ typedef struct MTITextureDimensions MTITextureDimensions;
 
 @property (nonatomic,readonly) simd_float4 color;
 
-- (instancetype)initWithColor:(simd_float4)color;
+- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size;
 
 @end
 
