@@ -57,11 +57,13 @@ namespace metalpetal {
         return unpremultiply(src + dst * (1.0 - src.a));
     }
     
+    //untested
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
         float3 B = clamp(Cb.rgb * Cs.rgb, float3(0), float3(1));
         return normalBlend(Cb, float4(B, Cs.a));
     }
     
+    //unimplemented
     METAL_FUNC float4 hardLightBlend(float4 Cb, float4 Cs) {
         return Cs;
     }
