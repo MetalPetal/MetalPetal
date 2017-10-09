@@ -184,7 +184,6 @@ static const ColorConversion kColorConversion709 = {
     
     OSType pixelFormatType = CVPixelBufferGetPixelFormatType(self.pixelBuffer);
     
-#warning texture pixel format
     switch (pixelFormatType) {
         case kCVPixelFormatType_32BGRA:{
             CVMetalTextureRef metalTexture = NULL;
@@ -192,7 +191,7 @@ static const ColorConversion kColorConversion709 = {
                                                                         renderingContext.context.coreVideoTextureCache,
                                                                         self.pixelBuffer,
                                                                         NULL,
-                                                                        MTLPixelFormatBGRA8Unorm,
+                                                                        self.textureDescriptor.pixelFormat,
                                                                         CVPixelBufferGetWidth(self.pixelBuffer),
                                                                         CVPixelBufferGetHeight(self.pixelBuffer),
                                                                         0,
