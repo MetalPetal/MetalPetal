@@ -6,8 +6,8 @@
 //
 //
 
-#import <UIKit/UIKit.h>
 #import "MTIFilter.h"
+
 @import simd;
 
 NS_ASSUME_NONNULL_BEGIN

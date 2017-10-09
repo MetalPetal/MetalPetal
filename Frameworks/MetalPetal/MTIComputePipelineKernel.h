@@ -5,8 +5,6 @@
 //  Created by yi chen on 2017/7/27.
 //
 //
-
-#import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
 

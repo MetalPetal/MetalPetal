@@ -5,7 +5,6 @@
 //  Created by Yu Ao on 30/09/2017.
 //
 
-#import <Foundation/Foundation.h>
 #import "MTIFilter.h"
 #import "MTIImage.h"
 
