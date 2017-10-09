@@ -11,6 +11,7 @@
 #import "MTIImage.h"
 #import "MTIImage+Promise.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
+#import "MTIError.h"
 
 @interface MTIImageRenderingDependencyGraph : NSObject
 
@@ -208,6 +209,56 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             }
         }];
     }
+}
+
+@end
+
+@interface MTIImageBuffer () <MTIImagePromise>
+
+@property (nonatomic,strong) MTIImage *image;
+
+@property (nonatomic,strong) MTIPersistImageResolutionHolder *resolution;
+
+@end
+
+@implementation MTIImageBuffer
+
+@synthesize dimensions = _dimensions;
+
++ (MTIImage *)bufferForImage:(MTIImage *)image {
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (instancetype)initWithImage:(MTIImage *)image {
+    if (self = [super init]) {
+        NSAssert(image.cachePolicy == MTIImageCachePolicyPersistent, @"Invalid cache policy.");
+        _dimensions = image.promise.dimensions;
+        _image = image;
+    }
+    return self;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    if (!_resolution) {
+        MTIPersistImageResolutionHolder *persistResolution = [renderingContext.context valueForImage:_image inTable:MTIContextImagePersistentResolutionHolderTable];
+        if (!persistResolution) {
+            if (error) {
+                *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToGetRenderedBuffer userInfo:@{}];
+            }
+            return nil;
+        }
+        _resolution = persistResolution;
+        _image = nil;
+    }
+    return _resolution.renderTarget;
 }
 
 @end

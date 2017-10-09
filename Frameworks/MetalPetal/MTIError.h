@@ -36,6 +36,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
+    MTIErrorFailedToGetRenderedBuffer = 5005,
 };
 
 NS_ASSUME_NONNULL_END
