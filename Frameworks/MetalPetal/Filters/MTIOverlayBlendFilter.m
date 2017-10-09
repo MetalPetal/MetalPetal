@@ -21,7 +21,7 @@
         //Hard Light is equivalent to Overlay, but with the bottom and top images swapped.
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
                                                         fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hardLightBlend"]
-                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm];
     });
     return kernel;
 }

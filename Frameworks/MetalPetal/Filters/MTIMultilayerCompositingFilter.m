@@ -14,7 +14,7 @@
     static MTIMultilayerCompositeKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        kernel = [[MTIMultilayerCompositeKernel alloc] initWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+        kernel = [[MTIMultilayerCompositeKernel alloc] initWithPixelFormat:MTLPixelFormatBGRA8Unorm];
     });
     return kernel;
 }

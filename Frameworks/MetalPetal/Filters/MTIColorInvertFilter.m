@@ -21,7 +21,7 @@
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
                                                         fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorInvert"]
-                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB];
+                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm];
     });
     return kernel;
 }
