@@ -49,6 +49,7 @@
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIShaderTypes.h"
+#import "MTIImageView.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;
 FOUNDATION_EXPORT const unsigned char MetalPetalVersionString[];

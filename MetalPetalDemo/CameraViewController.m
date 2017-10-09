@@ -10,11 +10,9 @@
 @import AVFoundation;
 @import MetalPetal;
 
-@interface CameraViewController () <AVCaptureVideoDataOutputSampleBufferDelegate, MTKViewDelegate>
+@interface CameraViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property (nonatomic, strong) MTIContext *context;
-
-@property (nonatomic, strong) MTKView *renderView;
+@property (nonatomic, strong) MTIImageView *renderView;
 
 @property (nonatomic, strong) MTISaturationFilter *saturationFilter;
 @property (nonatomic, strong) MTIColorInvertFilter *colorInvertFilter;
@@ -26,29 +24,14 @@
 @property (nonatomic, strong) AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewlayer;
 
-@property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
-
 @end
 
 @implementation CameraViewController
 
-- (void)dealloc
-{
-    if (self.pixelBuffer) {
-        CVPixelBufferRelease(self.pixelBuffer);
-        self.pixelBuffer = NULL;
-    }
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    NSError *error;
-    MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
-    self.context = context;
-    
-    self.renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:self.context.device];
-    self.renderView.delegate = self;
+    self.renderView = [[MTIImageView alloc] initWithFrame:self.view.bounds];
     self.renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:self.renderView];
     
@@ -133,27 +116,8 @@
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
     if (CMFormatDescriptionGetMediaType(CMSampleBufferGetFormatDescription(sampleBuffer)) == kCMMediaType_Video) {
-
-        CVPixelBufferRef pixelBuffer = CVPixelBufferRetain(CMSampleBufferGetImageBuffer(sampleBuffer));
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.pixelBuffer) {
-                CVPixelBufferRelease(self.pixelBuffer);
-                self.pixelBuffer = NULL;
-            }
-            self.pixelBuffer = pixelBuffer;
-        });
-    }
-}
-
-- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size
-{
-    
-}
-
-- (void)drawInMTKView:(nonnull MTKView *)view
-{
-    if (self.pixelBuffer) {
-        MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:self.pixelBuffer];
+        CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+        MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:pixelBuffer];
         self.saturationFilter.inputImage = inputImage;
         self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
         self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
@@ -164,12 +128,12 @@
         self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
         self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
         MTIImage *outputImage = self.colorInvertFilter.outputImage;
-        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-        request.drawableProvider = self.renderView;
-        request.resizingMode = MTIDrawableRenderingResizingModeAspect;
-        [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.renderView.image = outputImage;
+        });
     }
 }
+
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
