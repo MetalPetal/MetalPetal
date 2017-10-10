@@ -242,7 +242,7 @@
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
-    uint8_t colors[4] = {_color[0] * 255, _color[1] * 255, _color[2] * 255, _color[3] * 255};
+    uint8_t colors[4] = {_color[2] * 255, _color[1] * 255, _color[0] * 255, _color[3] * 255};
     [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     return renderTarget;
 }

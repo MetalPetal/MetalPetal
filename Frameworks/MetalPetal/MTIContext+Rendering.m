@@ -15,6 +15,7 @@
 #import "MTIFilter.h"
 #import "MTIDrawableRendering.h"
 #import "MTIError.h"
+#import "MTIDefer.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -28,6 +29,9 @@
     NSError *error = nil;
     
     id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -72,8 +76,6 @@
     
     CFRelease(renderTexture);
     CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
-    
-    [resolution markAsConsumedBy:self];
     
     if (inOutError) {
         *inOutError = nil;
@@ -122,6 +124,9 @@
     
     NSError *error = nil;
     id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -190,12 +195,6 @@
     
     [renderingContext.commandBuffer commit];
     
-    [resolution markAsConsumedBy:self];
-    
-    if (inOutError) {
-        *inOutError = nil;
-    }
-    
     return YES;
 }
 
@@ -204,6 +203,9 @@
     MTIImage *persistentImage = [image imageWithCachePolicy:MTIImageCachePolicyPersistent];
     NSError *error = nil;
     id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:persistentImage error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
     if (error) {
         if (inOutError) {
             *inOutError = error;
