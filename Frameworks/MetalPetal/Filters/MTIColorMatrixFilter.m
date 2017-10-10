@@ -12,39 +12,34 @@
 #import "MTIImage.h"
 #import "MTIKernel.h"
 #import "MTIRenderPipelineKernel.h"
+#import "MTIVector.h"
+
+@interface MTIColorMatrixFilter ()
+
+@property (nonatomic,copy) MTIVector *colorMatrixValue;
+
+@end
 
 @implementation MTIColorMatrixFilter
 
-+ (MTIRenderPipelineKernel *)kernel {
-    static MTIRenderPipelineKernel *kernel;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorMatrixProjection"]
-                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm];
-    });
-    return kernel;
++ (NSString *)fragmentFunctionName {
+    return @"colorMatrixProjection";
 }
 
-- (MTIImage *)outputImage {
-    if (!self.inputImage) {
-        return nil;
+- (instancetype)init {
+    if (self = [super init]) {
+        self.colorMatrix = matrix_identity_float4x4;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIFilterGetParametersDictionary(self) outputTextureDescriptor:outputTextureDescriptor];
+    return self;
 }
 
-- (id)valueForKey:(NSString *)key {
-    if ([key isEqualToString:@"colorMatrix"]) {
-        NSData *data = [NSData dataWithBytes:&_colorMatrix length:sizeof(_colorMatrix)];
-        return data;
-    }
-    return [super valueForKey:key];
+- (void)setColorMatrix:(simd_float4x4)colorMatrix {
+    _colorMatrixValue = [[MTIVector alloc] initWithFloat4x4:colorMatrix];
+    _colorMatrix = colorMatrix;
 }
 
 + (NSSet *)inputParameterKeys {
-    return [NSSet setWithObjects:@"colorMatrix", nil];
+    return [NSSet setWithObjects:@"colorMatrixValue", nil];
 }
 
 @end

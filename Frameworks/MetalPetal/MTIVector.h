@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
+#import <simd/simd.h>
 
 @interface MTIVector : NSObject <NSCopying, NSSecureCoding>
 
@@ -25,10 +26,9 @@
 - (instancetype)initWithCGRect:(CGRect)r;
 - (instancetype)initWithCGAffineTransform:(CGAffineTransform)t;
 - (instancetype)initWithCATransform3D:(CATransform3D)t;
+- (instancetype)initWithFloat4x4:(simd_float4x4)m;
 
 @property (readonly) NSUInteger count;
-
-@property (readonly) const float *bytes NS_RETURNS_INNER_POINTER;
 
 @property (nonatomic,copy,readonly) NSData *data;
 
@@ -39,5 +39,9 @@
 @property (readonly) CGRect CGRectValue;
 
 @property (readonly) CGAffineTransform CGAffineTransformValue;
+
+@property (readonly) CATransform3D CATransform3DValue;
+
+@property (readonly) simd_float4x4 float4x4Value;
 
 @end

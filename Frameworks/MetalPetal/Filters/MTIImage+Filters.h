@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)imageByUnpremultiplyingAlpha;
 
+- (MTIImage *)imageByPremultiplyingAlpha;
+
 @end
 
 NS_ASSUME_NONNULL_END

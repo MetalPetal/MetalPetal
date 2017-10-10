@@ -7,12 +7,11 @@
 //
 
 #import "MTIFilter.h"
+#import "MTIUnaryImageFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTISaturationFilter : NSObject <MTIFilter>
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
+@interface MTISaturationFilter : MTIUnaryImageFilter
 
 @property (nonatomic) float saturation;
 

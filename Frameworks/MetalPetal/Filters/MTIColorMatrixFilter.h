@@ -7,16 +7,14 @@
 //
 
 #import "MTIFilter.h"
-
-@import simd;
+#import "MTIUnaryImageFilter.h"
+#import <simd/simd.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIColorMatrixFilter : NSObject <MTIFilter>
+@interface MTIColorMatrixFilter : MTIUnaryImageFilter
 
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
-
-@property (nonatomic) matrix_float4x4 colorMatrix;
+@property (nonatomic) simd_float4x4 colorMatrix;
 
 @end
 

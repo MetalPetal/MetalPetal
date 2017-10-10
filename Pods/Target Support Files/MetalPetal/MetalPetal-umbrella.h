@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "MTIAlphaPremultiplicationFilter.h"
 #import "MTIColorInvertFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"
@@ -19,7 +20,7 @@
 #import "MTIMultilayerCompositingFilter.h"
 #import "MTIOverlayBlendFilter.h"
 #import "MTISaturationFilter.h"
-#import "MTIUnpremultiplyAlphaFilter.h"
+#import "MTIUnaryImageFilter.h"
 #import "MetalPetal.h"
 #import "MTIBlendModes.h"
 #import "MTIComputePipeline.h"
@@ -27,7 +28,6 @@
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
 #import "MTICVPixelBufferPromise.h"
-#import "MTIDefer.h"
 #import "MTIDrawableRendering.h"
 #import "MTIError.h"
 #import "MTIFilter.h"

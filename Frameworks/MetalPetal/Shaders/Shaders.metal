@@ -40,6 +40,15 @@ fragment float4 unpremultiplyAlpha(
     return unpremultiply(textureColor);
 }
 
+fragment float4 premultiplyAlpha(
+                                   VertexOut vertexIn [[ stage_in ]],
+                                   texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                   sampler colorSampler [[ sampler(0) ]]
+                                   ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return premultiply(textureColor);
+}
+
 fragment float4 colorInvert(
     VertexOut vertexIn [[ stage_in ]],
     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
@@ -67,10 +76,10 @@ fragment float4 colorMatrixProjection(
                                  VertexOut vertexIn [[ stage_in ]],
                                  texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                  sampler colorSampler [[ sampler(0) ]],
-                                 constant float4x4 & colorMatrix [[ buffer(0) ]]
+                                 constant float4x4 & colorMatrixValue [[ buffer(0) ]]
                                  ) {
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    return textureColor * colorMatrix;
+    return textureColor * colorMatrixValue;
 }
 
 kernel void adjustExposure(

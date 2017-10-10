@@ -13,7 +13,8 @@ s.subspec 'Core' do |ss|
     ss.source_files = '**/*.{h,m,c,mm,metal}'
     ss.private_header_files = [
     'MTIImage+Promise.h',
-    'MTIPrint.h'
+    'MTIPrint.h',
+    'MTIDefer.h'
     ]
 end
 

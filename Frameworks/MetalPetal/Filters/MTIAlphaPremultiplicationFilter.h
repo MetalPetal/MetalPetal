@@ -6,23 +6,19 @@
 //
 
 #import "MTIFilter.h"
+#import "MTIUnaryImageFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIAlphaPremultiplicationFilter: NSObject
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
+@interface MTIUnpremultiplyAlphaFilter : MTIUnaryImageFilter
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image;
 
 @end
 
-@interface MTIUnpremultiplyAlphaFilter : MTIAlphaPremultiplicationFilter <MTIFilter>
+@interface MTIPremultiplyAlphaFilter : MTIUnaryImageFilter
 
-@end
-
-@interface MTIPremultiplyAlphaFilter : MTIAlphaPremultiplicationFilter <MTIFilter>
-
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image;
 
 @end
 

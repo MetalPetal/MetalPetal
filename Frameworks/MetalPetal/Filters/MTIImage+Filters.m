@@ -6,12 +6,16 @@
 //
 
 #import "MTIImage+Filters.h"
-#import "MTIUnpremultiplyAlphaFilter.h"
+#import "MTIAlphaPremultiplicationFilter.h"
 
 @implementation MTIImage (Filters)
 
 - (MTIImage *)imageByUnpremultiplyingAlpha {
     return [MTIUnpremultiplyAlphaFilter imageByProcessingImage:self];
+}
+
+- (MTIImage *)imageByPremultiplyingAlpha {
+    return [MTIPremultiplyAlphaFilter imageByProcessingImage:self];
 }
 
 @end

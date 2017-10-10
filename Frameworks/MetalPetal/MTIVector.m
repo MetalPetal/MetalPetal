@@ -8,6 +8,7 @@
 
 #import "MTIVector.h"
 @import Accelerate;
+@import SceneKit;
 
 @implementation MTIVector
 
@@ -67,6 +68,17 @@
     return [self initWithValues:values count:16];
 }
 
+- (instancetype)initWithFloat4x4:(simd_float4x4)m {
+    SCNMatrix4 t = SCNMatrix4FromMat4(m);
+    float values[16] = {
+        (float)t.m11, (float)t.m12, (float)t.m13, (float)t.m14,
+        (float)t.m21, (float)t.m22, (float)t.m23, (float)t.m24,
+        (float)t.m31, (float)t.m32, (float)t.m33, (float)t.m34,
+        (float)t.m41, (float)t.m42, (float)t.m43, (float)t.m44
+    };
+    return [self initWithValues:values count:16];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
     if (!data) {
@@ -84,31 +96,63 @@
 }
 
 - (CGPoint)CGPointValue {
-    if (self.count > 1) {
-        return CGPointMake(self.bytes[0], self.bytes[1]);
+    if (self.count == 2) {
+        const float * bytes = self.bytes;
+        return CGPointMake(bytes[0], bytes[1]);
     }
     return CGPointZero;
 }
 
 - (CGSize)CGSizeValue {
-    if (self.count > 1) {
-        return CGSizeMake(self.bytes[0], self.bytes[1]);
+    if (self.count == 2) {
+        const float * bytes = self.bytes;
+        return CGSizeMake(bytes[0], bytes[1]);
     }
     return CGSizeZero;
 }
 
 - (CGRect)CGRectValue {
-    if (self.count > 3) {
-        return CGRectMake(self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3]);
+    if (self.count == 4) {
+        const float * bytes = self.bytes;
+        return CGRectMake(bytes[0], bytes[1], bytes[2], bytes[3]);
     }
     return CGRectZero;
 }
 
 - (CGAffineTransform)CGAffineTransformValue {
-    if (self.count > 5) {
-        return CGAffineTransformMake(self.bytes[0], self.bytes[1], self.bytes[2], self.bytes[3], self.bytes[4], self.bytes[5]);
+    if (self.count == 6) {
+        const float * bytes = self.bytes;
+        return CGAffineTransformMake(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5]);
     }
     return CGAffineTransformIdentity;
+}
+
+- (simd_float4x4)float4x4Value {
+    if (self.count == 16) {
+        const float * bytes = self.bytes;
+        SCNMatrix4 m = (SCNMatrix4){
+            bytes[0], bytes[1], bytes[2], bytes[3],
+            bytes[4], bytes[5], bytes[6], bytes[7],
+            bytes[8], bytes[9], bytes[10], bytes[11],
+            bytes[12], bytes[13], bytes[14], bytes[15]
+        };
+        return SCNMatrix4ToMat4(m);
+    }
+    return matrix_identity_float4x4;
+}
+
+- (CATransform3D)CATransform3DValue {
+    if (self.count == 16) {
+        const float * bytes = self.bytes;
+        CATransform3D m = (CATransform3D){
+            bytes[0], bytes[1], bytes[2], bytes[3],
+            bytes[4], bytes[5], bytes[6], bytes[7],
+            bytes[8], bytes[9], bytes[10], bytes[11],
+            bytes[12], bytes[13], bytes[14], bytes[15]
+        };
+        return m;
+    }
+    return CATransform3DIdentity;
 }
 
 - (NSUInteger)hash {
