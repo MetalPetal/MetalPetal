@@ -9,8 +9,17 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
+#import "MTIFilterUtilities.h"
 
-@implementation MTIUnpremultiplyAlphaFilter
+@interface MTIAlphaPremultiplicationFilter () <MTIFilter>
+
+@end
+
+@implementation MTIAlphaPremultiplicationFilter
+
++ (NSString *)fragmentFunctionName {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"" userInfo:nil];
+}
 
 + (MTIRenderPipelineKernel *)kernelWithPixelFormat:(MTLPixelFormat)pixelFormat {
     static NSMutableDictionary *kernels;
@@ -25,7 +34,7 @@
     MTIRenderPipelineKernel *kernel = kernels[@(pixelFormat)];
     if (!kernel) {
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"unpremultiplyAlpha"]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:[self fragmentFunctionName]]
                                                         colorAttachmentPixelFormat:pixelFormat];
         kernels[@(pixelFormat)] = kernel;
     }
@@ -37,18 +46,34 @@
     if (!self.inputImage) {
         return nil;
     }
-    return [MTIUnpremultiplyAlphaFilter imageByProcessingImage:self.inputImage];
+    return [self.class imageByProcessingImage:self.inputImage];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
     MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
     MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:image.size.width height:image.size.height mipmapped:NO];
     outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    return [[MTIUnpremultiplyAlphaFilter kernelWithPixelFormat:pixelFormat] applyToInputImages:@[image] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
+    return [[self.class kernelWithPixelFormat:pixelFormat] applyToInputImages:@[image] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
 }
 
 + (NSSet<NSString *> *)inputParameterKeys {
     return [NSSet set];
+}
+
+@end
+
+@implementation MTIPremultiplyAlphaFilter
+
++ (NSString *)fragmentFunctionName {
+    return @"premultiplyAlpha";
+}
+
+@end
+
+@implementation MTIUnpremultiplyAlphaFilter
+
++ (NSString *)fragmentFunctionName {
+    return @"unpremultiplyAlpha";
 }
 
 @end
