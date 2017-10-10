@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <simd/simd.h>
+#import "MTIColor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -65,9 +66,9 @@ typedef struct MTITextureDimensions MTITextureDimensions;
 
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
 
-@property (nonatomic,readonly) simd_float4 color;
+@property (nonatomic,readonly) MTIColor color;
 
-- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size;
+- (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
 @end
 

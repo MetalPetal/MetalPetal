@@ -215,13 +215,20 @@
 
 @end
 
+@interface MTIColorImagePromise ()
+
+@property (nonatomic,readonly) BOOL sRGB;
+
+@end
+
 @implementation MTIColorImagePromise
 @synthesize dimensions = _dimensions;
 
-- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size {
+- (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size {
     if (self = [super init]) {
         _dimensions = (MTITextureDimensions){size.width,size.height,1};
         _color = color;
+        _sRGB = sRGB;
     }
     return self;
 }
@@ -240,9 +247,13 @@
     textureDescriptor.height = 1;
     textureDescriptor.depth = 1;
     textureDescriptor.textureType = MTLTextureType2D;
-    textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+    if (_sRGB) {
+        textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+    } else {
+        textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+    }
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
-    uint8_t colors[4] = {_color[2] * 255, _color[1] * 255, _color[0] * 255, _color[3] * 255};
+    uint8_t colors[4] = {_color.blue * 255, _color.green * 255, _color.red * 255, _color.alpha * 255};
     [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     return renderTarget;
 }

@@ -106,13 +106,13 @@
     return [self initWithPromise:urlPromise samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size {
+- (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size {
     MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
     samplerDescriptor.minFilter = MTLSamplerMinMagFilterNearest;
     samplerDescriptor.magFilter = MTLSamplerMinMagFilterNearest;
     samplerDescriptor.sAddressMode = MTLSamplerAddressModeClampToEdge;
     samplerDescriptor.tAddressMode = MTLSamplerAddressModeClampToEdge;
-    return [self initWithPromise:[[MTIColorImagePromise alloc] initWithColor:color size:size] samplerDescriptor:[samplerDescriptor newMTISamplerDescriptor] cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTIColorImagePromise alloc] initWithColor:color sRGB:sRGB size:size] samplerDescriptor:[samplerDescriptor newMTISamplerDescriptor] cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 @end

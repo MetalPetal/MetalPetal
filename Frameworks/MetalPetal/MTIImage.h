@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<NSString *,id> *)options;
 
-- (instancetype)initWithColor:(simd_float4)color size:(CGSize)size;
+- (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
 @end
 

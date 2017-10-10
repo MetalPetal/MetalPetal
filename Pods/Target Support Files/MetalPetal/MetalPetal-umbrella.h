@@ -23,6 +23,7 @@
 #import "MTIUnaryImageFilter.h"
 #import "MetalPetal.h"
 #import "MTIBlendModes.h"
+#import "MTIColor.h"
 #import "MTIComputePipeline.h"
 #import "MTIComputePipelineKernel.h"
 #import "MTIContext+Rendering.h"
