@@ -35,6 +35,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 @property (nonatomic,copy,nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
 
+@property (nonatomic) MTLPixelFormat workingPixelFormat;
+
 @end
 
 @interface MTIContext : NSObject
@@ -45,7 +47,9 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
 
-- (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(nullable MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) MTLPixelFormat workingPixelFormat;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 

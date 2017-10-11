@@ -13,7 +13,7 @@
 
 @implementation MTIUnaryImageFilter
 
-+ (MTIRenderPipelineKernel *)kernelWithPixelFormat:(MTLPixelFormat)pixelFormat {
++ (MTIRenderPipelineKernel *)kernel {
     static NSMutableDictionary *kernels;
     static NSLock *kernelsLock;
     static dispatch_once_t onceToken;
@@ -23,15 +23,13 @@
     });
     
     NSString *fragmentFunctionName = [self fragmentFunctionName];
-    NSString *kernelKey = [fragmentFunctionName stringByAppendingFormat:@"-%@",@(pixelFormat)];
     
     [kernelsLock lock];
-    MTIRenderPipelineKernel *kernel = kernels[kernelKey];
+    MTIRenderPipelineKernel *kernel = kernels[fragmentFunctionName];
     if (!kernel) {
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName]
-                                                        colorAttachmentPixelFormat:pixelFormat];
-        kernels[kernelKey] = kernel;
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName]];
+        kernels[fragmentFunctionName] = kernel;
     }
     [kernelsLock unlock];
     
@@ -46,10 +44,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters {
-    MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:image.size.width height:image.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    return [[self kernelWithPixelFormat:pixelFormat] applyToInputImages:@[image] parameters:parameters outputTextureDescriptor:outputTextureDescriptor];
+    return [[self kernel] applyToInputImages:@[image] parameters:parameters outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(image.size)];
 }
 
 + (NSSet<NSString *> *)inputParameterKeys {

@@ -184,8 +184,6 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 
 @property (nonatomic,copy,readonly) NSArray<MTICompositingLayer *> *layers;
 
-@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
-
 @end
 
 @implementation MTIMultilayerCompositingRecipe
@@ -243,8 +241,11 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         [layerContentResolutions addObject:contentResolution];
     }
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:renderingContext.context.workingPixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
     renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
@@ -307,15 +308,14 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 }
 
 - (instancetype)initWithKernel:(MTIMultilayerCompositeKernel *)kernel
-                   backgroundImage:(MTIImage *)backgroundImage
+               backgroundImage:(MTIImage *)backgroundImage
                         layers:(NSArray<MTICompositingLayer *> *)layers
-           outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
+       outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions {
     if (self = [super init]) {
         _backgroundImage = backgroundImage;
         _kernel = kernel;
         _layers = layers;
-        _textureDescriptor = [outputTextureDescriptor newMTITextureDescriptor];
-        _dimensions = (MTITextureDimensions){outputTextureDescriptor.width, outputTextureDescriptor.height, outputTextureDescriptor.depth};
+        _dimensions = outputTextureDimensions;
     }
     return self;
 }
@@ -324,37 +324,23 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 
 @interface MTIMultilayerCompositeKernel ()
 
-@property (nonatomic,copy,readonly) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
-
 @end
 
 @implementation MTIMultilayerCompositeKernel
 
-- (instancetype)initWithPixelFormat:(MTLPixelFormat)format {
-    if (self = [super init]) {
-        MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-        colorAttachmentDescriptor.pixelFormat = format;
-        colorAttachmentDescriptor.blendingEnabled = NO;
-        _colorAttachmentDescriptor = colorAttachmentDescriptor;
-    }
-    return self;
-}
-
 - (id)newKernelStateWithContext:(MTIContext *)context error:(NSError * _Nullable __autoreleasing *)error {
-    return [[MTIMultilayerCompositeKernelState alloc] initWithContext:context colorAttachmentDescriptor:self.colorAttachmentDescriptor error:error];
+    MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+    colorAttachmentDescriptor.pixelFormat = context.workingPixelFormat;
+    colorAttachmentDescriptor.blendingEnabled = NO;
+    return [[MTIMultilayerCompositeKernelState alloc] initWithContext:context colorAttachmentDescriptor:colorAttachmentDescriptor error:error];
 }
 
-- (MTIImage *)applyToBackgroundImage:(MTIImage *)image layers:(NSArray<MTICompositingLayer *> *)layers outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
-    NSParameterAssert(outputTextureDescriptor.pixelFormat == self.colorAttachmentDescriptor.pixelFormat);
+- (MTIImage *)applyToBackgroundImage:(MTIImage *)image layers:(NSArray<MTICompositingLayer *> *)layers outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions {
     MTIMultilayerCompositingRecipe *receipt = [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self
                                                                                      backgroundImage:image
                                                                                               layers:layers
-                                                                             outputTextureDescriptor:outputTextureDescriptor];
+                                                                             outputTextureDimensions:outputTextureDimensions];
     return [[MTIImage alloc] initWithPromise:receipt];
-}
-
-- (MTLPixelFormat)pixelFormat {
-    return self.colorAttachmentDescriptor.pixelFormat;
 }
 
 @end

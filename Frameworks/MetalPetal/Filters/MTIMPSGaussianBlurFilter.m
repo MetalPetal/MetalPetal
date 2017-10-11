@@ -47,9 +47,7 @@
     if (ceil(self.radius) <= 0) {
         return self.inputImage;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
+    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)];
 }
 
 + (NSSet *)inputParameterKeys {

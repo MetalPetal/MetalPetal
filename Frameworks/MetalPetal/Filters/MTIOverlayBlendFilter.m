@@ -20,8 +20,7 @@
     dispatch_once(&onceToken, ^{
         //Hard Light is equivalent to Overlay, but with the bottom and top images swapped.
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hardLightBlend"]
-                                                        colorAttachmentPixelFormat:MTLPixelFormatBGRA8Unorm];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hardLightBlend"]];
     });
     return kernel;
 }
@@ -30,9 +29,7 @@
     if (!self.inputBackgroundImage || !self.inputForegroundImage) {
         return nil;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputBackgroundImage.size.width height:self.inputBackgroundImage.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    return [self.class.kernel applyToInputImages:@[self.inputForegroundImage,self.inputBackgroundImage] parameters:@{} outputTextureDescriptor:outputTextureDescriptor];
+    return [self.class.kernel applyToInputImages:@[self.inputForegroundImage,self.inputBackgroundImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputBackgroundImage.size)];
 }
 
 + (NSSet *)inputParameterKeys {

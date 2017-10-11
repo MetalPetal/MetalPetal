@@ -7,6 +7,7 @@
 //
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
+#import "MTITextureDimensions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
-         outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
+         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions;
 
 @end
 

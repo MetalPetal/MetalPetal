@@ -36,7 +36,7 @@
         return YES;
     }
     if ([object isKindOfClass:[MTITextureDescriptor class]]) {
-        return [self.metalTextureDescriptor isEqual:((MTITextureDescriptor *)object).metalTextureDescriptor];
+        return [_metalTextureDescriptor isEqual:((MTITextureDescriptor *)object).metalTextureDescriptor];
     }
     return NO;
 }

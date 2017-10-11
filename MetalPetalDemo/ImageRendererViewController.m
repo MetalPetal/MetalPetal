@@ -51,8 +51,11 @@
     
     //[WeakToStrongObjectsMapTableTests test];
     
+    MTIContextOptions *options = [[MTIContextOptions alloc] init];
+    //options.workingPixelFormat = MTLPixelFormatRGBA16Float;
+    
     NSError *error;
-    MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
+    MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() options:options error:&error];
     self.context = context;
     
     UIImage *image = [UIImage imageNamed:@"P1040808.jpg"];
@@ -171,12 +174,12 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [[self saturationAndInvertTestOutputImage] imageWithCachePolicy:MTIImageCachePolicyPersistent];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
-        
+       
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
