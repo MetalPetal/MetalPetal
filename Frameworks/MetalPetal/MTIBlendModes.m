@@ -16,3 +16,8 @@ MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
 NSArray<MTIBlendMode> *MTIBlendModeGetAllModes(void) {
     return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight];
 }
+
+NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) {
+    NSCParameterAssert(mode.length > 0);
+    return [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
+}

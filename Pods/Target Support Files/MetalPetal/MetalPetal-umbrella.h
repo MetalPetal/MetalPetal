@@ -11,6 +11,7 @@
 #endif
 
 #import "MTIAlphaPremultiplicationFilter.h"
+#import "MTIBlendFilter.h"
 #import "MTIColorInvertFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"

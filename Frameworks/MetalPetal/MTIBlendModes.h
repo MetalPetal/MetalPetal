@@ -17,6 +17,8 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeOverlay;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHardLight;
 
-FOUNDATION_EXPORT NSArray<MTIBlendMode> *MTIBlendModeGetAllModes(void);
+FOUNDATION_EXPORT NSArray<MTIBlendMode> * MTIBlendModeGetAllModes(void) NS_SWIFT_NAME(getter:MTIBlendMode.all());
+
+FOUNDATION_EXPORT NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) NS_SWIFT_NAME(getter:MTIBlendMode.fragmentFunctionName(self:));
 
 NS_ASSUME_NONNULL_END
