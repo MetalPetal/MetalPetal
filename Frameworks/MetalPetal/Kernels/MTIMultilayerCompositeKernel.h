@@ -9,6 +9,8 @@
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
 #import "MTIBlendModes.h"
+#import "MTITextureDimensions.h"
+#import "MTIPixelFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,16 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIMultilayerCompositeKernel : NSObject <MTIKernel>
 
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)initWithPixelFormat:(MTLPixelFormat)format NS_DESIGNATED_INITIALIZER;
-
-@property (nonatomic,readonly) MTLPixelFormat pixelFormat;
-
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image
                               layers:(NSArray<MTICompositingLayer *> *)layers
-             outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor;
+             outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+                   outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
 

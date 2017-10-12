@@ -25,7 +25,7 @@
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *functionParameters;
 
-@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
+@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
 @end
 
@@ -65,7 +65,9 @@
         [inputResolutions addObject:resolution];
     }
     
-    MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel error:&error];
+    MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
+
+    MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
     
     if (error) {
         if (inOutError) {
@@ -74,7 +76,10 @@
         return nil;
     }
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+    
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
@@ -137,13 +142,14 @@
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel
                    inputImages:(NSArray<MTIImage *> *)inputImages
             functionParameters:(NSDictionary<NSString *,id> *)functionParameters
-       outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
+       outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+             outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
         _functionParameters = functionParameters;
-        _textureDescriptor = [outputTextureDescriptor newMTITextureDescriptor];
-        _dimensions = (MTITextureDimensions){outputTextureDescriptor.width, outputTextureDescriptor.height, outputTextureDescriptor.depth};
+        _dimensions = outputTextureDimensions;
+        _outputPixelFormat = outputPixelFormat;
     }
     return self;
 }
@@ -155,37 +161,27 @@
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptor;
 @property (nonatomic,copy,readonly) MTLVertexDescriptor *vertexDescriptor;
-@property (nonatomic,copy,readonly) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
 
 @end
 
 @implementation MTIRenderPipelineKernel
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor colorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
-    MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-    colorAttachmentDescriptor.pixelFormat = colorAttachmentPixelFormat;
-    colorAttachmentDescriptor.blendingEnabled = NO;
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor {
     return [self initWithVertexFunctionDescriptor:vertexFunctionDescriptor
                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
-                                 vertexDescriptor:nil
-                        colorAttachmentDescriptor:colorAttachmentDescriptor];
+                                 vertexDescriptor:nil];
 }
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor {
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor {
     if (self = [super init]) {
         _vertexFunctionDescriptor = [vertexFunctionDescriptor copy];
         _fragmentFunctionDescriptor = [fragmentFunctionDescriptor copy];
         _vertexDescriptor = [vertexDescriptor copy];
-        _colorAttachmentDescriptor = [colorAttachmentDescriptor copy];
     }
     return self;
 }
 
-- (MTLPixelFormat)pixelFormat {
-    return self.colorAttachmentDescriptor.pixelFormat;
-}
-
-- (MTIRenderPipeline *)newKernelStateWithContext:(MTIContext *)context error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIRenderPipeline *)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor;
     
@@ -209,19 +205,23 @@
     renderPipelineDescriptor.vertexFunction = vertextFunction;
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
-    renderPipelineDescriptor.colorAttachments[0] = self.colorAttachmentDescriptor;
+    MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+    colorAttachmentDescriptor.pixelFormat = pixelFormat;
+    colorAttachmentDescriptor.blendingEnabled = NO;
+    
+    renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
-- (MTIImage *)applyToInputImages:(NSArray *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
-    NSParameterAssert(outputTextureDescriptor.pixelFormat == self.colorAttachmentDescriptor.pixelFormat);
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
                                                                            inputImages:images
                                                                     functionParameters:parameters
-                                                               outputTextureDescriptor:outputTextureDescriptor];
+                                                               outputTextureDimensions:outputTextureDimensions
+                                                                     outputPixelFormat:outputPixelFormat];
     return [[MTIImage alloc] initWithPromise:receipt];
 }
 

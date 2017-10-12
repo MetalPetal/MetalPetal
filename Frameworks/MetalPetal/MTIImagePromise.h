@@ -10,17 +10,11 @@
 #import <Metal/Metal.h>
 #import <simd/simd.h>
 #import "MTIColor.h"
+#import "MTITextureDimensions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget;
-
-struct MTITextureDimensions {
-    NSUInteger width;
-    NSUInteger height;
-    NSUInteger depth;
-};
-typedef struct MTITextureDimensions MTITextureDimensions;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 

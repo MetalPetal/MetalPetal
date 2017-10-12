@@ -65,14 +65,16 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _coreImageContextOptions = @{kCIContextWorkingColorSpace: CFBridgingRelease(CGColorSpaceCreateDeviceRGB())};
+        _coreImageContextOptions = @{};
+        _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
     }
     return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
     MTIContextOptions *options = [[MTIContextOptions allocWithZone:zone] init];
-    options.coreImageContextOptions = self.coreImageContextOptions;
+    options.coreImageContextOptions = _coreImageContextOptions;
+    options.workingPixelFormat = _workingPixelFormat;
     return options;
 }
 
@@ -129,6 +131,7 @@
             return nil;
         }
         
+        _workingPixelFormat = options.workingPixelFormat;
         _device = device;
         _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
@@ -153,7 +156,7 @@
 }
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
-    return [self initWithDevice:device options:nil error:error];
+    return [self initWithDevice:device options:[[MTIContextOptions alloc] init] error:error];
 }
 
 #pragma mark - Cache
@@ -252,12 +255,17 @@
     return computePipeline;
 }
 
-- (id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError * _Nullable __autoreleasing *)error {
-    id cachedState = [self.kernelStateMap objectForKey:kernel];
+- (id)kernelStateForKernel:(id<MTIKernel>)kernel pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    NSMutableDictionary *states = [self.kernelStateMap objectForKey:kernel];
+    id cachedState = states[@(pixelFormat)];
     if (!cachedState) {
-        cachedState = [kernel newKernelStateWithContext:self error:error];
+        cachedState = [kernel newKernelStateWithContext:self pixelFormat:pixelFormat error:error];
         if (cachedState) {
-            [self.kernelStateMap setObject:cachedState forKey:kernel];
+            if (!states) {
+                states = [NSMutableDictionary dictionary];
+                [self.kernelStateMap setObject:states forKey:kernel];
+            }
+            states[@(pixelFormat)] = cachedState;
         }
     }
     return cachedState;

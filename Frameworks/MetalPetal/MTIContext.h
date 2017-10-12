@@ -35,6 +35,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 @property (nonatomic,copy,nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
 
+@property (nonatomic) MTLPixelFormat workingPixelFormat;
+
 @end
 
 @interface MTIContext : NSObject
@@ -45,7 +47,9 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError **)error;
 
-- (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(nullable MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) MTLPixelFormat workingPixelFormat;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
@@ -77,7 +81,7 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)descriptor error:(NSError **)error;
 
-- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel error:(NSError **)error;
+- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)error;
 
 
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));

@@ -21,7 +21,7 @@
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
 
-@property (nonatomic,copy,readonly) MTITextureDescriptor *textureDescriptor;
+@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
 @end
 
@@ -47,7 +47,7 @@
         [inputResolutions addObject:resolution];
     }
     
-    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel error:&error];
+    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
     
     if (error) {
         if (inOutError) {
@@ -58,7 +58,12 @@
     
     [kernel setValuesForKeysWithDictionary:self.parameters];
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+    MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
+
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
+
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
     
     if (self.inputImages.count == 1) {
         MPSUnaryImageKernel *encoder = (MPSUnaryImageKernel *)kernel;
@@ -87,13 +92,14 @@
 - (instancetype)initWithKernel:(MTIMPSKernel *)kernel
                    inputImages:(NSArray<MTIImage *> *)inputImages
                     parameters:(NSDictionary<NSString *,id> *)parameters
-       outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
+       outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+             outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
         _parameters = parameters;
-        _textureDescriptor = [outputTextureDescriptor newMTITextureDescriptor];
-        _dimensions = (MTITextureDimensions){outputTextureDescriptor.width, outputTextureDescriptor.height, outputTextureDescriptor.depth};
+        _dimensions = outputTextureDimensions;
+        _outputPixelFormat = outputPixelFormat;
     }
     return self;
 }
@@ -115,15 +121,16 @@
     return self;
 }
 
-- (id)newKernelStateWithContext:(MTIContext *)context error:(NSError * _Nullable __autoreleasing *)error {
+- (id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)error {
     return self.builder(context.device);
 }
 
-- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDescriptor:(MTLTextureDescriptor *)outputTextureDescriptor {
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIMPSProcessingRecipe *receipt = [[MTIMPSProcessingRecipe alloc] initWithKernel:self
                                                                          inputImages:images
                                                                           parameters:parameters
-                                                             outputTextureDescriptor:outputTextureDescriptor];
+                                                             outputTextureDimensions:outputTextureDimensions
+                                                                   outputPixelFormat:outputPixelFormat];
     return [[MTIImage alloc] initWithPromise:receipt];
 }
 

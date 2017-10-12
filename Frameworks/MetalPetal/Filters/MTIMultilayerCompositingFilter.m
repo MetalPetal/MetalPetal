@@ -10,11 +10,13 @@
 
 @implementation MTIMultilayerCompositingFilter
 
+@synthesize outputPixelFormat = _outputPixelFormat;
+
 + (MTIMultilayerCompositeKernel *)kernel {
     static MTIMultilayerCompositeKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        kernel = [[MTIMultilayerCompositeKernel alloc] initWithPixelFormat:MTLPixelFormatBGRA8Unorm];
+        kernel = [[MTIMultilayerCompositeKernel alloc] init];
     });
     return kernel;
 }
@@ -24,12 +26,13 @@
 }
 
 - (MTIImage *)outputImage {
-    if (!self.inputBackgroundImage) {
+    if (!_inputBackgroundImage) {
         return nil;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:self.class.kernel.pixelFormat width:self.inputBackgroundImage.size.width height:self.inputBackgroundImage.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-    return [self.class.kernel applyToBackgroundImage:self.inputBackgroundImage layers:self.layers outputTextureDescriptor:outputTextureDescriptor];
+    return [self.class.kernel applyToBackgroundImage:_inputBackgroundImage
+                                              layers:_layers
+                             outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
+                                   outputPixelFormat:_outputPixelFormat];
 }
 
 @end
