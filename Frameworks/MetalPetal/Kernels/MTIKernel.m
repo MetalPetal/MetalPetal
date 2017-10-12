@@ -12,8 +12,6 @@
 #import "MTIVector.h"
 #import "MTIError.h"
 
-MTLPixelFormat const MTIKernelPixelFormatDontCare = MTLPixelFormatInvalid;
-
 @implementation MTIArgumentsEncoder
 
 + (BOOL)encodeArguments:(NSArray<MTLArgument *> *)arguments values:(NSDictionary<NSString *,id> *)parameters functionType:(MTLFunctionType)functionType encoder:(id<MTLCommandEncoder>)encoder error:(NSError * _Nullable __autoreleasing *)inOutError {

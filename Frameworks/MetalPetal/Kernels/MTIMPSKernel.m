@@ -21,7 +21,7 @@
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
 
-@property (nonatomic,readonly) MTIPixelFormat outputPixelFormat;
+@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
 @end
 
@@ -47,7 +47,7 @@
         [inputResolutions addObject:resolution];
     }
     
-    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIKernelPixelFormatDontCare error:&error];
+    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
     
     if (error) {
         if (inOutError) {
@@ -58,7 +58,7 @@
     
     [kernel setValuesForKeysWithDictionary:self.parameters];
     
-    MTLPixelFormat pixelFormat = MTIPixelFormatValueIsSpecified(self.outputPixelFormat) ? self.outputPixelFormat.value : renderingContext.context.workingPixelFormat;
+    MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
@@ -93,7 +93,7 @@
                    inputImages:(NSArray<MTIImage *> *)inputImages
                     parameters:(NSDictionary<NSString *,id> *)parameters
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
-             outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
+             outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
@@ -125,7 +125,7 @@
     return self.builder(context.device);
 }
 
-- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIMPSProcessingRecipe *receipt = [[MTIMPSProcessingRecipe alloc] initWithKernel:self
                                                                          inputImages:images
                                                                           parameters:parameters

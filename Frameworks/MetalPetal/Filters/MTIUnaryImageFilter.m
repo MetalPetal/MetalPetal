@@ -44,7 +44,7 @@
     return [self.class imageByProcessingImage:_inputImage withInputParameters:MTIFilterGetParametersDictionary(self) outputPixelFormat:_outputPixelFormat];
 }
 
-+ (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     return [[self kernel] applyToInputImages:@[image] parameters:parameters outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(image.size) outputPixelFormat:outputPixelFormat];
 }
 

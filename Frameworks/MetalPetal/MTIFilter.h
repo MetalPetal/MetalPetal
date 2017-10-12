@@ -19,7 +19,7 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 
 @protocol MTIFilter <NSObject>
 
-@property (nonatomic) MTIPixelFormat outputPixelFormat;
+@property (nonatomic) MTLPixelFormat outputPixelFormat; //Default: MTIPixelFormatUnspecified aka MTLPixelFormatInvalid
 
 @property (nonatomic, readonly, nullable) MTIImage *outputImage;
 

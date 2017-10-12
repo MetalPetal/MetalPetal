@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image
                               layers:(NSArray<MTICompositingLayer *> *)layers
              outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
-                   outputPixelFormat:(MTIPixelFormat)outputPixelFormat;
+                   outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
 

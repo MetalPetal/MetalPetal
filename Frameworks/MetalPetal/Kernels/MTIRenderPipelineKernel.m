@@ -25,7 +25,7 @@
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *functionParameters;
 
-@property (nonatomic,readonly) MTIPixelFormat outputPixelFormat;
+@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
 @end
 
@@ -65,7 +65,7 @@
         [inputResolutions addObject:resolution];
     }
     
-    MTLPixelFormat pixelFormat = MTIPixelFormatValueIsSpecified(self.outputPixelFormat) ? self.outputPixelFormat.value : renderingContext.context.workingPixelFormat;
+    MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
     MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
     
@@ -143,7 +143,7 @@
                    inputImages:(NSArray<MTIImage *> *)inputImages
             functionParameters:(NSDictionary<NSString *,id> *)functionParameters
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
-             outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
+             outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
@@ -216,7 +216,7 @@
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
-- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
                                                                            inputImages:images
                                                                     functionParameters:parameters

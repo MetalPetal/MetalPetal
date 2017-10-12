@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
          outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
-               outputPixelFormat:(MTIPixelFormat)outputPixelFormat;
+               outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
 

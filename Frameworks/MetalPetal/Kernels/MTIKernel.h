@@ -11,8 +11,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT MTLPixelFormat const MTIKernelPixelFormatDontCare;
-
 @class MTIContext;
 
 /// A kernel must be stateless.

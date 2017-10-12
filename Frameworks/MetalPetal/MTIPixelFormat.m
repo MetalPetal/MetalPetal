@@ -7,38 +7,6 @@
 
 #import "MTIPixelFormat.h"
 
-MTIPixelFormat MTIPixelFormatMake(MTLPixelFormat value) {
-    return (MTIPixelFormat){.type = MTIPixelFormatTypeConcreteValue, .value = value };
-}
+MTLPixelFormat const MTIPixelFormatDontCare = MTLPixelFormatInvalid;
+MTLPixelFormat const MTIPixelFormatUnspecified = MTLPixelFormatInvalid;
 
-MTIPixelFormat MTIPixelFormatMakeWithUnspecifiedValue(void) {
-    return (MTIPixelFormat){.type = MTIPixelFormatTypeUnspecifiedValue, .value = MTLPixelFormatInvalid };
-}
-
-BOOL MTIPixelFormatValueIsSpecified(MTIPixelFormat format) {
-    return format.type != MTIPixelFormatTypeUnspecifiedValue;
-}
-
-BOOL MTIPixelFormatEqualToPixelFormat(MTIPixelFormat lhs, MTIPixelFormat rhs) {
-    return lhs.type == rhs.type && lhs.value == rhs.value;
-}
-
-@implementation NSValue (MTIPixelFormat)
-
-+ (instancetype)valueWithMTIPixelFormat:(MTIPixelFormat)pixelFormat {
-    return [NSValue value:&pixelFormat withObjCType:@encode(MTIPixelFormat)];
-}
-
-- (MTIPixelFormat)mtiPixelFormatValue {
-    MTIPixelFormat format = (MTIPixelFormat){.type = MTIPixelFormatTypeUnspecifiedValue, .value = MTLPixelFormatInvalid };
-    if (strcmp(self.objCType, @encode(MTIPixelFormat)) == 0) {
-        if (@available(iOS 11.0, *)) {
-            [self getValue:&format size:sizeof(MTIPixelFormat)];
-        } else {
-            [self getValue:&format];
-        }
-    }
-    return format;
-}
-
-@end
