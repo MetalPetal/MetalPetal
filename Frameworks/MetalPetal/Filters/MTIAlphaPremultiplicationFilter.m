@@ -18,7 +18,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
-    return [self imageByProcessingImage:image withInputParameters:@{}];
+    return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatMakeWithUnspecifiedValue()];
 }
 
 @end
@@ -30,7 +30,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
-    return [self imageByProcessingImage:image withInputParameters:@{}];
+    return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatMakeWithUnspecifiedValue()];
 }
 
 @end

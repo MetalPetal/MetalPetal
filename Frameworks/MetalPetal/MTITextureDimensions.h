@@ -5,7 +5,6 @@
 //  Created by Yu Ao on 11/10/2017.
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN

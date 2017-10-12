@@ -63,6 +63,7 @@
 @end
 
 @implementation MTIMPSConvolutionFilter
+@synthesize outputPixelFormat = _outputPixelFormat;
 
 - (instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float *)kernelWeights {
     if (self = [super init]) {
@@ -99,7 +100,8 @@
     }
     return [self.kernel applyToInputImages:@[self.inputImage]
                                 parameters:@{NSStringFromSelector(@selector(bias)): @(self.bias)}
-                   outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)];
+                   outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
+                         outputPixelFormat:_outputPixelFormat];
 }
 
 + (NSSet *)inputParameterKeys {

@@ -15,6 +15,7 @@
 @end
 
 @implementation MTIMPSGaussianBlurFilter
+@synthesize outputPixelFormat = _outputPixelFormat;
 
 + (MTIMPSKernel *)kernelWithRadius:(NSInteger)radius {
     static NSMutableDictionary *kernels;
@@ -47,7 +48,7 @@
     if (ceil(self.radius) <= 0) {
         return self.inputImage;
     }
-    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)];
+    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }
 
 + (NSSet *)inputParameterKeys {

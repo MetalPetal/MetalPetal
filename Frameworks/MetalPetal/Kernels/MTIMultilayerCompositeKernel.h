@@ -10,6 +10,7 @@
 #import "MTIKernel.h"
 #import "MTIBlendModes.h"
 #import "MTITextureDimensions.h"
+#import "MTIPixelFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,7 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image
                               layers:(NSArray<MTICompositingLayer *> *)layers
-             outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions;
+             outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+                   outputPixelFormat:(MTIPixelFormat)outputPixelFormat;
 
 @end
 

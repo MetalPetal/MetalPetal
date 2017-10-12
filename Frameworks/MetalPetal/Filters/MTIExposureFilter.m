@@ -14,6 +14,8 @@
 
 @implementation MTIExposureFilter
 
+@synthesize outputPixelFormat = _outputPixelFormat;
+
 + (MTIComputePipelineKernel *)kernel {
     static MTIComputePipelineKernel *kernel;
     static dispatch_once_t onceToken;
@@ -27,7 +29,7 @@
     if (!self.inputImage) {
         return nil;
     }
-    return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIFilterGetParametersDictionary(self) outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)];
+    return [self.class.kernel applyToInputImages:@[self.inputImage] parameters:MTIFilterGetParametersDictionary(self) outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }
 
 + (NSSet *)inputParameterKeys {

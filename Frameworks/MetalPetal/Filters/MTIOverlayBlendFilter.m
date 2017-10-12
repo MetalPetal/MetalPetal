@@ -14,6 +14,8 @@
 
 @implementation MTIOverlayBlendFilter
 
+@synthesize outputPixelFormat = _outputPixelFormat;
+
 + (MTIRenderPipelineKernel *)kernel {
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
@@ -26,10 +28,13 @@
 }
 
 - (MTIImage *)outputImage {
-    if (!self.inputBackgroundImage || !self.inputForegroundImage) {
+    if (!_inputBackgroundImage || !_inputForegroundImage) {
         return nil;
     }
-    return [self.class.kernel applyToInputImages:@[self.inputForegroundImage,self.inputBackgroundImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputBackgroundImage.size)];
+    return [self.class.kernel applyToInputImages:@[_inputForegroundImage, _inputBackgroundImage]
+                                      parameters:@{}
+                         outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
+                               outputPixelFormat:_outputPixelFormat];
 }
 
 + (NSSet *)inputParameterKeys {

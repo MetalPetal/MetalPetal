@@ -12,6 +12,7 @@
 #import "MTIFilterUtilities.h"
 
 @implementation MTIUnaryImageFilter
+@synthesize outputPixelFormat = _outputPixelFormat;
 
 + (MTIRenderPipelineKernel *)kernel {
     static NSMutableDictionary *kernels;
@@ -40,11 +41,11 @@
     if (!_inputImage) {
         return nil;
     }
-    return [self.class imageByProcessingImage:_inputImage withInputParameters:MTIFilterGetParametersDictionary(self)];
+    return [self.class imageByProcessingImage:_inputImage withInputParameters:MTIFilterGetParametersDictionary(self) outputPixelFormat:_outputPixelFormat];
 }
 
-+ (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters {
-    return [[self kernel] applyToInputImages:@[image] parameters:parameters outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(image.size)];
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTIPixelFormat)outputPixelFormat {
+    return [[self kernel] applyToInputImages:@[image] parameters:parameters outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(image.size) outputPixelFormat:outputPixelFormat];
 }
 
 + (NSSet<NSString *> *)inputParameterKeys {

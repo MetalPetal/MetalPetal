@@ -10,6 +10,8 @@
 
 @implementation MTIMultilayerCompositingFilter
 
+@synthesize outputPixelFormat = _outputPixelFormat;
+
 + (MTIMultilayerCompositeKernel *)kernel {
     static MTIMultilayerCompositeKernel *kernel;
     static dispatch_once_t onceToken;
@@ -24,10 +26,13 @@
 }
 
 - (MTIImage *)outputImage {
-    if (!self.inputBackgroundImage) {
+    if (!_inputBackgroundImage) {
         return nil;
     }
-    return [self.class.kernel applyToBackgroundImage:self.inputBackgroundImage layers:self.layers outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputBackgroundImage.size)];
+    return [self.class.kernel applyToBackgroundImage:_inputBackgroundImage
+                                              layers:_layers
+                             outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
+                                   outputPixelFormat:_outputPixelFormat];
 }
 
 @end

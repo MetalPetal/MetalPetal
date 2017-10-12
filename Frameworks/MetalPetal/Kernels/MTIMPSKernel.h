@@ -10,6 +10,7 @@
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 #import "MTIKernel.h"
 #import "MTITextureDimensions.h"
+#import "MTIPixelFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +24,8 @@ typedef MPSKernel * _Nonnull (^MTIMPSKernelBuilder)(id<MTLDevice> device);
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
-         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions;
+         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+               outputPixelFormat:(MTIPixelFormat)outputPixelFormat;
 
 @end
 

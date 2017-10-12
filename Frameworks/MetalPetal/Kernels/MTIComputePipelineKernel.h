@@ -8,6 +8,7 @@
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
 #import "MTITextureDimensions.h"
+#import "MTIPixelFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,11 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor NS_DESIGNATED_INITIALIZER;
 
-- (nullable MTIComputePipeline *)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error;
-
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
-         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions;
+         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+               outputPixelFormat:(MTIPixelFormat)outputPixelFormat;
 
 @end
 

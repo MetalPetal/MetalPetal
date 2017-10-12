@@ -10,13 +10,16 @@
 #import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+FOUNDATION_EXPORT MTLPixelFormat const MTIKernelPixelFormatDontCare;
+
 @class MTIContext;
 
 /// A kernel must be stateless.
 
 @protocol MTIKernel <NSObject>
 
-- (nullable id)newKernelStateWithContext:(MTIContext *)context error:(NSError **)error NS_SWIFT_NAME(makeKernelState(context:));
+- (nullable id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)error NS_SWIFT_NAME(makeKernelState(context:outputPixelFormat:));
 
 @end
 
