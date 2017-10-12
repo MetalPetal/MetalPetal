@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIBlendFilter : NSObject <MTIFilter>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 @property (nonatomic,copy,readonly) MTIBlendMode blendMode;
 
 - (instancetype)initWithBlendMode:(MTIBlendMode)mode;
