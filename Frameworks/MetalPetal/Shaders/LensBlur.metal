@@ -34,7 +34,8 @@ fragment float4 lensBlurPre(
                              constant float & power [[ buffer(0) ]]
                              ) {
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    return pow(textureColor, float4(power));
+    textureColor.rgb = pow(textureColor.rgb, float3(power));
+    return textureColor;
 }
 
 struct LensBlurAlphaPassOutput {
@@ -67,10 +68,15 @@ fragment float4 lensBlurBravoCharlie(VertexOut vertexIn [[ stage_in ]],
                            sampler diagonalSampler [[ sampler(1) ]],
                            texture2d<float, access::sample> maskTexture [[ texture(2) ]],
                            sampler maskSampler [[ sampler(2) ]],
+                           texture2d<float, access::sample> colorTexture [[ texture(3) ]],
+                           sampler colorSampler [[ sampler(3) ]],
                            constant float2 & delta0 [[ buffer(0) ]],
                            constant float2 & delta1 [[ buffer(1) ]],
                            constant float & power [[ buffer(2) ]]) {
     float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
     float4 color = (sampleWithDelta(verticalTexture, verticalSampler, vertexIn.texcoords, delta0 * maskColor.r) + sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.texcoords, delta1 * maskColor.r)) * 0.5;
-    return pow(color, float4(power));
+    color.rgb = pow(color.rgb, float3(power));
+    color.a = textureColor.a;
+    return color;
 }
