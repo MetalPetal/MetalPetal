@@ -40,6 +40,8 @@
 
 @property (nonatomic, strong) MTIMultilayerCompositingFilter *compositingFilter;
 
+@property (nonatomic, strong) MTILensBlurFilter *lensBlurFilter;
+
 @end
 
 @implementation ImageRendererViewController
@@ -58,11 +60,12 @@
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() options:options error:&error];
     self.context = context;
     
-    UIImage *image = [UIImage imageNamed:@"P1040808.jpg"];
+    UIImage *image = [UIImage imageNamed:@"P1030510.jpg"];
     
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:context.device];
     renderView.delegate = self;
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    renderView.preferredFramesPerSecond = 30;
     [self.view addSubview:renderView];
     self.renderView = renderView;
     
@@ -73,6 +76,7 @@
     self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
+    self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
     
     float matrix[9] = {
         -1, 0, 1,
@@ -82,7 +86,7 @@
     self.convolutionFilter = [[MTIMPSConvolutionFilter alloc] initWithKernelWidth:3 kernelHeight:3 weights:matrix];
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
-    id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)} error:&error];
+    id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} error:&error];
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture];
     self.inputImage = mtiImageFromTexture;
 }
@@ -111,6 +115,14 @@
     self.colorMatrixFilter.colorMatrix = matrix_scale(scale, matrix_identity_float4x4);
     self.colorMatrixFilter.inputImage = self.inputImage;
     MTIImage *outputImage = self.colorMatrixFilter.outputImage;
+    return outputImage;
+}
+
+- (MTIImage *)lensBlurTestOutputImage {
+    self.lensBlurFilter.brightness = 0.4;
+    self.lensBlurFilter.radius = 10 * (1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0));
+    self.lensBlurFilter.inputImage = self.inputImage;
+    MTIImage *outputImage = self.lensBlurFilter.outputImage;
     return outputImage;
 }
 
@@ -174,7 +186,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [[self saturationAndInvertTestOutputImage] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

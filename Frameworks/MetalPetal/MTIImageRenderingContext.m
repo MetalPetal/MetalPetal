@@ -120,6 +120,12 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @implementation MTIImageRenderingContext
 
+- (void)dealloc {
+    if (self.commandBuffer.status == MTLCommandBufferStatusNotEnqueued || self.commandBuffer.status == MTLCommandBufferStatusEnqueued) {
+        [self.commandBuffer commit];
+    }
+}
+
 - (instancetype)initWithContext:(MTIContext *)context {
     if (self = [super init]) {
         _context = context;

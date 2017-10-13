@@ -16,6 +16,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTIImage+Promise.h"
+#import "MTIDefer.h"
 
 @interface MTIImageRenderingRecipe : NSObject <MTIImagePromise>
 
@@ -65,6 +66,12 @@
         [inputResolutions addObject:resolution];
     }
     
+    @MTI_DEFER {
+        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
+            [resolution markAsConsumedBy:self];
+        }
+    };
+    
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
     MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
@@ -110,6 +117,7 @@
     if (self.functionParameters.count > 0) {
         [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:self.functionParameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
         if (error) {
+            [commandEncoder endEncoding];
             if (inOutError) {
                 *inOutError = error;
             }
@@ -118,6 +126,7 @@
         
         [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:self.functionParameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
         if (error) {
+            [commandEncoder endEncoding];
             if (inOutError) {
                 *inOutError = error;
             }
@@ -127,10 +136,6 @@
     
     [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
     [commandEncoder endEncoding];
-    
-    for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-        [resolution markAsConsumedBy:self];
-    }
     
     return renderTarget;
 }

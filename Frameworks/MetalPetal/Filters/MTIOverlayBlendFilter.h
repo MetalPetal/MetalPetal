@@ -10,6 +10,8 @@
 
 @class MTIImage;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MTIOverlayBlendFilter : NSObject <MTIFilter>
 
 @property (nonatomic,strong,nullable) MTIImage *inputBackgroundImage;
@@ -17,3 +19,5 @@
 @property (nonatomic,strong,nullable) MTIImage *inputForegroundImage;
 
 @end
+
+NS_ASSUME_NONNULL_END
