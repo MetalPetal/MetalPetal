@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 
+@property (nonatomic,readonly) NSUInteger colorAttachmentCount;
+
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor
                                 vertexDescriptor:(nullable MTLVertexDescriptor *)vertexDescriptor

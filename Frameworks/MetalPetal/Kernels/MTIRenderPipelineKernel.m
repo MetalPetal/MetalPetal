@@ -31,7 +31,7 @@
 
 @property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
-@property (nonatomic, strong) MTIWeakToStrongObjectsMapTable *resolutionMap;
+@property (nonatomic, strong) MTIWeakToStrongObjectsMapTable *resolutionCache;
 
 @end
 
@@ -51,7 +51,7 @@
     } count:4];
 }
 
-- (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext byPromise:(id<MTIImagePromise>)promise error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
     NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
@@ -87,7 +87,7 @@
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
 
-    for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
+    for (NSUInteger index = 0; index < self.kernel.colorAttachmentCount; index += 1) {
         MTIRenderPipelineOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
@@ -163,7 +163,7 @@
         _functionParameters = functionParameters;
         _outputDescriptors = outputDescriptors;
         _outputPixelFormat = pixelFormat;
-        _resolutionMap = [[MTIWeakToStrongObjectsMapTable alloc] init];
+        _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
     }
     return self;
 }
@@ -203,7 +203,7 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     [self.lock lock];
-    NSArray<MTIImagePromiseRenderTarget *> *renderTargets = [self.recipe.resolutionMap objectForKey:renderingContext];
+    NSArray<MTIImagePromiseRenderTarget *> *renderTargets = [self.recipe.resolutionCache objectForKey:renderingContext];
     [self.lock unlock];
     if (renderTargets) {
         MTIImagePromiseRenderTarget *renderTarget = renderTargets[self.outputIndex];
@@ -211,15 +211,49 @@
             return renderTarget;
         }
     }
-    renderTargets = [self.recipe resolveWithContext:renderingContext byPromise:self error:error];
+    renderTargets = [self.recipe resolveWithContext:renderingContext resolver:self error:error];
     if (renderTargets) {
         [self.lock lock];
-        [self.recipe.resolutionMap setObject:renderTargets forKey:renderingContext];
+        [self.recipe.resolutionCache setObject:renderTargets forKey:renderingContext];
         [self.lock unlock];
         return renderTargets[self.outputIndex];
     } else {
         return nil;
     }
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+@end
+
+
+@interface MTIImageRenderingRecipeSingleOutputView: NSObject <MTIImagePromise>
+
+@property (nonatomic, strong, readonly) MTIImageRenderingRecipe *recipe;
+
+@end
+
+@implementation MTIImageRenderingRecipeSingleOutputView
+
+- (NSArray<MTIImage *> *)dependencies {
+    return self.recipe.inputImages;
+}
+
+- (instancetype)initWithImageRenderingRecipe:(MTIImageRenderingRecipe *)recipe {
+    if (self = [super init]) {
+        _recipe = recipe;
+    }
+    return self;
+}
+
+- (MTITextureDimensions)dimensions {
+    return self.recipe.outputDescriptors[0].dimensions;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    return [self.recipe resolveWithContext:renderingContext resolver:self error:error].firstObject;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -250,7 +284,6 @@
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptor;
 @property (nonatomic,copy,readonly) MTLVertexDescriptor *vertexDescriptor;
-@property (nonatomic,readonly) NSUInteger colorAttachmentCount;
 
 @end
 
@@ -321,12 +354,17 @@
                                                                     functionParameters:parameters
                                                                      outputDescriptors:outputDescriptors
                                                                      outputPixelFormat:outputPixelFormat];
-    NSMutableArray *outputs = [NSMutableArray array];
-    for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
-        MTIImageRenderingRecipeView *promise = [[MTIImageRenderingRecipeView alloc] initWithImageRenderingRecipe:receipt outputIndex:index];
-        [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
+    if (self.colorAttachmentCount == 1) {
+        MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:receipt];
+        return @[[[MTIImage alloc] initWithPromise:promise]];
+    } else {
+        NSMutableArray *outputs = [NSMutableArray array];
+        for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
+            MTIImageRenderingRecipeView *promise = [[MTIImageRenderingRecipeView alloc] initWithImageRenderingRecipe:receipt outputIndex:index];
+            [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
+        }
+        return outputs;
     }
-    return outputs;
 }
 
 @end
