@@ -93,7 +93,7 @@ kernel void adjustExposure(
     outTexture.write(outColor, gid);
 }
 
-fragment float4 lookUpTable(
+fragment float4 colorLookUp512x512 (
                             VertexOut vertexIn [[stage_in]],
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
                             texture2d<float, access::sample> lutTexture [[texture(1)]],
