@@ -18,6 +18,7 @@
 #import "MTIImage+Promise.h"
 #import "MTIDefer.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
+#import "MTILock.h"
 
 @interface MTIImageRenderingRecipe : NSObject
 
@@ -31,7 +32,8 @@
 
 @property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
-@property (nonatomic, strong) MTIWeakToStrongObjectsMapTable *resolutionCache;
+@property (nonatomic, strong, readonly) MTIWeakToStrongObjectsMapTable *resolutionCache;
+@property (nonatomic, strong, readonly) id<NSLocking> resolutionCacheLock;
 
 @end
 
@@ -164,21 +166,19 @@
         _outputDescriptors = outputDescriptors;
         _outputPixelFormat = pixelFormat;
         _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
+        _resolutionCacheLock = MTICreateLock();
     }
     return self;
 }
 
 @end
 
-#import "MTILock.h"
 
 @interface MTIImageRenderingRecipeView: NSObject <MTIImagePromise>
 
 @property (nonatomic, strong, readonly) MTIImageRenderingRecipe *recipe;
 
 @property (nonatomic, readonly) NSUInteger outputIndex;
-
-@property (nonatomic, strong, readonly) id<NSLocking> lock;
 
 @end
 
@@ -192,7 +192,6 @@
     if (self = [super init]) {
         _recipe = recipe;
         _outputIndex = index;
-        _lock = MTICreateLock();
     }
     return self;
 }
@@ -202,9 +201,11 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    [self.lock lock];
+    [self.recipe.resolutionCacheLock lock];
+    @MTI_DEFER {
+        [self.recipe.resolutionCacheLock unlock];
+    };
     NSArray<MTIImagePromiseRenderTarget *> *renderTargets = [self.recipe.resolutionCache objectForKey:renderingContext];
-    [self.lock unlock];
     if (renderTargets) {
         MTIImagePromiseRenderTarget *renderTarget = renderTargets[self.outputIndex];
         if (renderTarget.texture) {
@@ -213,9 +214,7 @@
     }
     renderTargets = [self.recipe resolveWithContext:renderingContext resolver:self error:error];
     if (renderTargets) {
-        [self.lock lock];
         [self.recipe.resolutionCache setObject:renderTargets forKey:renderingContext];
-        [self.lock unlock];
         return renderTargets[self.outputIndex];
     } else {
         return nil;
