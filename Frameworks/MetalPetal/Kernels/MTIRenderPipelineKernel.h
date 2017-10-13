@@ -16,6 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage;
 
+@interface MTIRenderPipelineOutputDescriptor: NSObject <NSCopying>
+
+@property (nonatomic,readonly) MTITextureDimensions dimensions;
+
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions;
+
+@end
+
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -24,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor
-                                vertexDescriptor:(nullable MTLVertexDescriptor *)vertexDescriptor NS_DESIGNATED_INITIALIZER;
+                                vertexDescriptor:(nullable MTLVertexDescriptor *)vertexDescriptor
+                            colorAttachmentCount:(NSUInteger)colorAttachmentCount NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor;
@@ -33,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
                       parameters:(NSDictionary<NSString *,id> *)parameters
          outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
                outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
+
+- (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images
+                                 parameters:(NSDictionary<NSString *,id> *)parameters
+                          outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors
+                          outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
 

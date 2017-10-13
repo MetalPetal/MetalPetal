@@ -29,27 +29,19 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurAlpha"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurAlpha"]
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:2];
     });
     return kernel;
 }
 
-+ (MTIRenderPipelineKernel *)bravoPassKernel {
++ (MTIRenderPipelineKernel *)bravoCharliePassKernel {
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurBravo"]];
-    });
-    return kernel;
-}
-
-+ (MTIRenderPipelineKernel *)charliePassKernel {
-    static MTIRenderPipelineKernel *kernel;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurCharlie"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurBravoCharlie"]];
     });
     return kernel;
 }
@@ -84,25 +76,20 @@
                                                                               parameters:@{@"power": @(power)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
-    MTIImage *pass0Output = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage, maskImage]
-                                                                         parameters:@{@"delta": deltas[0]}
-                                                            outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
-                                                                  outputPixelFormat:MTLPixelFormatRGBA16Float];
-    MTIImage *pass1Output = [[MTILensBlurFilter bravoPassKernel] applyToInputImages:@[pass0Output, maskImage]
-                                                                         parameters:@{@"delta0": deltas[1],
-                                                                                      @"delta1": deltas[2]}
-                                                            outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
-                                                                  outputPixelFormat:MTLPixelFormatRGBA16Float];
-    MTIImage *pass01Output = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage, maskImage]
-                                                                          parameters:@{@"delta": deltas[1]}
-                                                             outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
-                                                                   outputPixelFormat:MTLPixelFormatRGBA16Float];
-    MTIImage *pass2Output = [[MTILensBlurFilter charliePassKernel] applyToInputImages:@[pass01Output, pass1Output, maskImage]
-                                                                         parameters:@{@"delta": deltas[2],
-                                                                                      @"power": @((float)1.0/power)}
-                                                            outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
-                                                                  outputPixelFormat:_outputPixelFormat];
-    return pass2Output;
+    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage, maskImage]
+                                                                                     parameters:@{@"delta0": deltas[0],
+                                                                                                  @"delta1": deltas[1],
+                                                                                                  }
+                                                                              outputDescriptors:@[[[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)],[[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)]]
+                                                                              outputPixelFormat:MTLPixelFormatRGBA16Float];
+    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1],maskImage]
+                                                                                parameters:@{@"delta0": deltas[1],
+                                                                                             @"delta1": deltas[2],
+                                                                                             @"power": @((float)1.0/power)
+                                                                                             }
+                                                                   outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
+                                                                         outputPixelFormat:_outputPixelFormat];
+    return outputImage;
 }
 
 @end

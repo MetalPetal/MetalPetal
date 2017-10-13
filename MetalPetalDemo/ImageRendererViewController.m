@@ -65,7 +65,6 @@
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:context.device];
     renderView.delegate = self;
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    renderView.preferredFramesPerSecond = 30;
     [self.view addSubview:renderView];
     self.renderView = renderView;
     
@@ -119,7 +118,7 @@
 }
 
 - (MTIImage *)lensBlurTestOutputImage {
-    self.lensBlurFilter.brightness = 0.4;
+    self.lensBlurFilter.brightness = 0.3;
     self.lensBlurFilter.radius = 10 * (1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0));
     self.lensBlurFilter.inputImage = self.inputImage;
     MTIImage *outputImage = self.lensBlurFilter.outputImage;
@@ -186,7 +185,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [self lensBlurTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
