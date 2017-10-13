@@ -13,6 +13,7 @@
 #import "MTIAlphaPremultiplicationFilter.h"
 #import "MTIBlendFilter.h"
 #import "MTIColorInvertFilter.h"
+#import "MTIColorLookupFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"
 #import "MTIImage+Filters.h"
