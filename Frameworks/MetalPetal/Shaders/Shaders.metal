@@ -92,3 +92,42 @@ kernel void adjustExposure(
     float4 outColor = float4(inColor.rgb * pow(2.0, exposure), inColor.a);
     outTexture.write(outColor, gid);
 }
+
+fragment float4 lookUpTable(
+                            VertexOut vertexIn [[stage_in]],
+                            texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                            texture2d<float, access::sample> lutTexture [[texture(1)]],
+                            sampler samp [[sampler(0)]]
+                            )
+{
+    float2 sourceCoord = vertexIn.texcoords;
+    float4 color = sourceTexture.sample(samp,sourceCoord);
+    
+    float blueColor = color.b * 63;
+    
+    int2 quad1;
+    quad1.y = floor(floor(blueColor) / 8.0);
+    quad1.x = floor(blueColor) - (quad1.y * 8.0);
+    
+    int2 quad2;
+    
+    quad2.y = floor(ceil(blueColor) / 8.0);
+    quad2.x = ceil(blueColor) - (quad2.y * 8.0);;
+    
+    float2 texPos1;
+    texPos1.x = (quad1.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.r);
+    texPos1.y = (quad1.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.g);
+    
+    float2 texPos2;
+    texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.r);
+    texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.g);
+    
+    float4 newColor1 = lutTexture.read(uint2(floor(texPos1.x * 512) ,floor(texPos2.y * 512)));
+    float4 newColor2 = lutTexture.read(uint2(floor(texPos2.x * 512) ,floor(texPos2.y * 512)));
+    
+    float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
+    
+    float4 finalColor = mix(color, float4(newColor.rgb, color.w), float(1));
+    if (vertexIn.texcoords.x > 0.5) return color;
+    return finalColor;
+}

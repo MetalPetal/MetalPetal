@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "MTIColorLookupFilter.h"
 #import "MTIAlphaPremultiplicationFilter.h"
 #import "MTIBlendFilter.h"
 #import "MTIColorInvertFilter.h"
