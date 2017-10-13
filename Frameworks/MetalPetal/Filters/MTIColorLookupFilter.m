@@ -33,8 +33,6 @@
     if (!self.inputImage) {
         return nil;
     }
-    MTLTextureDescriptor *outputTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:self.inputImage.size.width height:self.inputImage.size.height mipmapped:NO];
-    outputTextureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
     if (_mtiLutImage == nil ) return nil;
     return [self.class.kernel applyToInputImages:@[self.inputImage, _mtiLutImage]
                                       parameters:@{}
