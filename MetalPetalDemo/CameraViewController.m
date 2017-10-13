@@ -39,7 +39,8 @@
     self.saturationFilter = [[MTISaturationFilter alloc] init];
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.lutFilter = [[MTIColorLookupFilter alloc] init];
-    self.lutFilter.inputColorLookupTable = [UIImage imageNamed:@"ml_best_lut"];
+
+    self.lutFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ml_best_lut"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)}];
     
     self.queue = dispatch_queue_create("video_queue", NULL);
     

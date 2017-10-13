@@ -97,12 +97,12 @@ fragment float4 lookUpTable(
                             VertexOut vertexIn [[stage_in]],
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
                             texture2d<float, access::sample> lutTexture [[texture(1)]],
-                            sampler samp [[sampler(0)]],
-                            sampler lutTextureSampler [[sampler(1)]]
+                            sampler colorSampler [[sampler(0)]],
+                            sampler lutSamper [[sampler(1)]]
                             )
 {
     float2 sourceCoord = vertexIn.texcoords;
-    float4 color = sourceTexture.sample(samp,sourceCoord);
+    float4 color = sourceTexture.sample(colorSampler,sourceCoord);
     
     float blueColor = color.b * 63;
     
@@ -123,12 +123,12 @@ fragment float4 lookUpTable(
     texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.r);
     texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * color.g);
     
-    float4 newColor1 = lutTexture.sample(lutTextureSampler,texPos1);
-    float4 newColor2 = lutTexture.sample(lutTextureSampler,texPos2);
+    float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
+    float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
     
     float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
     
     float4 finalColor = mix(color, float4(newColor.rgb, color.w), float(1));
-    if (vertexIn.texcoords.x > 0.5) return color;
+//    if (vertexIn.texcoords.x > 0.5) return color;
     return finalColor;
 }

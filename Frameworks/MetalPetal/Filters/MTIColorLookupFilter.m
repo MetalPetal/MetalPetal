@@ -14,9 +14,6 @@
 
 
 @implementation MTIColorLookupFilter
-{
-    MTIImage *_mtiLutImage;
-}
 @synthesize outputPixelFormat = _outputPixelFormat;
 
 + (MTIRenderPipelineKernel *)kernel {
@@ -33,27 +30,15 @@
     if (!self.inputImage) {
         return nil;
     }
-    if (_mtiLutImage == nil ) return nil;
-    return [self.class.kernel applyToInputImages:@[self.inputImage, _mtiLutImage]
+    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputColorLookupTable]
                                       parameters:@{}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }
-- (void)setInputColorLookupTable:(UIImage *)inputColorLookupTable
-{
-    _inputColorLookupTable = inputColorLookupTable;
-    _mtiLutImage = [self mtiLutImageWithImage:inputColorLookupTable];
-}
-
 
 + (nonnull NSSet<NSString *> *)inputParameterKeys {
     return [NSSet set];
 }
 
-- (MTIImage *)mtiLutImageWithImage:(UIImage *)lutImage
-{
-    MTIImage *img = [[MTIImage alloc] initWithCGImage:lutImage.CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)}];
-    return img;
-}
 @end
 
