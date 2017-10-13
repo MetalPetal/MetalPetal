@@ -10,13 +10,14 @@
 #endif
 #endif
 
-#import "MTIColorLookupFilter.h"
 #import "MTIAlphaPremultiplicationFilter.h"
 #import "MTIBlendFilter.h"
 #import "MTIColorInvertFilter.h"
+#import "MTIColorLookupFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTIExposureFilter.h"
 #import "MTIImage+Filters.h"
+#import "MTILensBlurFilter.h"
 #import "MTIMPSConvolutionFilter.h"
 #import "MTIMPSGaussianBlurFilter.h"
 #import "MTIMultilayerCompositingFilter.h"

@@ -148,7 +148,9 @@
     if (self = [super init]) {
         _image = ciImage;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
-        _textureDescriptor = [[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO] newMTITextureDescriptor];
+        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
+        textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
+        _textureDescriptor = [textureDescriptor newMTITextureDescriptor];
     }
     return self;
 }

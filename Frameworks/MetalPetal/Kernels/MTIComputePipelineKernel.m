@@ -16,6 +16,7 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIComputePipeline.h"
 #import "MTIVector.h"
+#import "MTIDefer.h"
 
 @interface MTIImageComputeRecipe : NSObject <MTIImagePromise>
 
@@ -47,6 +48,12 @@
         [inputResolutions addObject:resolution];
     }
     
+    @MTI_DEFER {
+        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
+            [resolution markAsConsumedBy:self];
+        }
+    };
+    
     MTIComputePipeline *computePipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
     
     if (error) {
@@ -74,6 +81,7 @@
     [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     
     if (error) {
+        [commandEncoder endEncoding];
         if (inOutError) {
             *inOutError = error;
         }
@@ -97,10 +105,6 @@
     }
     
     [commandEncoder endEncoding];
-    
-    for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-        [resolution markAsConsumedBy:self];
-    }
     
     return renderTarget;
 }

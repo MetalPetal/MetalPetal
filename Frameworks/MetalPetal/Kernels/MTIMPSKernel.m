@@ -12,6 +12,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIError.h"
+#import "MTIDefer.h"
 
 @interface MTIMPSProcessingRecipe : NSObject <MTIImagePromise>
 
@@ -47,6 +48,12 @@
         [inputResolutions addObject:resolution];
     }
     
+    @MTI_DEFER {
+        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
+            [resolution markAsConsumedBy:self];
+        }
+    };
+    
     MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
     
     if (error) {
@@ -76,10 +83,6 @@
             *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorMPSKernelInputCountMismatch userInfo:@{}];
         }
         return nil;
-    }
-    
-    for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-        [resolution markAsConsumedBy:self];
     }
     
     return renderTarget;
