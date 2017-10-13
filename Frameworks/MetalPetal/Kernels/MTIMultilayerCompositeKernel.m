@@ -17,6 +17,7 @@
 #import "MTIImage+Promise.h"
 #import "MTIFilter.h"
 #import "MTIVector.h"
+#import "MTIDefer.h"
 
 @interface MTIMultilayerCompositeKernelState: NSObject
 
@@ -220,6 +221,9 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         }
         return nil;
     }
+    @MTI_DEFER {
+        [backgroundImageResolution markAsConsumedBy:self];
+    };
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
@@ -302,8 +306,6 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     //end encoding
     [commandEncoder endEncoding];
     
-    [backgroundImageResolution markAsConsumedBy:self];
-
     return renderTarget;
 }
 
