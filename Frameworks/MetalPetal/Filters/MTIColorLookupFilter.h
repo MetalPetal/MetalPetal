@@ -10,6 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIColorLookupFilter : NSObject <MTIFilter>
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
-@property (nonatomic, strong, nullable) UIImage *inputColorLookupTable;
+@property (nonatomic, strong, nullable) MTIImage *inputColorLookupTable;
 @end
 NS_ASSUME_NONNULL_END
