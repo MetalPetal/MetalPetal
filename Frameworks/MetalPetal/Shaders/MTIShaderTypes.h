@@ -50,6 +50,59 @@ namespace metalpetal {
         return float4(s.rgb * s.a, s.a);
     }
     
+    METAL_FUNC float hue2rgb(float p, float q, float t){
+        if(t < 0.0) t += 1.0;
+        if(t > 1.0) t -= 1.0;
+        if(t < 1.0/6.0) return p + (q - p) * 6.0 * t;
+        if(t < 1.0/2.0) return q;
+        if(t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+        return p;
+    }
+    
+    METAL_FUNC float4 rgb2hsl(float4 inputColor) {
+        float4 color = clamp(inputColor,float4(0.0),float4(1.0));
+        
+        //Compute min and max component values
+        float MAX = max(color.r, max(color.g, color.b));
+        float MIN = min(color.r, min(color.g, color.b));
+        
+        //Make sure MAX > MIN to avoid division by zero later
+        MAX = max(MIN + 1e-6, MAX);
+        
+        //Compute luminosity
+        float l = (MIN + MAX) / 2.0;
+        
+        //Compute saturation
+        float s = (l < 0.5 ? (MAX - MIN) / (MIN + MAX) : (MAX - MIN) / (2.0 - MAX - MIN));
+        
+        //Compute hue
+        float h = (MAX == color.r ? (color.g - color.b) / (MAX - MIN) : (MAX == color.g ? 2.0 + (color.b - color.r) / (MAX - MIN) : 4.0 + (color.r - color.g) / (MAX - MIN)));
+        h /= 6.0;
+        h = (h < 0.0 ? 1.0 + h : h);
+        
+        return float4(h, s, l, color.a);
+    }
+    
+    METAL_FUNC float4 hsl2rgb(float4 inputColor) {
+        float4 color = clamp(inputColor,float4(0.0),float4(1.0));
+        
+        float h = color.r;
+        float s = color.g;
+        float l = color.b;
+        
+        float r,g,b;
+        if(s <= 0.0){
+            r = g = b = l;
+        }else{
+            float q = l < 0.5 ? (l * (1.0 + s)) : (l + s - l * s);
+            float p = 2.0 * l - q;
+            r = hue2rgb(p, q, h + 1.0/3.0);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1.0/3.0);
+        }
+        return float4(r,g,b,color.a);
+    }
+    
     //source over blend
     METAL_FUNC float4 normalBlend(float4 Cb, float4 Cf) {
         float4 dst = premultiply(Cb);
