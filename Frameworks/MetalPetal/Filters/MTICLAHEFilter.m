@@ -200,7 +200,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return [NSSet setWithObjects:@"clipLimit",@"tileGridSize", nil];
 }
 
-+ (MTICLAHELUTKernel *)lutKernel {
++ (MTICLAHELUTKernel *)LUTGeneratorKernel {
     static MTICLAHELUTKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -251,7 +251,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
                                                                            parameters:@{@"scale": lightnessImageScale}
                                                               outputTextureDimensions:lightnessTextureDimensions
                                                                     outputPixelFormat:MTLPixelFormatR8Unorm];
-    MTIImage *lutImage = [[MTIImage alloc] initWithPromise:[[MTICLAHELUTRecipe alloc] initWithKernel:MTICLAHEFilter.lutKernel
+    MTIImage *lutImage = [[MTIImage alloc] initWithPromise:[[MTICLAHELUTRecipe alloc] initWithKernel:MTICLAHEFilter.LUTGeneratorKernel
                                                                                  inputLightnessImage:lightnessImage
                                                                                            clipLimit:self.clipLimit
                                                                                         tileGridSize:self.tileGridSize]];
