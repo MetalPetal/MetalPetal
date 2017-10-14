@@ -20,7 +20,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookUp512x512"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookup512x512"]];
     });
     return kernel;
 }
