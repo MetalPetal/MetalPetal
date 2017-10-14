@@ -42,6 +42,8 @@
 
 @property (nonatomic, strong) MTILensBlurFilter *lensBlurFilter;
 
+@property (nonatomic, strong) MTICLAHEFilter *claheFilter;
+
 @end
 
 @implementation ImageRendererViewController
@@ -60,7 +62,7 @@
     MTIContext *context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() options:options error:&error];
     self.context = context;
     
-    UIImage *image = [UIImage imageNamed:@"P1030510.jpg"];
+    UIImage *image = [UIImage imageNamed:@"P1040808.jpg"];
     
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:context.device];
     renderView.delegate = self;
@@ -76,6 +78,7 @@
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
     self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
+    self.claheFilter = [[MTICLAHEFilter alloc] init];
     
     float matrix[9] = {
         -1, 0, 1,
@@ -123,6 +126,11 @@
     self.lensBlurFilter.inputImage = self.inputImage;
     MTIImage *outputImage = self.lensBlurFilter.outputImage;
     return outputImage;
+}
+
+- (MTIImage *)claheTestOutputImage {
+    self.claheFilter.inputImage = self.inputImage;
+    return self.claheFilter.outputImage;
 }
 
 - (MTIImage *)renderTargetCacheAndReuseTestOutputImage {
@@ -185,7 +193,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self lensBlurTestOutputImage];
+        MTIImage *outputImage = [self claheTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

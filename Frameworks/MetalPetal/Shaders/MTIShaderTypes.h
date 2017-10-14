@@ -29,6 +29,14 @@ struct MTIVertex {
 };
 typedef struct MTIVertex MTIVertex;
 
+struct MTICLAHELUTGeneratorInputParameters {
+    uint histogramBins;
+    uint clipLimit;
+    uint totalPixelCountPerTile;
+    uint numberOfLUTs;
+};
+typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputParameters;
+
 #if defined(__cplusplus)
 
 #if __has_include(<metal_stdlib>)

@@ -79,6 +79,11 @@
     return [self initWithValues:values count:16];
 }
 
+- (instancetype)initWithFloat2:(simd_float2)v {
+    float values[2] = {v[0],v[1]};
+    return [self initWithValues:values count:2];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
     if (!data) {
@@ -139,6 +144,14 @@
         return SCNMatrix4ToMat4(m);
     }
     return matrix_identity_float4x4;
+}
+
+- (simd_float2)float2Value {
+    if (self.count == 2) {
+        const float * bytes = self.bytes;
+        return (simd_float2){bytes[0], bytes[1]};
+    }
+    return (simd_float2){0,0};
 }
 
 - (CATransform3D)CATransform3DValue {

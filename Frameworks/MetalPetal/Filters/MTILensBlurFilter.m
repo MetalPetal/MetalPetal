@@ -66,7 +66,7 @@
     NSMutableArray *deltas = [NSMutableArray array];
     for (NSInteger i = 0; i < 3; ++i) {
         float a = self.angle + i * M_PI * 2.0 / 3.0;
-        MTIVector *delta = [[MTIVector alloc] initWithCGSize:CGSizeMake(self.radius * sin(a)/self.inputImage.size.width, self.radius * cos(a)/self.inputImage.size.height)];
+        MTIVector *delta = [[MTIVector alloc] initWithFloat2:(simd_float2){self.radius * sin(a)/self.inputImage.size.width, self.radius * cos(a)/self.inputImage.size.height}];
         [deltas addObject:delta];
     }
     

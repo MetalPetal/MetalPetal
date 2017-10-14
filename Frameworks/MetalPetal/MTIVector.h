@@ -27,6 +27,7 @@
 - (instancetype)initWithCGAffineTransform:(CGAffineTransform)t;
 - (instancetype)initWithCATransform3D:(CATransform3D)t;
 - (instancetype)initWithFloat4x4:(simd_float4x4)m;
+- (instancetype)initWithFloat2:(simd_float2)v;
 
 @property (readonly) NSUInteger count;
 
@@ -43,5 +44,7 @@
 @property (readonly) CATransform3D CATransform3DValue;
 
 @property (readonly) simd_float4x4 float4x4Value;
+
+@property (readonly) simd_float2 float2Value;
 
 @end
