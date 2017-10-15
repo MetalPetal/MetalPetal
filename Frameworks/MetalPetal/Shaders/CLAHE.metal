@@ -59,8 +59,8 @@ kernel void CLAHEGenerateLUT(
     }
 }
 
-METAL_FUNC float CLAHELookup(texture2d<float, access::sample> lutTexture, sampler lutSamper, float index, float value) {
-    return lutTexture.sample(lutSamper, float2((value * 255.0 + 0.5)/lutTexture.get_width(), (index + 0.5)/lutTexture.get_height())).r;
+METAL_FUNC float CLAHELookup(texture2d<float, access::sample> lutTexture, sampler lutSamper, float index, float x) {
+    return lutTexture.sample(lutSamper, float2(x, (index + 0.5)/lutTexture.get_height())).r;
 }
 
 fragment float4 CLAHEColorLookup (
@@ -99,11 +99,12 @@ fragment float4 CLAHEColorLookup (
     ty2 = min(ty2, tileGridSize.y - 1.0);
     
     float srcVal = hslColor.b;
+    float x = (srcVal * 255.0 + 0.5)/lutTexture.get_width();
     
-    float lutPlane1_ind1 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx1, srcVal);
-    float lutPlane1_ind2 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx2, srcVal);
-    float lutPlane2_ind1 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx1, srcVal);
-    float lutPlane2_ind2 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx2, srcVal);
+    float lutPlane1_ind1 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx1, x);
+    float lutPlane1_ind2 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx2, x);
+    float lutPlane2_ind1 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx1, x);
+    float lutPlane2_ind2 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx2, x);
     
     float res = (lutPlane1_ind1 * xa1_p + lutPlane1_ind2 * xa_p) * ya1 + (lutPlane2_ind1 * xa1_p + lutPlane2_ind2 * xa_p) * ya;
     

@@ -111,7 +111,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     MPSImageHistogram *histogramKernel = kernelState.histogramKernel;
     
     size_t histogramSize = [histogramKernel histogramSizeForSourceFormat:inputLightnessImageResolution.texture.pixelFormat];
-    id<MTLBuffer> histogramBuffer = [renderingContext.context.device newBufferWithLength:histogramSize * self.numberOfLUTs options:MTLResourceOptionCPUCacheModeDefault|MTLResourceStorageModePrivate];
+    id<MTLBuffer> histogramBuffer = [renderingContext.context.device newBufferWithLength:histogramSize * self.numberOfLUTs options:MTLResourceCPUCacheModeDefaultCache | MTLResourceStorageModeShared];
     
     for (NSUInteger tileIndex = 0; tileIndex < self.numberOfLUTs; tileIndex += 1) {
         NSInteger colum = tileIndex % self.tileGridSize.width;
@@ -127,7 +127,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:MTICLAHEHistogramBinCount height:self.numberOfLUTs mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-    
+    textureDescriptor.resourceOptions = MTLResourceCPUCacheModeDefaultCache | MTLResourceStorageModePrivate;
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
     
     MTICLAHELUTGeneratorInputParameters parameters;
