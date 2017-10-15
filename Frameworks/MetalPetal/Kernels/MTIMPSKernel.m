@@ -54,6 +54,7 @@
         }
     };
     
+    //May need to get a copy
     MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
     
     if (error) {

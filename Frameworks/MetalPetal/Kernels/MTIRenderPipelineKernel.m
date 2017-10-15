@@ -30,8 +30,6 @@
 
 @property (nonatomic,copy,readonly) NSArray<MTIRenderPipelineOutputDescriptor *> *outputDescriptors;
 
-@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
-
 @property (nonatomic, strong, readonly) MTIWeakToStrongObjectsMapTable *resolutionCache;
 @property (nonatomic, strong, readonly) id<NSLocking> resolutionCacheLock;
 
@@ -74,7 +72,11 @@
         }
     };
     
-    MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
+    NSAssert([NSSet setWithArray:[self.outputDescriptors valueForKeyPath:@"pixelFormat"]].count == 1, @"We only support on pixel format type for all outputs currently.");
+    
+    MTLPixelFormat outputPixelFormat = self.outputDescriptors.firstObject.pixelFormat;
+    
+    MTLPixelFormat pixelFormat = (outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputPixelFormat;
 
     MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
     
@@ -157,14 +159,12 @@
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel
                    inputImages:(NSArray<MTIImage *> *)inputImages
             functionParameters:(NSDictionary<NSString *,id> *)functionParameters
-             outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors
-             outputPixelFormat:(MTLPixelFormat)pixelFormat {
+             outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
     if (self = [super init]) {
         _inputImages = inputImages;
         _kernel = kernel;
         _functionParameters = functionParameters;
         _outputDescriptors = outputDescriptors;
-        _outputPixelFormat = pixelFormat;
         _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
         _resolutionCacheLock = MTICreateLock();
     }
@@ -264,9 +264,10 @@
 
 @implementation MTIRenderPipelineOutputDescriptor
 
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions {
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat {
     if (self = [super init]) {
         _dimensions = dimensions;
+        _pixelFormat = pixelFormat;
     }
     return self;
 }
@@ -343,16 +344,16 @@
 }
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:outputTextureDimensions];
-    return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor] outputPixelFormat:outputPixelFormat].firstObject;
+    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:outputTextureDimensions pixelFormat:outputPixelFormat];
+    return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
-- (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
+- (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
+    NSParameterAssert(outputDescriptors.count == self.colorAttachmentCount);
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
                                                                            inputImages:images
                                                                     functionParameters:parameters
-                                                                     outputDescriptors:outputDescriptors
-                                                                     outputPixelFormat:outputPixelFormat];
+                                                                     outputDescriptors:outputDescriptors];
     if (self.colorAttachmentCount == 1) {
         MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:receipt];
         return @[[[MTIImage alloc] initWithPromise:promise]];

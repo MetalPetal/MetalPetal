@@ -108,6 +108,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
         return nil;
     }
     
+    //May need to get a copy
     MPSImageHistogram *histogramKernel = kernelState.histogramKernel;
     
     size_t histogramSize = [histogramKernel histogramSizeForSourceFormat:inputLightnessImageResolution.texture.pixelFormat];

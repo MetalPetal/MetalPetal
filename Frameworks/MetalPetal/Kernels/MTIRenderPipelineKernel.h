@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,readonly) MTITextureDimensions dimensions;
 
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions;
+@property (nonatomic,readonly) MTLPixelFormat pixelFormat;
+
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat;
 
 @end
 
@@ -47,8 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images
                                  parameters:(NSDictionary<NSString *,id> *)parameters
-                          outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors
-                          outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
+                          outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
 
 @end
 
