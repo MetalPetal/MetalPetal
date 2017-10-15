@@ -255,17 +255,18 @@
     return computePipeline;
 }
 
-- (id)kernelStateForKernel:(id<MTIKernel>)kernel pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
     NSMutableDictionary *states = [self.kernelStateMap objectForKey:kernel];
-    id cachedState = states[@(pixelFormat)];
+    id<NSCopying> cacheKey = configuration.identifier ?: [NSNull null];
+    id cachedState = states[cacheKey];
     if (!cachedState) {
-        cachedState = [kernel newKernelStateWithContext:self pixelFormat:pixelFormat error:error];
+        cachedState = [kernel newKernelStateWithContext:self configuration:configuration error:error];
         if (cachedState) {
             if (!states) {
                 states = [NSMutableDictionary dictionary];
                 [self.kernelStateMap setObject:states forKey:kernel];
             }
-            states[@(pixelFormat)] = cachedState;
+            states[cacheKey] = cachedState;
         }
     }
     return cachedState;

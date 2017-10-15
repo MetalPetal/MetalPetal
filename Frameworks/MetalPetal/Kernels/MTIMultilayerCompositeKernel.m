@@ -19,6 +19,33 @@
 #import "MTIVector.h"
 #import "MTIDefer.h"
 
+@interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
+
+@property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
+
+@end
+
+@implementation MTIMultilayerCompositeKernelConfiguration
+@synthesize identifier = _identifier;
+
+- (instancetype)initWithOutputPixelFormat:(MTLPixelFormat)pixelFormat {
+    if (self = [super init]) {
+        _outputPixelFormat = pixelFormat;
+        _identifier = @(pixelFormat).description;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
++ (instancetype)configurationWithOutputPixelFormat:(MTLPixelFormat)pixelFormat {
+    return [[MTIMultilayerCompositeKernelConfiguration alloc] initWithOutputPixelFormat:pixelFormat];
+}
+
+@end
+
 @interface MTIMultilayerCompositeKernelState: NSObject
 
 @property (nonatomic,copy,readonly) NSDictionary<MTIBlendMode, MTIRenderPipeline *> *pipelines;
@@ -227,7 +254,7 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
-    MTIMultilayerCompositeKernelState *kernelState = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
+    MTIMultilayerCompositeKernelState *kernelState = [renderingContext.context kernelStateForKernel:self.kernel configuration:[MTIMultilayerCompositeKernelConfiguration configurationWithOutputPixelFormat:pixelFormat] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -332,9 +359,10 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 
 @implementation MTIMultilayerCompositeKernel
 
-- (id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)error {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(MTIMultilayerCompositeKernelConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)error {
+    NSParameterAssert(configuration);
     MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-    colorAttachmentDescriptor.pixelFormat = pixelFormat;
+    colorAttachmentDescriptor.pixelFormat = configuration.outputPixelFormat;
     colorAttachmentDescriptor.blendingEnabled = NO;
     return [[MTIMultilayerCompositeKernelState alloc] initWithContext:context colorAttachmentDescriptor:colorAttachmentDescriptor error:error];
 }

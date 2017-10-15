@@ -20,6 +20,40 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTILock.h"
 
+@interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
+
+@property (nonatomic,copy,readonly) NSArray<NSNumber *> *colorAttachmentPixelFormats;
+
+@end
+
+@implementation MTIRenderPipelineKernelConfiguration
+@synthesize identifier = _identifier;
+
+- (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {
+    if (self = [super init]) {
+        _colorAttachmentPixelFormats = [colorAttachmentPixelFormats copy];
+        NSMutableString *identifier = [NSMutableString string];
+        for (NSNumber *value in colorAttachmentPixelFormats) {
+            // Using "/" to make the result fits in a tagged pointer.
+            // table = "eilotrm.apdnsIc ufkMShjTRxgC4013bDNvwyUL2O856P-B79AFKEWV_zGJ/HYX";
+            // ref: https://www.mikeash.com/pyblog/friday-qa-2015-07-31-tagged-pointer-strings.html
+            [identifier appendFormat:@"/%@/",value];
+        }
+        _identifier = [identifier copy];
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
++ (instancetype)configurationWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {
+    return [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:colorAttachmentPixelFormats];
+}
+
+@end
+
 @interface MTIImageRenderingRecipe : NSObject
 
 @property (nonatomic,copy,readonly) NSArray<MTIImage *> *inputImages;
@@ -72,13 +106,13 @@
         }
     };
     
-    NSAssert([NSSet setWithArray:[self.outputDescriptors valueForKeyPath:@"pixelFormat"]].count == 1, @"We only support on pixel format type for all outputs currently.");
+    NSMutableArray<NSNumber *> *pixelFormats = [NSMutableArray array];
+    for (MTIRenderPipelineOutputDescriptor *outputDescriptor in self.outputDescriptors) {
+        MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
+        [pixelFormats addObject:@(pixelFormat)];
+    }
     
-    MTLPixelFormat outputPixelFormat = self.outputDescriptors.firstObject.pixelFormat;
-    
-    MTLPixelFormat pixelFormat = (outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputPixelFormat;
-
-    MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:pixelFormat error:&error];
+    MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:self.kernel configuration:[MTIRenderPipelineKernelConfiguration configurationWithColorAttachmentPixelFormats:pixelFormats] error:&error];
     
     if (error) {
         if (inOutError) {
@@ -92,6 +126,8 @@
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
 
     for (NSUInteger index = 0; index < self.kernel.colorAttachmentCount; index += 1) {
+        MTLPixelFormat pixelFormat = [pixelFormats[index] MTLPixelFormatValue];
+        
         MTIRenderPipelineOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
@@ -306,7 +342,9 @@
     return self;
 }
 
-- (MTIRenderPipeline *)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(MTIRenderPipelineKernelConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
+    NSParameterAssert(configuration.colorAttachmentPixelFormats.count == self.colorAttachmentCount);
+    
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor;
     
@@ -330,11 +368,10 @@
     renderPipelineDescriptor.vertexFunction = vertextFunction;
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
-    MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-    colorAttachmentDescriptor.pixelFormat = pixelFormat;
-    colorAttachmentDescriptor.blendingEnabled = NO;
-    
     for (NSUInteger index = 0; index < self.colorAttachmentCount; index += 1) {
+        MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
+        colorAttachmentDescriptor.pixelFormat = [configuration.colorAttachmentPixelFormats[index] MTLPixelFormatValue];
+        colorAttachmentDescriptor.blendingEnabled = NO;
         renderPipelineDescriptor.colorAttachments[index] = colorAttachmentDescriptor;
     }
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;

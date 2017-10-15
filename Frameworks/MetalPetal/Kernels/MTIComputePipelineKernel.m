@@ -54,7 +54,7 @@
         }
     };
     
-    MTIComputePipeline *computePipeline = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
+    MTIComputePipeline *computePipeline = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
     
     if (error) {
         if (inOutError) {
@@ -145,7 +145,7 @@
     return self;
 }
 
-- (nullable MTIComputePipeline *)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTLComputePipelineDescriptor *computePipelineDescriptor = [[MTLComputePipelineDescriptor alloc] init];
     NSError *error;
     id<MTLFunction> computeFunction = [context functionWithDescriptor:self.computeFunctionDescriptor error:&error];

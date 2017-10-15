@@ -100,7 +100,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
         [inputLightnessImageResolution markAsConsumedBy:self];
     };
     
-    MTICLAHELUTKernelState *kernelState = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
+    MTICLAHELUTKernelState *kernelState = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -160,7 +160,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @implementation MTICLAHELUTKernel
 
-- (id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
     MPSImageHistogramInfo info;
     info.numberOfHistogramEntries = MTICLAHEHistogramBinCount;
     info.minPixelValue = (vector_float4){0,0,0,0};

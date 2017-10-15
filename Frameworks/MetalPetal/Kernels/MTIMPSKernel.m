@@ -55,7 +55,7 @@
     };
     
     //May need to get a copy
-    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel pixelFormat:MTIPixelFormatDontCare error:&error];
+    MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
     
     if (error) {
         if (inOutError) {
@@ -125,7 +125,7 @@
     return self;
 }
 
-- (id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError * _Nullable __autoreleasing *)error {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
     return self.builder(context.device);
 }
 

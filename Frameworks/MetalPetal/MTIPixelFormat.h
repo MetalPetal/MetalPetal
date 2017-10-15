@@ -10,8 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT MTLPixelFormat const MTIPixelFormatDontCare;      //aliased to MTLPixelFormatInvalid
 FOUNDATION_EXPORT MTLPixelFormat const MTIPixelFormatUnspecified;   //aliased to MTLPixelFormatInvalid
+
+@interface NSNumber (MTIPixelFormat)
+
+- (MTLPixelFormat)MTLPixelFormatValue;
+
+@end
 
 NS_ASSUME_NONNULL_END
 

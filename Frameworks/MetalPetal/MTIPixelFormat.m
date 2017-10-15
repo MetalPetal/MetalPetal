@@ -6,7 +6,15 @@
 //
 
 #import "MTIPixelFormat.h"
+#import <AssertMacros.h>
 
-MTLPixelFormat const MTIPixelFormatDontCare = MTLPixelFormatInvalid;
 MTLPixelFormat const MTIPixelFormatUnspecified = MTLPixelFormatInvalid;
 
+@implementation NSNumber (MTIPixelFormat)
+
+- (MTLPixelFormat)MTLPixelFormatValue {
+    __Check_Compile_Time(__builtin_types_compatible_p(MTLPixelFormat, NSUInteger));
+    return [self unsignedIntegerValue];
+}
+
+@end

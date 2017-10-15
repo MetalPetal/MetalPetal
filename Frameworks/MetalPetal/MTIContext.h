@@ -81,7 +81,7 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)descriptor error:(NSError **)error;
 
-- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)error;
+- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(nullable id<MTIKernelConfiguration>)configuration error:(NSError **)error;
 
 
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));

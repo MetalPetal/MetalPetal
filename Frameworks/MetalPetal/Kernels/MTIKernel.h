@@ -13,11 +13,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIContext;
 
+@protocol MTIKernelConfiguration <NSObject, NSCopying>
+
+@property (nonatomic, copy, readonly) NSString *identifier;
+
+@end
+
 /// A kernel must be stateless.
 
 @protocol MTIKernel <NSObject>
 
-- (nullable id)newKernelStateWithContext:(MTIContext *)context pixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)error NS_SWIFT_NAME(makeKernelState(context:outputPixelFormat:));
+- (nullable id)newKernelStateWithContext:(MTIContext *)context configuration:(nullable id<MTIKernelConfiguration>)configuration error:(NSError **)error NS_SWIFT_NAME(makeKernelState(context:configuration:));
 
 @end
 
