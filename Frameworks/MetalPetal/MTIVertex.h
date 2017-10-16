@@ -28,8 +28,6 @@ FOUNDATION_EXPORT MTIVertex MTIVertexMake(float x, float y, float z, float w, fl
 
 @interface MTIVertices : NSObject <MTIGeometry>
 
-@property (nonatomic,readonly) const MTIVertex *buffer NS_RETURNS_INNER_POINTER;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;

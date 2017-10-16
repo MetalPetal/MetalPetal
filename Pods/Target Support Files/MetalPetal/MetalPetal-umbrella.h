@@ -43,6 +43,7 @@
 #import "MTIFilterUtilities.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
+#import "MTIImageOrientation.h"
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTILock.h"
