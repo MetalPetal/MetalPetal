@@ -70,6 +70,34 @@ A `MTIContext` contains a lot of states and caches thus cannot be shared safely 
 
 - Generally better performance. (Detailed benchmark data needed)
 
+## Builtin Filters
+
+### Color Matrix
+
+### Color Lookup
+
+### Opacity
+
+### Exposure
+
+### Vibrance
+
+### Blends
+
+### Mask
+
+### Transform
+
+### Multilayer Composite
+
+### MPS Convolution
+
+### MPS Gaussian Blur
+
+### CLAHE
+
+### Lens Blur (Hexagonal Bokeh Blur)
+
 ## Example Code
 
 #### Create a `MTIImage`
@@ -118,7 +146,7 @@ do {
 
 - Reuse a `MTIContext` whenever possible.
 
-    Contexts are heavyweight objects, so if you do create one, do so as early as possible, and reuse it each time you need to render a image.
+    Contexts are heavyweight objects, so if you do create one, do so as early as possible, and reuse it each time you need to render an image.
 
 - Use `MTIImage.cachePolicy` wisely.
     
@@ -128,7 +156,7 @@ do {
 
     Use `MTIImageCachePolicyPersistent` when you want to prevent the underlying texture from being reused.
     
-    By default, images created from external sources has the `persistent` policy.
+    By default, images created from external sources have the `persistent` policy.
 
 - Understand that `MTIFilter.outputImage` is a compute property.
 
@@ -176,7 +204,7 @@ pod 'MetalPetal/Swift', :git => 'https://github.com/MetalPetal/MetalPetal.git'
 
 ## Roadmap
 
-We're going to release an alpha version of MetalPetal in Augest 2017 (hopefully).
+We're going to release an alpha version of MetalPetal in Nov 2017.
 
 You can follow our progress on the "Project" page. https://github.com/MetalPetal/MetalPetal/projects/1
 
