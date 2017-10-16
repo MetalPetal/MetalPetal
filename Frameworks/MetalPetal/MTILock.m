@@ -37,7 +37,7 @@ OS_UNFAIR_LOCK_AVAILABILITY
 
 @end
 
-id<NSLocking> MTICreateLock(void) {
+id<NSLocking> MTILockCreate(void) {
     if (@available(iOS 10.0, *)) {
         return [[MTILock alloc] init];
     } else {

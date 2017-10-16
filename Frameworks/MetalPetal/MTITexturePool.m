@@ -44,7 +44,7 @@
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
     if (self = [super init]) {
-        _lock = MTICreateLock();
+        _lock = MTILockCreate();
         _textureReferenceCount = 1;
         _pool = pool;
         _texture = texture;
@@ -116,7 +116,7 @@
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device {
     if (self = [super init]) {
-        _lock = MTICreateLock();
+        _lock = MTILockCreate();
         _device = device;
         _textureCache = [NSMutableDictionary dictionary];
     }

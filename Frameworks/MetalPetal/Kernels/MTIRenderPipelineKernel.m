@@ -202,7 +202,7 @@
         _functionParameters = functionParameters;
         _outputDescriptors = outputDescriptors;
         _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
-        _resolutionCacheLock = MTICreateLock();
+        _resolutionCacheLock = MTILockCreate();
     }
     return self;
 }
