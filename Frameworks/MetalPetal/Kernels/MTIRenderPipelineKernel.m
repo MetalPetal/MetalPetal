@@ -56,6 +56,8 @@
 
 @interface MTIImageRenderingRecipe : NSObject
 
+@property (nonatomic,copy,readonly) id<MTIGeometry> geometry;
+
 @property (nonatomic,copy,readonly) NSArray<MTIImage *> *inputImages;
 
 @property (nonatomic,strong,readonly) MTIRenderPipelineKernel *kernel;
@@ -70,20 +72,6 @@
 @end
 
 @implementation MTIImageRenderingRecipe
-
-- (MTIVertices *)verticesForRect:(CGRect)rect {
-    CGFloat l = CGRectGetMinX(rect);
-    CGFloat r = CGRectGetMaxX(rect);
-    CGFloat t = CGRectGetMinY(rect);
-    CGFloat b = CGRectGetMaxY(rect);
-    
-    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
-    } count:4];
-}
 
 - (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
@@ -142,17 +130,16 @@
         [renderTargets addObject:renderTarget];
     }
     
-    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
-    
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
     
-    if (vertices.count * sizeof(MTIVertex) < 4096) {
+    NSData *geometryBufferData = self.geometry.bufferData;
+    if (geometryBufferData.length < 4096) {
         //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
-        [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
+        [commandEncoder setVertexBytes:geometryBufferData.bytes length:geometryBufferData.length atIndex:0];
     } else {
-        id<MTLBuffer> verticesBuffer = [renderingContext.context.device newBufferWithBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) options:0];
-        [commandEncoder setVertexBuffer:verticesBuffer offset:0 atIndex:0];
+        id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:geometryBufferData.bytes length:geometryBufferData.length options:0];
+        [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
     }
     
     for (NSUInteger index = 0; index < inputResolutions.count; index += 1) {
@@ -182,7 +169,7 @@
         }
     }
     
-    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
+    [commandEncoder drawPrimitives:self.geometry.primitiveType vertexStart:0 vertexCount:self.geometry.vertexCount];
     [commandEncoder endEncoding];
     
     return renderTargets;
@@ -193,10 +180,12 @@
 }
 
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel
+                      geometry:(id<MTIGeometry>)geometry
                    inputImages:(NSArray<MTIImage *> *)inputImages
             functionParameters:(NSDictionary<NSString *,id> *)functionParameters
              outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
     if (self = [super init]) {
+        _geometry = [geometry copyWithZone:nil];
         _inputImages = inputImages;
         _kernel = kernel;
         _functionParameters = functionParameters;
@@ -385,9 +374,34 @@
     return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
++ (MTIVertices *)verticesForDrawingInRect:(CGRect)rect {
+    CGFloat l = CGRectGetMinX(rect);
+    CGFloat r = CGRectGetMaxX(rect);
+    CGFloat t = CGRectGetMinY(rect);
+    CGFloat b = CGRectGetMaxY(rect);
+    
+    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
+    } count:4];
+}
+
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
+    return [self imagesByDrawingGeometry:[MTIRenderPipelineKernel verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2)]
+                            withTextures:images
+                              parameters:parameters
+                       outputDescriptors:outputDescriptors];
+}
+
+- (NSArray<MTIImage *> *)imagesByDrawingGeometry:(id<MTIGeometry>)geometry
+                                    withTextures:(NSArray<MTIImage *> *)images
+                                      parameters:(NSDictionary<NSString *,id> *)parameters
+                               outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
     NSParameterAssert(outputDescriptors.count == self.colorAttachmentCount);
     MTIImageRenderingRecipe *receipt = [[MTIImageRenderingRecipe alloc] initWithKernel:self
+                                                                              geometry:geometry
                                                                            inputImages:images
                                                                     functionParameters:parameters
                                                                      outputDescriptors:outputDescriptors];

@@ -22,7 +22,7 @@ extension MTIVertex {
 }
 
 extension MTIVertices {
-    public convenience init(_ vertices: [MTIVertex]) {
-        self.init(vertices: vertices, count: vertices.count)
+    public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType = .triangleStrip) {
+        self.init(__vertices: vertices, count: vertices.count, primitiveType: primitiveType)
     }
 }

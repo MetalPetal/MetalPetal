@@ -11,6 +11,7 @@
 #import "MTIKernel.h"
 #import "MTITextureDimensions.h"
 #import "MTIPixelFormat.h"
+#import "MTIVertex.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images
                                  parameters:(NSDictionary<NSString *,id> *)parameters
                           outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
+
+- (NSArray<MTIImage *> *)imagesByDrawingGeometry:(id<MTIGeometry>)geometry
+                                    withTextures:(NSArray<MTIImage *> *)images
+                                      parameters:(NSDictionary<NSString *,id> *)parameters
+                               outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
 
 @end
 

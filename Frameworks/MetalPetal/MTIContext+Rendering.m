@@ -181,13 +181,13 @@
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setVertexBytes:vertices.buffer length:vertices.count * sizeof(MTIVertex) atIndex:0];
+    [commandEncoder setVertexBytes:vertices.bufferData.bytes length:vertices.bufferData.length atIndex:0];
     
     [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
     
-    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:vertices.count];
+    [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
     [commandEncoder endEncoding];
     
     id<MTLDrawable> drawable = [request.drawableProvider drawableForRequest:request];
