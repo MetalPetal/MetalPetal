@@ -51,7 +51,7 @@ namespace metalpetal {
     };
     
     METAL_FUNC float4 unpremultiply(float4 s) {
-        return s.a > 0 ? float4(s.rgb/s.a, s.a) : float4(0);
+        return float4(s.rgb/max(s.a,0.00001), s.a);
     }
     
     METAL_FUNC float4 premultiply(float4 s) {
