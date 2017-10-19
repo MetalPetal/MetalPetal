@@ -45,7 +45,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    return [self imageByProcessingImage:image withInputParameters:parameters outputPixelFormat:outputPixelFormat];
+    return [self imageByProcessingImage:image withInputParameters:parameters outputPixelFormat:outputPixelFormat rotation:MTIImageOrientationUp];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat rotation:(MTIImageOrientation)rotation {
