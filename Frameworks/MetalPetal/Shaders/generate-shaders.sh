@@ -38,7 +38,7 @@ struct ShaderTemplate {
 }
 
 struct MetalPetalShaderGenerator {
-    static let blendModes: [String] = ["Normal","Multiply","HardLight"]
+    static let blendModes: [String] = ["Normal","Multiply","HardLight", "SoftLight", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "Difference", "Exclusion"]
 
     static func generateMultilayerCompositeShaders(writeTo shaderDirectoryURL: URL) {
         let multilayerCompositeShaderTemplate = ShaderTemplate(

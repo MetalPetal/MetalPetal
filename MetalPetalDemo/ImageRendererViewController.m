@@ -44,13 +44,15 @@
 
 @property (nonatomic, strong) MTICLAHEFilter *claheFilter;
 
+@property (nonatomic, strong) MTIBlendFilter *blendFilter;
+
 @end
 
 @implementation ImageRendererViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    self.view.backgroundColor = UIColor.blackColor;
     //[MetalPetalSwiftInterfaceTest test];
     
     //[WeakToStrongObjectsMapTableTests test];
@@ -67,6 +69,7 @@
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.view.bounds device:context.device];
     renderView.delegate = self;
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    renderView.layer.opaque = NO;
     [self.view addSubview:renderView];
     self.renderView = renderView;
     
@@ -91,6 +94,10 @@
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} error:&error];
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture];
     self.inputImage = mtiImageFromTexture;
+    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeExclusion];
+    
+    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
+    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -186,6 +193,12 @@
     return self.compositingFilter.outputImage;
 }
 
+- (MTIImage *)blendFilterTestOutputImage
+{
+    return self.blendFilter.outputImage;
+}
+
+#pragma mark ----------
 - (void)drawInMTKView:(MTKView *)view {
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
     @autoreleasepool {
@@ -193,11 +206,11 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self claheTestOutputImage];
+        MTIImage *outputImage = [self blendFilterTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
-        [self.context renderImage:outputImage toDrawableWithRequest:request error:nil];
+        [self.context renderImage:[outputImage imageByPremultiplyingAlpha] toDrawableWithRequest:request error:nil];
        
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);

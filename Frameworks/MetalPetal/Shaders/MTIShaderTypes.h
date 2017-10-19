@@ -112,23 +112,100 @@ namespace metalpetal {
     }
     
     //source over blend
-    METAL_FUNC float4 normalBlend(float4 Cb, float4 Cf) {
+    METAL_FUNC float4 normalBlend(float4 Cb, float4 Cs) {
         float4 dst = premultiply(Cb);
-        float4 src = premultiply(Cf);
+        float4 src = premultiply(Cs);
         return unpremultiply(src + dst * (1.0 - src.a));
     }
+
+    METAL_FUNC float4 blendBaseAlpha(float4 Cb, float4 Cs, float4 B) {
+        float4 Cr = float4((1 - Cb.a) * Cs.rgb + Cb.a * B.rgb, Cs.a);
+        return normalBlend(Cb, Cr);
+    }
     
-    //untested
+    
+    // multiply
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
-        float3 B = clamp(Cb.rgb * Cs.rgb, float3(0), float3(1));
-        return normalBlend(Cb, float4(B, Cs.a));
+        float4 B = clamp(float4(Cb.rgb * Cs.rgb, Cs.a), float4(0), float4(1));
+        return blendBaseAlpha(Cb, Cs, B);
     }
     
-    //unimplemented
+    // overlay
+    METAL_FUNC float overlayBlendSingleChannel(float b, float f ) {
+                return f < 0.5f ? (2 * f * b) : (1 - 2 * (1 - f) * (1 - b));
+    }
+    
+    METAL_FUNC float4 overlayBlend(float4 Cb, float4 Cs) {
+        float4 B =  float4(overlayBlendSingleChannel(Cb.r, Cs.r), overlayBlendSingleChannel(Cb.g, Cs.g), overlayBlendSingleChannel(Cb.b, Cs.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    //hardLight
     METAL_FUNC float4 hardLightBlend(float4 Cb, float4 Cs) {
-        return Cs;
+        return overlayBlend(Cs, Cb);
     }
     
+     //  softLight
+    METAL_FUNC float softLightBlendSingleChannel(float b, float f) {
+        return f < 0.5? ((2 * f * b) + pow(f, 2) * (1 - 2 * b)) : (2 * f * (1 - b) + sqrt(f) * (2 * b - 1));
+    }
+                         
+    METAL_FUNC float4 softLightBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(softLightBlendSingleChannel(Cb.r, Cs.r), softLightBlendSingleChannel(Cb.g, Cs.g), softLightBlendSingleChannel(Cb.b, Cs.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // screen
+    METAL_FUNC float4 screenBlend(float4 Cb, float4 Cs) {
+        float4 White = float4(1.0);
+        float4 B = White - ((White - Cs) * (White - Cb));
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // darken
+    METAL_FUNC float4 darkenBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(min(Cs.r, Cb.r), min(Cs.g, Cb.g), min(Cs.b, Cb.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // lighten
+    METAL_FUNC float4 lightenBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(max(Cs.r, Cb.r), max(Cs.g, Cb.g), max(Cs.b, Cb.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // colorDodge
+    METAL_FUNC float colorDodgeBlendSingleChannel(float b, float f) {
+         if  (b == 0) return 0;
+        else if (f == 1) return 1;
+        else return min(1.0, b / (1 - f));
+    }
+    METAL_FUNC float4 colorDodgeBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(colorDodgeBlendSingleChannel(Cb.r, Cs.r), colorDodgeBlendSingleChannel(Cb.g, Cs.g), colorDodgeBlendSingleChannel(Cb.b, Cs.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+
+    // colorBurn
+    METAL_FUNC float colorBurnBlendSingleChannel(float b, float f) {
+        if  (b == 1) return 1;
+        else if (f == 0) return 0;
+        else return min(1.0, (1 - b) / f);
+    }
+    METAL_FUNC float4 colorBurnBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(colorBurnBlendSingleChannel(Cb.r, Cs.r), colorBurnBlendSingleChannel(Cb.g, Cs.g), colorBurnBlendSingleChannel(Cb.b, Cs.b), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    // difference
+    METAL_FUNC float4 differenceBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(abs(Cb.rgb - Cs.rgb), Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // exclusion
+    METAL_FUNC float4 exclusionBlend(float4 Cb, float4 Cs) {
+        float4 B = float4(Cb.rgb + Cs.rgb - 2 * Cb.rgb * Cs.rgb, Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
 }
 
 #endif

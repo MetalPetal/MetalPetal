@@ -13,8 +13,16 @@ MTIBlendMode const MTIBlendModeOverlay = @"Overlay";
 MTIBlendMode const MTIBlendModeScreen = @"Screen";
 MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
 
+MTIBlendMode const MTIBlendModeSoftLight = @"SoftLight";
+MTIBlendMode const MTIBlendModeDarken = @"Darken";
+MTIBlendMode const MTIBlendModeLighten = @"Lighten";
+MTIBlendMode const MTIBlendModeColorDodge = @"ColorDodge";
+MTIBlendMode const MTIBlendModeColorBurn = @"ColorBurn";
+MTIBlendMode const MTIBlendModeDifference = @"Difference";
+MTIBlendMode const MTIBlendModeExclusion = @"Exclusion";
+
 NSArray<MTIBlendMode> *MTIBlendModeGetAllModes(void) {
-    return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight];
+    return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight, MTIBlendModeScreen, MTIBlendModeOverlay, MTIBlendModeSoftLight, MTIBlendModeDarken, MTIBlendModeLighten, MTIBlendModeColorDodge, MTIBlendModeColorBurn, MTIBlendModeDifference, MTIBlendModeExclusion];
 }
 
 NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) {
