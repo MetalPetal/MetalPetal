@@ -53,3 +53,112 @@ fragment float4 multilayerCompositeHardLightBlend(
     return hardLightBlend(currentColor,textureColor);
 }
 
+fragment float4 multilayerCompositeSoftLightBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    textureColor.a *= opacity;
+    return softLightBlend(currentColor,textureColor);
+}
+
+fragment float4 multilayerCompositeScreenBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    textureColor.a *= opacity;
+    return screenBlend(currentColor,textureColor);
+}
+
+fragment float4 multilayerCompositeOverlayBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    textureColor.a *= opacity;
+    return overlayBlend(currentColor,textureColor);
+}
+
+fragment float4 multilayerCompositeDarkenBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    textureColor.a *= opacity;
+    return darkenBlend(currentColor,textureColor);
+}
+
+fragment float4 multilayerCompositeLightenBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    constant float & opacity [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    textureColor.a *= opacity;
+    return lightenBlend(currentColor,textureColor);
+}
+
+//fragment float4 multilayerCompositeColorDodgeBlend(
+//                                                    VertexOut vertexIn [[ stage_in ]],
+//                                                    float4 currentColor [[color(0)]],
+//                                                    constant float & opacity [[buffer(0)]],
+//                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+//                                                    sampler colorSampler [[ sampler(0) ]]
+//                                                ) {
+//    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+//    textureColor.a *= opacity;
+//    return colorDodgeBlend(currentColor,textureColor);
+//}
+//
+//fragment float4 multilayerCompositeColorBurnBlend(
+//                                                    VertexOut vertexIn [[ stage_in ]],
+//                                                    float4 currentColor [[color(0)]],
+//                                                    constant float & opacity [[buffer(0)]],
+//                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+//                                                    sampler colorSampler [[ sampler(0) ]]
+//                                                ) {
+//    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+//    textureColor.a *= opacity;
+//    return colorBurnBlend(currentColor,textureColor);
+//}
+//
+//fragment float4 multilayerCompositeDifferenceBlend(
+//                                                    VertexOut vertexIn [[ stage_in ]],
+//                                                    float4 currentColor [[color(0)]],
+//                                                    constant float & opacity [[buffer(0)]],
+//                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+//                                                    sampler colorSampler [[ sampler(0) ]]
+//                                                ) {
+//    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+//    textureColor.a *= opacity;
+//    return differenceBlend(currentColor,textureColor);
+//}
+//
+//fragment float4 multilayerCompositeExclusionBlend(
+//                                                    VertexOut vertexIn [[ stage_in ]],
+//                                                    float4 currentColor [[color(0)]],
+//                                                    constant float & opacity [[buffer(0)]],
+//                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+//                                                    sampler colorSampler [[ sampler(0) ]]
+//                                                ) {
+//    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+//    textureColor.a *= opacity;
+//    return exclusionBlend(currentColor,textureColor);
+//}
+
+
