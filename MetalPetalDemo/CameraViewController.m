@@ -40,7 +40,7 @@
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.lutFilter = [[MTIColorLookupFilter alloc] init];
 
-    self.lutFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ml_best_lut"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)}];
+    self.lutFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"lut_abao"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)}];
     
     self.queue = dispatch_queue_create("video_queue", NULL);
     
