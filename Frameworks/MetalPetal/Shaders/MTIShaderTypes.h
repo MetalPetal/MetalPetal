@@ -67,8 +67,8 @@ namespace metalpetal {
         return p;
     }
     
-    METAL_FUNC float4 rgb2hsl(float4 inputColor) {
-        float4 color = clamp(inputColor,float4(0.0),float4(1.0));
+    METAL_FUNC float3 rgb2hsl(float3 inputColor) {
+        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
         
         //Compute min and max component values
         float MAX = max(color.r, max(color.g, color.b));
@@ -88,11 +88,11 @@ namespace metalpetal {
         h /= 6.0;
         h = (h < 0.0 ? 1.0 + h : h);
         
-        return float4(h, s, l, color.a);
+        return float3(h, s, l);
     }
     
-    METAL_FUNC float4 hsl2rgb(float4 inputColor) {
-        float4 color = clamp(inputColor,float4(0.0),float4(1.0));
+    METAL_FUNC float3 hsl2rgb(float3 inputColor) {
+        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
         
         float h = color.r;
         float s = color.g;
@@ -108,7 +108,7 @@ namespace metalpetal {
             g = hue2rgb(p, q, h);
             b = hue2rgb(p, q, h - 1.0/3.0);
         }
-        return float4(r,g,b,color.a);
+        return float3(r,g,b);
     }
     
     //source over blend

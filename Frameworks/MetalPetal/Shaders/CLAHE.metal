@@ -16,7 +16,7 @@ fragment float CLAHERGB2Lightness(VertexOut vertexIn [[ stage_in ]],
                         constant float2 & scale [[buffer(0)]]
                         ) {
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords * scale);
-    float4 hsl = rgb2hsl(textureColor);
+    float3 hsl = rgb2hsl(textureColor.rgb);
     return hsl.b;
 }
 
@@ -60,6 +60,7 @@ kernel void CLAHEGenerateLUT(
 }
 
 METAL_FUNC float CLAHELookup(texture2d<float, access::sample> lutTexture, sampler lutSamper, float index, float x) {
+    //lutTexture is R8, no alpha.
     return lutTexture.sample(lutSamper, float2(x, (index + 0.5)/lutTexture.get_height())).r;
 }
 
@@ -74,7 +75,7 @@ fragment float4 CLAHEColorLookup (
 {
     float2 sourceCoord = vertexIn.texcoords;
     float4 color = sourceTexture.sample(colorSampler,sourceCoord);
-    float4 hslColor = rgb2hsl(color);
+    float3 hslColor = rgb2hsl(color.rgb);
     
     float txf = sourceCoord.x * tileGridSize.x - 0.5;
     
@@ -108,7 +109,8 @@ fragment float4 CLAHEColorLookup (
     
     float res = (lutPlane1_ind1 * xa1_p + lutPlane1_ind2 * xa_p) * ya1 + (lutPlane2_ind1 * xa1_p + lutPlane2_ind2 * xa_p) * ya;
     
-    float4 r = float4(float3(hslColor.r, hslColor.g, res), color.a);
+    float3 r = float3(hslColor.r, hslColor.g, res);
     
-    return hsl2rgb(r);
+    float3 rgbResult = hsl2rgb(r);
+    return float4(rgbResult, color.a);
 }
