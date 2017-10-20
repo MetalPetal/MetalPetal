@@ -432,19 +432,38 @@ static NSString *propertyTypeWithPropertyName(NSObject *object ,NSString *proper
     return type;
 }
 
+static const void *MTIInputFilterKeysCache = &MTIInputFilterKeysCache;
+
+static void MTISetFilterInputKeysCache(id target, NSDictionary *newCaches) {
+    NSDictionary *property = objc_getAssociatedObject(target, &MTIInputFilterKeysCache);
+    if(property == nil)
+    {
+        property = newCaches;
+        objc_setAssociatedObject(target, &MTIInputFilterKeysCache, property, OBJC_ASSOCIATION_COPY);
+    }
+}
+
+static NSDictionary *MTIFilterInputKeysCachesFrom(id target) {
+    NSDictionary *property = objc_getAssociatedObject(target, &MTIInputFilterKeysCache);
+    return property;
+}
+
 static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object.class respondsToSelector:@selector(inputParameterKeys)], ([NSString stringWithFormat:@"method: +(void)inputParameterKeys NOT implement， cls %@", NSStringFromClass(object.class)]));
     NSSet *propertyNames = [filter.class inputParameterKeys];
+    NSDictionary *keysCache = MTIFilterInputKeysCachesFrom(filter);
+    if (keysCache.count == propertyNames.count) return keysCache;
     NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
     for (NSString *propertyName in propertyNames) {
         NSString *type = propertyTypeWithPropertyName(object, propertyName);
         if (type) [keysWithTypeDescription setObject:type forKey:propertyName];
     }
+    MTISetFilterInputKeysCache(filter, [keysWithTypeDescription copy]);
     return keysWithTypeDescription;
 }
 
-NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
+ NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
@@ -469,6 +488,7 @@ NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> fi
         }
     }];
     [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
+    NSLog(@">> reslut = %@ ", result);
     return result;
 }
 

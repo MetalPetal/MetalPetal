@@ -122,16 +122,16 @@
     if (CMFormatDescriptionGetMediaType(CMSampleBufferGetFormatDescription(sampleBuffer)) == kCMMediaType_Video) {
         CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:pixelBuffer];
-        self.lutFilter.inputImage = inputImage;
-//        self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-        MTIImage *outputImage = self.lutFilter.outputImage;
+        self.saturationFilter.inputImage = inputImage;
+        self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
+        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+        MTIImage *outputImage = self.colorInvertFilter.outputImage;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.renderView.image = outputImage;
         });
