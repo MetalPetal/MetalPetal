@@ -126,6 +126,12 @@
 }
 
 - (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
+    if (!MPSSupportsMTLDevice(context.device)) {
+        if (error) {
+            *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorMPSKernelNotSupported userInfo:nil];
+        }
+        return nil;
+    }
     return self.builder(context.device);
 }
 

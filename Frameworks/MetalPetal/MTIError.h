@@ -30,6 +30,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorDataBufferSizeMismatch = 4001,
     MTIErrorParameterDataTypeNotSupported = 4002,
     MTIErrorMPSKernelInputCountMismatch = 4003,
+    MTIErrorMPSKernelNotSupported = 4004,
     
     //Render errors
     MTIErrorEmptyDrawable = 5001,

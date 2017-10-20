@@ -211,3 +211,11 @@ You can follow our progress on the "Project" page. https://github.com/MetalPetal
 ## Contribute
 
 Thank you for considering contributing to MetalPetal. Please read our [Contributing Guidelines](CONTRIBUTING.md).
+
+## License
+
+MetalPetal is MIT-licensed. [LICENSE](LICENSE)
+
+The files in the `/MetalPetalDemo` directory are licensed under a separate license. [LICENSE.md](MetalPetalDemo/LICENSE.md)
+
+Documentation is licensed CC-BY-4.0.
