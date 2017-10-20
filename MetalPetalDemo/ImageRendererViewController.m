@@ -30,8 +30,6 @@
 
 @property (nonatomic, strong) MTIExposureFilter *exposureFilter;
 
-@property (nonatomic, strong) MTIOverlayBlendFilter *overlayBlendFilter;
-
 @property (nonatomic, strong) MTIImage *cachedImage;
 
 @property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
@@ -77,7 +75,6 @@
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.colorMatrixFilter = [[MTIColorMatrixFilter alloc] init];
     self.exposureFilter = [[MTIExposureFilter alloc] init];
-    self.overlayBlendFilter = [[MTIOverlayBlendFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
     self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
@@ -161,9 +158,9 @@
     self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
     MTIImage *desaturatedAndInvertedImage = self.colorInvertFilter.outputImage;
     
-    self.overlayBlendFilter.inputBackgroundImage = desaturatedAndInvertedImage;
-    self.overlayBlendFilter.inputForegroundImage = invertedAndDesaturatedImage;
-    return self.overlayBlendFilter.outputImage;
+    self.blendFilter.inputBackgroundImage = desaturatedAndInvertedImage;
+    self.blendFilter.inputImage = invertedAndDesaturatedImage;
+    return self.blendFilter.outputImage;
 }
 
 - (MTIImage *)multilayerCompositingTestOutputImage {
