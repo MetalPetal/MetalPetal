@@ -432,19 +432,19 @@ static NSString *propertyTypeWithPropertyName(NSObject *object ,NSString *proper
     return type;
 }
 
-static const void *MTIInputFilterKeysCache = &MTIInputFilterKeysCache;
+static const void *MTIFilterInputKeysCache = &MTIFilterInputKeysCache;
 
-static void MTISetFilterInputKeysCache(id target, NSDictionary *newCaches) {
-    NSDictionary *property = objc_getAssociatedObject(target, &MTIInputFilterKeysCache);
+static void setFilterInputKeysCache(id target, NSDictionary *newCaches) {
+    NSDictionary *property = objc_getAssociatedObject(target, &MTIFilterInputKeysCache);
     if(property == nil)
     {
         property = newCaches;
-        objc_setAssociatedObject(target, &MTIInputFilterKeysCache, property, OBJC_ASSOCIATION_COPY);
+        objc_setAssociatedObject(target, &MTIFilterInputKeysCache, property, OBJC_ASSOCIATION_COPY);
     }
 }
 
-static NSDictionary *MTIFilterInputKeysCachesFrom(id target) {
-    NSDictionary *property = objc_getAssociatedObject(target, &MTIInputFilterKeysCache);
+static NSDictionary *filterInputKeysCacheFrom(id target) {
+    NSDictionary *property = objc_getAssociatedObject(target, &MTIFilterInputKeysCache);
     return property;
 }
 
@@ -452,14 +452,14 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
     NSObject *object = filter;
     NSCAssert([object.class respondsToSelector:@selector(inputParameterKeys)], ([NSString stringWithFormat:@"method: +(void)inputParameterKeys NOT implement， cls %@", NSStringFromClass(object.class)]));
     NSSet *propertyNames = [filter.class inputParameterKeys];
-    NSDictionary *keysCache = MTIFilterInputKeysCachesFrom(filter);
+    NSDictionary *keysCache = filterInputKeysCacheFrom(filter);
     if (keysCache.count == propertyNames.count) return keysCache;
     NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
     for (NSString *propertyName in propertyNames) {
         NSString *type = propertyTypeWithPropertyName(object, propertyName);
         if (type) [keysWithTypeDescription setObject:type forKey:propertyName];
     }
-    MTISetFilterInputKeysCache(filter, [keysWithTypeDescription copy]);
+    setFilterInputKeysCache(filter, [keysWithTypeDescription copy]);
     return keysWithTypeDescription;
 }
 
