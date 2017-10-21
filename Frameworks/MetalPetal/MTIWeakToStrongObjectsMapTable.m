@@ -33,11 +33,12 @@
 }
 
 - (void)setObject:(id)anObject forKey:(id)aKey {
+    //Safe to use `(__bridge const void *)(self)` here, since we'll remove all the associations on deallocation.
     objc_setAssociatedObject(aKey, (__bridge const void *)(self), anObject, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (anObject) {
-        [self.items addObject:aKey];
+        [_items addObject:aKey];
     } else {
-        [self.items removeObject:aKey];
+        [_items removeObject:aKey];
     }
 }
 
@@ -46,14 +47,15 @@
 }
 
 - (void)removeAllObjects {
-    NSArray *allObjects = [[self.items allObjects] copy];
-    for (id key in allObjects) {
-        [self setObject:nil forKey:key];
+    NSArray *allKeys = [[_items allObjects] copy];
+    for (id key in allKeys) {
+        objc_setAssociatedObject(key, (__bridge const void *)(self), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
+    [_items removeAllObjects];
 }
 
 - (NSUInteger)count {
-    return self.items.count;
+    return _items.count;
 }
 
 @end
