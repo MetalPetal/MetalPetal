@@ -471,7 +471,7 @@ NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> fi
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}", nil];
+        valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:[NSString stringWithUTF8String:@encode(CGPoint)], [NSString stringWithUTF8String:@encode(CGSize)], [NSString stringWithUTF8String:@encode(CGRect)], [NSString stringWithUTF8String:@encode(CGAffineTransform)], nil];
     });
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
         if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
