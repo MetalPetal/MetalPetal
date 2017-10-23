@@ -468,13 +468,13 @@ NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> fi
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
-    static NSSet * valueTypesNeedsRepresentedByMTIVector = nil;
+    static NSSet * valueTypesNeedToBeRepresentedByMTIVector = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}", nil];
+        valueTypesNeedToBeRepresentedByMTIVector = [NSSet setWithObjects:@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}", nil];
     });
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
-        if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
+        if ([valueTypesNeedToBeRepresentedByMTIVector containsObject:typeDescription]) {
             NSValue *nsValue = [object valueForKey:propertyKey];
             NSUInteger size;
             NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
