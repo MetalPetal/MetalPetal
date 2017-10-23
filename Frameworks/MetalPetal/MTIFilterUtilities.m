@@ -463,15 +463,16 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
     return keysWithTypeDescription;
 }
 
-static NSSet  * valueTypesNeedsRepresentedByMTIVector = nil;
 NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
+    static NSSet  * valueTypesNeedsRepresentedByMTIVector = nil;
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
-    if(!valueTypesNeedsRepresentedByMTIVector) {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
         valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}", nil];
-    }
+    });
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
         if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
             NSValue *nsValue = [object valueForKey:propertyKey];
