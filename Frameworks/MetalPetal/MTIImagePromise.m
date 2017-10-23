@@ -185,38 +185,6 @@
 
 @end
 
-@interface MTITextureDescriptorPromise ()
-
-@property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
-
-@end
-
-@implementation MTITextureDescriptorPromise
-
-@synthesize dimensions = _dimensions;
-
-- (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
-    if (self = [super init]) {
-        _textureDescriptor = [[MTITextureDescriptor alloc] initWithMTLTextureDescriptor:textureDescriptor];
-        _dimensions = (MTITextureDimensions){textureDescriptor.width, textureDescriptor.height, textureDescriptor.depth};
-    }
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
-- (NSArray<MTIImage *> *)dependencies {
-    return @[];
-}
-
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    return [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
-}
-
-@end
-
 @interface MTIColorImagePromise ()
 
 @property (nonatomic,readonly) BOOL sRGB;

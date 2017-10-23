@@ -52,12 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface MTITextureDescriptorPromise : NSObject <MTIImagePromise>
-
-- (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor;
-
-@end
-
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
 
 @property (nonatomic,readonly) MTIColor color;
