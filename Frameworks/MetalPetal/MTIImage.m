@@ -94,10 +94,6 @@
     return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
-    return [self initWithPromise:[[MTITextureDescriptorPromise alloc] initWithTextureDescriptor:textureDescriptor]];
-}
-
 - (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
     id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options];
     if (!urlPromise) {

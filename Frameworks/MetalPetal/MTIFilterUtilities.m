@@ -464,17 +464,17 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
 }
 
 NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
-    static NSSet  * valueTypesNeedsRepresentedByMTIVector = nil;
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
+    static NSSet * valueTypesNeedToBeRepresentedByMTIVector = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:[NSString stringWithUTF8String:@encode(CGPoint)], [NSString stringWithUTF8String:@encode(CGSize)], [NSString stringWithUTF8String:@encode(CGRect)], [NSString stringWithUTF8String:@encode(CGAffineTransform)], nil];
+        valueTypesNeedToBeRepresentedByMTIVector = [NSSet setWithObjects:[NSString stringWithUTF8String:@encode(CGPoint)], [NSString stringWithUTF8String:@encode(CGSize)], [NSString stringWithUTF8String:@encode(CGRect)], [NSString stringWithUTF8String:@encode(CGAffineTransform)], nil];
     });
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
-        if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
+        if ([valueTypesNeedToBeRepresentedByMTIVector containsObject:typeDescription]) {
             NSValue *nsValue = [object valueForKey:propertyKey];
             NSUInteger size;
             NSGetSizeAndAlignment(nsValue.objCType, &size, NULL);
