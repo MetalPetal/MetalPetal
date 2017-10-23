@@ -29,6 +29,7 @@ struct MTIVertex {
 };
 typedef struct MTIVertex MTIVertex;
 
+
 struct MTICLAHELUTGeneratorInputParameters {
     uint histogramBins;
     uint clipLimit;
@@ -36,6 +37,13 @@ struct MTICLAHELUTGeneratorInputParameters {
     uint numberOfLUTs;
 };
 typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputParameters;
+
+
+struct MTIMultilayerCompositingLayerShadingParameters {
+    float opacity;
+    bool contentHasPremultipliedAlpha;
+};
+typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 
 #if defined(__cplusplus)
 

@@ -52,16 +52,46 @@
 
 @property (nonatomic,copy,readonly) MTIRenderPipeline *passthroughRenderPipeline;
 
+@property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaRenderPipeline;
+
 @end
 
 @implementation MTIMultilayerCompositeKernelState
 
++ (MTIRenderPipeline *)basicRenderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor context:(MTIContext *)context error:(NSError **)inOutError {
+    MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+    
+    NSError *error;
+    id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    renderPipelineDescriptor.vertexFunction = vertextFunction;
+    renderPipelineDescriptor.fragmentFunction = fragmentFunction;
+    
+    renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
+    renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
+    renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
+    return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
+}
+
 - (instancetype)initWithContext:(MTIContext *)context colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor error:(NSError **)inOutError {
     if (self = [super init]) {
-        MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-        
         NSError *error;
-        id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
+        
+        _passthroughRenderPipeline = [MTIMultilayerCompositeKernelState basicRenderPipelineWithFragmentFunctionName:MTIFilterPassthroughFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -69,21 +99,7 @@
             return nil;
         }
         
-        id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        
-        renderPipelineDescriptor.vertexFunction = vertextFunction;
-        renderPipelineDescriptor.fragmentFunction = fragmentFunction;
-        
-        renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-        renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
-        renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
-        _passthroughRenderPipeline = [context renderPipelineWithDescriptor:renderPipelineDescriptor error:&error];
+        _unpremultiplyAlphaRenderPipeline = [MTIMultilayerCompositeKernelState basicRenderPipelineWithFragmentFunctionName:@"unpremultiplyAlpha" colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
