@@ -452,24 +452,26 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
     NSObject *object = filter;
     NSCAssert([object.class respondsToSelector:@selector(inputParameterKeys)], ([NSString stringWithFormat:@"method: +(void)inputParameterKeys NOT implement， cls %@", NSStringFromClass(object.class)]));
     NSSet *propertyNames = [filter.class inputParameterKeys];
-    NSDictionary *keysCache = filterInputKeysCacheFrom(filter);
+    NSDictionary *keysCache = filterInputKeysCacheFrom(filter.class);
     if (keysCache.count == propertyNames.count) return keysCache;
     NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
     for (NSString *propertyName in propertyNames) {
         NSString *type = propertyTypeWithPropertyName(object, propertyName);
         if (type) [keysWithTypeDescription setObject:type forKey:propertyName];
     }
-    setFilterInputKeysCache(filter, [keysWithTypeDescription copy]);
+    setFilterInputKeysCache(filter.class, [keysWithTypeDescription copy]);
     return keysWithTypeDescription;
 }
 
- NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
+static NSSet  * valueTypesNeedsRepresentedByMTIVector = nil;
+NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
     NSObject *object = filter;
     NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
     NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
-    NSMutableSet *otherKeys = [NSMutableSet setWithCapacity:keys.count];
-    const NSArray *valueTypesNeedsRepresentedByMTIVector = @[@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}"];
+    if(!valueTypesNeedsRepresentedByMTIVector) {
+        valueTypesNeedsRepresentedByMTIVector = [NSSet setWithObjects:@"{CGPoint=dd}", @"{CGSize=dd}", @"{CGRect={CGPoint=dd}{CGSize=dd}}", @"{CGAffineTransform=dddddd}", nil];
+    }
     [keys enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull propertyKey, NSString * _Nonnull typeDescription, BOOL * _Nonnull stop) {
         if ([valueTypesNeedsRepresentedByMTIVector containsObject:typeDescription]) {
             NSValue *nsValue = [object valueForKey:propertyKey];
@@ -480,15 +482,12 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
                 free(valuePtr);
             };
             [nsValue getValue:valuePtr];
-            
             MTIVector *vector = [MTIVector vectorWithDoubleValues:valuePtr count:size/sizeof(double)];
             [result setObject:vector forKey:propertyKey];
         }else {
-            [otherKeys addObject:propertyKey];
+            [result setObject:[object valueForKey:propertyKey]?:@"" forKey:propertyKey];
         }
     }];
-    [result addEntriesFromDictionary:[object dictionaryWithValuesForKeys:otherKeys.allObjects]];
-    NSLog(@">> reslut = %@ ", result);
     return result;
 }
 
