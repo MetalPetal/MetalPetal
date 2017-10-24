@@ -28,6 +28,7 @@
 
 @implementation MTIMPSProcessingRecipe
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
 - (NSArray<MTIImage *> *)dependencies {
     return self.inputImages;
@@ -37,6 +38,7 @@
     NSError *error = nil;
     NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
+        NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
@@ -104,6 +106,7 @@
         _parameters = parameters;
         _dimensions = outputTextureDimensions;
         _outputPixelFormat = outputPixelFormat;
+        _alphaType = [kernel.alphaTypeHandlingRule outputAlphaTypeForInputImages:inputImages];
     }
     return self;
 }
@@ -119,8 +122,13 @@
 @implementation MTIMPSKernel
 
 - (instancetype)initWithMPSKernelBuilder:(MTIMPSKernelBuilder)builder {
+    return [self initWithMPSKernelBuilder:builder alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
+}
+
+- (instancetype)initWithMPSKernelBuilder:(MTIMPSKernelBuilder)builder alphaTypeHandlingRule:(MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
     if (self = [super init]) {
         _builder = [builder copy];
+        _alphaTypeHandlingRule = alphaTypeHandlingRule;
     }
     return self;
 }

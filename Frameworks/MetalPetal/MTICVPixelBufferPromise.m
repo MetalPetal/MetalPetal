@@ -76,17 +76,17 @@ static const ColorConversion kColorConversion709 = {
 @end
 
 @implementation MTICVPixelBufferPromise
-
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI
-{
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         NSParameterAssert(pixelBuffer);
+        _alphaType = alphaType;
         _renderingAPI = renderingAPI;
         _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
         _dimensions = (MTITextureDimensions){CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer), 1};
-        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
+        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
         if (renderingAPI == MTICVPixelBufferRenderingAPICoreImage) {
             descriptor.usage =  MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
         } else {

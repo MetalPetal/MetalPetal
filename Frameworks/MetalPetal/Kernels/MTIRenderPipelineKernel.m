@@ -69,6 +69,8 @@
 @property (nonatomic, strong, readonly) MTIWeakToStrongObjectsMapTable *resolutionCache;
 @property (nonatomic, strong, readonly) id<NSLocking> resolutionCacheLock;
 
+@property (nonatomic, readonly) MTIAlphaType alphaType;
+
 @end
 
 @implementation MTIImageRenderingRecipe
@@ -77,6 +79,8 @@
     NSError *error = nil;
     NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
+        NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
+        
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
@@ -192,6 +196,7 @@
         _outputDescriptors = outputDescriptors;
         _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
         _resolutionCacheLock = MTILockCreate();
+        _alphaType = [kernel.alphaTypeHandlingRule outputAlphaTypeForInputImages:inputImages];
     }
     return self;
 }
@@ -250,6 +255,10 @@
     return self;
 }
 
+- (MTIAlphaType)alphaType {
+    return _recipe.alphaType;
+}
+
 @end
 
 
@@ -282,6 +291,10 @@
 
 - (id)copyWithZone:(NSZone *)zone {
     return self;
+}
+
+- (MTIAlphaType)alphaType {
+    return _recipe.alphaType;
 }
 
 @end
@@ -318,15 +331,17 @@
     return [self initWithVertexFunctionDescriptor:vertexFunctionDescriptor
                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
                                  vertexDescriptor:nil
-                             colorAttachmentCount:1];
+                             colorAttachmentCount:1
+                            alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
 }
 
-- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentCount:(NSUInteger)colorAttachmentCount {
+- (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentCount:(NSUInteger)colorAttachmentCount alphaTypeHandlingRule:(nonnull MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
     if (self = [super init]) {
         _vertexFunctionDescriptor = [vertexFunctionDescriptor copy];
         _fragmentFunctionDescriptor = [fragmentFunctionDescriptor copy];
         _vertexDescriptor = [vertexDescriptor copy];
         _colorAttachmentCount = colorAttachmentCount;
+        _alphaTypeHandlingRule = alphaTypeHandlingRule;
     }
     return self;
 }

@@ -31,7 +31,8 @@
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
                                                         fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurAlpha"]
                                                                   vertexDescriptor:nil
-                                                              colorAttachmentCount:2];
+                                                              colorAttachmentCount:2
+                                                             alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
     });
     return kernel;
 }

@@ -64,6 +64,10 @@
     return _extent.size;
 }
 
+- (MTIAlphaType)alphaType {
+    return _promise.alphaType;
+}
+
 - (id)copyWithZone:(NSZone *)zone {
     return self;
 }
@@ -74,28 +78,74 @@
 
 @implementation MTIImage (Creation)
 
++ (MTIAlphaType)alphaTypeGuessForCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+    MTIAlphaType alphaType = MTIAlphaTypePremultiplied;
+    OSType pixelFormat = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    if (pixelFormat == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || pixelFormat == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
+        alphaType = MTIAlphaTypeAlphaIsOne;
+    }
+    return alphaType;
+}
+
++ (MTIAlphaType)alphaTypeGuessForURL:(NSURL *)url {
+    static NSSet *opaqueImagePathExtensions;
+    static NSSet *premultipliedAlphaImagePathExtensions;
+    static NSSet *nonPremultipliedAlphaImagePathExtensions;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        opaqueImagePathExtensions = [NSSet setWithObjects:@"jpg", @"jpeg", nil];
+        nonPremultipliedAlphaImagePathExtensions = [NSSet set];
+        premultipliedAlphaImagePathExtensions = [NSSet setWithObjects:@"png", @"tiff", nil];
+    });
+    MTIAlphaType alphaType = MTIAlphaTypeUnknown;
+    if ([opaqueImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
+        alphaType = MTIAlphaTypeAlphaIsOne;
+    } else if ([nonPremultipliedAlphaImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
+        alphaType = MTIAlphaTypeNonPremultiplied;
+    } else if ([premultipliedAlphaImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
+        alphaType = MTIAlphaTypePremultiplied;
+    }
+    return alphaType;
+}
+
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:MTICVPixelBufferRenderingAPIDefault]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:MTICVPixelBufferRenderingAPIDefault alphaType:[MTIImage alphaTypeGuessForCVPixelBuffer:pixelBuffer]]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI {
-    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:renderingAPI]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:renderingAPI alphaType:[MTIImage alphaTypeGuessForCVPixelBuffer:pixelBuffer]]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType {
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:renderingAPI alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options {
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithCGImage:cgImage options:options alphaType:MTIAlphaTypePremultiplied];
+}
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options alphaType:(MTIAlphaType)alphaType {
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:alphaType] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
-    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithCIImage:ciImage isOpaque:NO];
 }
 
-- (instancetype)initWithTexture:(id<MTLTexture>)texture {
-    return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque {
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType {
+    return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture alphaType:alphaType] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
-    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options];
+    return [self initWithContentsOfURL:URL options:options alphaType:[MTIImage alphaTypeGuessForURL:URL]];
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options alphaType:(MTIAlphaType)alphaType {
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options alphaType:alphaType];
     if (!urlPromise) {
         return nil;
     }

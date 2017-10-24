@@ -12,6 +12,7 @@
 #import "MTITextureDimensions.h"
 #import "MTIPixelFormat.h"
 #import "MTIVertex.h"
+#import "MTIAlphaType.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,10 +36,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,readonly) NSUInteger colorAttachmentCount;
 
+@property (nonatomic,copy,readonly) MTIAlphaTypeHandlingRule *alphaTypeHandlingRule;
+
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor
                                 vertexDescriptor:(nullable MTLVertexDescriptor *)vertexDescriptor
-                            colorAttachmentCount:(NSUInteger)colorAttachmentCount NS_DESIGNATED_INITIALIZER;
+                            colorAttachmentCount:(NSUInteger)colorAttachmentCount
+                           alphaTypeHandlingRule:(MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor;

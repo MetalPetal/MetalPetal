@@ -209,7 +209,7 @@
         
         if (!cachedFunction) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFunctionNotFound userInfo:@{}];
+                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFunctionNotFound userInfo:@{@"MTIFunctionDescriptor": descriptor}];
             }
             return nil;
         }

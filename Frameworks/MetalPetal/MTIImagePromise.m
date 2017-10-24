@@ -26,13 +26,15 @@
 
 @implementation MTIImageURLPromise
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options {
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _URL = [URL copy];
         _options = [options copy];
         _texture = [[MDLURLTexture alloc] initWithURL:URL name:URL.lastPathComponent];
         _dimensions = (MTITextureDimensions){_texture.dimensions.x, _texture.dimensions.y, 1};
+        _alphaType = alphaType;
         if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
             return nil;
         }
@@ -72,12 +74,14 @@
 
 @implementation MTICGImagePromise
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options {
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _image = CGImageRetain(cgImage);
         _dimensions = (MTITextureDimensions){CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 1};
         _options = [options copy];
+        _alphaType = alphaType;
     }
     return self;
 }
@@ -108,13 +112,14 @@
 @end
 
 @implementation MTITexturePromise
-
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
-- (instancetype)initWithTexture:(id<MTLTexture>)texture {
+- (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _dimensions = (MTITextureDimensions){texture.width, texture.height, texture.depth};
         _texture = texture;
+        _alphaType = alphaType;
     }
     return self;
 }
@@ -139,14 +144,18 @@
 
 @property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
 
+@property (nonatomic,readonly) BOOL isOpaque;
+
 @end
 
 @implementation MTICIImagePromise
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage {
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque {
     if (self = [super init]) {
         _image = ciImage;
+        _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
@@ -159,12 +168,25 @@
     return @[];
 }
 
+- (MTIAlphaType)alphaType {
+    if (_isOpaque) {
+        return MTIAlphaTypeAlphaIsOne;
+    } else {
+        if (@available(iOS 11.0, *)) {
+            return MTIAlphaTypeNonPremultiplied;
+        } else {
+            return MTIAlphaTypePremultiplied;
+        }
+    }
+}
+
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
     if (@available(iOS 11.0, *)) {
         CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
         renderDestination.flipped = YES;
         renderDestination.colorSpace = (CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB());
+        renderDestination.alphaMode = CIRenderDestinationAlphaUnpremultiplied;
         NSError *error;
         [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
         if (error) {
@@ -226,6 +248,10 @@
     uint8_t colors[4] = {_color.blue * 255, _color.green * 255, _color.red * 255, _color.alpha * 255};
     [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     return renderTarget;
+}
+
+- (MTIAlphaType)alphaType {
+    return MTIAlphaTypeNonPremultiplied;
 }
 
 @end

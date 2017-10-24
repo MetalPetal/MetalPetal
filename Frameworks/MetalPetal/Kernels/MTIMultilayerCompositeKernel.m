@@ -233,8 +233,8 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
 @end
 
 @implementation MTIMultilayerCompositingRecipe
-
 @synthesize dimensions = _dimensions;
+@synthesize dependencies = _dependencies;
 
 - (MTIVertices *)verticesForRect:(CGRect)rect {
     CGFloat l = CGRectGetMinX(rect);
@@ -248,10 +248,6 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
         { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
     } count:4];
-}
-
-- (NSArray<MTIImage *> *)dependencies {
-    return [@[self.backgroundImage] arrayByAddingObjectsFromArray:[self.layers valueForKeyPath:@"content"]];
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
@@ -306,7 +302,14 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-    [commandEncoder setRenderPipelineState:[kernelState passthroughRenderPipeline].state];
+    
+    NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
+    
+    if (self.backgroundImage.alphaType == MTIAlphaTypePremultiplied) {
+        [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaRenderPipeline].state];
+    } else {
+        [commandEncoder setRenderPipelineState:[kernelState passthroughRenderPipeline].state];
+    }
     [commandEncoder setVertexBytes:vertices.bufferData.bytes length:vertices.bufferData.length atIndex:0];
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor];
@@ -337,9 +340,13 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
-        //opacity
-        float opacity = layer.opacity;
-        [commandEncoder setFragmentBytes:&opacity length:sizeof(float) atIndex:0];
+        //parameters
+        NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
+        
+        MTIMultilayerCompositingLayerShadingParameters parameters;
+        parameters.opacity = layer.opacity;
+        parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
+        [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
         
@@ -356,6 +363,10 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     return self;
 }
 
+- (MTIAlphaType)alphaType {
+    return MTIAlphaTypeNonPremultiplied;
+}
+
 - (instancetype)initWithKernel:(MTIMultilayerCompositeKernel *)kernel
                backgroundImage:(MTIImage *)backgroundImage
                         layers:(NSArray<MTICompositingLayer *> *)layers
@@ -367,6 +378,12 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         _layers = layers;
         _dimensions = outputTextureDimensions;
         _outputPixelFormat = outputPixelFormat;
+        NSMutableArray *dependencies = [NSMutableArray arrayWithCapacity:layers.count + 1];
+        [dependencies addObject:backgroundImage];
+        for (MTICompositingLayer *layer in layers) {
+            [dependencies addObject:layer.content];
+        }
+        _dependencies = [dependencies copy];
     }
     return self;
 }
