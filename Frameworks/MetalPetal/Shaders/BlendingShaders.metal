@@ -256,4 +256,87 @@ fragment float4 exclusionBlend(VertexOut vertexIn [[ stage_in ]],
     return exclusionBlend(uCb, uCf);
 }
 
+fragment float4 hueBlendInPlace(
+                                            VertexOut vertexIn [[ stage_in ]],
+                                            float4 currentColor [[color(0)]],
+                                            texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                            sampler colorSampler [[ sampler(0) ]]
+                                            ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return hueBlend(currentColor,textureColor);
+}
+
+fragment float4 hueBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return hueBlend(uCb, uCf);
+}
+
+fragment float4 saturationBlendInPlace(
+                                            VertexOut vertexIn [[ stage_in ]],
+                                            float4 currentColor [[color(0)]],
+                                            texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                            sampler colorSampler [[ sampler(0) ]]
+                                            ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return saturationBlend(currentColor,textureColor);
+}
+
+fragment float4 saturationBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return saturationBlend(uCb, uCf);
+}
+
+fragment float4 colorBlendInPlace(
+                                            VertexOut vertexIn [[ stage_in ]],
+                                            float4 currentColor [[color(0)]],
+                                            texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                            sampler colorSampler [[ sampler(0) ]]
+                                            ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return colorBlend(currentColor,textureColor);
+}
+
+fragment float4 colorBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return colorBlend(uCb, uCf);
+}
+
+fragment float4 luminosityBlendInPlace(
+                                            VertexOut vertexIn [[ stage_in ]],
+                                            float4 currentColor [[color(0)]],
+                                            texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                            sampler colorSampler [[ sampler(0) ]]
+                                            ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return luminosityBlend(currentColor,textureColor);
+}
+
+fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return luminosityBlend(uCb, uCf);
+}
 
