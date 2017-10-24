@@ -31,7 +31,7 @@
 - (instancetype)initWithOutputPixelFormat:(MTLPixelFormat)pixelFormat {
     if (self = [super init]) {
         _outputPixelFormat = pixelFormat;
-        _identifier = @(pixelFormat).description;
+        _identifier = @(pixelFormat);
     }
     return self;
 }
@@ -307,7 +307,7 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:[kernelState passthroughRenderPipeline].state];
-    [commandEncoder setVertexBytes:vertices.bufferData.bytes length:vertices.bufferData.length atIndex:0];
+    [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
@@ -320,7 +320,7 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         
         MTIVertices *vertices = [self verticesForRect:CGRectMake(-layer.size.width/2.0, -layer.size.height/2.0, layer.size.width, layer.size.height)];
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
-        [commandEncoder setVertexBytes:vertices.bufferData.bytes length:vertices.bufferData.length atIndex:0];
+        [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;

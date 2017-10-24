@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTIKernelConfiguration <NSObject, NSCopying>
 
-@property (nonatomic, copy, readonly) NSString *identifier;
+@property (nonatomic, copy, readonly) id<NSCopying> identifier;
 
 @end
 

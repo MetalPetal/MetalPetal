@@ -36,10 +36,16 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 }
 */
 
+@interface MTIVertices () {
+    void *_memory;
+}
+
+@end
+
 @implementation MTIVertices
-@synthesize bufferData = _bufferData;
 @synthesize primitiveType = _primitiveType;
 @synthesize vertexCount = _vertexCount;
+@synthesize bufferLength = _bufferLength;
 
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count {
     return [self initWithVertices:vertices count:count primitiveType:MTLPrimitiveTypeTriangleStrip];
@@ -48,13 +54,22 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType {
     if (self = [super init]) {
         _vertexCount = count;
-        _bufferData = [NSData dataWithBytes:vertices length:count * sizeof(MTIVertex)];
         _primitiveType = primitiveType;
+        NSUInteger bufferLength = count * sizeof(MTIVertex);
+        void *memory = malloc(bufferLength);
+        memcpy(memory, vertices, bufferLength);
+        _bufferLength = bufferLength;
+        _memory = memory;
     }
     return self;
 }
-- (const MTIVertex *)buffer {
-    return _bufferData.bytes;
+
+- (void)dealloc {
+    free(_memory);
+}
+
+- (const void *)bufferBytes {
+    return _memory;
 }
 
 - (id)copyWithZone:(NSZone *)zone {

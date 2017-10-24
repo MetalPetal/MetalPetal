@@ -181,7 +181,7 @@
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setVertexBytes:vertices.bufferData.bytes length:vertices.bufferData.length atIndex:0];
+    [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
     
     [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
     id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
