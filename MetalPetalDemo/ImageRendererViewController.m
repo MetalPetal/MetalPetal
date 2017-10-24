@@ -91,7 +91,7 @@
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} error:&error];
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture];
     self.inputImage = mtiImageFromTexture;
-    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeScreen];
+    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSaturation];
     
     self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
     self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];

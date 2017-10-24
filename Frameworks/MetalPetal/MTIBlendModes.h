@@ -24,6 +24,12 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorDodge;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDifference;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeExclusion;
 
+// nom-separable
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHue;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSaturation; // untested
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColor;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLuminosity; // untested
+
 FOUNDATION_EXPORT NSArray<MTIBlendMode> * MTIBlendModeGetAllModes(void) NS_SWIFT_NAME(getter:MTIBlendMode.all());
 
 FOUNDATION_EXPORT NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) NS_SWIFT_NAME(getter:MTIBlendMode.fragmentFunctionName(self:));
