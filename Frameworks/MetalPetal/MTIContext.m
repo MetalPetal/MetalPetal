@@ -52,6 +52,9 @@
 }
 
 - (BOOL)retainTexture {
+    if (_nonreusableTexture) {
+        return YES;
+    }
     return [_resuableTexture retainTexture];
 }
 
