@@ -79,10 +79,15 @@
 @implementation MTIImage (Creation)
 
 + (MTIAlphaType)alphaTypeGuessForCVPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    MTIAlphaType alphaType = MTIAlphaTypePremultiplied;
+    MTIAlphaType alphaType = MTIAlphaTypeUnknown;
     OSType pixelFormat = CVPixelBufferGetPixelFormatType(pixelBuffer);
     if (pixelFormat == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange || pixelFormat == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange) {
         alphaType = MTIAlphaTypeAlphaIsOne;
+    }
+    NSAssert(alphaType != MTIAlphaTypeUnknown, @"Cannot predicate alpha type. Please call the init method with the alphaType parameter.");
+    if (alphaType == MTIAlphaTypeUnknown) {
+        //We assume the alpha type to be non-premultiplied.
+        alphaType = MTIAlphaTypeNonPremultiplied;
     }
     return alphaType;
 }
@@ -105,6 +110,11 @@
     } else if ([premultipliedAlphaImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
         alphaType = MTIAlphaTypePremultiplied;
     }
+    NSAssert(alphaType != MTIAlphaTypeUnknown, @"Cannot predicate alpha type. Please call the init method with the alphaType parameter.");
+    if (alphaType == MTIAlphaTypeUnknown) {
+        //We assume the alpha type to be non-premultiplied.
+        alphaType = MTIAlphaTypeNonPremultiplied;
+    }
     return alphaType;
 }
 
@@ -112,8 +122,8 @@
     return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:MTICVPixelBufferRenderingAPIDefault alphaType:[MTIImage alphaTypeGuessForCVPixelBuffer:pixelBuffer]]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI {
-    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:renderingAPI alphaType:[MTIImage alphaTypeGuessForCVPixelBuffer:pixelBuffer]]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer alphaType:(MTIAlphaType)alphaType {
+    return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer renderingAPI:MTICVPixelBufferRenderingAPIDefault alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType {

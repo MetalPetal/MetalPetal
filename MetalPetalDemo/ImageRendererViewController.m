@@ -208,7 +208,7 @@
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         NSError *error;
-        [self.context renderImage:[outputImage imageByPremultiplyingAlpha] toDrawableWithRequest:request error:&error];
+        [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
        
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);

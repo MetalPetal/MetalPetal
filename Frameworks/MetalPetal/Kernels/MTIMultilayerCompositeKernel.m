@@ -58,7 +58,7 @@
 
 @implementation MTIMultilayerCompositeKernelState
 
-+ (MTIRenderPipeline *)basicRenderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor context:(MTIContext *)context error:(NSError **)inOutError {
++ (MTIRenderPipeline *)renderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor context:(MTIContext *)context error:(NSError **)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     
     NSError *error;
@@ -91,7 +91,7 @@
     if (self = [super init]) {
         NSError *error;
         
-        _passthroughRenderPipeline = [MTIMultilayerCompositeKernelState basicRenderPipelineWithFragmentFunctionName:MTIFilterPassthroughFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
+        _passthroughRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:MTIFilterPassthroughFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -99,7 +99,7 @@
             return nil;
         }
         
-        _unpremultiplyAlphaRenderPipeline = [MTIMultilayerCompositeKernelState basicRenderPipelineWithFragmentFunctionName:@"unpremultiplyAlpha" colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
+        _unpremultiplyAlphaRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:MTIFilterUnpremultiplyAlphaFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;

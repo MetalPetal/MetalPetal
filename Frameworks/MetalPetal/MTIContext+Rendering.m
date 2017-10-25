@@ -24,6 +24,9 @@
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
 #if COREVIDEO_SUPPORTS_METAL
+    
+#warning consider pixel format / alphaType
+    
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
@@ -90,7 +93,7 @@
 #endif
 }
 
-- (nullable MTIRenderPipeline *)passthroughRenderPipelineWithColorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)inOutError {
+- (nullable MTIRenderPipeline *)renderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     
     NSError *error;
@@ -102,7 +105,7 @@
         return nil;
     }
     
-    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -170,8 +173,15 @@
         { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
     } count:4];
     
-    MTIRenderPipeline *renderPipeline = [self passthroughRenderPipelineWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat error:&error];
+    NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
     
+    //iOS drawables always require premultiplied alpha.
+    NSString *fragmentFunctionName = MTIFilterPassthroughFragmentFunctionName;
+    if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
+        fragmentFunctionName = MTIFilterPremultiplyAlphaFragmentFunctionName;
+    }
+    
+    MTIRenderPipeline *renderPipeline = [self renderPipelineWithFragmentFunctionName:fragmentFunctionName colorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -199,6 +209,8 @@
 }
 
 - (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
+    
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     MTIImage *persistentImage = [image imageWithCachePolicy:MTIImageCachePolicyPersistent];
     NSError *error = nil;
@@ -214,6 +226,20 @@
     }
     [renderingContext.commandBuffer commit];
     CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
+    if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
+        //ref: https://developer.apple.com/documentation/coreimage/ciimage/1645894-premultiplyingalpha
+        //Premultiplied alpha speeds up the rendering of images, so Core Image filters require that input image data be premultiplied. If you have an image without premultiplied alpha that you want to feed into a filter, use this method before applying the filter.
+        if (@available(iOS 10.0, *)) {
+            ciImage = [ciImage imageByPremultiplyingAlpha];
+        } else {
+            CIFilter *premultiplyFilter = [CIFilter filterWithName:@"CIPremultiply"];
+            NSAssert(premultiplyFilter, @"");
+            if (premultiplyFilter) {
+                [premultiplyFilter setValue:ciImage forKey:kCIInputImageKey];
+                ciImage = premultiplyFilter.outputImage;
+            }
+        }
+    }
     objc_setAssociatedObject(ciImage, (__bridge const void *)(persistentImage), persistentImage, OBJC_ASSOCIATION_RETAIN);
     return ciImage;
 }
