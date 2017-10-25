@@ -486,7 +486,7 @@ NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> fi
             MTIVector *vector = [MTIVector vectorWithDoubleValues:valuePtr count:size/sizeof(double)];
             [result setObject:vector forKey:propertyKey];
         }else {
-            [result setObject:[object valueForKey:propertyKey]?:@"" forKey:propertyKey];
+            [result setObject:[object valueForKey:propertyKey] forKey:propertyKey];
         }
     }];
     return result;
