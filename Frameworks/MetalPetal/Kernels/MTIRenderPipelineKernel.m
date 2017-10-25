@@ -27,21 +27,16 @@
 @end
 
 @implementation MTIRenderPipelineKernelConfiguration
-@synthesize identifier = _identifier;
 
 - (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {
     if (self = [super init]) {
-        _colorAttachmentPixelFormats = [colorAttachmentPixelFormats copy];
-        NSMutableString *identifier = [NSMutableString string];
-        for (NSNumber *value in colorAttachmentPixelFormats) {
-            // Using "/" to make the result fits in a tagged pointer.
-            // table = "eilotrm.apdnsIc ufkMShjTRxgC4013bDNvwyUL2O856P-B79AFKEWV_zGJ/HYX";
-            // ref: https://www.mikeash.com/pyblog/friday-qa-2015-07-31-tagged-pointer-strings.html
-            [identifier appendFormat:@"/%@/",value];
-        }
-        _identifier = [identifier copy];
+        _colorAttachmentPixelFormats = colorAttachmentPixelFormats;
     }
     return self;
+}
+
+- (id<NSCopying>)identifier {
+    return _colorAttachmentPixelFormats;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -133,12 +128,11 @@
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
     
-    NSData *geometryBufferData = self.geometry.bufferData;
-    if (geometryBufferData.length < 4096) {
+    if (self.geometry.bufferLength < 4096) {
         //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
-        [commandEncoder setVertexBytes:geometryBufferData.bytes length:geometryBufferData.length atIndex:0];
+        [commandEncoder setVertexBytes:self.geometry.bufferBytes length:self.geometry.bufferLength atIndex:0];
     } else {
-        id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:geometryBufferData.bytes length:geometryBufferData.length options:0];
+        id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:self.geometry.bufferBytes length:self.geometry.bufferLength options:0];
         [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
     }
     
