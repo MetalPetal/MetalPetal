@@ -51,7 +51,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.blackColor;
-    //[MetalPetalSwiftInterfaceTest test];
+    [MetalPetalSwiftInterfaceTest test];
     
     //[WeakToStrongObjectsMapTableTests test];
     
@@ -89,12 +89,12 @@
     //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
     
     id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} error:&error];
-    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture];
+    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture alphaType:MTIAlphaTypeAlphaIsOne];
     self.inputImage = mtiImageFromTexture;
     self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSaturation];
     
-    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
-    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
+    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -185,7 +185,7 @@
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
-                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal]
+                                      [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeOverlay]
                                       ];
     return self.compositingFilter.outputImage;
 }
@@ -203,11 +203,12 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self blendFilterTestOutputImage];
+        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
-        [self.context renderImage:[outputImage imageByPremultiplyingAlpha] toDrawableWithRequest:request error:nil];
+        NSError *error;
+        [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
        
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);

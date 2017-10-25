@@ -230,6 +230,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @implementation MTIImageBuffer
 
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
 + (MTIImage *)bufferForImage:(MTIImage *)image {
     return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
@@ -248,6 +249,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         NSAssert(image.cachePolicy == MTIImageCachePolicyPersistent, @"Invalid cache policy.");
         _dimensions = image.promise.dimensions;
         _image = image;
+        _alphaType = image.alphaType;
     }
     return self;
 }

@@ -32,11 +32,13 @@
 
 @implementation MTIImageComputeRecipe
 @synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
     NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
     for (MTIImage *image in self.inputImages) {
+        NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
@@ -124,6 +126,7 @@
         _functionParameters = functionParameters;
         _dimensions = outputTextureDimensions;
         _outputPixelFormat = outputPixelFormat;
+        _alphaType = [kernel.alphaTypeHandlingRule outputAlphaTypeForInputImages:inputImages];
     }
     return self;
 }
@@ -139,8 +142,13 @@
 @implementation MTIComputePipelineKernel
 
 - (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor {
+    return [self initWithComputeFunctionDescriptor:computeFunctionDescriptor alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
+}
+
+- (instancetype)initWithComputeFunctionDescriptor:(MTIFunctionDescriptor *)computeFunctionDescriptor alphaTypeHandlingRule:(MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
     if (self = [super init]) {
         _computeFunctionDescriptor = [computeFunctionDescriptor copy];
+        _alphaTypeHandlingRule = alphaTypeHandlingRule;
     }
     return self;
 }

@@ -88,6 +88,8 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+    NSParameterAssert(self.inputLightnessImage.alphaType == MTIAlphaTypeAlphaIsOne);
+    
     NSError *error = nil;
     id<MTIImagePromiseResolution> inputLightnessImageResolution = [renderingContext resolutionForImage:self.inputLightnessImage error:&error];
     if (error) {
@@ -156,6 +158,10 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return self;
 }
 
+- (MTIAlphaType)alphaType {
+    return MTIAlphaTypeAlphaIsOne;
+}
+
 @end
 
 @implementation MTICLAHELUTKernel
@@ -215,7 +221,10 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"CLAHERGB2Lightness"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"CLAHERGB2Lightness"]
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:1
+                                                             alphaTypeHandlingRule:[[MTIAlphaTypeHandlingRule alloc] initWithAcceptableAlphaTypes:@[@(MTIAlphaTypeNonPremultiplied), @(MTIAlphaTypeAlphaIsOne)] outputAlphaType:MTIAlphaTypeAlphaIsOne]];
     });
     return kernel;
 }
