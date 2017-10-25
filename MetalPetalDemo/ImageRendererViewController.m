@@ -118,7 +118,7 @@
 
 - (MTIImage *)colorMatrixTestOutputImage {
     float scale = sin(CFAbsoluteTimeGetCurrent() * 2.0) + 1.0;
-    self.colorMatrixFilter.colorMatrix = matrix_scale(scale, matrix_identity_float4x4);
+    self.colorMatrixFilter.colorMatrix = MTIColorMatrixMakeWithExposure(scale);
     self.colorMatrixFilter.inputImage = self.inputImage;
     MTIImage *outputImage = self.colorMatrixFilter.outputImage;
     return outputImage;
@@ -202,8 +202,7 @@
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
-        
-        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
