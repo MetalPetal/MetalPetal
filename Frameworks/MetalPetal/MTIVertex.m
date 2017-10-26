@@ -15,6 +15,10 @@ MTIVertex MTIVertexMake(float x, float y, float z, float w, float u, float v) {
     };
 }
 
+BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
+    return simd_equal(v1.position, v2.position) && simd_equal(v1.textureCoordinate, v2.textureCoordinate);
+}
+
 /*
 MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
     static MTLVertexDescriptor *vertexDescriptor;
@@ -74,6 +78,30 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 
 - (id)copyWithZone:(NSZone *)zone {
     return self;
+}
+
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+    if ([object isKindOfClass:[MTIVertices class]]) {
+        MTIVertices *other = object;
+        if (_bufferLength == other -> _bufferLength) {
+            BOOL equal = YES;
+            for (NSUInteger index = 0; index < _bufferLength/sizeof(MTIVertex); index += 1) {
+                MTIVertex v1 = ((MTIVertex *)_memory)[index];
+                MTIVertex v2 = ((MTIVertex *)other -> _memory)[index];
+                if (!MTIVertexEqualToVertex(v1, v2)) {
+                    equal = NO;
+                    break;
+                }
+            }
+            return equal;
+        }
+        return NO;
+    } else {
+        return NO;
+    }
 }
 
 @end

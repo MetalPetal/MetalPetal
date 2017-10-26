@@ -11,7 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MTIRenderPipelineKernel;
+
 @interface MTIUnaryImageFilter : NSObject <MTIFilter>
+
++ (MTIRenderPipelineKernel *)kernel;
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
