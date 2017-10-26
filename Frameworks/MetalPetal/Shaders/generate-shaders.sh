@@ -111,21 +111,25 @@ struct MetalPetalShaderGenerator {
                                                         VertexOut vertexIn [[ stage_in ]],
                                                         float4 currentColor [[color(0)]],
                                                         texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                        sampler colorSampler [[ sampler(0) ]]
+                                                        sampler colorSampler [[ sampler(0) ]],
+                                                        constant float &intensity [[buffer(0)]]
                                                         ) {
                 float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
-                return %blendModeName%Blend(currentColor,textureColor);
+                float4 blendedColor = %blendModeName%Blend(currentColor,textureColor);
+                return mix(currentColor,blendedColor,intensity);
             }
 
             fragment float4 %blendModeName%Blend(VertexOut vertexIn [[ stage_in ]],
                                                 texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                                 sampler colorSampler [[ sampler(0) ]],
                                                 texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
-                                                sampler overlaySampler [[ sampler(1) ]]
+                                                sampler overlaySampler [[ sampler(1) ]],
+                                                constant float &intensity [[buffer(0)]]
                                                 ) {
                 float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
                 float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
-                return %blendModeName%Blend(uCb, uCf);
+                float4 blendedColor = %blendModeName%Blend(uCb, uCf);
+                return mix(uCb,blendedColor,intensity);
             }
 
 

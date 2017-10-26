@@ -45,6 +45,7 @@
         NSParameterAssert([MTIBlendModeGetAllModes() containsObject:mode]);
         _blendMode = [mode copy];
         _kernel = [MTIBlendFilter kernelWithBlendMode:mode];
+        _intensity = 1.0;
     }
     return self;
 }
@@ -54,13 +55,13 @@
         return nil;
     }
     return [self.kernel applyToInputImages:@[_inputBackgroundImage, _inputImage]
-                                parameters:@{}
+                                parameters:@{@"intensity": @(_intensity)}
                    outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
                          outputPixelFormat:_outputPixelFormat];
 }
 
 + (NSSet *)inputParameterKeys {
-    return [NSSet set];
+    return [NSSet setWithObject:@"intensity"];
 }
 
 @end
