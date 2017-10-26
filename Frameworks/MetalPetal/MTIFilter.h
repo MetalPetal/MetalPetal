@@ -18,6 +18,8 @@ FOUNDATION_EXPORT NSString * const MTIFilterPassthroughFragmentFunctionName;
 FOUNDATION_EXPORT NSString * const MTIFilterUnpremultiplyAlphaFragmentFunctionName;
 FOUNDATION_EXPORT NSString * const MTIFilterPremultiplyAlphaFragmentFunctionName;
 
+FOUNDATION_EXPORT NSString * const MTIFilterColorMatrixFragmentFunctionName;
+
 @class MTIImage;
 
 @protocol MTIFilter <NSObject>

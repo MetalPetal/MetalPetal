@@ -23,7 +23,7 @@
 @implementation MTIColorMatrixFilter
 
 + (NSString *)fragmentFunctionName {
-    return @"colorMatrixProjection";
+    return MTIFilterColorMatrixFragmentFunctionName;
 }
 
 - (instancetype)init {

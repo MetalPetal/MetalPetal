@@ -16,3 +16,5 @@ NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmen
 
 NSString * const MTIFilterUnpremultiplyAlphaFragmentFunctionName = @"unpremultiplyAlpha";
 NSString * const MTIFilterPremultiplyAlphaFragmentFunctionName = @"premultiplyAlpha";
+
+NSString * const MTIFilterColorMatrixFragmentFunctionName = @"colorMatrixProjection";
