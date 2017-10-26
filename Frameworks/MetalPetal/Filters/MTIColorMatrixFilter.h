@@ -40,4 +40,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface MTIOpacityFilter: MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
+
+@property (nonatomic) float opacity;
+
+@end
+
+@interface MTIBrightnessFilter: MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
+
+@property (nonatomic) float brightness;
+
+@end
+
+@interface MTIContrastFilter: MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
+
+@property (nonatomic) float contrast;
+
+@end
+
 NS_ASSUME_NONNULL_END

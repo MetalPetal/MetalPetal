@@ -80,3 +80,43 @@
 
 @end
 
+@implementation MTIOpacityFilter
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.opacity = 1;
+    }
+    return self;
+}
+
+- (void)setOpacity:(float)opacity {
+    _opacity = opacity;
+    [super setColorMatrix:MTIColorMatrixMakeWithOpacity(opacity)];
+}
+
+@end
+
+@implementation MTIBrightnessFilter
+
+- (void)setBrightness:(float)brightness {
+    _brightness = brightness;
+    [super setColorMatrix:MTIColorMatrixMakeWithBrightness(brightness)];
+}
+
+@end
+
+@implementation MTIContrastFilter
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.contrast = 1;
+    }
+    return self;
+}
+
+- (void)setContrast:(float)contrast {
+    _contrast = contrast;
+    [super setColorMatrix:MTIColorMatrixMakeWithContrast(contrast)];
+}
+
+@end
