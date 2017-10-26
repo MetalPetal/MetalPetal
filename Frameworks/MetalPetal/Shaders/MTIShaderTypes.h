@@ -218,7 +218,7 @@ namespace metalpetal {
     //---
     // non-separable blend
     METAL_FUNC float lum(float4 C) {
-        return 0.3 * C.a + 0.59 * C.g + 0.11 * C.b;
+        return 0.3 * C.r + 0.59 * C.g + 0.11 * C.b;
     }
     
     METAL_FUNC float4 clipColor(float4 C) {
