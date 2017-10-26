@@ -29,6 +29,11 @@ struct MTIVertex {
 };
 typedef struct MTIVertex MTIVertex;
 
+struct MTIColorMatrix {
+    matrix_float4x4 matrix;
+    vector_float4 bias;
+};
+typedef struct MTIColorMatrix MTIColorMatrix;
 
 struct MTICLAHELUTGeneratorInputParameters {
     uint histogramBins;
@@ -37,7 +42,6 @@ struct MTICLAHELUTGeneratorInputParameters {
     uint numberOfLUTs;
 };
 typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputParameters;
-
 
 struct MTIMultilayerCompositingLayerShadingParameters {
     float opacity;

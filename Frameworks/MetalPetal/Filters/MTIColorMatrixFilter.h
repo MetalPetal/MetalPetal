@@ -8,13 +8,35 @@
 
 #import "MTIFilter.h"
 #import "MTIUnaryImageFilter.h"
-#import <simd/simd.h>
+#import "MTIColorMatrix.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIColorMatrixFilter : MTIUnaryImageFilter
 
-@property (nonatomic) simd_float4x4 colorMatrix;
+@property (nonatomic) MTIColorMatrix colorMatrix;
+
+@end
+
+@interface MTIExposureFilter : MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
+
+@property (nonatomic) float exposure;
+
+@end
+
+@interface MTISaturationFilter : MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
+
+@property (nonatomic) float saturation;
+
+@end
+
+@interface MTIColorInvertFilter : MTIColorMatrixFilter
+
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
 
 @end
 

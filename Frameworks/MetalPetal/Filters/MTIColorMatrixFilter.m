@@ -16,7 +16,7 @@
 
 @interface MTIColorMatrixFilter ()
 
-@property (nonatomic,copy) MTIVector *colorMatrixValue;
+@property (nonatomic,copy) NSData *colorMatrixValue;
 
 @end
 
@@ -28,14 +28,14 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.colorMatrix = matrix_identity_float4x4;
+        self.colorMatrix = MTIColorMatrixIdentity;
     }
     return self;
 }
 
-- (void)setColorMatrix:(simd_float4x4)colorMatrix {
-    _colorMatrixValue = [[MTIVector alloc] initWithFloat4x4:colorMatrix];
+- (void)setColorMatrix:(MTIColorMatrix)colorMatrix {
     _colorMatrix = colorMatrix;
+    _colorMatrixValue = [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)];
 }
 
 + (NSSet *)inputParameterKeys {
@@ -43,3 +43,40 @@
 }
 
 @end
+
+@implementation MTIExposureFilter
+
+- (void)setExposure:(float)exposure {
+    _exposure = exposure;
+    [super setColorMatrix:MTIColorMatrixMakeWithExposure(exposure)];
+}
+
+@end
+
+@implementation MTISaturationFilter
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.saturation = 1;
+    }
+    return self;
+}
+
+- (void)setSaturation:(float)saturation {
+    _saturation = saturation;
+    [super setColorMatrix:MTIColorMatrixMakeWithSaturation(saturation)];
+}
+
+@end
+
+@implementation MTIColorInvertFilter
+
+- (instancetype)init {
+    if (self = [super init]) {
+        [super setColorMatrix:MTIColorMatrixRGBColorInvert];
+    }
+    return self;
+}
+
+@end
+

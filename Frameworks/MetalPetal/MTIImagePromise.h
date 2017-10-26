@@ -11,6 +11,7 @@
 #import <simd/simd.h>
 #import "MTIColor.h"
 #import "MTITextureDimensions.h"
+#import "MTIAlphaType.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,9 +19,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
-@property (nonatomic,readonly) MTITextureDimensions dimensions;
+@property (nonatomic, readonly) MTITextureDimensions dimensions;
 
-@property (nonatomic,readonly,copy) NSArray<MTIImage *> *dependencies;
+@property (nonatomic, readonly, copy) NSArray<MTIImage *> *dependencies;
+
+@property (nonatomic, readonly) MTIAlphaType alphaType;
 
 - (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
 
@@ -30,25 +33,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary <NSString *, id> *)options;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary <NSString *, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary <NSString *, id> *)options;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary <NSString *, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
 @interface MTITexturePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithTexture:(id<MTLTexture>)texture;
+- (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;
 
 @end
 
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage;
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
 
 @end
 

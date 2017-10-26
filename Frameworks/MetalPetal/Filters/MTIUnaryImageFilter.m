@@ -29,7 +29,10 @@
     MTIRenderPipelineKernel *kernel = kernels[fragmentFunctionName];
     if (!kernel) {
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName]
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:1
+                                                             alphaTypeHandlingRule:[self alphaTypeHandlingRule]];
         kernels[fragmentFunctionName] = kernel;
     }
     [kernelsLock unlock];
@@ -161,6 +164,10 @@
 
 + (NSString *)fragmentFunctionName {
     return MTIFilterPassthroughFragmentFunctionName;
+}
+
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
 }
 
 @end

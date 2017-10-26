@@ -13,3 +13,6 @@
 
 NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertexShader";
 NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmentShader";
+
+NSString * const MTIFilterUnpremultiplyAlphaFragmentFunctionName = @"unpremultiplyAlpha";
+NSString * const MTIFilterPremultiplyAlphaFragmentFunctionName = @"premultiplyAlpha";

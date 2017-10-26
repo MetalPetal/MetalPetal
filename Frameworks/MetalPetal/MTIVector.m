@@ -84,6 +84,11 @@
     return [self initWithValues:values count:2];
 }
 
+- (instancetype)initWithFloat4:(simd_float4)v {
+    float values[4] = {v[0],v[1],v[2],v[3]};
+    return [self initWithValues:values count:4];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
     if (!data) {
@@ -152,6 +157,14 @@
         return (simd_float2){bytes[0], bytes[1]};
     }
     return (simd_float2){0,0};
+}
+
+- (simd_float4)float4Value {
+    if (self.count == 4) {
+        const float * bytes = self.bytes;
+        return (simd_float4){bytes[0], bytes[1], bytes[2], bytes[3]};
+    }
+    return (simd_float4){0,0,0,0};
 }
 
 - (CATransform3D)CATransform3DValue {

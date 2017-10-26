@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, MTICVPixelBufferRenderingAPI) {
 
 @property (nonatomic, readonly) MTICVPixelBufferRenderingAPI renderingAPI;
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI;
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType;
 
 @end
 
