@@ -419,7 +419,7 @@
                                                                            inputImages:images
                                                                     functionParameters:parameters
                                                                      outputDescriptors:outputDescriptors];
-    recipe = [self recipeByHandlingMergeInRecipe:recipe];
+    //recipe = [self recipeByHandlingMergeInRecipe:recipe];
     if (self.colorAttachmentCount == 1) {
         MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:recipe];
         return @[[[MTIImage alloc] initWithPromise:promise]];
