@@ -207,6 +207,7 @@ namespace metalpetal {
         float4 B = float4(colorBurnBlendSingleChannel(Cb.r, Cs.r), colorBurnBlendSingleChannel(Cb.g, Cs.g), colorBurnBlendSingleChannel(Cb.b, Cs.b), Cs.a);
         return blendBaseAlpha(Cb, Cs, B);
     }
+    
     // difference
     METAL_FUNC float4 differenceBlend(float4 Cb, float4 Cs) {
         float4 B = float4(abs(Cb.rgb - Cs.rgb), Cs.a);
@@ -222,7 +223,7 @@ namespace metalpetal {
     //---
     // non-separable blend
     METAL_FUNC float lum(float4 C) {
-        return 0.3 * C.a + 0.59 * C.g + 0.11 * C.b;
+        return 0.3 * C.r + 0.59 * C.g + 0.11 * C.b;
     }
     
     METAL_FUNC float4 clipColor(float4 C) {
@@ -253,37 +254,31 @@ namespace metalpetal {
         return ((cmid - cmin) * s) / (cmax - cmin);
     }
     
-    METAL_FUNC float4 setSat (float4 C, float s) {
+    METAL_FUNC float4 setSat(float4 C, float s) {
         if (C.r > C.g) {
             if (C.r > C.b) {
                 if (C.g > C.b) {
-                    /* g is mid, b is min */
                     C.g = mid(C.b, C.g, C.r, s);
                     C.b = 0.0;
                 } else {
-                    /* b is mid, g is min */
                     C.b = mid(C.g, C.b, C.r, s);
                     C.g = 0.0;
                 }
                 C.r = s;
             } else {
-                /* b is max, r is mid, g is min */
                 C.r = mid(C.g, C.r, C.b, s);
                 C.b = s;
                 C.r = 0.0;
             }
         } else if (C.r > C.b) {
-            /* g is max, r is mid, b is min */
             C.r = mid(C.b, C.r, C.g, s);
             C.g = s;
             C.b = 0.0;
         } else if (C.g > C.b) {
-            /* g is max, b is mid, r is min */
             C.b = mid(C.r, C.b, C.g, s);
             C.g = s;
             C.r = 0.0;
         } else if (C.b > C.g) {
-            /* b is max, g is mid, r is min */
             C.g = mid(C.r, C.g, C.b, s);
             C.b = s;
             C.r = 0.0;
@@ -316,8 +311,6 @@ namespace metalpetal {
         float4 B = setLum(Cb, lum(Cs));
         return blendBaseAlpha(Cb, Cs, B);
     }
-    
-    
 }
 
 #endif
