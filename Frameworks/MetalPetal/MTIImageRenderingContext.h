@@ -8,10 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import "MTIImagePromise.h"
 
 @class MTIImage, MTIContext;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface MTIImageRenderingDependencyGraph : NSObject
+
+- (NSInteger)dependentCountForPromise:(id<MTIImagePromise>)promise;
+
+@end
 
 @protocol MTIImagePromiseResolution <NSObject>
 

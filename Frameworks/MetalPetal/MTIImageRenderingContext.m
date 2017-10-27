@@ -12,8 +12,9 @@
 #import "MTIImage+Promise.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
+#import "MTIRenderPipelineKernel.h"
 
-@interface MTIImageRenderingDependencyGraph : NSObject
+@interface MTIImageRenderingDependencyGraph ()
 
 @property (nonatomic,strong) NSMapTable<id<MTIImagePromise>,NSMutableArray<id<MTIImagePromise>> *> *promiseDenpendentsTable;
 
@@ -135,25 +136,47 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return self;
 }
 
++ (id<MTIImagePromise>)recursivelyMergePromise:(id<MTIImagePromise>)promise dependencyGraph:(MTIImageRenderingDependencyGraph *)dependencyGraph {
+    id<MTIImagePromise> p = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
+    return p;
+}
+
 - (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (image == nil) {
         [NSException raise:NSInvalidArgumentException format:@"%@: Application is requesting a resolution of a nil image.", self];
     }
-    
+ 
     BOOL isRootImage = NO;
-    
+    id<MTIImagePromise> promise = image.promise;
+
     if (!self.dependencyGraph) {
-        //create dependency graph
+        //If we don't have the dependency graph, we're processing the root image.
+        isRootImage = YES;
+        
+        //Create dependency graph.
         MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
         [dependencyGraph addDependenciesForImage:image];
-        self.dependencyGraph = dependencyGraph;
         
-        isRootImage = YES;
+        //Handle promise merge.
+        id<MTIImagePromise> mergedPromise = [MTIImageRenderingContext recursivelyMergePromise:image.promise dependencyGraph:dependencyGraph];
+        
+        if (mergedPromise == promise) {
+            //If nothing is merged we use the dependency graph created with the input image.
+            self.dependencyGraph = dependencyGraph;
+        } else {
+            //Update the promise we're going to resolve.
+            promise = mergedPromise;
+            
+            //Generate merged dependency graph.
+            MTIImageRenderingDependencyGraph *updatedDependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
+            [updatedDependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:mergedPromise]];
+            
+            //Use the dependency graph created with the merged promise.
+            self.dependencyGraph = updatedDependencyGraph;
+        }
     }
     
     MTIImageRenderingDependencyGraph *dependencyGraph = self.dependencyGraph;
-    id<MTIImagePromise> promise = image.promise;
-    NSAssert(image.promise, @"");
 
     MTIImagePromiseRenderTarget *renderTarget = nil;
     if ([self.resolvedPromises containsObject:promise]) {
@@ -164,21 +187,20 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     } else {
         renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
         BOOL renderTargetIsValid = NO;
-        if (renderTarget) {
-            if ([renderTarget retainTexture]) {
-                NSAssert(renderTarget != nil, @"");
-                NSAssert(renderTarget.texture != nil, @"");
-                renderTargetIsValid = YES;
-            }
+        if ([renderTarget retainTexture]) {
+            NSAssert(renderTarget != nil, @"");
+            NSAssert(renderTarget.texture != nil, @"");
+            renderTargetIsValid = YES;
         }
         if (!renderTargetIsValid) {
+            //Resolve promise
             NSError *error;
             renderTarget = [promise resolveWithContext:self error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;
                 }
-                //clean up
+                //Clean up
                 [renderTarget releaseTexture];
                 for (id<MTIImagePromise> promise in self.resolvedPromises) {
                     if ([dependencyGraph dependentCountForPromise:promise] != 0) {

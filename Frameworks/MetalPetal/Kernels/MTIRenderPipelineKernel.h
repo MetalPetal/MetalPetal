@@ -13,6 +13,7 @@
 #import "MTIPixelFormat.h"
 #import "MTIVertex.h"
 #import "MTIAlphaType.h"
+#import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -62,5 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
                                outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
 
 @end
+
+@class MTIImageRenderingDependencyGraph;
+
+FOUNDATION_EXPORT id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph);
 
 NS_ASSUME_NONNULL_END
