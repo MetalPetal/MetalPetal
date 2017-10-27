@@ -80,13 +80,23 @@ A `MTIContext` contains a lot of states and caches thus cannot be shared safely 
 
 ### Exposure
 
+### Saturation
+
+### Brightness
+
+### Contrast
+
+### Color Invert
+
 ### Vibrance
 
-### Blends
+### Blend Modes
 
-### Mask
+### Blend with Mask
 
 ### Transform
+
+### Crop
 
 ### Multilayer Composite
 
