@@ -16,6 +16,12 @@ extension MTIVertex {
     }
 }
 
+extension MTIVertex : Equatable {
+    public static func == (lhs: MTIVertex, rhs: MTIVertex) -> Bool {
+        return lhs.isEqual(to: rhs)
+    }
+}
+
 extension MTIVertices {
     public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType = .triangleStrip) {
         self.init(__vertices: vertices, count: vertices.count, primitiveType: primitiveType)
