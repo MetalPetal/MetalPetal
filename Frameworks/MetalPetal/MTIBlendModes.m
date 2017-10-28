@@ -26,11 +26,86 @@ MTIBlendMode const MTIBlendModeSaturation = @"Saturation";
 MTIBlendMode const MTIBlendModeColor = @"Color";
 MTIBlendMode const MTIBlendModeLuminosity = @"Luminosity";
 
-NSArray<MTIBlendMode> *MTIBlendModeGetAllModes(void) {
-    return @[MTIBlendModeNormal, MTIBlendModeMultiply, MTIBlendModeHardLight, MTIBlendModeScreen, MTIBlendModeOverlay, MTIBlendModeSoftLight, MTIBlendModeDarken, MTIBlendModeLighten, MTIBlendModeColorDodge, MTIBlendModeColorBurn, MTIBlendModeDifference, MTIBlendModeExclusion, MTIBlendModeHue, MTIBlendModeColor, MTIBlendModeSaturation, MTIBlendModeLuminosity];
+@implementation MTIBlendFunctionDescriptors
+
+- (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
+        fragmentFunctionDescriptorForMultilayerCompositingFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilter {
+    if (self = [super init]) {
+        _fragmentFunctionDescriptorForBlendFilter = fragmentFunctionDescriptorForBlendFilter;
+        _fragmentFunctionDescriptorForMultilayerCompositingFilter = fragmentFunctionDescriptorForMultilayerCompositingFilter;
+    }
+    return self;
 }
 
-NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) {
-    NSCParameterAssert(mode.length > 0);
-    return [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
 }
+
+@end
+
+#import "MTILock.h"
+#import "MTIFunctionDescriptor.h"
+
+@implementation MTIBlendModes
+
+static NSDictionary<MTIBlendMode, MTIBlendFunctionDescriptors *> *_registeredBlendModes;
+static id<NSLocking> _registeredBlendModesLock;
+
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSArray<MTIBlendMode> *builtinModes = @[MTIBlendModeNormal,
+                                                MTIBlendModeMultiply,
+                                                MTIBlendModeHardLight,
+                                                MTIBlendModeScreen,
+                                                MTIBlendModeOverlay,
+                                                MTIBlendModeSoftLight,
+                                                MTIBlendModeDarken,
+                                                MTIBlendModeLighten,
+                                                MTIBlendModeColorDodge,
+                                                MTIBlendModeColorBurn,
+                                                MTIBlendModeDifference,
+                                                MTIBlendModeExclusion,
+                                                MTIBlendModeHue,
+                                                MTIBlendModeColor,
+                                                MTIBlendModeSaturation,
+                                                MTIBlendModeLuminosity];
+        NSMutableDictionary *modes = [NSMutableDictionary dictionary];
+        for (MTIBlendMode mode in builtinModes) {
+            NSString *fragmentFunctionNameForBlendFilter = [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
+            MTIBlendFunctionDescriptors *descriptors = [[MTIBlendFunctionDescriptors alloc] initWithFragmentFunctionDescriptorForBlendFilter:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForBlendFilter]
+                                                                                    fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:[NSString stringWithFormat:@"multilayerComposite%@Blend",mode]]];
+            modes[mode] = descriptors;
+        }
+        _registeredBlendModes = [modes copy];
+        _registeredBlendModesLock = MTILockCreate();
+    });
+}
+
++ (NSArray<MTIBlendMode> *)allModes {
+    [_registeredBlendModesLock lock];
+    NSArray<MTIBlendMode> *allModes = _registeredBlendModes.allKeys;
+    [_registeredBlendModesLock unlock];
+    return allModes;
+}
+
++ (void)registerBlendMode:(MTIBlendMode)blendMode withFunctionDescriptors:(MTIBlendFunctionDescriptors *)functionDescriptors {
+    NSParameterAssert(blendMode);
+    NSParameterAssert(functionDescriptors);
+    
+    [_registeredBlendModesLock lock];
+    NSParameterAssert(_registeredBlendModes[blendMode] == nil);
+    NSMutableDictionary *modes = [NSMutableDictionary dictionaryWithDictionary:_registeredBlendModes];
+    modes[blendMode] = functionDescriptors;
+    _registeredBlendModes = [modes copy];
+    [_registeredBlendModesLock unlock];
+}
+
++ (MTIBlendFunctionDescriptors *)functionDescriptorsForBlendMode:(MTIBlendMode)blendMode {
+    [_registeredBlendModesLock lock];
+    MTIBlendFunctionDescriptors *functionDescriptors = _registeredBlendModes[blendMode];
+    [_registeredBlendModesLock unlock];
+    return functionDescriptors;
+}
+
+@end

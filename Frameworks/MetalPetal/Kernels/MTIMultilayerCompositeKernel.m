@@ -108,7 +108,7 @@
         }
         
         NSMutableDictionary *pipelines = [NSMutableDictionary dictionary];
-        for (MTIBlendMode mode in MTIBlendModeGetAllModes()) {
+        for (MTIBlendMode mode in MTIBlendModes.allModes) {
             MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
             
             NSError *error = nil;
@@ -120,7 +120,7 @@
                 return nil;
             }
             
-            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:[NSString stringWithFormat:@"multilayerComposite%@Blend",mode]] error:&error];
+            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilter error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;

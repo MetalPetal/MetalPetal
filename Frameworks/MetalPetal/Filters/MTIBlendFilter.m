@@ -32,7 +32,7 @@
     MTIRenderPipelineKernel *kernel = kernels[mode];
     if (!kernel) {
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIBlendModeGetFragmentFunctionName(mode)]];
+                                                        fragmentFunctionDescriptor:[MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForBlendFilter];
         kernels[mode] = kernel;
     }
     [kernelsLock unlock];
@@ -42,7 +42,7 @@
 
 - (instancetype)initWithBlendMode:(MTIBlendMode)mode {
     if (self = [super init]) {
-        NSParameterAssert([MTIBlendModeGetAllModes() containsObject:mode]);
+        NSParameterAssert([MTIBlendModes.allModes containsObject:mode]);
         _blendMode = [mode copy];
         _kernel = [MTIBlendFilter kernelWithBlendMode:mode];
         _intensity = 1.0;

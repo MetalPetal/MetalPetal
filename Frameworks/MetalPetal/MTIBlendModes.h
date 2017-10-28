@@ -24,14 +24,33 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorDodge;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDifference;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeExclusion;
 
-// nom-separable
+// non-separable
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHue;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSaturation;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColor;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLuminosity; 
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLuminosity;
 
-FOUNDATION_EXPORT NSArray<MTIBlendMode> * MTIBlendModeGetAllModes(void) NS_SWIFT_NAME(getter:MTIBlendMode.all());
+@class MTIFunctionDescriptor;
 
-FOUNDATION_EXPORT NSString * MTIBlendModeGetFragmentFunctionName(MTIBlendMode mode) NS_SWIFT_NAME(getter:MTIBlendMode.fragmentFunctionName(self:));
+@interface MTIBlendFunctionDescriptors: NSObject <NSCopying>
+
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForBlendFilter;
+
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForMultilayerCompositingFilter;
+
+- (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
+        fragmentFunctionDescriptorForMultilayerCompositingFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilter;
+
+@end
+
+@interface MTIBlendModes: NSObject
+
+@property (nonatomic,copy,readonly,class) NSArray<MTIBlendMode> *allModes NS_SWIFT_NAME(all);
+
++ (void)registerBlendMode:(MTIBlendMode)blendMode withFunctionDescriptors:(MTIBlendFunctionDescriptors *)functionDescriptors;
+
++ (nullable MTIBlendFunctionDescriptors *)functionDescriptorsForBlendMode:(MTIBlendMode)blendMode NS_SWIFT_NAME(functionDescriptors(for:));
+
+@end
 
 NS_ASSUME_NONNULL_END
