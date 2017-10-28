@@ -15,7 +15,7 @@ struct MTICLAHESize {
 };
 typedef struct MTICLAHESize MTICLAHESize;
 
-FOUNDATION_EXPORT MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) NS_SWIFT_UNAVAILABLE("Use MTICLAHESizeMake.init instead.");
+FOUNDATION_EXPORT MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) NS_SWIFT_UNAVAILABLE("Use MTICLAHESize.init instead.");
 
 @interface MTICLAHEFilter : NSObject <MTIFilter>
 
