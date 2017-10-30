@@ -195,8 +195,6 @@
     return self.blendFilter.outputImage;
 }
 
-static double starTime;
-
 #pragma mark ----------
 - (void)drawInMTKView:(MTKView *)view {
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html

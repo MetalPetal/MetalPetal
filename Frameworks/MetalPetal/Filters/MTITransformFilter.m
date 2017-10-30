@@ -76,7 +76,7 @@
     NSAssert(p2.w == -p1.z, @"");
     */
     
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTIPixelFormatUnspecified loadAction:MTLLoadActionClear];
+    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:self.outputPixelFormat loadAction:MTLLoadActionClear];
     return [[MTITransformFilter kernel] imagesByDrawingGeometry:[self verticesForRect:CGRectMake(-self.inputImage.size.width/2.0, -self.inputImage.size.height/2.0, self.inputImage.size.width, self.inputImage.size.height)]
                                                    withTextures:@[self.inputImage]
                                                      parameters:@{@"transformMatrix": [NSData dataWithBytes:&transformMatrix length:sizeof(transformMatrix)],
