@@ -25,7 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,readonly) MTLPixelFormat pixelFormat;
 
+@property (nonatomic,readonly) MTLLoadAction loadAction;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat;
+
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction NS_DESIGNATED_INITIALIZER;
 
 @end
 

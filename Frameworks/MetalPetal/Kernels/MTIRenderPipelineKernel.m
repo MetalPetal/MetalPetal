@@ -123,7 +123,7 @@
         
         renderPassDescriptor.colorAttachments[index].texture = renderTarget.texture;
         renderPassDescriptor.colorAttachments[index].clearColor = MTLClearColorMake(0, 0, 0, 0);
-        renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionDontCare;
+        renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
         renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionStore;
         
         [renderTargets addObject:renderTarget];
@@ -297,9 +297,14 @@
 @implementation MTIRenderPipelineOutputDescriptor
 
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat {
+    return [self initWithDimensions:dimensions pixelFormat:pixelFormat loadAction:MTLLoadActionDontCare];
+}
+
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction {
     if (self = [super init]) {
         _dimensions = dimensions;
         _pixelFormat = pixelFormat;
+        _loadAction = loadAction;
     }
     return self;
 }
