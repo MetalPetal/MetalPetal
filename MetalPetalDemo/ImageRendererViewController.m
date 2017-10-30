@@ -50,7 +50,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = UIColor.blackColor;
+    self.view.backgroundColor = UIColor.redColor;
     [MetalPetalSwiftInterfaceTest test];
     
     //[WeakToStrongObjectsMapTableTests test];
@@ -195,6 +195,8 @@
     return self.blendFilter.outputImage;
 }
 
+static double starTime;
+
 #pragma mark ----------
 - (void)drawInMTKView:(MTKView *)view {
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
@@ -202,7 +204,35 @@
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        
+        /*
+        MTITransformFilter *trans = [[MTITransformFilter alloc] init];
+        
+        CATransform3D transformI = CATransform3DIdentity;
+        CATransform3D transformS = CATransform3DMakeScale(0.5, 0.5, 1.0);
+        CATransform3D transformT = CATransform3DMakeTranslation(-1920/2.0, 0, 0);
+        CATransform3D transformR = CATransform3DMakeRotation(CFAbsoluteTimeGetCurrent(), 0, 0, 1);
+        CATransform3D transform = CATransform3DConcat(transformI, transformS);
+        
+        //trans.transform = CATransform3DTranslate(trans.transform, -1920/2, -100, 0);
+        //trans.transform = CATransform3DScale(trans.transform,0.5, 0.5, 1.0);
+        
+        if (starTime == 0) {
+            starTime = CFAbsoluteTimeGetCurrent();
+        }
+        MTIImage *outputImage = self.inputImage;
+      
+        trans.transform = CATransform3DRotate(trans.transform, CFAbsoluteTimeGetCurrent(), 0, 1, 0);
+        trans.transform = CATransform3DTranslate(trans.transform, 0, -0, 0);
+        CATransform3D t = trans.transform;
+        t.m34 = -1/600.0;
+        trans.transform = t;
+        trans.inputImage = self.inputImage;
+        
+        outputImage = trans.outputImage;
+        */
+        
+        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

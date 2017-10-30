@@ -12,7 +12,7 @@ vertex VertexOut multilayerCompositeVertexShader(
                                         ) {
     VertexOut outVertex;
     VertexIn inVertex = vertices[vid];
-    outVertex.position = transformMatrix * inVertex.position * orthographicMatrix;
+    outVertex.position = inVertex.position * transformMatrix * orthographicMatrix;
     outVertex.texcoords = inVertex.textureCoordinate;
     return outVertex;
 }

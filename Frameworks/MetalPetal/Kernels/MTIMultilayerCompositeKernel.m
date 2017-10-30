@@ -18,6 +18,7 @@
 #import "MTIFilter.h"
 #import "MTIVector.h"
 #import "MTIDefer.h"
+#import "MTITransform.h"
 
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -177,49 +178,6 @@
 
 @end
 
-static simd_float4x4 MTIMakeOrthoMatrix(float left, float right, float bottom, float top, float near, float far) {
-    float r_l = right - left;
-    float t_b = top - bottom;
-    float f_n = far - near;
-    float tx = - (right + left) / (right - left);
-    float ty = - (top + bottom) / (top - bottom);
-    float tz = - (far + near) / (far - near);
-    
-    float scale = 2.0f;
-    
-    simd_float4x4 matrix;
-    
-    matrix.columns[0][0] = scale / r_l;
-    matrix.columns[1][0] = 0.0f;
-    matrix.columns[2][0] = 0.0f;
-    matrix.columns[3][0] = tx;
-    
-    matrix.columns[0][1] = 0.0f;
-    matrix.columns[1][1] = scale / t_b;
-    matrix.columns[2][1] = 0.0f;
-    matrix.columns[3][1] = ty;
-    
-    matrix.columns[0][2] = 0.0f;
-    matrix.columns[1][2] = 0.0f;
-    matrix.columns[2][2] = scale / f_n;
-    matrix.columns[3][2] = tz;
-    
-    matrix.columns[0][3] = 0.0f;
-    matrix.columns[1][3] = 0.0f;
-    matrix.columns[2][3] = 0.0f;
-    matrix.columns[3][3] = 1.0f;
-    
-    return matrix;
-}
-
-static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
-    simd_float4x4 matrix = simd_matrix(simd_make_float4((float)transform.m11,(float)transform.m12,(float)transform.m13,(float)transform.m14),
-                                       simd_make_float4((float)transform.m21,(float)transform.m22,(float)transform.m23,(float)transform.m24),
-                                       simd_make_float4((float)transform.m31,(float)transform.m32,(float)transform.m33,(float)transform.m34),
-                                       simd_make_float4((float)transform.m41,(float)transform.m42,(float)transform.m43,(float)transform.m44));
-    return matrix;
-}
-
 @interface MTIMultilayerCompositingRecipe : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) MTIImage *backgroundImage;
@@ -329,11 +287,11 @@ static simd_float4x4 MTIMakeTransformMatrix(CATransform3D transform) {
         CATransform3D transform = CATransform3DIdentity;
         transform = CATransform3DTranslate(transform, layer.position.x - self.backgroundImage.size.width/2.0, layer.position.y - self.backgroundImage.size.height/2.0, 0);
         transform = CATransform3DRotate(transform, layer.rotation, 0, 0, 1);
-        simd_float4x4 transformMatrix = MTIMakeTransformMatrix(transform);
+        simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
         //orthographicMatrix
-        simd_float4x4 orthographicMatrix = MTIMakeOrthoMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];

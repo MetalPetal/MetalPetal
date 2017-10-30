@@ -94,6 +94,20 @@ fragment float4 colorLookup512x512 (
     float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
     
     float4 finalColor = mix(color, float4(newColor.rgb, color.w), float(1));
-//    if (vertexIn.texcoords.x > 0.5) return color;
+    
     return finalColor;
+}
+
+vertex VertexOut imageTransformVertexShader(
+                                       const device VertexIn * vertices [[ buffer(0) ]],
+                                       constant float4x4 & transformMatrix [[ buffer(1) ]],
+                                       constant float4x4 & orthographicMatrix [[ buffer(2) ]],
+                                       uint vid [[ vertex_id ]]
+                                       ) {
+    VertexOut outVertex;
+    VertexIn inVertex = vertices[vid];
+    outVertex.position = inVertex.position * transformMatrix * orthographicMatrix;
+    outVertex.position.z = 0;
+    outVertex.texcoords = inVertex.textureCoordinate;
+    return outVertex;
 }
