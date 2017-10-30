@@ -40,6 +40,9 @@ typedef MTIAlphaType (^MTIAlphaTypeHandlingOutputAlphaTypeRule)(NSArray<NSNumber
 
 @property (nonatomic, copy, class, readonly) MTIAlphaTypeHandlingRule *generalAlphaTypeHandlingRule; //accepts MTIAlphaTypeNonPremultiplied, MTIAlphaTypeAlphaIsOne; outputs MTIAlphaTypeNonPremultiplied
 
+@property (nonatomic, copy, class, readonly) MTIAlphaTypeHandlingRule *passthroughAlphaTypeHandlingRule; //accepts all; output is same as input.
+
+
 @end
 
 NS_ASSUME_NONNULL_END
