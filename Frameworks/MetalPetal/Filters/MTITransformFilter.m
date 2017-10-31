@@ -44,13 +44,9 @@
 - (instancetype)init {
     if (self = [super init]) {
         _transform = CATransform3DIdentity;
-        _fov = 0.0;
+        _fieldOfView = 0.0;
     }
     return self;
-}
-
-- (simd_float4)vector:(simd_float4)position matrix:(simd_float4x4)m {
-    return position.xxxx * m.columns[0] + position.yyyy * m.columns[1] + position.zzzz * m.columns[2] + position.wwww * m.columns[3];
 }
 
 - (MTIImage *)outputImage {
@@ -64,10 +60,10 @@
     
     simd_float4x4 matrix;
     CGSize inputImageSize = CGSizeMake(self.inputImage.size.width, self.inputImage.size.height);
-    CGFloat near = -self.inputImage.size.width*0.5/tan(self.fov/2.0);
+    CGFloat near = -self.inputImage.size.width*0.5/tan(self.fieldOfView/2.0);
     CGFloat far = near * 2.0;
 
-    if (self.fov > 0.0) {
+    if (self.fieldOfView > 0.0) {
         CATransform3D transformToCameraCoordinates = CATransform3DMakeTranslation(0, 0, near);
         CATransform3D combinedTransform = CATransform3DConcat(self.transform, transformToCameraCoordinates);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(combinedTransform);
