@@ -44,6 +44,8 @@ simd_float4x4 MTIMakeOrthographicMatrix(float left, float right, float top, floa
 
 simd_float4x4 MTIMakePerspectiveMatrix(float left, float right, float top, float bottom, float near, float far) {
     simd_float4x4 matrix;
+    near = -near;
+    far = -far;
     
     matrix.columns[0][0] = 2 * near / (right - left);
     matrix.columns[0][1] = 0.0f;
@@ -51,14 +53,14 @@ simd_float4x4 MTIMakePerspectiveMatrix(float left, float right, float top, float
     matrix.columns[0][3] = 0;
     
     matrix.columns[1][0] = 0.0f;
-    matrix.columns[1][1] = 2 * near/ (top - bottom);
-    matrix.columns[1][2] = (top + bottom) / (top - bottom);
+    matrix.columns[1][1] = 2 * near/ (bottom - top);
+    matrix.columns[1][2] = (top + bottom) / (bottom - top);
     matrix.columns[1][3] = 0;
     
     matrix.columns[2][0] = 0.0f;
     matrix.columns[2][1] = 0.0f;
-    matrix.columns[2][2] = - (far + near) / (far - near);
-    matrix.columns[2][3] = - 2 * (far * near) / (far - near);
+    matrix.columns[2][2] = - (far) / (far - near);
+    matrix.columns[2][3] = - (far * near) / (far - near);
     
     matrix.columns[3][0] = 0.0f;
     matrix.columns[3][1] = 0.0f;

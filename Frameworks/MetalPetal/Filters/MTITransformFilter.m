@@ -44,6 +44,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _transform = CATransform3DIdentity;
+        _fov = 0.0;
     }
     return self;
 }
@@ -61,26 +62,30 @@
         return self.inputImage;
     }
     
-    simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(self.transform);
-    simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.inputImage.size.width/2.0, self.inputImage.size.width/2.0, -self.inputImage.size.height/2.0, self.inputImage.size.height/2.0, -1, 1.0);
-    
-    /*
-    simd_float4x4 perspectiveMatrix = MTIMakePerspectiveMatrix(-self.inputImage.size.width/2.0, self.inputImage.size.width/2.0, -self.inputImage.size.height/2.0, self.inputImage.size.height/2.0, 1.0, 960.0/2.0);
+    simd_float4x4 matrix;
+    CGSize inputImageSize = CGSizeMake(self.inputImage.size.width, self.inputImage.size.height);
+    CGFloat near = -self.inputImage.size.width*0.5/tan(self.fov/2.0);
+    CGFloat far = near * 2.0;
 
-    MTIVertices *v = [self verticesForRect:CGRectMake(-self.inputImage.size.width/2.0, -self.inputImage.size.height/2.0, self.inputImage.size.width, self.inputImage.size.height)];
-    simd_float4 position = ((MTIVertex *)v.bufferBytes)[0].position;
-    simd_float4 p1 = [self vector:position matrix:simd_transpose(transformMatrix)];
-    simd_float4 p2 = [self vector:p1 matrix:simd_transpose(perspectiveMatrix)];
-    NSLog(@"P1: %@,%@,%@,%@",@(p1.x),@(p1.y),@(p1.z),@(p1.w));
-    NSLog(@"P2: %@,%@,%@,%@",@(p2.x/p2.w),@(p2.y/p2.w),@(p2.z/p2.w),@(p2.w/p2.w));
-    NSAssert(p2.w == -p1.z, @"");
-    */
-    
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:self.outputPixelFormat loadAction:MTLLoadActionClear];
-    return [[MTITransformFilter kernel] imagesByDrawingGeometry:[self verticesForRect:CGRectMake(-self.inputImage.size.width/2.0, -self.inputImage.size.height/2.0, self.inputImage.size.width, self.inputImage.size.height)]
+    if (self.fov > 0.0) {
+        CATransform3D transformToCameraCoordinates = CATransform3DMakeTranslation(0, 0, near);
+        CATransform3D combinedTransform = CATransform3DConcat(self.transform, transformToCameraCoordinates);
+        simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(combinedTransform);
+        simd_float4x4 perspectiveMatrix = MTIMakePerspectiveMatrix(-inputImageSize.width*0.5, inputImageSize.width*0.5,
+                                                                   -inputImageSize.height*0.5, inputImageSize.height*0.5,
+                                                                   near, far);
+        matrix = simd_mul(transformMatrix, perspectiveMatrix);
+    }else {
+        simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(self.transform);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-inputImageSize.width*0.5, inputImageSize.width*0.5,
+                                                                     -inputImageSize.height*0.5, inputImageSize.height*0.5,
+                                                                     near, far);
+        matrix = simd_mul(transformMatrix, orthographicMatrix);
+    }
+    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTIPixelFormatUnspecified loadAction:MTLLoadActionClear];
+    return [[MTITransformFilter kernel] imagesByDrawingGeometry:[self verticesForRect:CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height)]
                                                    withTextures:@[self.inputImage]
-                                                     parameters:@{@"transformMatrix": [NSData dataWithBytes:&transformMatrix length:sizeof(transformMatrix)],
-                                                                  @"orthographicMatrix": [NSData dataWithBytes:&orthographicMatrix length:sizeof(orthographicMatrix)]}
+                                                     parameters:@{@"transformMatrix": [NSData dataWithBytes:&matrix length:sizeof(matrix)]}
                                               outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
