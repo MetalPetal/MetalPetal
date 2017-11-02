@@ -100,6 +100,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
+    self.renderView.contentScaleFactor = self.view.window.screen.nativeScale;
 }
 
 - (MTIImage *)saturationAndInvertTestOutputImage {
@@ -167,7 +168,7 @@
     self.compositingFilter.inputBackgroundImage = self.inputImage;
 
     self.compositingFilter.layers = @[
-                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:nil position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:[[MTIImage alloc] initWithColor:MTIColorMake(0.5, 0.5, 0.5, 1) sRGB:NO size:CGSizeMake(1, 1)] position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       //[[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(900, 900) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],

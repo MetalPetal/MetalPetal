@@ -46,6 +46,7 @@ typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputPara
 struct MTIMultilayerCompositingLayerShadingParameters {
     float opacity;
     bool contentHasPremultipliedAlpha;
+    bool hasCompositingMask;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 

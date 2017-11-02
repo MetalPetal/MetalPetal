@@ -48,6 +48,13 @@
     _renderView = renderView;
 }
 
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if (self.window) {
+        _renderView.contentScaleFactor = self.window.screen.nativeScale;
+    }
+}
+
 - (void)setContext:(MTIContext *)context {
     _context = context;
     _renderView.device = context.device;

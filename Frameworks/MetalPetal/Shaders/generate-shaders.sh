@@ -71,11 +71,17 @@ struct MetalPetalShaderGenerator {
                                                                 float4 currentColor [[color(0)]],
                                                                 constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                                 texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                                sampler colorSampler [[ sampler(0) ]]
+                                                                sampler colorSampler [[ sampler(0) ]],
+                                                                texture2d<float, access::sample> maskTexture [[ texture(1) ]],
+                                                                sampler maskSampler [[ sampler(1) ]]
                                                             ) {
                 float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
                 if (parameters.contentHasPremultipliedAlpha) {
                     textureColor = unpremultiply(textureColor);
+                }
+                if (parameters.hasCompositingMask) {
+                    float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+                    textureColor.a *= maskColor.r;
                 }
                 textureColor.a *= parameters.opacity;
                 return %blendModeName%Blend(currentColor,textureColor);

@@ -235,6 +235,7 @@
     
     //calc layerContentResolutions early to avoid recursive command encoding.
     NSMutableArray<id<MTIImagePromiseResolution>> *layerContentResolutions = [NSMutableArray array];
+    NSMutableArray *layerCompositingMaskResolutions = [NSMutableArray array];
     for (MTICompositingLayer *layer in self.layers) {
         NSError *error = nil;
         id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
@@ -245,6 +246,19 @@
             return nil;
         }
         [layerContentResolutions addObject:contentResolution];
+        
+        if (layer.compositingMask) {
+            id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            [layerCompositingMaskResolutions addObject:compositingMaskResolution];
+        } else {
+            [layerCompositingMaskResolutions addObject:[NSNull null]];
+        }
     }
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
@@ -299,17 +313,27 @@
         id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
+        id<MTIImagePromiseResolution> compositingMaskResolution = nil;
+        if (layer.compositingMask) {
+            compositingMaskResolution = layerCompositingMaskResolutions[index];
+            [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:1];
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.samplerDescriptor];
+            [commandEncoder setFragmentSamplerState:samplerState atIndex:1];
+        }
+        
         //parameters
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         
         MTIMultilayerCompositingLayerShadingParameters parameters;
         parameters.opacity = layer.opacity;
         parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
+        parameters.hasCompositingMask = !(layer.compositingMask == nil);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
         
         [contentResolution markAsConsumedBy:self];
+        [compositingMaskResolution markAsConsumedBy:self];
     }
     
     //end encoding
@@ -341,6 +365,9 @@
         [dependencies addObject:backgroundImage];
         for (MTICompositingLayer *layer in layers) {
             [dependencies addObject:layer.content];
+            if (layer.compositingMask) {
+                [dependencies addObject:layer.compositingMask];
+            }
         }
         _dependencies = [dependencies copy];
     }
