@@ -159,14 +159,11 @@
 
 @implementation MTICompositingLayer
 
-- (instancetype)initWithContent:(MTIImage *)content
-                       position:(CGPoint)position
-                           size:(CGSize)size
-                       rotation:(CGFloat)rotation
-                        opacity:(CGFloat)opacity
-                      blendMode:(MTIBlendMode)blendMode {
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion compositingMask:(MTIImage *)compositingMask position:(CGPoint)position size:(CGSize)size rotation:(CGFloat)rotation opacity:(CGFloat)opacity blendMode:(MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
+        _contentRegion = contentRegion;
+        _compositingMask = compositingMask;
         _position = position;
         _size = size;
         _rotation = rotation;
@@ -174,6 +171,10 @@
         _blendMode = blendMode;
     }
     return self;
+}
+
+- (instancetype)initWithContent:(MTIImage *)content position:(CGPoint)position size:(CGSize)size rotation:(CGFloat)rotation opacity:(CGFloat)opacity blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content contentRegion:content.extent compositingMask:nil position:position size:size rotation:rotation opacity:opacity blendMode:blendMode];
 }
 
 @end
@@ -194,17 +195,17 @@
 @synthesize dimensions = _dimensions;
 @synthesize dependencies = _dependencies;
 
-- (MTIVertices *)verticesForRect:(CGRect)rect {
+- (MTIVertices *)verticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion {
     CGFloat l = CGRectGetMinX(rect);
     CGFloat r = CGRectGetMaxX(rect);
     CGFloat t = CGRectGetMinY(rect);
     CGFloat b = CGRectGetMaxY(rect);
     
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
+        { .position = {l, t, 0, 1} , .textureCoordinate = { CGRectGetMinX(contentRegion), CGRectGetMaxY(contentRegion) } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMaxY(contentRegion) } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { CGRectGetMinX(contentRegion), CGRectGetMinY(contentRegion) } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMinY(contentRegion) } }
     } count:4];
 }
 
@@ -258,7 +259,7 @@
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
     //render background
-    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2)];
+    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1)];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
@@ -279,7 +280,7 @@
         MTICompositingLayer *layer = self.layers[index];
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
-        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layer.size.width/2.0, -layer.size.height/2.0, layer.size.width, layer.size.height)];
+        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layer.size.width/2.0, -layer.size.height/2.0, layer.size.width, layer.size.height) contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)];
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
         [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         

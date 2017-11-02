@@ -251,6 +251,9 @@
 }
 
 - (MTIAlphaType)alphaType {
+    if (_color.alpha == 1) {
+        return MTIAlphaTypeAlphaIsOne;
+    }
     return MTIAlphaTypeNonPremultiplied;
 }
 

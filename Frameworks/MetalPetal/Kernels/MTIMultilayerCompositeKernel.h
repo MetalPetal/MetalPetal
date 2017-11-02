@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly) MTIImage *content;
 
+@property (nonatomic, readonly) CGRect contentRegion; //pixel
+
+@property (nonatomic, strong, readonly, nullable) MTIImage *compositingMask;
+
 @property (nonatomic, readonly) CGPoint position; //pixel
 
 @property (nonatomic, readonly) CGSize size; //pixel
@@ -34,6 +38,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithContent:(MTIImage *)content
+                       position:(CGPoint)position
+                           size:(CGSize)size
+                       rotation:(CGFloat)rotation
+                        opacity:(CGFloat)opacity
+                      blendMode:(MTIBlendMode)blendMode;
+
+- (instancetype)initWithContent:(MTIImage *)content
+                  contentRegion:(CGRect)contentRegion
+                compositingMask:(nullable MTIImage *)compositingMask
                        position:(CGPoint)position
                            size:(CGSize)size
                        rotation:(CGFloat)rotation

@@ -72,6 +72,15 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
+/// Return a 1x1 white image
++ (instancetype)whiteImage;
+
+/// Return a 1x1 black image
++ (instancetype)blackImage;
+
+/// Return a 1x1 transparent image
++ (instancetype)transparentImage;
+
 @end
 
 
