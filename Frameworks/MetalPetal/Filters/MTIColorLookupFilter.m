@@ -30,7 +30,7 @@
         return nil;
     }
     return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputColorLookupTable]
-                                      parameters:@{}
+                                      parameters:@{@"intensity": @(self.intensity)}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }

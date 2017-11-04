@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) MTIImage *inputColorLookupTable;
 
+@property (nonatomic) float intensity;
+
 @end
 
 NS_ASSUME_NONNULL_END

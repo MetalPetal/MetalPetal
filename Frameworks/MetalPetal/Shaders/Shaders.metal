@@ -63,7 +63,8 @@ fragment float4 colorLookup512x512 (
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
                             texture2d<float, access::sample> lutTexture [[texture(1)]],
                             sampler colorSampler [[sampler(0)]],
-                            sampler lutSamper [[sampler(1)]]
+                            sampler lutSamper [[sampler(1)]],
+                            constant float & intensity [[ buffer(0) ]]
                             )
 {
     float2 sourceCoord = vertexIn.texcoords;
@@ -93,7 +94,7 @@ fragment float4 colorLookup512x512 (
     
     float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
     
-    float4 finalColor = mix(color, float4(newColor.rgb, color.w), float(1));
+    float4 finalColor = mix(color, float4(newColor.rgb, color.w), intensity);
     
     return finalColor;
 }
