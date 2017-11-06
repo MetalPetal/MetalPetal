@@ -18,3 +18,4 @@ NSString * const MTIFilterUnpremultiplyAlphaFragmentFunctionName = @"unpremultip
 NSString * const MTIFilterPremultiplyAlphaFragmentFunctionName = @"premultiplyAlpha";
 
 NSString * const MTIFilterColorMatrixFragmentFunctionName = @"colorMatrixProjection";
+

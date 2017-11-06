@@ -44,6 +44,7 @@
 
 @property (nonatomic, strong) MTIBlendFilter *blendFilter;
 
+@property (nonatomic, strong)  MTIBlendWithMaskFilter *maskBlendFilter;
 @end
 
 @implementation ImageRendererViewController
@@ -80,6 +81,13 @@
     self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
     self.claheFilter = [[MTICLAHEFilter alloc] init];
     
+    self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
+    
+    self.maskBlendFilter.inputMaskImage = [[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO];
+    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.maskBlendFilter.maskComponent = MTIMaskBlendComponentAlpha;
+    
     float matrix[9] = {
         -1, 0, 1,
         -1, 0, 1,
@@ -93,14 +101,19 @@
     self.inputImage = mtiImageFromTexture;
     self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSaturation];
     
-    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
     self.renderView.contentScaleFactor = self.view.window.screen.nativeScale;
+}
+
+- (MTIImage *)maskBlendTestOutputImage {
+    MTIImage *outputImage =  self.maskBlendFilter.outputImage;
+    return outputImage;
 }
 
 - (MTIImage *)saturationAndInvertTestOutputImage {
@@ -233,7 +246,7 @@
         outputImage = trans.outputImage;
         */
         
-        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
+        MTIImage *outputImage = [self maskBlendTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
