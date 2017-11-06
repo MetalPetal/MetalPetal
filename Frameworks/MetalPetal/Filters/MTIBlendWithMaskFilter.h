@@ -7,15 +7,11 @@
 
 #import <Foundation/Foundation.h>
 #import "MTIFilter.h"
+#import "MTIColor.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(int, MTIMaskBlendComponent) {
-    MTIMaskBlendComponentAlpha = 0,
-    MTIMaskBlendComponentRed
-};
-
-@interface  MTIBlendWithMaskFilter: NSObject<MTIFilter>
+@interface  MTIBlendWithMaskFilter: NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
@@ -23,7 +19,7 @@ typedef NS_ENUM(int, MTIMaskBlendComponent) {
 
 @property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;
 
-@property (nonatomic, assign) MTIMaskBlendComponent maskComponent;
+@property (nonatomic, assign) MTIColorComponent maskComponent;
 
 @end
 

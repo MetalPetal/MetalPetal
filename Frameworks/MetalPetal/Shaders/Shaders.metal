@@ -112,7 +112,7 @@ vertex VertexOut imageTransformVertexShader(
     return outVertex;
 }
 
-fragment float4 maskBlend(
+fragment float4 blendWithMask(
                                      VertexOut vertexIn [[stage_in]],
                                      texture2d<float, access::sample> overlayTexture [[texture(0)]],
                                      texture2d<float, access::sample> maskTexture [[texture(1)]],
@@ -121,10 +121,9 @@ fragment float4 maskBlend(
                                      sampler maskSampler [[sampler(1)]],
                                      sampler baseSampler [[sampler(2)]],
                                      constant int &maskComponent [[ buffer(0) ]]) {
-    
     float4 overlayColor = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
     float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
     float4 baseColor = baseTexture.sample(baseSampler, vertexIn.texcoords);
-    return mix(baseColor, overlayColor, maskComponent == 0 ? maskColor.a : maskColor.r);
+    return mix(baseColor, overlayColor, maskColor[maskComponent]);
 }
 

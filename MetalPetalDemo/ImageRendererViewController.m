@@ -86,7 +86,7 @@
     self.maskBlendFilter.inputMaskImage = [[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO];
     self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
     self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.maskBlendFilter.maskComponent = MTIMaskBlendComponentAlpha;
+    self.maskBlendFilter.maskComponent = MTIColorComponentAlpha;
     
     float matrix[9] = {
         -1, 0, 1,
@@ -246,7 +246,7 @@
         outputImage = trans.outputImage;
         */
         
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [self maskBlendTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

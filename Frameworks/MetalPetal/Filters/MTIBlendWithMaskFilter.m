@@ -20,7 +20,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"maskBlend"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"blendWithMask"]];
     });
     return kernel;
 }
@@ -30,7 +30,7 @@
         return nil;
     }
     return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputMaskImage, self.inputBackgroundImage]
-                                      parameters:@{@"maskComponent": @(self.maskComponent)}
+                                      parameters:@{@"maskComponent": @((int)_maskComponent)}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }
