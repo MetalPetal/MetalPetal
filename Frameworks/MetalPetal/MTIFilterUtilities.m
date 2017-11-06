@@ -448,10 +448,9 @@ static NSDictionary *filterInputKeysCacheFrom(id target) {
     return property;
 }
 
-static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filter) {
+static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<NSObject> filter, NSArray<NSString *> *parameterKeys) {
     NSObject *object = filter;
-    NSCAssert([object.class respondsToSelector:@selector(inputParameterKeys)], ([NSString stringWithFormat:@"method: +(void)inputParameterKeys NOT implement， cls %@", NSStringFromClass(object.class)]));
-    NSSet *propertyNames = [filter.class inputParameterKeys];
+    NSArray *propertyNames = parameterKeys;
     NSDictionary *keysCache = filterInputKeysCacheFrom(filter.class);
     if (keysCache.count == propertyNames.count) return keysCache;
     NSMutableDictionary *keysWithTypeDescription = [NSMutableDictionary dictionary];
@@ -463,10 +462,9 @@ static NSDictionary *propertyKeysWithTypeDescriptionForFilter(id<MTIFilter> filt
     return keysWithTypeDescription;
 }
 
-NSDictionary<NSString *, id> * MTIFilterGetParametersDictionary(id<MTIFilter> filter) {
+NSDictionary<NSString *, id> * MTIFilterMakeParametersDictionaryWithParameterKeys(id filter, NSArray<NSString *> *parameterKeys) {
     NSObject *object = filter;
-    NSCAssert([object conformsToProtocol:@protocol(MTIFilter)], @"");
-    NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter);
+    NSDictionary *keys = propertyKeysWithTypeDescriptionForFilter(filter, parameterKeys);
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:keys.count];
     static NSSet * valueTypesNeedToBeRepresentedByMTIVector = nil;
     static dispatch_once_t onceToken;

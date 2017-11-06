@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIUnaryImageFilter (SubclassingHooks)
 
+@property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
+
 + (NSString *)fragmentFunctionName;
 
 + (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule;

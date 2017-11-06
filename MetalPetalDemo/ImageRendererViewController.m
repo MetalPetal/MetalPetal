@@ -233,7 +233,7 @@
         outputImage = trans.outputImage;
         */
         
-        MTIImage *outputImage = [self multilayerCompositingTestOutputImage];
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

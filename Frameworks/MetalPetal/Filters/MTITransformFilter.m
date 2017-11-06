@@ -85,8 +85,4 @@
                                               outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
-+ (nonnull NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet set];
-}
-
 @end

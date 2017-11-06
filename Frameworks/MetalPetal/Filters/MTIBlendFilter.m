@@ -60,8 +60,4 @@
                          outputPixelFormat:_outputPixelFormat];
 }
 
-+ (NSSet *)inputParameterKeys {
-    return [NSSet setWithObject:@"intensity"];
-}
-
 @end

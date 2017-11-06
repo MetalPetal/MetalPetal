@@ -9,8 +9,4 @@ import Foundation
 
 extension MTIFilter {
     
-    public var parameters: Dictionary<String, Any> {
-        return MTIFilterGetParametersDictionary(self)
-    }
-    
 }

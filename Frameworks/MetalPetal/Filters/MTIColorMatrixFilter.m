@@ -14,11 +14,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIVector.h"
 
-@interface MTIColorMatrixFilter ()
-
-@property (nonatomic,copy) NSData *colorMatrixValue;
-
-@end
+NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
 
 @implementation MTIColorMatrixFilter
 
@@ -33,13 +29,8 @@
     return self;
 }
 
-- (void)setColorMatrix:(MTIColorMatrix)colorMatrix {
-    _colorMatrix = colorMatrix;
-    _colorMatrixValue = [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)];
-}
-
-+ (NSSet *)inputParameterKeys {
-    return [NSSet setWithObjects:@"colorMatrixValue", nil];
+- (NSDictionary<NSString *,id> *)parameters {
+    return @{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&_colorMatrix length:sizeof(MTIColorMatrix)]};
 }
 
 @end

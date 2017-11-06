@@ -47,10 +47,6 @@
     return kernel;
 }
 
-+ (NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet setWithArray:@[@"radius", @"brightness", @"angle"]];
-}
-
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;

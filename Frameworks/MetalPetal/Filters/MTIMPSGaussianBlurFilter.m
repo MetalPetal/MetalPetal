@@ -51,8 +51,4 @@
     return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }
 
-+ (NSSet *)inputParameterKeys {
-    return [NSSet setWithObjects:@"radius", nil];
-}
-
 @end

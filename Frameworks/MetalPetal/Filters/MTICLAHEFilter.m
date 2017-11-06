@@ -203,10 +203,6 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return self;
 }
 
-+ (NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet setWithObjects:@"clipLimit",@"tileGridSize", nil];
-}
-
 + (MTICLAHELUTKernel *)LUTGeneratorKernel {
     static MTICLAHELUTKernel *kernel;
     static dispatch_once_t onceToken;

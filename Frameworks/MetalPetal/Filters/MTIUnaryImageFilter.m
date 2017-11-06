@@ -44,7 +44,7 @@
     if (!_inputImage) {
         return nil;
     }
-    return [self.class imageByProcessingImage:_inputImage withInputParameters:MTIFilterGetParametersDictionary(self) outputPixelFormat:_outputPixelFormat rotation:_inputRotation];
+    return [self.class imageByProcessingImage:_inputImage withInputParameters:self.parameters outputPixelFormat:_outputPixelFormat rotation:_inputRotation];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
@@ -63,10 +63,6 @@
                                      withTextures:@[image]
                                        parameters:parameters
                                 outputDescriptors:@[outputDescriptor]].firstObject;
-}
-
-+ (NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet set];
 }
 
 + (BOOL)shouldSwipeWidthAndHeightWhenRotatingToOrientation:(MTIImageOrientation)orientation {
@@ -161,6 +157,10 @@
 @end
 
 @implementation MTIUnaryImageFilter (SubclassingHooks)
+
+- (NSDictionary<NSString *,id> *)parameters {
+    return @{};
+}
 
 + (NSString *)fragmentFunctionName {
     return MTIFilterPassthroughFragmentFunctionName;

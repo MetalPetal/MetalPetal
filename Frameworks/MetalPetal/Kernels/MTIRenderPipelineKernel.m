@@ -452,7 +452,7 @@
 
 - (MTIColorMatrix)colorMatrix {
     MTIColorMatrix colorMatrix = MTIColorMatrixIdentity;
-    NSData *data = self.functionParameters[@"colorMatrixValue"];
+    NSData *data = self.functionParameters[MTIColorMatrixFilterColorMatrixParameterKey];
     if ([data isKindOfClass:[NSData class]] && data.length == sizeof(MTIColorMatrix)) {
         [data getBytes:&colorMatrix length:sizeof(MTIColorMatrix)];
     }
@@ -475,7 +475,7 @@ id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise
                     MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithKernel:recipe.kernel
                                                                                         geometry:recipe.geometry
                                                                                      inputImages:lastPromise.dependencies
-                                                                              functionParameters:@{@"colorMatrixValue": [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}
+                                                                              functionParameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}
                                                                                outputDescriptors:recipe.outputDescriptors];
                     MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:r];
                     return promise;

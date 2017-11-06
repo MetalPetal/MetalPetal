@@ -21,10 +21,6 @@
     return kernel;
 }
 
-+ (NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet set];
-}
-
 - (MTIImage *)outputImage {
     if (!_inputBackgroundImage) {
         return nil;

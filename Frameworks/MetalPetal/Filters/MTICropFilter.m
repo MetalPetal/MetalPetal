@@ -80,8 +80,4 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
                                          outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
-+ (nonnull NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet set];
-}
-
 @end

@@ -17,7 +17,6 @@ import MetalPetal
         let vertices = MTIVertices(vertices: array)
         print(vertices)
         
-        let filter = MTIExposureFilter()
-        print(filter.parameters)
+        let _ = MTIExposureFilter()
     }
 }

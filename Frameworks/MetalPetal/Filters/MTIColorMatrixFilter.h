@@ -12,6 +12,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString * const MTIColorMatrixFilterColorMatrixParameterKey;
+
 @interface MTIColorMatrixFilter : MTIUnaryImageFilter
 
 @property (nonatomic) MTIColorMatrix colorMatrix;

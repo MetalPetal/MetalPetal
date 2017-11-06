@@ -53,9 +53,9 @@ fragment float4 colorMatrixProjection(
                                  VertexOut vertexIn [[ stage_in ]],
                                  texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                  sampler colorSampler [[ sampler(0) ]],
-                                 constant MTIColorMatrix & colorMatrixValue [[ buffer(0) ]]
+                                 constant MTIColorMatrix & colorMatrix [[ buffer(0) ]]
                                  ) {
-    return colorTexture.sample(colorSampler, vertexIn.texcoords) * colorMatrixValue.matrix + colorMatrixValue.bias;
+    return colorTexture.sample(colorSampler, vertexIn.texcoords) * colorMatrix.matrix + colorMatrix.bias;
 }
 
 fragment float4 colorLookup512x512 (
