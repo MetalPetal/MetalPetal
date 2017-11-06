@@ -44,14 +44,14 @@
     if (!_inputImage) {
         return nil;
     }
-    return [self.class imageByProcessingImage:_inputImage withInputParameters:self.parameters outputPixelFormat:_outputPixelFormat rotation:_inputRotation];
+    return [self.class imageByProcessingImage:_inputImage rotation:_inputRotation parameters:self.parameters outputPixelFormat:_outputPixelFormat];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    return [self imageByProcessingImage:image withInputParameters:parameters outputPixelFormat:outputPixelFormat rotation:MTIImageOrientationUp];
+    return [self imageByProcessingImage:image rotation:MTIImageOrientationUp parameters:parameters outputPixelFormat:outputPixelFormat];
 }
 
-+ (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat rotation:(MTIImageOrientation)rotation {
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image rotation:(MTIImageOrientation)rotation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     CGSize size = image.size;
     if ([MTIUnaryImageFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:rotation]) {
         size.width = image.size.height;
