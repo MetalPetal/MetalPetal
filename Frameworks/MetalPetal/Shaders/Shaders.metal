@@ -63,7 +63,8 @@ fragment float4 colorLookup512x512 (
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
                             texture2d<float, access::sample> lutTexture [[texture(1)]],
                             sampler colorSampler [[sampler(0)]],
-                            sampler lutSamper [[sampler(1)]]
+                            sampler lutSamper [[sampler(1)]],
+                            constant float & intensity [[ buffer(0) ]]
                             )
 {
     float2 sourceCoord = vertexIn.texcoords;
@@ -93,7 +94,7 @@ fragment float4 colorLookup512x512 (
     
     float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
     
-    float4 finalColor = mix(color, float4(newColor.rgb, color.w), float(1));
+    float4 finalColor = mix(color, float4(newColor.rgb, color.w), intensity);
     
     return finalColor;
 }
@@ -110,3 +111,20 @@ vertex VertexOut imageTransformVertexShader(
     outVertex.texcoords = inVertex.textureCoordinate;
     return outVertex;
 }
+
+fragment float4 maskBlend(
+                                     VertexOut vertexIn [[stage_in]],
+                                     texture2d<float, access::sample> overlayTexture [[texture(0)]],
+                                     texture2d<float, access::sample> maskTexture [[texture(1)]],
+                                     texture2d<float, access::sample> baseTexture [[texture(2)]],
+                                     sampler overlaySampler [[sampler(0)]],
+                                     sampler maskSampler [[sampler(1)]],
+                                     sampler baseSampler [[sampler(2)]],
+                                     constant int &maskComponent [[ buffer(0) ]]) {
+    
+    float4 overlayColor = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
+    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
+    float4 baseColor = baseTexture.sample(baseSampler, vertexIn.texcoords);
+    return mix(baseColor, overlayColor, maskComponent == 0 ? maskColor.a : maskColor.r);
+}
+

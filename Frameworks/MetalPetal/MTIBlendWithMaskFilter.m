@@ -1,18 +1,18 @@
 //
-//  MTILookUpTableFilter.m
+//  MTIMaskBlendFilter.m
 //  MetalPetal
 //
-//  Created by 杨乃川 on 2017/10/12.
+//  Created by 杨乃川 on 2017/10/26.
 //
 
-#import "MTIColorLookupFilter.h"
+#import "MTIBlendWithMaskFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIFilterUtilities.h"
 #import "MTIImage.h"
 
-@implementation MTIColorLookupFilter
 
+@implementation MTIBlendWithMaskFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
 
 + (MTIRenderPipelineKernel *)kernel {
@@ -20,7 +20,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookup512x512"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"maskBlend"]];
     });
     return kernel;
 }
@@ -29,11 +29,14 @@
     if (!self.inputImage) {
         return nil;
     }
-    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputColorLookupTable]
-                                      parameters:@{@"intensity": @(self.intensity)}
+    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputMaskImage, self.inputBackgroundImage]
+                                      parameters:@{@"maskComponent": @(self.maskComponent)}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }
 
-@end
++ (nonnull NSSet<NSString *> *)inputParameterKeys {
+    return [NSSet set];
+}
 
+@end
