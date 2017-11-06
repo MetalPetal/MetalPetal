@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIMPSConvolutionFilter : NSObject <MTIFilter>
+@interface MTIMPSConvolutionFilter : NSObject <MTIUnaryFilter>
 
 /*! @property    bias
  *  @discussion  The bias is a value to be added to convolved pixel before it is converted back to the storage format.
@@ -23,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
  *               Default value is 0.0f.
  */
 @property (nonatomic) float bias;
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 - (instancetype)init NS_UNAVAILABLE;
 

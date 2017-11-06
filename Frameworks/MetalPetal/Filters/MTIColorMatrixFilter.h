@@ -7,14 +7,14 @@
 //
 
 #import "MTIFilter.h"
-#import "MTIUnaryImageFilter.h"
+#import "MTIUnaryImageRenderingFilter.h"
 #import "MTIColorMatrix.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const MTIColorMatrixFilterColorMatrixParameterKey;
 
-@interface MTIColorMatrixFilter : MTIUnaryImageFilter
+@interface MTIColorMatrixFilter : MTIUnaryImageRenderingFilter
 
 @property (nonatomic) MTIColorMatrix colorMatrix;
 

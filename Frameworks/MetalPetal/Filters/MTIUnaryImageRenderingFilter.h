@@ -13,11 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipelineKernel;
 
-@interface MTIUnaryImageFilter : NSObject <MTIFilter>
+@interface MTIUnaryImageRenderingFilter : NSObject <MTIUnaryFilter>
 
 + (MTIRenderPipelineKernel *)kernel;
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @property (nonatomic) MTIImageOrientation inputRotation; //Rotate the input image to that orientation.
 
@@ -25,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface MTIUnaryImageFilter (SubclassingHooks)
+@interface MTIUnaryImageRenderingFilter (SubclassingHooks)
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
 

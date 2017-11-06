@@ -23,11 +23,9 @@ typedef struct MTICropRegion MTICropRegion;
 
 FOUNDATION_EXPORT MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) NS_SWIFT_UNAVAILABLE("Use MTICropRegion.init instead.");
 
-@interface MTICropFilter : NSObject <MTIFilter>
+@interface MTICropFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) MTICropRegion cropRegion;
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @end
 

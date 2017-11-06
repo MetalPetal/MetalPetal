@@ -5,14 +5,15 @@
 //  Created by Yu Ao on 10/10/2017.
 //
 
-#import "MTIUnaryImageFilter.h"
+#import "MTIUnaryImageRenderingFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIFilterUtilities.h"
 
-@implementation MTIUnaryImageFilter
+@implementation MTIUnaryImageRenderingFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
 
 + (MTIRenderPipelineKernel *)kernel {
     static NSMutableDictionary *kernels;
@@ -53,12 +54,12 @@
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image rotation:(MTIImageOrientation)rotation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     CGSize size = image.size;
-    if ([MTIUnaryImageFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:rotation]) {
+    if ([MTIUnaryImageRenderingFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:rotation]) {
         size.width = image.size.height;
         size.height = image.size.width;
     }
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(size) pixelFormat:outputPixelFormat];
-    MTIVertices *geometry = [MTIUnaryImageFilter verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2) rotation:rotation];
+    MTIVertices *geometry = [MTIUnaryImageRenderingFilter verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2) rotation:rotation];
     return [[self kernel] imagesByDrawingGeometry:geometry
                                      withTextures:@[image]
                                        parameters:parameters
@@ -156,7 +157,7 @@
 
 @end
 
-@implementation MTIUnaryImageFilter (SubclassingHooks)
+@implementation MTIUnaryImageRenderingFilter (SubclassingHooks)
 
 - (NSDictionary<NSString *,id> *)parameters {
     return @{};

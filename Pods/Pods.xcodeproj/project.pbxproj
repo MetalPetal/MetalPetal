@@ -7,126 +7,126 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		040B5322A2DB08193EAA95B6A163D863 /* MTIRenderPipelineKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = BCEBF810ECA988CD6C1AA804E9A94013 /* MTIRenderPipelineKernel.m */; };
-		04D30E148F5B2FF9E761DD1B87ADBCC1 /* MTIBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B20661D1C773EE6FC91F25F6106FF08 /* MTIBlendFilter.m */; };
-		05D365DE7805031CE0BF094783627E47 /* MTIKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9ECC85A72533BACD87A12844F86D4C6 /* MTIKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0041CEF0EAB2A30C49B47D3FFED0F683 /* ColorConversionShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = F0CE86CF3DCEB9250422C5650C495E24 /* ColorConversionShaders.metal */; };
+		02F64252DBFC0DEA084659B1EB0044AD /* MTITexturePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 780651FFE7884644B72F04336885CEB6 /* MTITexturePool.m */; };
 		05D4F8C477D84A468FBFEB3B95E60E6D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
-		06A9B0EEE90C102A3C32183EAD8CA5A6 /* ColorConversionShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = F0CE86CF3DCEB9250422C5650C495E24 /* ColorConversionShaders.metal */; };
-		06BCF3A2324431731FF56CEE09575E47 /* MTICVPixelBufferPromise.h in Headers */ = {isa = PBXBuildFile; fileRef = CAB6B4D934DF75D0015911B2B3597A82 /* MTICVPixelBufferPromise.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		093878E43602A1AB282D3933B055BDF5 /* MTIVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BF87324A9A644B1D5D50538C6B48E74 /* MTIVertex.m */; };
-		0A4A2FCFB48B60999FA59D53F6D03100 /* MTILock.h in Headers */ = {isa = PBXBuildFile; fileRef = 10C73EDDF5CC9D3EB2A83A34CCC5E2A1 /* MTILock.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		0E08B4776D8DC6D5D167BBD88FDD6BEC /* MTITransform.h in Headers */ = {isa = PBXBuildFile; fileRef = C12B18D526214B2CDD98B4212FBE8CFF /* MTITransform.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		128D9E979BDE5204A1B753CE4E81505D /* MTILock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5EAA1FECB00DB21EF5D1F159A3B99E /* MTILock.m */; };
-		16107491E128E58D76A04F34B15C155A /* MetalPetal-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F83022D833CE30EB8351727A6CA17BC /* MetalPetal-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		17CC041B2C125E90E2E8DA2FCED915BD /* MTICropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A3C29A67E8FA38F0A758C1E2EDEF9E /* MTICropFilter.m */; };
-		17DC3108D9A64B4E16F41BAC3468D62E /* MTIBlendModes.m in Sources */ = {isa = PBXBuildFile; fileRef = E6125A395A20EE0B8DEF2EEC92A47720 /* MTIBlendModes.m */; };
-		198942E27A869897EBF986BA788B9BCB /* MTIFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 325493277637F52901F808151EE96A04 /* MTIFilter.m */; };
-		19A6FE30C2595CDA27FFD23A9B6BEA6A /* MTIImageRenderingContext.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD8A2AD2559335606C181F3097D473D /* MTIImageRenderingContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1B7D7A38D1D8D9874786002D5015E7E3 /* MTISamplerDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 216A48E1333362DBCD32E9B5826A94FF /* MTISamplerDescriptor.m */; };
-		1F7887030A945F642AB9BB65E553EB4D /* MTIColorMatrixFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = FB28B0229962FCE1A763C7B5C0BF6293 /* MTIColorMatrixFilter.m */; };
-		20FB7CBD80A82932FFD40D8585B19DE8 /* MTIImage+Filters.h in Headers */ = {isa = PBXBuildFile; fileRef = FDAC3708297076F5BCD22A5248721034 /* MTIImage+Filters.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		2236EB077572FC05933D5B464CDA1E48 /* MTIComputePipelineKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89416789795126353DE90D26F3FE2DA6 /* MTIComputePipelineKernel.m */; };
-		225F9EA03425457EA5DF29E5C4FF0EF8 /* MTIComputePipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 22854152E7098E91055F5CC06B9011DD /* MTIComputePipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		22BE05116EA68ABDE6795B1A929D1DDB /* MTIMPSConvolutionFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = FE15B4CBF2A3BA77680F04FF03B1FA23 /* MTIMPSConvolutionFilter.m */; };
-		22E429DC88294EDA5E6FC33209EEFA37 /* MTIMPSConvolutionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 155AFDA274E200197B24CD73D89BF5B3 /* MTIMPSConvolutionFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		23A857C79F6025604B7304D958D1E1D8 /* MetalPetal-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5171FCD66F611937B609571481A8D0DC /* MetalPetal-dummy.m */; };
-		24ED8E3C5618A34CBE3E34D33464641F /* BlendingShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8156C59EA7C7BA591785AFEF9F6B5C14 /* BlendingShaders.metal */; };
+		0CDA86303D4E1E38BFF6FCE01D131B18 /* MTIVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3F5DA3BA4A1B9BBCA194D37B8A89C1 /* MTIVertex.swift */; };
+		0DC760A387238A7030D2980633067668 /* MTIFunctionDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E0112DDE8A3073C2F1839218CF5ABD /* MTIFunctionDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		0E652A065F00DB68CB3A454EC4682F91 /* MTIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9378B1D2A2931B2311EBD4F04A050977 /* MTIImage.m */; };
+		119C4986893CD9BE1CD45209F01B66C5 /* MTITransformFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = BD08441A75EA7726A3D3FCCFF60E09DD /* MTITransformFilter.m */; };
+		1502E85D5A178601162A5CC37E6A2DA9 /* MTITextureDimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 51CB827E80B0B1825E409301A2D02766 /* MTITextureDimensions.m */; };
+		17E2F8E70049415288FC5D2193D7D3F1 /* MTIImage+Filters.m in Sources */ = {isa = PBXBuildFile; fileRef = A73879DA85A4AA415021B7D0B73560E3 /* MTIImage+Filters.m */; };
+		17FA513C1F0B49C32C4DC3545AEB7ED3 /* MTIBlendModes.h in Headers */ = {isa = PBXBuildFile; fileRef = DE51D51145AFF20E64697799E973F28B /* MTIBlendModes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1A62BBE5536D50883D237FFFB8D681A1 /* MTIDrawableRendering.h in Headers */ = {isa = PBXBuildFile; fileRef = 2476181D88A72109F68139FD9E0195FC /* MTIDrawableRendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		1FE53A8F81A58B4C2C87B2DE41121C0A /* MTIKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9ECC85A72533BACD87A12844F86D4C6 /* MTIKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		20E3CE75C8B58F8FDBB120A7CF8FD47B /* MTIAlphaPremultiplicationFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = BBB69A410FB1F49A04FDA8140D826068 /* MTIAlphaPremultiplicationFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		21836A3975FE9D14A06BFD7DD027C5EF /* MTIMultilayerCompositingFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = E15F5D6AB0F3D235997EC4DB33CEE8BD /* MTIMultilayerCompositingFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		25571845C429797F1A47746B2A0C8C75 /* MTIComputePipelineKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89416789795126353DE90D26F3FE2DA6 /* MTIComputePipelineKernel.m */; };
+		269839A684BBAF0B0945750C3FA68D6D /* MTIWeakToStrongObjectsMapTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EF91995312E6F3F8B7467394E4E5BEB /* MTIWeakToStrongObjectsMapTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27A495BB57A4A5CB9BF77842D91706EC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */; };
-		28DC10CC4F5CD5287BEE48985CEB05DD /* MTIMultilayerCompositingFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A8A662C3954E93DD1B95E73241FFE90 /* MTIMultilayerCompositingFilter.m */; };
-		2B4399502163A4AB94C73CF2F867092B /* MTIKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 46EE50483B31CA3C8416B2154910957D /* MTIKernel.m */; };
-		2ECB8DD50B5CFC198D5F107411B4B606 /* MTIFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = DA4B7962A87BF4D61EC45148B73CB9D5 /* MTIFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3144B37AA8428003A90A9ABB5F5D26BE /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52965FAF822AF8D93652CE2B8C1DBC5F /* Shaders.metal */; };
-		31C0E2DD9A48D5B6D25C72BD8B8E3787 /* MTIMultilayerCompositeKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = EC1F4C9AEE0A406C86BA2E13D19058F0 /* MTIMultilayerCompositeKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2D71D89A73D460FFB026C5CAF167649E /* MTIShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 84FFB370861F12FACE2CFFD7160B7BF4 /* MTIShaderTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		2DEA082191E4DEB8DAD1F714B97E0037 /* MTIBlendWithMaskFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = FBB1DB3B9E42D9884B50D4743152AEFD /* MTIBlendWithMaskFilter.m */; };
+		30127712F2785EA0E82CA257F98BE2F0 /* MTIVector.h in Headers */ = {isa = PBXBuildFile; fileRef = EDCCF1878957BA9508CACF9A6DC4CAAB /* MTIVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		32919F02E0D2B3A8CF1CD8E87F42B2C0 /* Pods-MetalPetalDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 120DDF755D2019397F4BF5E27C376205 /* Pods-MetalPetalDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		348414EE042BB2660CA62E4677FCCBC8 /* CLAHE.metal in Sources */ = {isa = PBXBuildFile; fileRef = E8F20AC45B910A4D35547351E5E6CC3A /* CLAHE.metal */; };
-		3709930479DBD3DD942621ECB99FE790 /* MTIVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = D04EFC64FDCB1BAE22F6CEE9B535069F /* MTIVertex.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		3B5A460BF73241BC4B90E70349BCF7AB /* MTIRenderPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = A75843A382471C85349AA087E79EAB25 /* MTIRenderPipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		402CA8C099205BAF7729DABCEFA4F845 /* MTIBlendWithMaskFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4BB38D2B6C87B57E30420EA32B85DB26 /* MTIBlendWithMaskFilter.m */; };
-		413AE308F7BF9DFF99FB53D753C45561 /* MTIWeakToStrongObjectsMapTable.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD2C48D4D1E2FD0D9C3CA44CEDB24D4 /* MTIWeakToStrongObjectsMapTable.m */; };
-		426F757181B09C46C66ED55F3811C766 /* MTIDrawableRendering.h in Headers */ = {isa = PBXBuildFile; fileRef = 2476181D88A72109F68139FD9E0195FC /* MTIDrawableRendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		46485E2D3FD3B440A1B546C4891C1A95 /* MTITextureDimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17E8E5177859D8A442B18DFC2D5C9A1 /* MTITextureDimensions.swift */; };
-		47CEA36FF0DA0B3E0A1E7B0AF5EDC23D /* LensBlur.metal in Sources */ = {isa = PBXBuildFile; fileRef = 65B7CEABED183F3A5F16A7D46CA25017 /* LensBlur.metal */; };
-		4866B9A346DAB82B1BF9EC7ABE553697 /* MTIImageOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B67762BFF6657733AABAB60CB2C8F9 /* MTIImageOrientation.m */; };
-		4909F17C5D548C44EB1197191B0D205C /* MTIAlphaPremultiplicationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 222558805E13282FEDD5F7D8769B84E7 /* MTIAlphaPremultiplicationFilter.m */; };
-		4A2E4E2E23544D8EC8E1CECC4AA6B27C /* MTITexturePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 16F0F29FDEF7CC5D297AAC0706A64ED5 /* MTITexturePool.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4A810AFC27A56F56A1805159B88610E1 /* MTIFunctionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA3036E98B2751C73C608DF4C21450F /* MTIFunctionDescriptor.m */; };
-		4AC6CB4BBDADE1E76C8DD2E90022BA68 /* MTIRenderPipelineKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = CE750105CCA219C74C149D8F58C26F0C /* MTIRenderPipelineKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		4E3C2DCC4219BF0A331A7B276E486BD2 /* MTIImagePromise.m in Sources */ = {isa = PBXBuildFile; fileRef = F9EE8132058CB72C3994ADA7E07FABD6 /* MTIImagePromise.m */; };
-		555986BFCFA1183ADD2C34021B382EBF /* MTIContext+Rendering.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D20237A461C9C2B770F033B249FDBB /* MTIContext+Rendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		577E579E89FF939E05038B4ADB39E7AB /* MTIDrawableRendering.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DAB2F554193F12A36D0A84C6F88742 /* MTIDrawableRendering.m */; };
-		57B51E23C4FB04CF31791952C3922621 /* MTIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2905D934B558808CA47F1DE6D8BE47A5 /* MTIColor.m */; };
-		57F8548A526B58118C8B10D49FDE77D1 /* MTIBlendWithMaskFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1FC06900FBE48321B0AC743227C2262F /* MTIBlendWithMaskFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5D2DA2349F3D77E6E0D456F3F9C57EE9 /* MTIColorMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FA5D014B00A7A86274714F2ECD4355 /* MTIColorMatrix.m */; };
-		5E83F700581F12B3AA23F2B0BD7DAA42 /* MTIVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71D758501B3404BDEA2D32143705 /* MTIVector.m */; };
-		5F04633C562423A36A56FFDB1332D60D /* MTISamplerDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FA44582D4BA14A71D8624335222E76 /* MTISamplerDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		60C8A5D4480705FE9CCE6C4087720908 /* MTIImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 9378B1D2A2931B2311EBD4F04A050977 /* MTIImage.m */; };
-		618B935B6F1EE0A12BE031423B5C2A69 /* MTIPixelFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 8583C60D87BAA83AE2925DE366E10DDC /* MTIPixelFormat.m */; };
-		6220E7ACE1EA16ED4668821CC0541D50 /* MTITransform.m in Sources */ = {isa = PBXBuildFile; fileRef = F9461F90E9CF191B44EB8C4E58B8D212 /* MTITransform.m */; };
-		6482293D59FD4905A39CE9AC8F559E42 /* MTIImage+Promise.h in Headers */ = {isa = PBXBuildFile; fileRef = 4555ADE5B2A140F2E1A41A6A74AA4AD3 /* MTIImage+Promise.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		653EA0146F5E64C15543FA434AA07124 /* MTIColorMatrixFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 190DF40A26AA853EA32822E73CF14BFA /* MTIColorMatrixFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6AFA29AEBB9D91A690B2E1D54679A825 /* MTICLAHEFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = D9A5F0FAB7C0DFA651F132041B4FE232 /* MTICLAHEFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6F75AD9C08F3F7398D3B882AAB1EA597 /* MTICVPixelBufferPromise.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF5B09A9DD946169F6628661B9F91 /* MTICVPixelBufferPromise.m */; };
-		7972C8D83529B29E4A4360BED47AA831 /* MTIMultilayerCompositingFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = C03FBAC40B78140C28F6BAE9E329969B /* MTIMultilayerCompositingFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7CD96091902B8AED9518C4212DA27F45 /* MTIVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3F5DA3BA4A1B9BBCA194D37B8A89C1 /* MTIVertex.swift */; };
-		7F77CF077CB144F772B988CCB31E32C2 /* MTIMPSKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = 011D0854E23B2BC1B3A393E18B0714E5 /* MTIMPSKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7FC242639CDF422A4D6286C7E8896C13 /* MTIImage+Filters.m in Sources */ = {isa = PBXBuildFile; fileRef = 5808FA55012178553CEE27FE6DF59417 /* MTIImage+Filters.m */; };
-		80C24DE708A8A936A75ABE408D08D376 /* MTITextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 45F86BDF96DF1898C0D6749C6D876CA1 /* MTITextureDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		816A5889F51D4C089D1947542D89D4DF /* MTIMPSGaussianBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 345B517E2A83498A9C3ABCE48E659DFF /* MTIMPSGaussianBlurFilter.m */; };
-		82F73A85317C59B0887D07D98920B670 /* MTIAlphaType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFD7103A1526A329F7CCA6EA17E91 /* MTIAlphaType.swift */; };
-		8358F1693117512ED69EE526CDF22B61 /* MTICropFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = D74BB5CA8928CAEB306394AF636060FC /* MTICropFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88574EE1511626F0D1B4F5547B1F42C8 /* MTIBlendModes.h in Headers */ = {isa = PBXBuildFile; fileRef = DE51D51145AFF20E64697799E973F28B /* MTIBlendModes.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8A7F8D01E618F8F745ADF60ED6A80B10 /* MTIImagePromise.h in Headers */ = {isa = PBXBuildFile; fileRef = A091F9A9ACC9A34AD4CE44721D583B47 /* MTIImagePromise.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8CF12670C56D19A02EF2B45A9E843DDA /* MTIColorMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69FB7504266F781D8DB2FB94C2DD803 /* MTIColorMatrix.swift */; };
-		8D5A95FA8D6AB104579861CB07295C7D /* MTIVector.h in Headers */ = {isa = PBXBuildFile; fileRef = EDCCF1878957BA9508CACF9A6DC4CAAB /* MTIVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		92B580DC3C349E2351B5ADE42F6AF88C /* MTITextureDimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 51CB827E80B0B1825E409301A2D02766 /* MTITextureDimensions.m */; };
-		97BB5E77E28E8ABEE19ED7B42627D412 /* MTIContext+Rendering.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7D0C19856DB39BD6806927249F9377 /* MTIContext+Rendering.m */; };
-		9E55CBB947DCF83CD40E895C7708EF72 /* MTIBlendFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2E3FEC89CEFDEADD0AAE2C76C2AA805A /* MTIBlendFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A2C0B703E2DD88A150A2A6D44FD74F6F /* MTITexturePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 780651FFE7884644B72F04336885CEB6 /* MTITexturePool.m */; };
-		A3A59D702D569D023935C117D4E3BA70 /* MTITransformFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 617F12D7FF4CE4B280FAF8BB6A705EB9 /* MTITransformFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A407D96E4DB42091EA0BA4F38B9B9846 /* MultilayerCompositeShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9749A2001B0616968C01112D6402C8B7 /* MultilayerCompositeShaders.metal */; };
-		A5F24214A3E01355275865CA364BA93C /* MTIFilterUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B86D1012FE826ACC85CA698362C8B46A /* MTIFilterUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A630F6FBB52621BBE7EF9F7BDA87CA34 /* MTIDefer.h in Headers */ = {isa = PBXBuildFile; fileRef = DE107EFD6A85A1648321C246D545DF60 /* MTIDefer.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		A66554FF0391F9A3C94D8576DDFA878D /* MTIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E281157E15AEF220F223E7D67C609A1 /* MTIError.m */; };
-		A76449E2BF324AC3FCFCC7E749A259C3 /* MTIImageRenderingContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9053FD23BD9B28F9E1A9BAA66C329347 /* MTIImageRenderingContext.m */; };
-		A85F2E4856C8F43BC46C8C824464A569 /* MTIAlphaType.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B894137885A04CDCE2AC16A1409AFCA /* MTIAlphaType.m */; };
-		A97DEAEFD9BEC50947E1630236355E73 /* MTIColorLookupFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 338D97E3EE10F9E8A40CD3B03A8CD9BB /* MTIColorLookupFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AA4E19E1F1B0BE45685A8347C278C70D /* MTIUnaryImageFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 6318E69928C8EC930026D3E578F23A9A /* MTIUnaryImageFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AC4B9795791903FE0589F8E4B8D0DD6C /* MTIColorMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FAB2CAF945FF72F0FA4B04023B023F /* MTIColorMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		ACA0F144E1E05B9D6476853C13FC2340 /* MTIUnaryImageFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = A546C0110592A17B19C0CBCCE6C39F4B /* MTIUnaryImageFilter.m */; };
-		AD910AABEF9C9EC1E9D1A8BEBC2AEDA1 /* MTIContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A0023210D964163B032D1C5F81372711 /* MTIContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AEB5EE47A27B4564E234E122626E5547 /* MTIColorLookupFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D73EDC0C4998FE72872DADF062857A /* MTIColorLookupFilter.m */; };
-		B202FFC38D767288B24334A56010942E /* MTIPixelFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 1F9F4E8692C3657FAE1905778D58E714 /* MTIPixelFormat.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B807B5B61957436E2CF7407FC26C6342 /* MTITextureDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = E06F020B67F6E212B7A321F7D38AFF5C /* MTITextureDescriptor.m */; };
-		B8ED0FFE89D28DAFC2C8D489EAF4E136 /* MTIImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1A4A73EC16B1F061A2FBB5F851F8CC /* MTIImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C385810CF2509CAE8A6741965D3006AF /* MTIFunctionDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E0112DDE8A3073C2F1839218CF5ABD /* MTIFunctionDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		386EA2B88B97CE40A8D63C7027974100 /* MTIFilterUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = B86D1012FE826ACC85CA698362C8B46A /* MTIFilterUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		38C702B3C408110D4E060BDA1CC82CD3 /* MTIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 81AAC3A4DA39E2B0837CF7649AC46160 /* MTIError.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		395DC2803699FC77CCC51F4A7A68C8EB /* MTITransform.h in Headers */ = {isa = PBXBuildFile; fileRef = C12B18D526214B2CDD98B4212FBE8CFF /* MTITransform.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3A9505EFD15E820E861C75346988280D /* MTIMPSConvolutionFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BB5A6D88146631B16C1437BC142DE4B /* MTIMPSConvolutionFilter.m */; };
+		3D75305D5DA3B52BF10D46649B8620A0 /* MTIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E281157E15AEF220F223E7D67C609A1 /* MTIError.m */; };
+		3F8F78F25C514E7B22D721645073D309 /* MTIContext+Rendering.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7D0C19856DB39BD6806927249F9377 /* MTIContext+Rendering.m */; };
+		3FC57A1486F5AE6B2D6262F80BF2B6F5 /* MTIUnaryImageRenderingFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5D3FDE932DE6DAE6126BADFE66D57CCD /* MTIUnaryImageRenderingFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		40CC07215A81F29F0D69B2AD5CD2E37B /* MTIFilterUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 28880F4DBE479636DCE61558B6CAB5CE /* MTIFilterUtilities.m */; };
+		42174FB95D638CE6583E045F40E6FAA3 /* MTITextureDimensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17E8E5177859D8A442B18DFC2D5C9A1 /* MTITextureDimensions.swift */; };
+		42F1572FC21038A43CB46BDACD6A934A /* MTIMultilayerCompositeKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = EC1F4C9AEE0A406C86BA2E13D19058F0 /* MTIMultilayerCompositeKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		43ADD5F89127E9EC061533B5A72CCC3C /* MTIFunctionDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AA3036E98B2751C73C608DF4C21450F /* MTIFunctionDescriptor.m */; };
+		474CE0005E129BA44256F002A923F3ED /* MTIContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 958B29D36D8945FE18631A4554C0AEC3 /* MTIContext.m */; };
+		49E2E57F212BAA3F4B954A52CE211CC7 /* MTIRenderPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = 203E8164470597C83F3772C0C163B1EA /* MTIRenderPipeline.m */; };
+		4A36E9780696C677B28A5A36994ED9AA /* MTIDrawableRendering.m in Sources */ = {isa = PBXBuildFile; fileRef = 37DAB2F554193F12A36D0A84C6F88742 /* MTIDrawableRendering.m */; };
+		4BDEB8038B0041A515A3095C3D33989C /* MTICLAHEFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3AB8F9AD2C4FAC32D1DFAF8F020A15 /* MTICLAHEFilter.m */; };
+		4E36BE3FD8FCD49E547DBFF184BCF695 /* MTICVPixelBufferPromise.h in Headers */ = {isa = PBXBuildFile; fileRef = CAB6B4D934DF75D0015911B2B3597A82 /* MTICVPixelBufferPromise.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4FDAA54DFA876751E19B3B0BCB39D597 /* MTICVPixelBufferPromise.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF5B09A9DD946169F6628661B9F91 /* MTICVPixelBufferPromise.m */; };
+		507DC4D525C4033357D33F8503EB6BC9 /* MTIPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD7174741D158F5C7F6D206595629B5 /* MTIPrint.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		5291F0D3A1427EA36DD1A6EAC8096786 /* MTIVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = 3BF87324A9A644B1D5D50538C6B48E74 /* MTIVertex.m */; };
+		54664055E7EFF9DC6FC3353FE092F72B /* MTIImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = CB1A4A73EC16B1F061A2FBB5F851F8CC /* MTIImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		588CCE29F0695A0FDE1D2866F117C636 /* MTIImage+Filters.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A6F6EBCBF3E66E32798E48780AA54 /* MTIImage+Filters.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		58F030A8394788A2F6DABCB916D6D317 /* MTIMPSGaussianBlurFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FBBD025CE61599E4F54FA32CEEA7835 /* MTIMPSGaussianBlurFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		591908C6FC489B65EC5F54B34651B312 /* MTIPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 534791DCC8E5667F3E23A0B710E10D92 /* MTIPrint.m */; };
+		5A62DE3B6A824D1B0D389D56CC21DFEE /* MTIImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 705F9C01F88AAEF375DAD203C27DE454 /* MTIImage.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5BBB55AAB7D829AF361F4375FEB8C529 /* MTITextureDimensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 793CEAA1B5C06ED8436BB4874B685E85 /* MTITextureDimensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5C5EBDF2CB24EF15BC9597AADA018FCA /* MTIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADDCCEDF02D486391C8FEBF76AC9AE2 /* MTIColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5DB2AB6DC5DC174837A77AB2405D4C14 /* MTIMultilayerCompositeKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B035C3315C5D34951E7DE8770374F4C7 /* MTIMultilayerCompositeKernel.m */; };
+		5F2D57D1E0088DE6EE11818C08B6820F /* MTIPixelFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 8583C60D87BAA83AE2925DE366E10DDC /* MTIPixelFormat.m */; };
+		5F7B82935EAB84D281B43D169D50A6CA /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 52965FAF822AF8D93652CE2B8C1DBC5F /* Shaders.metal */; };
+		6073B5264D4F569180C1706090272C52 /* MTIColorLookupFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 70640789DF1A2256754EDB2EF1A96649 /* MTIColorLookupFilter.m */; };
+		62EA58F2EA62A69C6C15D2602217CAE9 /* MTIComputePipelineKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = 46814FECADCD8F79867AE37CAC6F34A9 /* MTIComputePipelineKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		64A6D29F1E146F5076D0DD575C2D3A0D /* MTIWeakToStrongObjectsMapTable.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD2C48D4D1E2FD0D9C3CA44CEDB24D4 /* MTIWeakToStrongObjectsMapTable.m */; };
+		6E3FFABBF2981B1C7C588F1C4FF3D05C /* MTIBlendFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B6362FFD2E166A8C0E757CA39F905A /* MTIBlendFilter.m */; };
+		6E7C0BEAC54BD26B98A954D9B10B60B7 /* MTIColorMatrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = F69FB7504266F781D8DB2FB94C2DD803 /* MTIColorMatrix.swift */; };
+		6FA30599E1280BB4FC1174126A6E53D0 /* MTIAlphaPremultiplicationFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB7A88F00AADD088B4F45DDCF6B4223 /* MTIAlphaPremultiplicationFilter.m */; };
+		7166EF39E339E6D2F7737C5CB5860359 /* BlendingShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 8156C59EA7C7BA591785AFEF9F6B5C14 /* BlendingShaders.metal */; };
+		76D562F1343C00BC246B30C7004E3CEA /* MTIVector.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C1C71D758501B3404BDEA2D32143705 /* MTIVector.m */; };
+		7A2AD8B9538F7D916DE688A517B55090 /* MTIContext.h in Headers */ = {isa = PBXBuildFile; fileRef = A0023210D964163B032D1C5F81372711 /* MTIContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7B8A6E0FF9960E1FFAEC67DB76195454 /* MTIMPSGaussianBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7ACEF0367C667521224C78A961E69458 /* MTIMPSGaussianBlurFilter.m */; };
+		7BF9271565724D4573D7A2CB9BBD49DA /* MTIImageOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = D915204D5A3DDF0CE34D0F3D001C37D9 /* MTIImageOrientation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7CBE163CD03A2FA143A40B1F1E19123F /* MTITextureDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = E06F020B67F6E212B7A321F7D38AFF5C /* MTITextureDescriptor.m */; };
+		7D3B66462C3DA331477397D629632088 /* MTIFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F796561912BEF8B078ABAEDF45EC9D /* MTIFilter.swift */; };
+		81781E7A3A366C3CD9E8E1F389C41A1B /* MTIFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 325493277637F52901F808151EE96A04 /* MTIFilter.m */; };
+		830D93229A374D6AE556F5DC69BF987E /* MTILensBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0DDA4E89E63E70EAB7AB67C24A728C71 /* MTILensBlurFilter.m */; };
+		835BB5CE7F11D13B83915A9311E3539C /* MTISamplerDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FA44582D4BA14A71D8624335222E76 /* MTISamplerDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		84375E1E6DA87A4B7EA58ABBD58BABC6 /* MTIAlphaType.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B894137885A04CDCE2AC16A1409AFCA /* MTIAlphaType.m */; };
+		84FAD448951D5BE9C21E34D53B4225A9 /* MTISamplerDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 216A48E1333362DBCD32E9B5826A94FF /* MTISamplerDescriptor.m */; };
+		86D596609BDCCD1D938BE8804D34F237 /* MTIAlphaType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 533BFD7103A1526A329F7CCA6EA17E91 /* MTIAlphaType.swift */; };
+		872E05B889C5EA204B9A3AABD86BCD02 /* MTIFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = DA4B7962A87BF4D61EC45148B73CB9D5 /* MTIFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		87CB084A2FB1E6A632D14431B57BEDF6 /* MTIDefer.h in Headers */ = {isa = PBXBuildFile; fileRef = DE107EFD6A85A1648321C246D545DF60 /* MTIDefer.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		887C24A7AA6AC0B62C76990A4DC65B61 /* MTICLAHEFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = EFA8B576C3734179B31D8D346DA69699 /* MTICLAHEFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		897586A0F4B571BF8CC66D55D12264F0 /* MTIContext+Rendering.h in Headers */ = {isa = PBXBuildFile; fileRef = B6D20237A461C9C2B770F033B249FDBB /* MTIContext+Rendering.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8C100FF24EA5795E3323E82BFA976510 /* MTIKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 46EE50483B31CA3C8416B2154910957D /* MTIKernel.m */; };
+		8E44E70E0DED34DE6F0814363600ED68 /* MTIColorMatrix.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FA5D014B00A7A86274714F2ECD4355 /* MTIColorMatrix.m */; };
+		9A124FEBAA7E56B634F0066511522394 /* MTIComputePipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 22854152E7098E91055F5CC06B9011DD /* MTIComputePipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9AC95FF4A116F5484D5B2CEE2DF09BE3 /* MTIImage+Promise.h in Headers */ = {isa = PBXBuildFile; fileRef = 4555ADE5B2A140F2E1A41A6A74AA4AD3 /* MTIImage+Promise.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		A3C99255F90840184C46A8B86C8FC477 /* MTIMPSConvolutionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7727808929BEB7073B1488B2DF7FEB97 /* MTIMPSConvolutionFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7A55199C4580ABF2510E341E9B13801 /* MTILock.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5EAA1FECB00DB21EF5D1F159A3B99E /* MTILock.m */; };
+		A9CE7CCAB97EF62140DA63B2FE228FD4 /* MTIRenderPipelineKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = BCEBF810ECA988CD6C1AA804E9A94013 /* MTIRenderPipelineKernel.m */; };
+		AC6565730E149485B385E452BB2B7F80 /* MTIMPSKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7357F336389CE20DC350087B39EF7FC8 /* MTIMPSKernel.m */; };
+		ACE7261115C63FA65CBF0A6359F241F2 /* MetalPetal-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5171FCD66F611937B609571481A8D0DC /* MetalPetal-dummy.m */; };
+		B5DF984AC487A23D23ECA03CC5B61957 /* MTIBlendFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = A54FEEA18F35554352D61B2F94FA7476 /* MTIBlendFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6303881B21949C308AA6A6146EF0C1E /* MTIColorMatrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A5FAB2CAF945FF72F0FA4B04023B023F /* MTIColorMatrix.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B7B3EDF915F87E1D4BD4C9AF9D0ED30D /* MetalPetal-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F83022D833CE30EB8351727A6CA17BC /* MetalPetal-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BC68F4F991F2BA1BE1C5AA21A3A17980 /* MultilayerCompositeShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9749A2001B0616968C01112D6402C8B7 /* MultilayerCompositeShaders.metal */; };
+		BCA8173516701A6558BF84CF6189D535 /* MTITexturePool.h in Headers */ = {isa = PBXBuildFile; fileRef = 16F0F29FDEF7CC5D297AAC0706A64ED5 /* MTITexturePool.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C3A792C5F4D6431F9AFC9B3AD9366993 /* MTIMPSKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = 011D0854E23B2BC1B3A393E18B0714E5 /* MTIMPSKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C5C8FA81D23B1FF2A700D3445FADD5EB /* MTIMultilayerCompositingFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9128573669377BFC8CE6218DD1E9D03 /* MTIMultilayerCompositingFilter.m */; };
 		C63AC0802CF102BCD741AC3BB9B03D5F /* Pods-MetalPetalDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D3280CEA76670C4E44A0BF545FB5F9E6 /* Pods-MetalPetalDemo-dummy.m */; };
-		CCD15FFE6CC6C7D64043368B3693DCC0 /* MTIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 8ADDCCEDF02D486391C8FEBF76AC9AE2 /* MTIColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D01F104E8D7D9C3D72A20F22198E2578 /* MTIComputePipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = A516492AE30DCCB54875C77D14EB2F69 /* MTIComputePipeline.m */; };
-		D0495854F2CF6183FDA2C06819E74F01 /* MTIImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 24E1AFBF803A05427A483E018853B590 /* MTIImageView.m */; };
-		D0F830DDF04D74B51CC6037E51855C9D /* MTITextureDimensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 793CEAA1B5C06ED8436BB4874B685E85 /* MTITextureDimensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D13DF2CEF51885372E0FEB223864BA5F /* MTIImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 705F9C01F88AAEF375DAD203C27DE454 /* MTIImage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D47C746DA00C17906D55B0B6EBD507D1 /* MTIContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 958B29D36D8945FE18631A4554C0AEC3 /* MTIContext.m */; };
-		D67D3010D5D358EFF73D0C8A276180FF /* MTIMultilayerCompositeKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B035C3315C5D34951E7DE8770374F4C7 /* MTIMultilayerCompositeKernel.m */; };
-		D9335169D25CAF3D252D75C1A1E0468E /* MTIError.h in Headers */ = {isa = PBXBuildFile; fileRef = 81AAC3A4DA39E2B0837CF7649AC46160 /* MTIError.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D944C9D4AFBBF732F3723A3AC3A7BD8F /* MTIImageOrientation.h in Headers */ = {isa = PBXBuildFile; fileRef = D915204D5A3DDF0CE34D0F3D001C37D9 /* MTIImageOrientation.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		D9CC8460075D12C42FA36FD06A36231F /* MTIPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = 534791DCC8E5667F3E23A0B710E10D92 /* MTIPrint.m */; };
-		DA0D781278092F803E336B3619D5FCFA /* MTILensBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 18630B8C5C6575C861639CD07425844E /* MTILensBlurFilter.m */; };
-		DB8F68D18C632AF24DE32D2A58EEF48B /* MTIFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F796561912BEF8B078ABAEDF45EC9D /* MTIFilter.swift */; };
-		DC08FEFEB2E132B04C727F5AED41E9E1 /* MTIPrint.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD7174741D158F5C7F6D206595629B5 /* MTIPrint.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		E1C0B334F2AA3B31BBA572811849AF7B /* MTIDefer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F21578A9FF9657F7BB69F5365718691 /* MTIDefer.m */; };
-		EE4CCBA59C4E7BAA0A14476576DC61FF /* MTIFilterUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 28880F4DBE479636DCE61558B6CAB5CE /* MTIFilterUtilities.m */; };
-		EFD750147F29EEB9A2AA4BCD02B426B0 /* MTIAlphaType.h in Headers */ = {isa = PBXBuildFile; fileRef = 01CDB6945BAF28B1319818C55EF7E706 /* MTIAlphaType.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F11C840990BEAD8F993F314E1E4E006F /* MTICLAHEFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 378BD873E1817D59C4311CED62D9DA0D /* MTICLAHEFilter.m */; };
-		F245C39CD229962B14F1B8E3FC6CA4A3 /* MetalPetal.h in Headers */ = {isa = PBXBuildFile; fileRef = E7454A590E4FC1D50EDC1C6FB469DA0F /* MetalPetal.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F2E55DB333B1584AC458C4509FC47F97 /* MTIAlphaPremultiplicationFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 78290344A9C33AEF66C884719DC08165 /* MTIAlphaPremultiplicationFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F482E778CA6C3AD99B4E4B07C5266765 /* MTILensBlurFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CAC0E235AB9E03B3095399F3799EEF4 /* MTILensBlurFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F7AC073708C615D720997D0BA3A69369 /* MTIRenderPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = 203E8164470597C83F3772C0C163B1EA /* MTIRenderPipeline.m */; };
-		F97BA8A133DD0B9D2D5369FEC830AFBA /* MTITransformFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = C8D75C01EAD7FB129183BC584C0AD5FA /* MTITransformFilter.m */; };
-		F9C99D9E4CA2EE56243060C0326A111B /* MTIMPSKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7357F336389CE20DC350087B39EF7FC8 /* MTIMPSKernel.m */; };
-		F9CF66502FF7F5A459A12DD243E124BD /* MTIMPSGaussianBlurFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9803EE855F3C21079F899B88A9A25FDB /* MTIMPSGaussianBlurFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FA826D1112413425AEFB6095BE92CA1A /* MTIComputePipelineKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = 46814FECADCD8F79867AE37CAC6F34A9 /* MTIComputePipelineKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FCB7B0C65B361174F99AD362B4CDF3E9 /* MTIShaderTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 84FFB370861F12FACE2CFFD7160B7BF4 /* MTIShaderTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FFADB1C7C8FFAE069628F759F7C4CBFE /* MTIWeakToStrongObjectsMapTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 7EF91995312E6F3F8B7467394E4E5BEB /* MTIWeakToStrongObjectsMapTable.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		C7CA25CDDB33A3B75F0A8AAE9A3C55BB /* MTIDefer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F21578A9FF9657F7BB69F5365718691 /* MTIDefer.m */; };
+		C9A9332F0A4629D3ACE7ECFB5B3F5F46 /* MTIBlendWithMaskFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 64A472CCD75E0A1EDB3AE60A5F5397BB /* MTIBlendWithMaskFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CA73EF28BA1F85A1B4E38E561A82D746 /* MTIImageRenderingContext.h in Headers */ = {isa = PBXBuildFile; fileRef = AAD8A2AD2559335606C181F3097D473D /* MTIImageRenderingContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CCF3D87D4E5E3E045EF43B81358F8CCA /* MTIRenderPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = A75843A382471C85349AA087E79EAB25 /* MTIRenderPipeline.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CF7B2557628BE3C77DCA913B5C552DBF /* MTIImagePromise.m in Sources */ = {isa = PBXBuildFile; fileRef = F9EE8132058CB72C3994ADA7E07FABD6 /* MTIImagePromise.m */; };
+		D25EA76EAEA1A579BE0355790CCEBED1 /* MTIPixelFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 1F9F4E8692C3657FAE1905778D58E714 /* MTIPixelFormat.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2AD31215248EFAC326AA8169074C6E0 /* MTILock.h in Headers */ = {isa = PBXBuildFile; fileRef = 10C73EDDF5CC9D3EB2A83A34CCC5E2A1 /* MTILock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D3E269E543CEDB84FEF7F70A6C4C5D15 /* MTICropFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 235D9330685CF28E3D92000B5EB4F2EC /* MTICropFilter.m */; };
+		D9FD9F0D6D1E5294FEE68EC37681D568 /* MetalPetal.h in Headers */ = {isa = PBXBuildFile; fileRef = E7454A590E4FC1D50EDC1C6FB469DA0F /* MetalPetal.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DAAF22C3530954E630ACC20B50D81C94 /* MTIColorMatrixFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = F9CB92006E58352A8D252FD8EB546E07 /* MTIColorMatrixFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DAC9ED01D7DE50669F40E435BD562225 /* MTIComputePipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = A516492AE30DCCB54875C77D14EB2F69 /* MTIComputePipeline.m */; };
+		DF8B5DB7E644D5739257637F7A1198A2 /* MTIImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 24E1AFBF803A05427A483E018853B590 /* MTIImageView.m */; };
+		E523F85E541B018D17773914818BE7A6 /* MTIImagePromise.h in Headers */ = {isa = PBXBuildFile; fileRef = A091F9A9ACC9A34AD4CE44721D583B47 /* MTIImagePromise.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E7A017EE1FDA9CFD9F4256B1DD91895E /* MTIRenderPipelineKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = CE750105CCA219C74C149D8F58C26F0C /* MTIRenderPipelineKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E8CF9F325D96F4CFAE51524F72AE7631 /* MTIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 2905D934B558808CA47F1DE6D8BE47A5 /* MTIColor.m */; };
+		E9F8BA4E271B7F5EA1CFAB44B04764BE /* MTICropFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = BDB996B1EB7E40A2472EB167C3B1D28A /* MTICropFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EA8CF18B9CF69F49AF7103F287286956 /* MTIUnaryImageRenderingFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 378AC7AF74835150A89D3684E4EB7085 /* MTIUnaryImageRenderingFilter.m */; };
+		EF384330B412BCAE5F0869EB0399F639 /* MTITextureDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 45F86BDF96DF1898C0D6749C6D876CA1 /* MTITextureDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		EFBF5C66516CDCCF48A475ACA1D949D0 /* MTITransform.m in Sources */ = {isa = PBXBuildFile; fileRef = F9461F90E9CF191B44EB8C4E58B8D212 /* MTITransform.m */; };
+		F02A99A4FF7ABF7C34AE53A0C98FD637 /* MTIAlphaType.h in Headers */ = {isa = PBXBuildFile; fileRef = 01CDB6945BAF28B1319818C55EF7E706 /* MTIAlphaType.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F252B685EE04CC070FFF3FD5C07E424B /* MTIBlendModes.m in Sources */ = {isa = PBXBuildFile; fileRef = E6125A395A20EE0B8DEF2EEC92A47720 /* MTIBlendModes.m */; };
+		F26414314C9FA510FF7D8D2EB3F68667 /* MTITransformFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7873945BB629C64251B36B247C8D4EEE /* MTITransformFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F5618A363D446A72B42700EAE46E3CD2 /* MTIImageRenderingContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9053FD23BD9B28F9E1A9BAA66C329347 /* MTIImageRenderingContext.m */; };
+		F61B651C466F755D502112A8C17B37A9 /* MTIVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = D04EFC64FDCB1BAE22F6CEE9B535069F /* MTIVertex.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F6C306ABAB5280B56CF3EE816B0DEB4F /* MTIColorMatrixFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D442899C25B50C6CBC0802963510ABC /* MTIColorMatrixFilter.m */; };
+		F793F971B3B998732C96259EFDF371A8 /* MTIImageOrientation.m in Sources */ = {isa = PBXBuildFile; fileRef = 01B67762BFF6657733AABAB60CB2C8F9 /* MTIImageOrientation.m */; };
+		F92232EA6028444A65112C5223C22C3C /* CLAHE.metal in Sources */ = {isa = PBXBuildFile; fileRef = E8F20AC45B910A4D35547351E5E6CC3A /* CLAHE.metal */; };
+		FA7990046901F09B74E040268E4A31F3 /* MTIColorLookupFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2F20E52272EE46D3E745CFDDCDEC6B7A /* MTIColorLookupFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FB386A0E1D40E07B76C05FDC37312B3F /* MTILensBlurFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7866A05650022A3D88A77113BD346400 /* MTILensBlurFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FF34EFACD001128DB5A6DEEA3E0D7EA8 /* LensBlur.metal in Sources */ = {isa = PBXBuildFile; fileRef = 65B7CEABED183F3A5F16A7D46CA25017 /* LensBlur.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -144,31 +144,27 @@
 		01B67762BFF6657733AABAB60CB2C8F9 /* MTIImageOrientation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIImageOrientation.m; sourceTree = "<group>"; };
 		01CDB6945BAF28B1319818C55EF7E706 /* MTIAlphaType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIAlphaType.h; sourceTree = "<group>"; };
 		01EB184CC134140A5B850D8345E7FB7F /* MetalPetal.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = MetalPetal.modulemap; sourceTree = "<group>"; };
+		0DDA4E89E63E70EAB7AB67C24A728C71 /* MTILensBlurFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTILensBlurFilter.m; sourceTree = "<group>"; };
 		0E281157E15AEF220F223E7D67C609A1 /* MTIError.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIError.m; sourceTree = "<group>"; };
 		10C73EDDF5CC9D3EB2A83A34CCC5E2A1 /* MTILock.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTILock.h; sourceTree = "<group>"; };
 		120DDF755D2019397F4BF5E27C376205 /* Pods-MetalPetalDemo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MetalPetalDemo-umbrella.h"; sourceTree = "<group>"; };
-		155AFDA274E200197B24CD73D89BF5B3 /* MTIMPSConvolutionFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMPSConvolutionFilter.h; sourceTree = "<group>"; };
 		16F0F29FDEF7CC5D297AAC0706A64ED5 /* MTITexturePool.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITexturePool.h; sourceTree = "<group>"; };
-		18630B8C5C6575C861639CD07425844E /* MTILensBlurFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTILensBlurFilter.m; sourceTree = "<group>"; };
-		190DF40A26AA853EA32822E73CF14BFA /* MTIColorMatrixFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColorMatrixFilter.h; sourceTree = "<group>"; };
+		1BB5A6D88146631B16C1437BC142DE4B /* MTIMPSConvolutionFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSConvolutionFilter.m; sourceTree = "<group>"; };
 		1F9F4E8692C3657FAE1905778D58E714 /* MTIPixelFormat.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIPixelFormat.h; sourceTree = "<group>"; };
-		1FC06900FBE48321B0AC743227C2262F /* MTIBlendWithMaskFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIBlendWithMaskFilter.h; sourceTree = "<group>"; };
 		203E8164470597C83F3772C0C163B1EA /* MTIRenderPipeline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIRenderPipeline.m; sourceTree = "<group>"; };
 		216A48E1333362DBCD32E9B5826A94FF /* MTISamplerDescriptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTISamplerDescriptor.m; sourceTree = "<group>"; };
-		222558805E13282FEDD5F7D8769B84E7 /* MTIAlphaPremultiplicationFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIAlphaPremultiplicationFilter.m; sourceTree = "<group>"; };
 		22854152E7098E91055F5CC06B9011DD /* MTIComputePipeline.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIComputePipeline.h; sourceTree = "<group>"; };
+		235D9330685CF28E3D92000B5EB4F2EC /* MTICropFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICropFilter.m; sourceTree = "<group>"; };
 		2476181D88A72109F68139FD9E0195FC /* MTIDrawableRendering.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIDrawableRendering.h; sourceTree = "<group>"; };
 		24E1AFBF803A05427A483E018853B590 /* MTIImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIImageView.m; sourceTree = "<group>"; };
 		28880F4DBE479636DCE61558B6CAB5CE /* MTIFilterUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIFilterUtilities.m; sourceTree = "<group>"; };
 		2905D934B558808CA47F1DE6D8BE47A5 /* MTIColor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColor.m; sourceTree = "<group>"; };
 		2A5EAA1FECB00DB21EF5D1F159A3B99E /* MTILock.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTILock.m; sourceTree = "<group>"; };
-		2E3FEC89CEFDEADD0AAE2C76C2AA805A /* MTIBlendFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIBlendFilter.h; sourceTree = "<group>"; };
+		2F20E52272EE46D3E745CFDDCDEC6B7A /* MTIColorLookupFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColorLookupFilter.h; sourceTree = "<group>"; };
+		2FBBD025CE61599E4F54FA32CEEA7835 /* MTIMPSGaussianBlurFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMPSGaussianBlurFilter.h; sourceTree = "<group>"; };
 		31ED6124726B39CB055D3D851D4F0146 /* Pods-MetalPetalDemo-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MetalPetalDemo-frameworks.sh"; sourceTree = "<group>"; };
 		325493277637F52901F808151EE96A04 /* MTIFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIFilter.m; sourceTree = "<group>"; };
-		338D97E3EE10F9E8A40CD3B03A8CD9BB /* MTIColorLookupFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColorLookupFilter.h; sourceTree = "<group>"; };
-		345B517E2A83498A9C3ABCE48E659DFF /* MTIMPSGaussianBlurFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSGaussianBlurFilter.m; sourceTree = "<group>"; };
-		34A3C29A67E8FA38F0A758C1E2EDEF9E /* MTICropFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICropFilter.m; sourceTree = "<group>"; };
-		378BD873E1817D59C4311CED62D9DA0D /* MTICLAHEFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICLAHEFilter.m; sourceTree = "<group>"; };
+		378AC7AF74835150A89D3684E4EB7085 /* MTIUnaryImageRenderingFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIUnaryImageRenderingFilter.m; sourceTree = "<group>"; };
 		37DAB2F554193F12A36D0A84C6F88742 /* MTIDrawableRendering.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIDrawableRendering.m; sourceTree = "<group>"; };
 		3AA3036E98B2751C73C608DF4C21450F /* MTIFunctionDescriptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIFunctionDescriptor.m; sourceTree = "<group>"; };
 		3BF87324A9A644B1D5D50538C6B48E74 /* MTIVertex.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIVertex.m; sourceTree = "<group>"; };
@@ -177,8 +173,6 @@
 		45F86BDF96DF1898C0D6749C6D876CA1 /* MTITextureDescriptor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITextureDescriptor.h; sourceTree = "<group>"; };
 		46814FECADCD8F79867AE37CAC6F34A9 /* MTIComputePipelineKernel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIComputePipelineKernel.h; sourceTree = "<group>"; };
 		46EE50483B31CA3C8416B2154910957D /* MTIKernel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIKernel.m; sourceTree = "<group>"; };
-		4BB38D2B6C87B57E30420EA32B85DB26 /* MTIBlendWithMaskFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendWithMaskFilter.m; sourceTree = "<group>"; };
-		4CAC0E235AB9E03B3095399F3799EEF4 /* MTILensBlurFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTILensBlurFilter.h; sourceTree = "<group>"; };
 		4F21578A9FF9657F7BB69F5365718691 /* MTIDefer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIDefer.m; sourceTree = "<group>"; };
 		5171FCD66F611937B609571481A8D0DC /* MetalPetal-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MetalPetal-dummy.m"; sourceTree = "<group>"; };
 		51CB827E80B0B1825E409301A2D02766 /* MTITextureDimensions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITextureDimensions.m; sourceTree = "<group>"; };
@@ -186,21 +180,23 @@
 		52965FAF822AF8D93652CE2B8C1DBC5F /* Shaders.metal */ = {isa = PBXFileReference; includeInIndex = 1; path = Shaders.metal; sourceTree = "<group>"; };
 		533BFD7103A1526A329F7CCA6EA17E91 /* MTIAlphaType.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MTIAlphaType.swift; sourceTree = "<group>"; };
 		534791DCC8E5667F3E23A0B710E10D92 /* MTIPrint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIPrint.m; sourceTree = "<group>"; };
-		5808FA55012178553CEE27FE6DF59417 /* MTIImage+Filters.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MTIImage+Filters.m"; sourceTree = "<group>"; };
-		5A8A662C3954E93DD1B95E73241FFE90 /* MTIMultilayerCompositingFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMultilayerCompositingFilter.m; sourceTree = "<group>"; };
+		5D3FDE932DE6DAE6126BADFE66D57CCD /* MTIUnaryImageRenderingFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIUnaryImageRenderingFilter.h; sourceTree = "<group>"; };
 		5DE575C86FC4078954ABAF5B1C7BE700 /* Pods-MetalPetalDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MetalPetalDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		5F83022D833CE30EB8351727A6CA17BC /* MetalPetal-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MetalPetal-umbrella.h"; sourceTree = "<group>"; };
-		617F12D7FF4CE4B280FAF8BB6A705EB9 /* MTITransformFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITransformFilter.h; sourceTree = "<group>"; };
-		6318E69928C8EC930026D3E578F23A9A /* MTIUnaryImageFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIUnaryImageFilter.h; sourceTree = "<group>"; };
+		64A472CCD75E0A1EDB3AE60A5F5397BB /* MTIBlendWithMaskFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIBlendWithMaskFilter.h; sourceTree = "<group>"; };
 		65B7CEABED183F3A5F16A7D46CA25017 /* LensBlur.metal */ = {isa = PBXFileReference; includeInIndex = 1; path = LensBlur.metal; sourceTree = "<group>"; };
 		6604A7D69453B4569E4E4827FB9155A9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS10.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		6B894137885A04CDCE2AC16A1409AFCA /* MTIAlphaType.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIAlphaType.m; sourceTree = "<group>"; };
 		705F9C01F88AAEF375DAD203C27DE454 /* MTIImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIImage.h; sourceTree = "<group>"; };
+		70640789DF1A2256754EDB2EF1A96649 /* MTIColorLookupFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColorLookupFilter.m; sourceTree = "<group>"; };
 		7357F336389CE20DC350087B39EF7FC8 /* MTIMPSKernel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSKernel.m; sourceTree = "<group>"; };
+		7727808929BEB7073B1488B2DF7FEB97 /* MTIMPSConvolutionFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMPSConvolutionFilter.h; sourceTree = "<group>"; };
 		77743222E186741EA1DD17E142B1778F /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		780651FFE7884644B72F04336885CEB6 /* MTITexturePool.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITexturePool.m; sourceTree = "<group>"; };
-		78290344A9C33AEF66C884719DC08165 /* MTIAlphaPremultiplicationFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIAlphaPremultiplicationFilter.h; sourceTree = "<group>"; };
+		7866A05650022A3D88A77113BD346400 /* MTILensBlurFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTILensBlurFilter.h; sourceTree = "<group>"; };
+		7873945BB629C64251B36B247C8D4EEE /* MTITransformFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITransformFilter.h; sourceTree = "<group>"; };
 		793CEAA1B5C06ED8436BB4874B685E85 /* MTITextureDimensions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITextureDimensions.h; sourceTree = "<group>"; };
+		7ACEF0367C667521224C78A961E69458 /* MTIMPSGaussianBlurFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSGaussianBlurFilter.m; sourceTree = "<group>"; };
 		7EF91995312E6F3F8B7467394E4E5BEB /* MTIWeakToStrongObjectsMapTable.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIWeakToStrongObjectsMapTable.h; sourceTree = "<group>"; };
 		8156C59EA7C7BA591785AFEF9F6B5C14 /* BlendingShaders.metal */ = {isa = PBXFileReference; includeInIndex = 1; path = BlendingShaders.metal; sourceTree = "<group>"; };
 		81AAC3A4DA39E2B0837CF7649AC46160 /* MTIError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIError.h; sourceTree = "<group>"; };
@@ -209,6 +205,7 @@
 		89416789795126353DE90D26F3FE2DA6 /* MTIComputePipelineKernel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIComputePipelineKernel.m; sourceTree = "<group>"; };
 		8ADDCCEDF02D486391C8FEBF76AC9AE2 /* MTIColor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColor.h; sourceTree = "<group>"; };
 		8C1C71D758501B3404BDEA2D32143705 /* MTIVector.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIVector.m; sourceTree = "<group>"; };
+		8D442899C25B50C6CBC0802963510ABC /* MTIColorMatrixFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColorMatrixFilter.m; sourceTree = "<group>"; };
 		9053FD23BD9B28F9E1A9BAA66C329347 /* MTIImageRenderingContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIImageRenderingContext.m; sourceTree = "<group>"; };
 		90E1A1B1A1AB408A158AC6071BD35521 /* Pods-MetalPetalDemo-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MetalPetalDemo-resources.sh"; sourceTree = "<group>"; };
 		9378B1D2A2931B2311EBD4F04A050977 /* MTIImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIImage.m; sourceTree = "<group>"; };
@@ -216,28 +213,31 @@
 		958B29D36D8945FE18631A4554C0AEC3 /* MTIContext.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIContext.m; sourceTree = "<group>"; };
 		96052FAD9C727EC20CA4F2EEFF403818 /* Pods-MetalPetalDemo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; path = "Pods-MetalPetalDemo.modulemap"; sourceTree = "<group>"; };
 		9749A2001B0616968C01112D6402C8B7 /* MultilayerCompositeShaders.metal */ = {isa = PBXFileReference; includeInIndex = 1; path = MultilayerCompositeShaders.metal; sourceTree = "<group>"; };
-		9803EE855F3C21079F899B88A9A25FDB /* MTIMPSGaussianBlurFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMPSGaussianBlurFilter.h; sourceTree = "<group>"; };
-		9B20661D1C773EE6FC91F25F6106FF08 /* MTIBlendFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendFilter.m; sourceTree = "<group>"; };
+		9D3AB8F9AD2C4FAC32D1DFAF8F020A15 /* MTICLAHEFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICLAHEFilter.m; sourceTree = "<group>"; };
 		A0023210D964163B032D1C5F81372711 /* MTIContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIContext.h; sourceTree = "<group>"; };
 		A091F9A9ACC9A34AD4CE44721D583B47 /* MTIImagePromise.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIImagePromise.h; sourceTree = "<group>"; };
 		A516492AE30DCCB54875C77D14EB2F69 /* MTIComputePipeline.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIComputePipeline.m; sourceTree = "<group>"; };
-		A546C0110592A17B19C0CBCCE6C39F4B /* MTIUnaryImageFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIUnaryImageFilter.m; sourceTree = "<group>"; };
+		A54FEEA18F35554352D61B2F94FA7476 /* MTIBlendFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIBlendFilter.h; sourceTree = "<group>"; };
 		A5FAB2CAF945FF72F0FA4B04023B023F /* MTIColorMatrix.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColorMatrix.h; sourceTree = "<group>"; };
+		A73879DA85A4AA415021B7D0B73560E3 /* MTIImage+Filters.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MTIImage+Filters.m"; sourceTree = "<group>"; };
 		A75843A382471C85349AA087E79EAB25 /* MTIRenderPipeline.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIRenderPipeline.h; sourceTree = "<group>"; };
 		AA7D0C19856DB39BD6806927249F9377 /* MTIContext+Rendering.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MTIContext+Rendering.m"; sourceTree = "<group>"; };
+		AAB7A88F00AADD088B4F45DDCF6B4223 /* MTIAlphaPremultiplicationFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIAlphaPremultiplicationFilter.m; sourceTree = "<group>"; };
 		AAD7174741D158F5C7F6D206595629B5 /* MTIPrint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIPrint.h; sourceTree = "<group>"; };
 		AAD8A2AD2559335606C181F3097D473D /* MTIImageRenderingContext.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIImageRenderingContext.h; sourceTree = "<group>"; };
 		AADFF5B09A9DD946169F6628661B9F91 /* MTICVPixelBufferPromise.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICVPixelBufferPromise.m; sourceTree = "<group>"; };
 		AF532E799CA48CEFBAF1CAECA56250D3 /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
 		B035C3315C5D34951E7DE8770374F4C7 /* MTIMultilayerCompositeKernel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMultilayerCompositeKernel.m; sourceTree = "<group>"; };
+		B03A6F6EBCBF3E66E32798E48780AA54 /* MTIImage+Filters.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MTIImage+Filters.h"; sourceTree = "<group>"; };
 		B6D20237A461C9C2B770F033B249FDBB /* MTIContext+Rendering.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MTIContext+Rendering.h"; sourceTree = "<group>"; };
-		B7D73EDC0C4998FE72872DADF062857A /* MTIColorLookupFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColorLookupFilter.m; sourceTree = "<group>"; };
 		B86D1012FE826ACC85CA698362C8B46A /* MTIFilterUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIFilterUtilities.h; sourceTree = "<group>"; };
+		B9128573669377BFC8CE6218DD1E9D03 /* MTIMultilayerCompositingFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMultilayerCompositingFilter.m; sourceTree = "<group>"; };
+		BBB69A410FB1F49A04FDA8140D826068 /* MTIAlphaPremultiplicationFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIAlphaPremultiplicationFilter.h; sourceTree = "<group>"; };
 		BBD2C48D4D1E2FD0D9C3CA44CEDB24D4 /* MTIWeakToStrongObjectsMapTable.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIWeakToStrongObjectsMapTable.m; sourceTree = "<group>"; };
 		BCEBF810ECA988CD6C1AA804E9A94013 /* MTIRenderPipelineKernel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIRenderPipelineKernel.m; sourceTree = "<group>"; };
-		C03FBAC40B78140C28F6BAE9E329969B /* MTIMultilayerCompositingFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMultilayerCompositingFilter.h; sourceTree = "<group>"; };
+		BD08441A75EA7726A3D3FCCFF60E09DD /* MTITransformFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITransformFilter.m; sourceTree = "<group>"; };
+		BDB996B1EB7E40A2472EB167C3B1D28A /* MTICropFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTICropFilter.h; sourceTree = "<group>"; };
 		C12B18D526214B2CDD98B4212FBE8CFF /* MTITransform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTITransform.h; sourceTree = "<group>"; };
-		C8D75C01EAD7FB129183BC584C0AD5FA /* MTITransformFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITransformFilter.m; sourceTree = "<group>"; };
 		CAB6B4D934DF75D0015911B2B3597A82 /* MTICVPixelBufferPromise.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTICVPixelBufferPromise.h; sourceTree = "<group>"; };
 		CB1A4A73EC16B1F061A2FBB5F851F8CC /* MTIImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIImageView.h; sourceTree = "<group>"; };
 		CE750105CCA219C74C149D8F58C26F0C /* MTIRenderPipelineKernel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIRenderPipelineKernel.h; sourceTree = "<group>"; };
@@ -245,16 +245,15 @@
 		D04EFC64FDCB1BAE22F6CEE9B535069F /* MTIVertex.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIVertex.h; sourceTree = "<group>"; };
 		D17E8E5177859D8A442B18DFC2D5C9A1 /* MTITextureDimensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MTITextureDimensions.swift; sourceTree = "<group>"; };
 		D3280CEA76670C4E44A0BF545FB5F9E6 /* Pods-MetalPetalDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MetalPetalDemo-dummy.m"; sourceTree = "<group>"; };
-		D74BB5CA8928CAEB306394AF636060FC /* MTICropFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTICropFilter.h; sourceTree = "<group>"; };
 		D8FA44582D4BA14A71D8624335222E76 /* MTISamplerDescriptor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTISamplerDescriptor.h; sourceTree = "<group>"; };
 		D8FA5D014B00A7A86274714F2ECD4355 /* MTIColorMatrix.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColorMatrix.m; sourceTree = "<group>"; };
 		D915204D5A3DDF0CE34D0F3D001C37D9 /* MTIImageOrientation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIImageOrientation.h; sourceTree = "<group>"; };
-		D9A5F0FAB7C0DFA651F132041B4FE232 /* MTICLAHEFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTICLAHEFilter.h; sourceTree = "<group>"; };
 		D9DAC4A0B14DBCE49DCEB04A4020402F /* MetalPetal-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MetalPetal-prefix.pch"; sourceTree = "<group>"; };
 		DA4B7962A87BF4D61EC45148B73CB9D5 /* MTIFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIFilter.h; sourceTree = "<group>"; };
 		DE107EFD6A85A1648321C246D545DF60 /* MTIDefer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIDefer.h; sourceTree = "<group>"; };
 		DE51D51145AFF20E64697799E973F28B /* MTIBlendModes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIBlendModes.h; sourceTree = "<group>"; };
 		E06F020B67F6E212B7A321F7D38AFF5C /* MTITextureDescriptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITextureDescriptor.m; sourceTree = "<group>"; };
+		E15F5D6AB0F3D235997EC4DB33CEE8BD /* MTIMultilayerCompositingFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMultilayerCompositingFilter.h; sourceTree = "<group>"; };
 		E46303C61CE7F2AF1CE19A7126D236A8 /* MetalPetal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MetalPetal.framework; path = MetalPetal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E6125A395A20EE0B8DEF2EEC92A47720 /* MTIBlendModes.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendModes.m; sourceTree = "<group>"; };
 		E7454A590E4FC1D50EDC1C6FB469DA0F /* MetalPetal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MetalPetal.h; sourceTree = "<group>"; };
@@ -263,16 +262,17 @@
 		EC8C40C49F9D3FD8BFF02F3C22363F77 /* Pods_MetalPetalDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_MetalPetalDemo.framework; path = "Pods-MetalPetalDemo.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDCCF1878957BA9508CACF9A6DC4CAAB /* MTIVector.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIVector.h; sourceTree = "<group>"; };
 		EE260F230C9F800F9C14B6A72256042F /* MetalPetal.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MetalPetal.xcconfig; sourceTree = "<group>"; };
+		EFA8B576C3734179B31D8D346DA69699 /* MTICLAHEFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTICLAHEFilter.h; sourceTree = "<group>"; };
 		F0CE86CF3DCEB9250422C5650C495E24 /* ColorConversionShaders.metal */ = {isa = PBXFileReference; includeInIndex = 1; path = ColorConversionShaders.metal; sourceTree = "<group>"; };
 		F5BF658F95490167CEF9304AF4AB462E /* Pods-MetalPetalDemo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MetalPetalDemo-acknowledgements.plist"; sourceTree = "<group>"; };
 		F69FB7504266F781D8DB2FB94C2DD803 /* MTIColorMatrix.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MTIColorMatrix.swift; sourceTree = "<group>"; };
+		F8B6362FFD2E166A8C0E757CA39F905A /* MTIBlendFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendFilter.m; sourceTree = "<group>"; };
 		F9461F90E9CF191B44EB8C4E58B8D212 /* MTITransform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTITransform.m; sourceTree = "<group>"; };
+		F9CB92006E58352A8D252FD8EB546E07 /* MTIColorMatrixFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIColorMatrixFilter.h; sourceTree = "<group>"; };
 		F9ECC85A72533BACD87A12844F86D4C6 /* MTIKernel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIKernel.h; sourceTree = "<group>"; };
 		F9EE8132058CB72C3994ADA7E07FABD6 /* MTIImagePromise.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIImagePromise.m; sourceTree = "<group>"; };
-		FB28B0229962FCE1A763C7B5C0BF6293 /* MTIColorMatrixFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIColorMatrixFilter.m; sourceTree = "<group>"; };
+		FBB1DB3B9E42D9884B50D4743152AEFD /* MTIBlendWithMaskFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendWithMaskFilter.m; sourceTree = "<group>"; };
 		FD3F5DA3BA4A1B9BBCA194D37B8A89C1 /* MTIVertex.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MTIVertex.swift; sourceTree = "<group>"; };
-		FDAC3708297076F5BCD22A5248721034 /* MTIImage+Filters.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MTIImage+Filters.h"; sourceTree = "<group>"; };
-		FE15B4CBF2A3BA77680F04FF03B1FA23 /* MTIMPSConvolutionFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSConvolutionFilter.m; sourceTree = "<group>"; };
 		FF1689FA1C6A134C8613FF4D7C835862 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -443,7 +443,7 @@
 				3BF87324A9A644B1D5D50538C6B48E74 /* MTIVertex.m */,
 				7EF91995312E6F3F8B7467394E4E5BEB /* MTIWeakToStrongObjectsMapTable.h */,
 				BBD2C48D4D1E2FD0D9C3CA44CEDB24D4 /* MTIWeakToStrongObjectsMapTable.m */,
-				EDB13DA79A71D0A7CB0140B41490ED4D /* Filters */,
+				F4A0106CB1FF67FF96ECE0CE5B2ECE81 /* Filters */,
 				3885681CB13DE58AF0E161B6FDED3F3B /* Kernels */,
 				012088C73692E0041FA4A975AD79B93B /* Shaders */,
 				FFC1CAD4EE472A8CCD03B7399884F045 /* UI */,
@@ -490,37 +490,37 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		EDB13DA79A71D0A7CB0140B41490ED4D /* Filters */ = {
+		F4A0106CB1FF67FF96ECE0CE5B2ECE81 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				78290344A9C33AEF66C884719DC08165 /* MTIAlphaPremultiplicationFilter.h */,
-				222558805E13282FEDD5F7D8769B84E7 /* MTIAlphaPremultiplicationFilter.m */,
-				2E3FEC89CEFDEADD0AAE2C76C2AA805A /* MTIBlendFilter.h */,
-				9B20661D1C773EE6FC91F25F6106FF08 /* MTIBlendFilter.m */,
-				1FC06900FBE48321B0AC743227C2262F /* MTIBlendWithMaskFilter.h */,
-				4BB38D2B6C87B57E30420EA32B85DB26 /* MTIBlendWithMaskFilter.m */,
-				D9A5F0FAB7C0DFA651F132041B4FE232 /* MTICLAHEFilter.h */,
-				378BD873E1817D59C4311CED62D9DA0D /* MTICLAHEFilter.m */,
-				338D97E3EE10F9E8A40CD3B03A8CD9BB /* MTIColorLookupFilter.h */,
-				B7D73EDC0C4998FE72872DADF062857A /* MTIColorLookupFilter.m */,
-				190DF40A26AA853EA32822E73CF14BFA /* MTIColorMatrixFilter.h */,
-				FB28B0229962FCE1A763C7B5C0BF6293 /* MTIColorMatrixFilter.m */,
-				D74BB5CA8928CAEB306394AF636060FC /* MTICropFilter.h */,
-				34A3C29A67E8FA38F0A758C1E2EDEF9E /* MTICropFilter.m */,
-				FDAC3708297076F5BCD22A5248721034 /* MTIImage+Filters.h */,
-				5808FA55012178553CEE27FE6DF59417 /* MTIImage+Filters.m */,
-				4CAC0E235AB9E03B3095399F3799EEF4 /* MTILensBlurFilter.h */,
-				18630B8C5C6575C861639CD07425844E /* MTILensBlurFilter.m */,
-				155AFDA274E200197B24CD73D89BF5B3 /* MTIMPSConvolutionFilter.h */,
-				FE15B4CBF2A3BA77680F04FF03B1FA23 /* MTIMPSConvolutionFilter.m */,
-				9803EE855F3C21079F899B88A9A25FDB /* MTIMPSGaussianBlurFilter.h */,
-				345B517E2A83498A9C3ABCE48E659DFF /* MTIMPSGaussianBlurFilter.m */,
-				C03FBAC40B78140C28F6BAE9E329969B /* MTIMultilayerCompositingFilter.h */,
-				5A8A662C3954E93DD1B95E73241FFE90 /* MTIMultilayerCompositingFilter.m */,
-				617F12D7FF4CE4B280FAF8BB6A705EB9 /* MTITransformFilter.h */,
-				C8D75C01EAD7FB129183BC584C0AD5FA /* MTITransformFilter.m */,
-				6318E69928C8EC930026D3E578F23A9A /* MTIUnaryImageFilter.h */,
-				A546C0110592A17B19C0CBCCE6C39F4B /* MTIUnaryImageFilter.m */,
+				BBB69A410FB1F49A04FDA8140D826068 /* MTIAlphaPremultiplicationFilter.h */,
+				AAB7A88F00AADD088B4F45DDCF6B4223 /* MTIAlphaPremultiplicationFilter.m */,
+				A54FEEA18F35554352D61B2F94FA7476 /* MTIBlendFilter.h */,
+				F8B6362FFD2E166A8C0E757CA39F905A /* MTIBlendFilter.m */,
+				64A472CCD75E0A1EDB3AE60A5F5397BB /* MTIBlendWithMaskFilter.h */,
+				FBB1DB3B9E42D9884B50D4743152AEFD /* MTIBlendWithMaskFilter.m */,
+				EFA8B576C3734179B31D8D346DA69699 /* MTICLAHEFilter.h */,
+				9D3AB8F9AD2C4FAC32D1DFAF8F020A15 /* MTICLAHEFilter.m */,
+				2F20E52272EE46D3E745CFDDCDEC6B7A /* MTIColorLookupFilter.h */,
+				70640789DF1A2256754EDB2EF1A96649 /* MTIColorLookupFilter.m */,
+				F9CB92006E58352A8D252FD8EB546E07 /* MTIColorMatrixFilter.h */,
+				8D442899C25B50C6CBC0802963510ABC /* MTIColorMatrixFilter.m */,
+				BDB996B1EB7E40A2472EB167C3B1D28A /* MTICropFilter.h */,
+				235D9330685CF28E3D92000B5EB4F2EC /* MTICropFilter.m */,
+				B03A6F6EBCBF3E66E32798E48780AA54 /* MTIImage+Filters.h */,
+				A73879DA85A4AA415021B7D0B73560E3 /* MTIImage+Filters.m */,
+				7866A05650022A3D88A77113BD346400 /* MTILensBlurFilter.h */,
+				0DDA4E89E63E70EAB7AB67C24A728C71 /* MTILensBlurFilter.m */,
+				7727808929BEB7073B1488B2DF7FEB97 /* MTIMPSConvolutionFilter.h */,
+				1BB5A6D88146631B16C1437BC142DE4B /* MTIMPSConvolutionFilter.m */,
+				2FBBD025CE61599E4F54FA32CEEA7835 /* MTIMPSGaussianBlurFilter.h */,
+				7ACEF0367C667521224C78A961E69458 /* MTIMPSGaussianBlurFilter.m */,
+				E15F5D6AB0F3D235997EC4DB33CEE8BD /* MTIMultilayerCompositingFilter.h */,
+				B9128573669377BFC8CE6218DD1E9D03 /* MTIMultilayerCompositingFilter.m */,
+				7873945BB629C64251B36B247C8D4EEE /* MTITransformFilter.h */,
+				BD08441A75EA7726A3D3FCCFF60E09DD /* MTITransformFilter.m */,
+				5D3FDE932DE6DAE6126BADFE66D57CCD /* MTIUnaryImageRenderingFilter.h */,
+				378AC7AF74835150A89D3684E4EB7085 /* MTIUnaryImageRenderingFilter.m */,
 			);
 			name = Filters;
 			path = Filters;
@@ -558,64 +558,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		A520404E04D53916F76224BDBCC480E4 /* Headers */ = {
+		09842F7A70456F644340116BB7BAD0E8 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16107491E128E58D76A04F34B15C155A /* MetalPetal-umbrella.h in Headers */,
-				F245C39CD229962B14F1B8E3FC6CA4A3 /* MetalPetal.h in Headers */,
-				F2E55DB333B1584AC458C4509FC47F97 /* MTIAlphaPremultiplicationFilter.h in Headers */,
-				EFD750147F29EEB9A2AA4BCD02B426B0 /* MTIAlphaType.h in Headers */,
-				9E55CBB947DCF83CD40E895C7708EF72 /* MTIBlendFilter.h in Headers */,
-				88574EE1511626F0D1B4F5547B1F42C8 /* MTIBlendModes.h in Headers */,
-				57F8548A526B58118C8B10D49FDE77D1 /* MTIBlendWithMaskFilter.h in Headers */,
-				6AFA29AEBB9D91A690B2E1D54679A825 /* MTICLAHEFilter.h in Headers */,
-				CCD15FFE6CC6C7D64043368B3693DCC0 /* MTIColor.h in Headers */,
-				A97DEAEFD9BEC50947E1630236355E73 /* MTIColorLookupFilter.h in Headers */,
-				AC4B9795791903FE0589F8E4B8D0DD6C /* MTIColorMatrix.h in Headers */,
-				653EA0146F5E64C15543FA434AA07124 /* MTIColorMatrixFilter.h in Headers */,
-				225F9EA03425457EA5DF29E5C4FF0EF8 /* MTIComputePipeline.h in Headers */,
-				FA826D1112413425AEFB6095BE92CA1A /* MTIComputePipelineKernel.h in Headers */,
-				555986BFCFA1183ADD2C34021B382EBF /* MTIContext+Rendering.h in Headers */,
-				AD910AABEF9C9EC1E9D1A8BEBC2AEDA1 /* MTIContext.h in Headers */,
-				8358F1693117512ED69EE526CDF22B61 /* MTICropFilter.h in Headers */,
-				06BCF3A2324431731FF56CEE09575E47 /* MTICVPixelBufferPromise.h in Headers */,
-				A630F6FBB52621BBE7EF9F7BDA87CA34 /* MTIDefer.h in Headers */,
-				426F757181B09C46C66ED55F3811C766 /* MTIDrawableRendering.h in Headers */,
-				D9335169D25CAF3D252D75C1A1E0468E /* MTIError.h in Headers */,
-				2ECB8DD50B5CFC198D5F107411B4B606 /* MTIFilter.h in Headers */,
-				A5F24214A3E01355275865CA364BA93C /* MTIFilterUtilities.h in Headers */,
-				C385810CF2509CAE8A6741965D3006AF /* MTIFunctionDescriptor.h in Headers */,
-				20FB7CBD80A82932FFD40D8585B19DE8 /* MTIImage+Filters.h in Headers */,
-				6482293D59FD4905A39CE9AC8F559E42 /* MTIImage+Promise.h in Headers */,
-				D13DF2CEF51885372E0FEB223864BA5F /* MTIImage.h in Headers */,
-				D944C9D4AFBBF732F3723A3AC3A7BD8F /* MTIImageOrientation.h in Headers */,
-				8A7F8D01E618F8F745ADF60ED6A80B10 /* MTIImagePromise.h in Headers */,
-				19A6FE30C2595CDA27FFD23A9B6BEA6A /* MTIImageRenderingContext.h in Headers */,
-				B8ED0FFE89D28DAFC2C8D489EAF4E136 /* MTIImageView.h in Headers */,
-				05D365DE7805031CE0BF094783627E47 /* MTIKernel.h in Headers */,
-				F482E778CA6C3AD99B4E4B07C5266765 /* MTILensBlurFilter.h in Headers */,
-				0A4A2FCFB48B60999FA59D53F6D03100 /* MTILock.h in Headers */,
-				22E429DC88294EDA5E6FC33209EEFA37 /* MTIMPSConvolutionFilter.h in Headers */,
-				F9CF66502FF7F5A459A12DD243E124BD /* MTIMPSGaussianBlurFilter.h in Headers */,
-				7F77CF077CB144F772B988CCB31E32C2 /* MTIMPSKernel.h in Headers */,
-				31C0E2DD9A48D5B6D25C72BD8B8E3787 /* MTIMultilayerCompositeKernel.h in Headers */,
-				7972C8D83529B29E4A4360BED47AA831 /* MTIMultilayerCompositingFilter.h in Headers */,
-				B202FFC38D767288B24334A56010942E /* MTIPixelFormat.h in Headers */,
-				DC08FEFEB2E132B04C727F5AED41E9E1 /* MTIPrint.h in Headers */,
-				3B5A460BF73241BC4B90E70349BCF7AB /* MTIRenderPipeline.h in Headers */,
-				4AC6CB4BBDADE1E76C8DD2E90022BA68 /* MTIRenderPipelineKernel.h in Headers */,
-				5F04633C562423A36A56FFDB1332D60D /* MTISamplerDescriptor.h in Headers */,
-				FCB7B0C65B361174F99AD362B4CDF3E9 /* MTIShaderTypes.h in Headers */,
-				80C24DE708A8A936A75ABE408D08D376 /* MTITextureDescriptor.h in Headers */,
-				D0F830DDF04D74B51CC6037E51855C9D /* MTITextureDimensions.h in Headers */,
-				4A2E4E2E23544D8EC8E1CECC4AA6B27C /* MTITexturePool.h in Headers */,
-				0E08B4776D8DC6D5D167BBD88FDD6BEC /* MTITransform.h in Headers */,
-				A3A59D702D569D023935C117D4E3BA70 /* MTITransformFilter.h in Headers */,
-				AA4E19E1F1B0BE45685A8347C278C70D /* MTIUnaryImageFilter.h in Headers */,
-				8D5A95FA8D6AB104579861CB07295C7D /* MTIVector.h in Headers */,
-				3709930479DBD3DD942621ECB99FE790 /* MTIVertex.h in Headers */,
-				FFADB1C7C8FFAE069628F759F7C4CBFE /* MTIWeakToStrongObjectsMapTable.h in Headers */,
+				B7B3EDF915F87E1D4BD4C9AF9D0ED30D /* MetalPetal-umbrella.h in Headers */,
+				D9FD9F0D6D1E5294FEE68EC37681D568 /* MetalPetal.h in Headers */,
+				20E3CE75C8B58F8FDBB120A7CF8FD47B /* MTIAlphaPremultiplicationFilter.h in Headers */,
+				F02A99A4FF7ABF7C34AE53A0C98FD637 /* MTIAlphaType.h in Headers */,
+				B5DF984AC487A23D23ECA03CC5B61957 /* MTIBlendFilter.h in Headers */,
+				17FA513C1F0B49C32C4DC3545AEB7ED3 /* MTIBlendModes.h in Headers */,
+				C9A9332F0A4629D3ACE7ECFB5B3F5F46 /* MTIBlendWithMaskFilter.h in Headers */,
+				887C24A7AA6AC0B62C76990A4DC65B61 /* MTICLAHEFilter.h in Headers */,
+				5C5EBDF2CB24EF15BC9597AADA018FCA /* MTIColor.h in Headers */,
+				FA7990046901F09B74E040268E4A31F3 /* MTIColorLookupFilter.h in Headers */,
+				B6303881B21949C308AA6A6146EF0C1E /* MTIColorMatrix.h in Headers */,
+				DAAF22C3530954E630ACC20B50D81C94 /* MTIColorMatrixFilter.h in Headers */,
+				9A124FEBAA7E56B634F0066511522394 /* MTIComputePipeline.h in Headers */,
+				62EA58F2EA62A69C6C15D2602217CAE9 /* MTIComputePipelineKernel.h in Headers */,
+				897586A0F4B571BF8CC66D55D12264F0 /* MTIContext+Rendering.h in Headers */,
+				7A2AD8B9538F7D916DE688A517B55090 /* MTIContext.h in Headers */,
+				E9F8BA4E271B7F5EA1CFAB44B04764BE /* MTICropFilter.h in Headers */,
+				4E36BE3FD8FCD49E547DBFF184BCF695 /* MTICVPixelBufferPromise.h in Headers */,
+				87CB084A2FB1E6A632D14431B57BEDF6 /* MTIDefer.h in Headers */,
+				1A62BBE5536D50883D237FFFB8D681A1 /* MTIDrawableRendering.h in Headers */,
+				38C702B3C408110D4E060BDA1CC82CD3 /* MTIError.h in Headers */,
+				872E05B889C5EA204B9A3AABD86BCD02 /* MTIFilter.h in Headers */,
+				386EA2B88B97CE40A8D63C7027974100 /* MTIFilterUtilities.h in Headers */,
+				0DC760A387238A7030D2980633067668 /* MTIFunctionDescriptor.h in Headers */,
+				588CCE29F0695A0FDE1D2866F117C636 /* MTIImage+Filters.h in Headers */,
+				9AC95FF4A116F5484D5B2CEE2DF09BE3 /* MTIImage+Promise.h in Headers */,
+				5A62DE3B6A824D1B0D389D56CC21DFEE /* MTIImage.h in Headers */,
+				7BF9271565724D4573D7A2CB9BBD49DA /* MTIImageOrientation.h in Headers */,
+				E523F85E541B018D17773914818BE7A6 /* MTIImagePromise.h in Headers */,
+				CA73EF28BA1F85A1B4E38E561A82D746 /* MTIImageRenderingContext.h in Headers */,
+				54664055E7EFF9DC6FC3353FE092F72B /* MTIImageView.h in Headers */,
+				1FE53A8F81A58B4C2C87B2DE41121C0A /* MTIKernel.h in Headers */,
+				FB386A0E1D40E07B76C05FDC37312B3F /* MTILensBlurFilter.h in Headers */,
+				D2AD31215248EFAC326AA8169074C6E0 /* MTILock.h in Headers */,
+				A3C99255F90840184C46A8B86C8FC477 /* MTIMPSConvolutionFilter.h in Headers */,
+				58F030A8394788A2F6DABCB916D6D317 /* MTIMPSGaussianBlurFilter.h in Headers */,
+				C3A792C5F4D6431F9AFC9B3AD9366993 /* MTIMPSKernel.h in Headers */,
+				42F1572FC21038A43CB46BDACD6A934A /* MTIMultilayerCompositeKernel.h in Headers */,
+				21836A3975FE9D14A06BFD7DD027C5EF /* MTIMultilayerCompositingFilter.h in Headers */,
+				D25EA76EAEA1A579BE0355790CCEBED1 /* MTIPixelFormat.h in Headers */,
+				507DC4D525C4033357D33F8503EB6BC9 /* MTIPrint.h in Headers */,
+				CCF3D87D4E5E3E045EF43B81358F8CCA /* MTIRenderPipeline.h in Headers */,
+				E7A017EE1FDA9CFD9F4256B1DD91895E /* MTIRenderPipelineKernel.h in Headers */,
+				835BB5CE7F11D13B83915A9311E3539C /* MTISamplerDescriptor.h in Headers */,
+				2D71D89A73D460FFB026C5CAF167649E /* MTIShaderTypes.h in Headers */,
+				EF384330B412BCAE5F0869EB0399F639 /* MTITextureDescriptor.h in Headers */,
+				5BBB55AAB7D829AF361F4375FEB8C529 /* MTITextureDimensions.h in Headers */,
+				BCA8173516701A6558BF84CF6189D535 /* MTITexturePool.h in Headers */,
+				395DC2803699FC77CCC51F4A7A68C8EB /* MTITransform.h in Headers */,
+				F26414314C9FA510FF7D8D2EB3F68667 /* MTITransformFilter.h in Headers */,
+				3FC57A1486F5AE6B2D6262F80BF2B6F5 /* MTIUnaryImageRenderingFilter.h in Headers */,
+				30127712F2785EA0E82CA257F98BE2F0 /* MTIVector.h in Headers */,
+				F61B651C466F755D502112A8C17B37A9 /* MTIVertex.h in Headers */,
+				269839A684BBAF0B0945750C3FA68D6D /* MTIWeakToStrongObjectsMapTable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -634,9 +634,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B7F5315D2D46396D5E7C77E7AC306D6A /* Build configuration list for PBXNativeTarget "MetalPetal" */;
 			buildPhases = (
-				12D0B3EB6A27B437C5E4BC3C41EDD0E9 /* Sources */,
+				DA8DCCBA78C9650C953EB0737264E640 /* Sources */,
 				32CA7D439972611299467700D437C487 /* Frameworks */,
-				A520404E04D53916F76224BDBCC480E4 /* Headers */,
+				09842F7A70456F644340116BB7BAD0E8 /* Headers */,
 			);
 			buildRules = (
 			);
@@ -701,72 +701,72 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		12D0B3EB6A27B437C5E4BC3C41EDD0E9 /* Sources */ = {
+		DA8DCCBA78C9650C953EB0737264E640 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24ED8E3C5618A34CBE3E34D33464641F /* BlendingShaders.metal in Sources */,
-				348414EE042BB2660CA62E4677FCCBC8 /* CLAHE.metal in Sources */,
-				06A9B0EEE90C102A3C32183EAD8CA5A6 /* ColorConversionShaders.metal in Sources */,
-				47CEA36FF0DA0B3E0A1E7B0AF5EDC23D /* LensBlur.metal in Sources */,
-				23A857C79F6025604B7304D958D1E1D8 /* MetalPetal-dummy.m in Sources */,
-				4909F17C5D548C44EB1197191B0D205C /* MTIAlphaPremultiplicationFilter.m in Sources */,
-				A85F2E4856C8F43BC46C8C824464A569 /* MTIAlphaType.m in Sources */,
-				82F73A85317C59B0887D07D98920B670 /* MTIAlphaType.swift in Sources */,
-				04D30E148F5B2FF9E761DD1B87ADBCC1 /* MTIBlendFilter.m in Sources */,
-				17DC3108D9A64B4E16F41BAC3468D62E /* MTIBlendModes.m in Sources */,
-				402CA8C099205BAF7729DABCEFA4F845 /* MTIBlendWithMaskFilter.m in Sources */,
-				F11C840990BEAD8F993F314E1E4E006F /* MTICLAHEFilter.m in Sources */,
-				57B51E23C4FB04CF31791952C3922621 /* MTIColor.m in Sources */,
-				AEB5EE47A27B4564E234E122626E5547 /* MTIColorLookupFilter.m in Sources */,
-				5D2DA2349F3D77E6E0D456F3F9C57EE9 /* MTIColorMatrix.m in Sources */,
-				8CF12670C56D19A02EF2B45A9E843DDA /* MTIColorMatrix.swift in Sources */,
-				1F7887030A945F642AB9BB65E553EB4D /* MTIColorMatrixFilter.m in Sources */,
-				D01F104E8D7D9C3D72A20F22198E2578 /* MTIComputePipeline.m in Sources */,
-				2236EB077572FC05933D5B464CDA1E48 /* MTIComputePipelineKernel.m in Sources */,
-				97BB5E77E28E8ABEE19ED7B42627D412 /* MTIContext+Rendering.m in Sources */,
-				D47C746DA00C17906D55B0B6EBD507D1 /* MTIContext.m in Sources */,
-				17CC041B2C125E90E2E8DA2FCED915BD /* MTICropFilter.m in Sources */,
-				6F75AD9C08F3F7398D3B882AAB1EA597 /* MTICVPixelBufferPromise.m in Sources */,
-				E1C0B334F2AA3B31BBA572811849AF7B /* MTIDefer.m in Sources */,
-				577E579E89FF939E05038B4ADB39E7AB /* MTIDrawableRendering.m in Sources */,
-				A66554FF0391F9A3C94D8576DDFA878D /* MTIError.m in Sources */,
-				198942E27A869897EBF986BA788B9BCB /* MTIFilter.m in Sources */,
-				DB8F68D18C632AF24DE32D2A58EEF48B /* MTIFilter.swift in Sources */,
-				EE4CCBA59C4E7BAA0A14476576DC61FF /* MTIFilterUtilities.m in Sources */,
-				4A810AFC27A56F56A1805159B88610E1 /* MTIFunctionDescriptor.m in Sources */,
-				7FC242639CDF422A4D6286C7E8896C13 /* MTIImage+Filters.m in Sources */,
-				60C8A5D4480705FE9CCE6C4087720908 /* MTIImage.m in Sources */,
-				4866B9A346DAB82B1BF9EC7ABE553697 /* MTIImageOrientation.m in Sources */,
-				4E3C2DCC4219BF0A331A7B276E486BD2 /* MTIImagePromise.m in Sources */,
-				A76449E2BF324AC3FCFCC7E749A259C3 /* MTIImageRenderingContext.m in Sources */,
-				D0495854F2CF6183FDA2C06819E74F01 /* MTIImageView.m in Sources */,
-				2B4399502163A4AB94C73CF2F867092B /* MTIKernel.m in Sources */,
-				DA0D781278092F803E336B3619D5FCFA /* MTILensBlurFilter.m in Sources */,
-				128D9E979BDE5204A1B753CE4E81505D /* MTILock.m in Sources */,
-				22BE05116EA68ABDE6795B1A929D1DDB /* MTIMPSConvolutionFilter.m in Sources */,
-				816A5889F51D4C089D1947542D89D4DF /* MTIMPSGaussianBlurFilter.m in Sources */,
-				F9C99D9E4CA2EE56243060C0326A111B /* MTIMPSKernel.m in Sources */,
-				D67D3010D5D358EFF73D0C8A276180FF /* MTIMultilayerCompositeKernel.m in Sources */,
-				28DC10CC4F5CD5287BEE48985CEB05DD /* MTIMultilayerCompositingFilter.m in Sources */,
-				618B935B6F1EE0A12BE031423B5C2A69 /* MTIPixelFormat.m in Sources */,
-				D9CC8460075D12C42FA36FD06A36231F /* MTIPrint.m in Sources */,
-				F7AC073708C615D720997D0BA3A69369 /* MTIRenderPipeline.m in Sources */,
-				040B5322A2DB08193EAA95B6A163D863 /* MTIRenderPipelineKernel.m in Sources */,
-				1B7D7A38D1D8D9874786002D5015E7E3 /* MTISamplerDescriptor.m in Sources */,
-				B807B5B61957436E2CF7407FC26C6342 /* MTITextureDescriptor.m in Sources */,
-				92B580DC3C349E2351B5ADE42F6AF88C /* MTITextureDimensions.m in Sources */,
-				46485E2D3FD3B440A1B546C4891C1A95 /* MTITextureDimensions.swift in Sources */,
-				A2C0B703E2DD88A150A2A6D44FD74F6F /* MTITexturePool.m in Sources */,
-				6220E7ACE1EA16ED4668821CC0541D50 /* MTITransform.m in Sources */,
-				F97BA8A133DD0B9D2D5369FEC830AFBA /* MTITransformFilter.m in Sources */,
-				ACA0F144E1E05B9D6476853C13FC2340 /* MTIUnaryImageFilter.m in Sources */,
-				5E83F700581F12B3AA23F2B0BD7DAA42 /* MTIVector.m in Sources */,
-				093878E43602A1AB282D3933B055BDF5 /* MTIVertex.m in Sources */,
-				7CD96091902B8AED9518C4212DA27F45 /* MTIVertex.swift in Sources */,
-				413AE308F7BF9DFF99FB53D753C45561 /* MTIWeakToStrongObjectsMapTable.m in Sources */,
-				A407D96E4DB42091EA0BA4F38B9B9846 /* MultilayerCompositeShaders.metal in Sources */,
-				3144B37AA8428003A90A9ABB5F5D26BE /* Shaders.metal in Sources */,
+				7166EF39E339E6D2F7737C5CB5860359 /* BlendingShaders.metal in Sources */,
+				F92232EA6028444A65112C5223C22C3C /* CLAHE.metal in Sources */,
+				0041CEF0EAB2A30C49B47D3FFED0F683 /* ColorConversionShaders.metal in Sources */,
+				FF34EFACD001128DB5A6DEEA3E0D7EA8 /* LensBlur.metal in Sources */,
+				ACE7261115C63FA65CBF0A6359F241F2 /* MetalPetal-dummy.m in Sources */,
+				6FA30599E1280BB4FC1174126A6E53D0 /* MTIAlphaPremultiplicationFilter.m in Sources */,
+				84375E1E6DA87A4B7EA58ABBD58BABC6 /* MTIAlphaType.m in Sources */,
+				86D596609BDCCD1D938BE8804D34F237 /* MTIAlphaType.swift in Sources */,
+				6E3FFABBF2981B1C7C588F1C4FF3D05C /* MTIBlendFilter.m in Sources */,
+				F252B685EE04CC070FFF3FD5C07E424B /* MTIBlendModes.m in Sources */,
+				2DEA082191E4DEB8DAD1F714B97E0037 /* MTIBlendWithMaskFilter.m in Sources */,
+				4BDEB8038B0041A515A3095C3D33989C /* MTICLAHEFilter.m in Sources */,
+				E8CF9F325D96F4CFAE51524F72AE7631 /* MTIColor.m in Sources */,
+				6073B5264D4F569180C1706090272C52 /* MTIColorLookupFilter.m in Sources */,
+				8E44E70E0DED34DE6F0814363600ED68 /* MTIColorMatrix.m in Sources */,
+				6E7C0BEAC54BD26B98A954D9B10B60B7 /* MTIColorMatrix.swift in Sources */,
+				F6C306ABAB5280B56CF3EE816B0DEB4F /* MTIColorMatrixFilter.m in Sources */,
+				DAC9ED01D7DE50669F40E435BD562225 /* MTIComputePipeline.m in Sources */,
+				25571845C429797F1A47746B2A0C8C75 /* MTIComputePipelineKernel.m in Sources */,
+				3F8F78F25C514E7B22D721645073D309 /* MTIContext+Rendering.m in Sources */,
+				474CE0005E129BA44256F002A923F3ED /* MTIContext.m in Sources */,
+				D3E269E543CEDB84FEF7F70A6C4C5D15 /* MTICropFilter.m in Sources */,
+				4FDAA54DFA876751E19B3B0BCB39D597 /* MTICVPixelBufferPromise.m in Sources */,
+				C7CA25CDDB33A3B75F0A8AAE9A3C55BB /* MTIDefer.m in Sources */,
+				4A36E9780696C677B28A5A36994ED9AA /* MTIDrawableRendering.m in Sources */,
+				3D75305D5DA3B52BF10D46649B8620A0 /* MTIError.m in Sources */,
+				81781E7A3A366C3CD9E8E1F389C41A1B /* MTIFilter.m in Sources */,
+				7D3B66462C3DA331477397D629632088 /* MTIFilter.swift in Sources */,
+				40CC07215A81F29F0D69B2AD5CD2E37B /* MTIFilterUtilities.m in Sources */,
+				43ADD5F89127E9EC061533B5A72CCC3C /* MTIFunctionDescriptor.m in Sources */,
+				17E2F8E70049415288FC5D2193D7D3F1 /* MTIImage+Filters.m in Sources */,
+				0E652A065F00DB68CB3A454EC4682F91 /* MTIImage.m in Sources */,
+				F793F971B3B998732C96259EFDF371A8 /* MTIImageOrientation.m in Sources */,
+				CF7B2557628BE3C77DCA913B5C552DBF /* MTIImagePromise.m in Sources */,
+				F5618A363D446A72B42700EAE46E3CD2 /* MTIImageRenderingContext.m in Sources */,
+				DF8B5DB7E644D5739257637F7A1198A2 /* MTIImageView.m in Sources */,
+				8C100FF24EA5795E3323E82BFA976510 /* MTIKernel.m in Sources */,
+				830D93229A374D6AE556F5DC69BF987E /* MTILensBlurFilter.m in Sources */,
+				A7A55199C4580ABF2510E341E9B13801 /* MTILock.m in Sources */,
+				3A9505EFD15E820E861C75346988280D /* MTIMPSConvolutionFilter.m in Sources */,
+				7B8A6E0FF9960E1FFAEC67DB76195454 /* MTIMPSGaussianBlurFilter.m in Sources */,
+				AC6565730E149485B385E452BB2B7F80 /* MTIMPSKernel.m in Sources */,
+				5DB2AB6DC5DC174837A77AB2405D4C14 /* MTIMultilayerCompositeKernel.m in Sources */,
+				C5C8FA81D23B1FF2A700D3445FADD5EB /* MTIMultilayerCompositingFilter.m in Sources */,
+				5F2D57D1E0088DE6EE11818C08B6820F /* MTIPixelFormat.m in Sources */,
+				591908C6FC489B65EC5F54B34651B312 /* MTIPrint.m in Sources */,
+				49E2E57F212BAA3F4B954A52CE211CC7 /* MTIRenderPipeline.m in Sources */,
+				A9CE7CCAB97EF62140DA63B2FE228FD4 /* MTIRenderPipelineKernel.m in Sources */,
+				84FAD448951D5BE9C21E34D53B4225A9 /* MTISamplerDescriptor.m in Sources */,
+				7CBE163CD03A2FA143A40B1F1E19123F /* MTITextureDescriptor.m in Sources */,
+				1502E85D5A178601162A5CC37E6A2DA9 /* MTITextureDimensions.m in Sources */,
+				42174FB95D638CE6583E045F40E6FAA3 /* MTITextureDimensions.swift in Sources */,
+				02F64252DBFC0DEA084659B1EB0044AD /* MTITexturePool.m in Sources */,
+				EFBF5C66516CDCCF48A475ACA1D949D0 /* MTITransform.m in Sources */,
+				119C4986893CD9BE1CD45209F01B66C5 /* MTITransformFilter.m in Sources */,
+				EA8CF18B9CF69F49AF7103F287286956 /* MTIUnaryImageRenderingFilter.m in Sources */,
+				76D562F1343C00BC246B30C7004E3CEA /* MTIVector.m in Sources */,
+				5291F0D3A1427EA36DD1A6EAC8096786 /* MTIVertex.m in Sources */,
+				0CDA86303D4E1E38BFF6FCE01D131B18 /* MTIVertex.swift in Sources */,
+				64A6D29F1E146F5076D0DD575C2D3A0D /* MTIWeakToStrongObjectsMapTable.m in Sources */,
+				BC68F4F991F2BA1BE1C5AA21A3A17980 /* MultilayerCompositeShaders.metal in Sources */,
+				5F7B82935EAB84D281B43D169D50A6CA /* Shaders.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

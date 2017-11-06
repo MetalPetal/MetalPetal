@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTITransformFilter : NSObject <MTIFilter>
+@interface MTITransformFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) CATransform3D transform;
 
@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
  @discussion When fov is zero the orthographic matrix will be applied . Otherwise, use the perspective matrix. Value in [0, M_PI) is valid. Defaults to 0.
  */
 @property (nonatomic) float fieldOfView;
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @end
 

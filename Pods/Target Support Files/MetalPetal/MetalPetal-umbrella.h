@@ -23,7 +23,7 @@
 #import "MTIMPSGaussianBlurFilter.h"
 #import "MTIMultilayerCompositingFilter.h"
 #import "MTITransformFilter.h"
-#import "MTIUnaryImageFilter.h"
+#import "MTIUnaryImageRenderingFilter.h"
 #import "MTIComputePipelineKernel.h"
 #import "MTIKernel.h"
 #import "MTIMPSKernel.h"

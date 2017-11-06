@@ -6,17 +6,17 @@
 //
 
 #import "MTIFilter.h"
-#import "MTIUnaryImageFilter.h"
+#import "MTIUnaryImageRenderingFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIUnpremultiplyAlphaFilter : MTIUnaryImageFilter
+@interface MTIUnpremultiplyAlphaFilter : MTIUnaryImageRenderingFilter
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image;
 
 @end
 
-@interface MTIPremultiplyAlphaFilter : MTIUnaryImageFilter
+@interface MTIPremultiplyAlphaFilter : MTIUnaryImageRenderingFilter
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image;
 

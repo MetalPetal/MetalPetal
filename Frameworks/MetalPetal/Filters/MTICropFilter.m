@@ -19,6 +19,7 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
 
 @implementation MTICropFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
 
 + (MTIRenderPipelineKernel *)kernel {
     static MTIRenderPipelineKernel *kernel;

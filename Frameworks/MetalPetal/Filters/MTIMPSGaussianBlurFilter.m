@@ -16,6 +16,7 @@
 
 @implementation MTIMPSGaussianBlurFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
 
 + (MTIMPSKernel *)kernelWithRadius:(NSInteger)radius {
     static NSMutableDictionary *kernels;

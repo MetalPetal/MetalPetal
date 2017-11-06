@@ -64,6 +64,7 @@
 
 @implementation MTIMPSConvolutionFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
 
 - (instancetype)initWithKernelWidth:(NSUInteger)kernelWidth kernelHeight:(NSUInteger)kernelHeight weights:(const float *)kernelWeights {
     if (self = [super init]) {

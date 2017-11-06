@@ -10,11 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIMPSGaussianBlurFilter : NSObject <MTIFilter>
+@interface MTIMPSGaussianBlurFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) float radius;
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
 
 @end
 

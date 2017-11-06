@@ -30,4 +30,10 @@ FOUNDATION_EXPORT NSString * const MTIFilterColorMatrixFragmentFunctionName;
 
 @end
 
+@protocol MTIUnaryFilter <MTIFilter>
+
+@property (nonatomic, strong, nullable) MTIImage *inputImage;
+
+@end
+
 NS_ASSUME_NONNULL_END

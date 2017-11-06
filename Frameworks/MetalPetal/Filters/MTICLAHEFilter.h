@@ -17,9 +17,7 @@ typedef struct MTICLAHESize MTICLAHESize;
 
 FOUNDATION_EXPORT MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) NS_SWIFT_UNAVAILABLE("Use MTICLAHESize.init instead.");
 
-@interface MTICLAHEFilter : NSObject <MTIFilter>
-
-@property (nonatomic, strong, nullable) MTIImage *inputImage;
+@interface MTICLAHEFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) float clipLimit;
 

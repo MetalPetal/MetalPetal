@@ -194,6 +194,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @implementation MTICLAHEFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
 
 - (instancetype)init {
     if (self = [super init]) {
