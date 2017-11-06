@@ -37,6 +37,11 @@
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
     NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
+    @MTI_DEFER {
+        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
+            [resolution markAsConsumedBy:self];
+        }
+    };
     for (MTIImage *image in self.inputImages) {
         NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
@@ -49,12 +54,6 @@
         NSAssert(resolution != nil, @"");
         [inputResolutions addObject:resolution];
     }
-    
-    @MTI_DEFER {
-        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-            [resolution markAsConsumedBy:self];
-        }
-    };
     
     //May need to get a copy
     MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];

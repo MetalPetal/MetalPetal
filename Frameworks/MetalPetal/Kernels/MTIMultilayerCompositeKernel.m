@@ -236,6 +236,18 @@
     //calc layerContentResolutions early to avoid recursive command encoding.
     NSMutableArray<id<MTIImagePromiseResolution>> *layerContentResolutions = [NSMutableArray array];
     NSMutableArray *layerCompositingMaskResolutions = [NSMutableArray array];
+    
+    @MTI_DEFER {
+        for (id<MTIImagePromiseResolution> resolution in layerContentResolutions) {
+            [resolution markAsConsumedBy:self];
+        }
+        for (id<MTIImagePromiseResolution> resolution in layerCompositingMaskResolutions) {
+            if (![resolution isKindOfClass:[NSNull class]]) {
+                [resolution markAsConsumedBy:self];
+            }
+        }
+    };
+    
     for (MTICompositingLayer *layer in self.layers) {
         NSError *error = nil;
         id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
@@ -331,9 +343,6 @@
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
-        
-        [contentResolution markAsConsumedBy:self];
-        [compositingMaskResolution markAsConsumedBy:self];
     }
     
     //end encoding
