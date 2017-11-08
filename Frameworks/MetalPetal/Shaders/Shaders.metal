@@ -127,3 +127,14 @@ fragment float4 blendWithMask(
     return mix(baseColor, overlayColor, maskColor[maskComponent]);
 }
 
+fragment float4 vibranceAdjust(
+                               VertexOut vertexIn [[stage_in]],
+                               texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                               sampler sourceSampler [[sampler(0)]],
+                               constant  float & amount [[ buffer(0) ]],
+                               constant  float4 & vibranceVector [[ buffer(1) ]],
+                               constant  bool & avoidSaturatingSkinTones [[ buffer(2) ]]
+                               ) {
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.texcoords);
+    return amount > 0 ? ( avoidSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector): adjustVibrance(textureColor, amount)) : adjustSaturation(textureColor, amount);
+}

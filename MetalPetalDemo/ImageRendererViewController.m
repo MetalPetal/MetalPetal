@@ -45,6 +45,8 @@
 @property (nonatomic, strong) MTIBlendFilter *blendFilter;
 
 @property (nonatomic, strong)  MTIBlendWithMaskFilter *maskBlendFilter;
+
+@property (nonatomic, strong)  MTIVibranceFilter *vibranceFilter;
 @end
 
 @implementation ImageRendererViewController
@@ -88,6 +90,9 @@
     self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     self.maskBlendFilter.maskComponent = MTIColorComponentAlpha;
     
+    self.vibranceFilter = [[MTIVibranceFilter alloc] init];
+    self.vibranceFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"P1040808.jpg"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    self.vibranceFilter.avoidSaturatingSkinTones = NO;
     float matrix[9] = {
         -1, 0, 1,
         -1, 0, 1,
@@ -113,6 +118,13 @@
 
 - (MTIImage *)maskBlendTestOutputImage {
     MTIImage *outputImage =  self.maskBlendFilter.outputImage;
+    return outputImage;
+}
+
+- (MTIImage *)vibranceTestOutputImage {
+    float amount =  sin(CFAbsoluteTimeGetCurrent() * 2.0) ;
+    self.vibranceFilter.amount = amount;
+    MTIImage *outputImage = self.vibranceFilter.outputImage;
     return outputImage;
 }
 
@@ -246,7 +258,7 @@
         outputImage = trans.outputImage;
         */
         
-        MTIImage *outputImage = [self maskBlendTestOutputImage];
+        MTIImage *outputImage = [self vibranceTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

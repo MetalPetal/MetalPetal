@@ -62,6 +62,7 @@ namespace metalpetal {
         float4 position [[ position ]];
         float2 texcoords;
     };
+
     
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
@@ -311,6 +312,54 @@ namespace metalpetal {
     METAL_FUNC float4 luminosityBlend(float4 Cb, float4 Cs) {
         float4 B = setLum(Cb, lum(Cs));
         return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+
+    
+    METAL_FUNC float4 adjustVibranceWhileKeepingSkinTones(float4 pixel0, float4 vvec) {
+        float4 pixel = clamp(pixel0, 0.0001, 0.9999);
+        float4 pdelta = pixel0 - pixel;
+        float gray = (pixel.r + pixel.g + pixel.b) * 0.33333;
+        float gi   = 1.0 / gray;
+        float gii  = 1.0 / (1.0 - gray);
+        float3 rgbsat = max((pixel.rgb - gray) * gii, (gray - pixel.rgb) * gi);
+        float sat = max(max(rgbsat.r, rgbsat.g), rgbsat.b);
+        float skin = min(pixel.r - pixel.g, pixel.g * 2.0 - pixel.b) * 4.0 * (1.0 - rgbsat.r) * gi;
+        skin = 0.15 + clamp(skin, 0.0, 1.0) * 0.7;
+        float boost = dot(vvec,float4(1.0, sat, sat*sat, sat*sat*sat)) * (1.0 - skin);
+        pixel = clamp(pixel + (pixel - gray) * boost, 0.0, 1.0);
+        pixel.a = pixel0.a;
+        pixel.rgb += pdelta.rgb;
+        return pixel;
+    }
+    
+    METAL_FUNC float4 adjustVibrance(float4 colorInput, float vibrance) {
+        float luma = dot(float3(0.2125, 0.7154, 0.0721), colorInput.rgb); //calculate luma (grey)
+        float max_color = max(colorInput.r, max(colorInput.g,colorInput.b)); //Find the strongest color
+        float min_color = min(colorInput.r, min(colorInput.g,colorInput.b)); //Find the weakest color
+        float color_saturation = max_color - min_color; //The difference between the two is the saturation
+        float4 color = colorInput;
+        color.rgb = mix(float3(luma), color.rgb, (1.0 + (vibrance * (1.0 - (sign(vibrance) * color_saturation))))); //extrapolate between luma and original by 1 + (1-saturation) - current
+        //color.rgb = mix(vec3(luma), color.rgb, 1.0 + (1.0 - pow(color_saturation, 1.0 - (1.0 - vibrance))) ); //pow version
+        return color; //return the result
+        //return color_saturation.xxxx; //Visualize the saturation
+    }
+    
+    METAL_FUNC float4 adjustSaturation(float4 textureColor, float saturation) {
+        float4 pixel = clamp(textureColor, 0.0001, 0.9999);
+        float4 pdelta = textureColor - pixel;
+        float gray = (pixel.r + pixel.g + pixel.b) * 0.33333;
+        float gi   = 1.0 / gray;
+        float gii  = 1.0 / (1.0 - gray);
+        float3 rgbsat = max((pixel.rgb - gray) * gii, (gray - pixel.rgb) * gi);
+        float sat = max(max(rgbsat.r, rgbsat.g), rgbsat.b);
+        float skin = min(pixel.r - pixel.g, pixel.g * 2.0 - pixel.b) * 4.0 * (1.0 - rgbsat.r) * gi;
+        skin = 0.15 + clamp(skin, 0.0, 1.0) * 0.7;
+        float boost = ((sat * (sat - 1.0) + 1.0) * saturation) * (1.0-skin);
+        pixel = clamp(pixel + (pixel - gray) * boost, 0.0, 1.0);
+        pixel.a = textureColor.a;
+        pixel.rgb += pdelta.rgb;
+        return pixel;
     }
 }
 
