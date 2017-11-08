@@ -13,6 +13,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTIRenderPipelineKernel.h"
+#import "MTIPrint.h"
 
 @interface MTIImageRenderingDependencyGraph ()
 
@@ -137,8 +138,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 + (id<MTIImagePromise>)recursivelyMergePromise:(id<MTIImagePromise>)promise dependencyGraph:(MTIImageRenderingDependencyGraph *)dependencyGraph {
-    id<MTIImagePromise> p = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
-    return p;
+    id<MTIImagePromise> mergedPromise = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
+    return mergedPromise;
 }
 
 - (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
@@ -200,14 +201,19 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
                 if (inOutError) {
                     *inOutError = error;
                 }
-                //Clean up
                 [renderTarget releaseTexture];
-                for (id<MTIImagePromise> promise in self.resolvedPromises) {
-                    if ([dependencyGraph dependentCountForPromise:promise] != 0) {
-                        MTIImagePromiseRenderTarget *target = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
-                        [target releaseTexture];
+                
+                if (isRootImage) {
+                    MTIPrint(@"An error occurred while resolving promise: %@ for image: %@.\n%@",promise,image,error);
+                    //Clean up
+                    for (id<MTIImagePromise> promise in self.resolvedPromises) {
+                        if ([self.dependencyGraph dependentCountForPromise:promise] != 0) {
+                            MTIImagePromiseRenderTarget *target = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+                            [target releaseTexture];
+                        }
                     }
                 }
+                
                 return nil;
             }
             NSAssert(renderTarget != nil, @"");
