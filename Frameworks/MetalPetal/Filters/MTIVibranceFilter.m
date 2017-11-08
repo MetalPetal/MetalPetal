@@ -25,7 +25,7 @@
     return @{
              @"amount": @(_amount),
              @"vibranceVector": [[MTIVector alloc] initWithFloat4:vector],
-             @"avoidSaturatingSkinTones": @(_avoidSaturatingSkinTones)
+             @"avoidsSaturatingSkinTones": @(_avoidsSaturatingSkinTones)
              };
 }
 

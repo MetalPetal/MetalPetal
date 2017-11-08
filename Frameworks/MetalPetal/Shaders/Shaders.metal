@@ -133,8 +133,10 @@ fragment float4 vibranceAdjust(
                                sampler sourceSampler [[sampler(0)]],
                                constant  float & amount [[ buffer(0) ]],
                                constant  float4 & vibranceVector [[ buffer(1) ]],
-                               constant  bool & avoidSaturatingSkinTones [[ buffer(2) ]]
+                               constant  bool & avoidsSaturatingSkinTones [[ buffer(2) ]]
                                ) {
     float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.texcoords);
-    return amount > 0 ? ( avoidSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector): adjustVibrance(textureColor, amount)) : adjustSaturation(textureColor, amount);
+    return amount > 0 ?
+    (avoidsSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector) : adjustVibrance(textureColor, amount))
+    : adjustSaturation(textureColor, amount);
 }

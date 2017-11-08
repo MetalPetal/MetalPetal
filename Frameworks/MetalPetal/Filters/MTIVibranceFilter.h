@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) float amount;
 
-@property (nonatomic) BOOL avoidSaturatingSkinTones;
+@property (nonatomic) BOOL avoidsSaturatingSkinTones;
 
 @end
 

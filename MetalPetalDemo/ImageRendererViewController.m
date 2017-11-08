@@ -92,7 +92,7 @@
     
     self.vibranceFilter = [[MTIVibranceFilter alloc] init];
     self.vibranceFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"P1040808.jpg"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.vibranceFilter.avoidSaturatingSkinTones = NO;
+    self.vibranceFilter.avoidsSaturatingSkinTones = NO;
     float matrix[9] = {
         -1, 0, 1,
         -1, 0, 1,
