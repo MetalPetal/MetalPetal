@@ -314,8 +314,7 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-
-    
+    // Vibrance
     METAL_FUNC float4 adjustVibranceWhileKeepingSkinTones(float4 pixel0, float4 vvec) {
         float4 pixel = clamp(pixel0, 0.0001, 0.9999);
         float4 pdelta = pixel0 - pixel;
@@ -346,6 +345,7 @@ namespace metalpetal {
     }
     
     METAL_FUNC float4 adjustSaturation(float4 textureColor, float saturation) {
+        /*
         float4 pixel = clamp(textureColor, 0.0001, 0.9999);
         float4 pdelta = textureColor - pixel;
         float gray = (pixel.r + pixel.g + pixel.b) * 0.33333;
@@ -360,6 +360,9 @@ namespace metalpetal {
         pixel.a = textureColor.a;
         pixel.rgb += pdelta.rgb;
         return pixel;
+        */
+        float luma = dot(float3(0.2125, 0.7154, 0.0721), textureColor.rgb); //calculate luma (grey)
+        return float4(mix(float3(luma), textureColor.rgb, saturation + 1.0), textureColor.a);
     }
 }
 
