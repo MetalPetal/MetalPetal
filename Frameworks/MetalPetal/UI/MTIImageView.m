@@ -5,6 +5,8 @@
 //  Created by Yu Ao on 09/10/2017.
 //
 
+#if __has_include(<UIKit/UIKit.h>)
+
 #import "MTIImageView.h"
 #import "MTIContext+Rendering.h"
 #import "MTIImage.h"
@@ -108,3 +110,5 @@
 }
 
 @end
+
+#endif

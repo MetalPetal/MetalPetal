@@ -5,6 +5,8 @@
 //  Created by Yu Ao on 09/10/2017.
 //
 
+#if __has_include(<UIKit/UIKit.h>)
+
 #import <UIKit/UIKit.h>
 #import "MTIDrawableRendering.h"
 
@@ -27,3 +29,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif
