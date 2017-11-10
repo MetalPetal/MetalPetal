@@ -8,7 +8,6 @@ s.license      = { :type => 'MIT'}
 s.source       = { :git => 'https://github.com/YuAo/MetalPetal.git', :tag => s.version}
 s.requires_arc = true
 s.ios.deployment_target = '9.0'
-s.osx.deployment_target = '10.13'
 
 s.subspec 'Core' do |ss|
     ss.source_files = '**/*.{h,m,c,mm,metal}'
