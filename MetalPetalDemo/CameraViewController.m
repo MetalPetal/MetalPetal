@@ -40,7 +40,7 @@
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
     self.lutFilter = [[MTIColorLookupFilter alloc] init];
 
-    self.lutFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"lut_abao"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(YES)}];
+    self.lutFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ColorTableGraded"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     
     self.queue = dispatch_queue_create("video_queue", NULL);
     
@@ -122,16 +122,17 @@
     if (CMFormatDescriptionGetMediaType(CMSampleBufferGetFormatDescription(sampleBuffer)) == kCMMediaType_Video) {
         CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:pixelBuffer];
-        self.saturationFilter.inputImage = inputImage;
-        self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-        MTIImage *outputImage = self.colorInvertFilter.outputImage;
+//        self.saturationFilter.inputImage = inputImage;
+//        self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
+//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+//        self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
+//        self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+        self.lutFilter.inputImage = inputImage;
+        MTIImage *outputImage = self.lutFilter.outputImage;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.renderView.image = outputImage;
         });
