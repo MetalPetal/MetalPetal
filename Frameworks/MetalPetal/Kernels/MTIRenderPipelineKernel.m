@@ -312,6 +312,17 @@
     return self;
 }
 
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[MTIRenderPipelineOutputDescriptor class]]) {
+        return [self isEqualToOutputDescriptor:object];
+    }
+    return NO;
+}
+
+- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object {
+    return MTITextureDimensionsEqualToTextureDimensions(_dimensions, object.dimensions) && _pixelFormat == object.pixelFormat && _loadAction == object.loadAction;
+}
+
 @end
 
 
@@ -470,7 +481,7 @@ id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise
             if ([dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
                 MTIImageRenderingRecipeSingleOutputView *lastPromise = MTIColorMatrixRenderingPromiseHandleMerge(lastImage.promise, dependencyGraph);
                 MTIColorMatrix colorMatrix = recipe.colorMatrix;
-                if (lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastPromise.recipe.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]]) {
+                if (lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastPromise.recipe.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors]) {
                     colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
                     MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithKernel:recipe.kernel
                                                                                         geometry:recipe.geometry

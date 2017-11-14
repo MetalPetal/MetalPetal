@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction NS_DESIGNATED_INITIALIZER;
 
+- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object;
+
 @end
 
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>

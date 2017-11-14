@@ -405,3 +405,24 @@
 }
 
 @end
+
+id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph) {
+    if ([promise isKindOfClass:[MTIMultilayerCompositingRecipe class]]) {
+        MTIMultilayerCompositingRecipe *recipe = promise;
+        MTIImage *lastImage = recipe.backgroundImage;
+        if ([lastImage.promise isKindOfClass:[MTIMultilayerCompositingRecipe class]] && [dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
+            MTIMultilayerCompositingRecipe *lastPromise = MTIMultilayerCompositingPromiseHandleMerge(lastImage.promise, dependencyGraph);
+            NSArray<MTICompositingLayer *> *layers = recipe.layers;
+            if (lastImage.cachePolicy == MTIImageCachePolicyTransient && lastPromise.outputPixelFormat == recipe.outputPixelFormat && recipe.kernel == lastPromise.kernel) {
+                layers = [lastPromise.layers arrayByAddingObjectsFromArray:layers];
+                MTIMultilayerCompositingRecipe *promise = [[MTIMultilayerCompositingRecipe alloc] initWithKernel:recipe.kernel
+                                                                                                 backgroundImage:lastPromise.backgroundImage
+                                                                                                          layers:layers
+                                                                                         outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(lastPromise.backgroundImage.size)
+                                                                                               outputPixelFormat:recipe.outputPixelFormat];
+                return promise;
+            }
+        }
+    }
+    return promise;
+}

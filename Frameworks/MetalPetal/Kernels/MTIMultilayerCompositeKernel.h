@@ -11,6 +11,7 @@
 #import "MTIBlendModes.h"
 #import "MTITextureDimensions.h"
 #import "MTIPixelFormat.h"
+#import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -63,5 +64,9 @@ NS_ASSUME_NONNULL_BEGIN
                    outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
+
+@class MTIImageRenderingDependencyGraph;
+
+FOUNDATION_EXPORT id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph);
 
 NS_ASSUME_NONNULL_END

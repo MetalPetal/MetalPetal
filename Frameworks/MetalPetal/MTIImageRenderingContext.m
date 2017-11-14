@@ -13,6 +13,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTIRenderPipelineKernel.h"
+#import "MTIMultilayerCompositeKernel.h"
 #import "MTIPrint.h"
 
 @interface MTIImageRenderingDependencyGraph ()
@@ -138,7 +139,9 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 + (id<MTIImagePromise>)recursivelyMergePromise:(id<MTIImagePromise>)promise dependencyGraph:(MTIImageRenderingDependencyGraph *)dependencyGraph {
-    id<MTIImagePromise> mergedPromise = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
+    id<MTIImagePromise> mergedPromise;
+    mergedPromise = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
+    mergedPromise = MTIMultilayerCompositingPromiseHandleMerge(mergedPromise, dependencyGraph);
     return mergedPromise;
 }
 
