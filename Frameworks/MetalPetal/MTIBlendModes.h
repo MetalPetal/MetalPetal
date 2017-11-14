@@ -30,6 +30,9 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSaturation;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColor;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLuminosity;
 
+//custom
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorLookup512x512;
+
 @class MTIFunctionDescriptor;
 
 @interface MTIBlendFunctionDescriptors: NSObject <NSCopying>

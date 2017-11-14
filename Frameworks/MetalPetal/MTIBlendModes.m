@@ -26,6 +26,8 @@ MTIBlendMode const MTIBlendModeSaturation = @"Saturation";
 MTIBlendMode const MTIBlendModeColor = @"Color";
 MTIBlendMode const MTIBlendModeLuminosity = @"Luminosity";
 
+MTIBlendMode const MTIBlendModeColorLookup512x512 = @"ColorLookup512x512";
+
 @implementation MTIBlendFunctionDescriptors
 
 - (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
@@ -77,6 +79,10 @@ static id<NSLocking> _registeredBlendModesLock;
                                                                                     fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:[NSString stringWithFormat:@"multilayerComposite%@Blend",mode]]];
             modes[mode] = descriptors;
         }
+
+        MTIBlendFunctionDescriptors *colorLookup512x512BlendDescriptor = [[MTIBlendFunctionDescriptors alloc] initWithFragmentFunctionDescriptorForBlendFilter:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookup512x512Blend"] fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeColorLookup512x512Blend"]];
+        modes[MTIBlendModeColorLookup512x512] = colorLookup512x512BlendDescriptor;
+        
         _registeredBlendModes = [modes copy];
         _registeredBlendModesLock = MTILockCreate();
     });

@@ -58,19 +58,11 @@ fragment float4 colorMatrixProjection(
     return colorTexture.sample(colorSampler, vertexIn.texcoords) * colorMatrix.matrix + colorMatrix.bias;
 }
 
-fragment float4 colorLookup2DSquare (
-                            VertexOut vertexIn [[stage_in]],
-                            texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                            texture2d<float, access::sample> lutTexture [[texture(1)]],
-                            sampler colorSampler [[sampler(0)]],
-                            sampler lutSamper [[sampler(1)]],
-                            constant int & dimension [[buffer(0)]],
-                            constant float & intensity [[ buffer(1) ]]
-                            )
-{
-    float2 sourceCoord = vertexIn.texcoords;
-    float4 color = sourceTexture.sample(colorSampler,sourceCoord);
-    
+METAL_FUNC float4 colorLookup2DSquareImp(float4 color,
+                                         int dimension,
+                                         float intensity,
+                                         texture2d<float, access::sample> lutTexture,
+                                         sampler lutSamper) {
     int row = round(sqrt((float)dimension));
     float blueColor = color.b * (dimension - 1);
     
@@ -99,6 +91,51 @@ fragment float4 colorLookup2DSquare (
     float4 finalColor = mix(color, float4(newColor.rgb, color.a), intensity);
     
     return finalColor;
+}
+
+fragment float4 colorLookup2DSquare (
+                            VertexOut vertexIn [[stage_in]],
+                            texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                            texture2d<float, access::sample> lutTexture [[texture(1)]],
+                            sampler colorSampler [[sampler(0)]],
+                            sampler lutSamper [[sampler(1)]],
+                            constant int & dimension [[buffer(0)]],
+                            constant float & intensity [[ buffer(1) ]]
+                            )
+{
+    float2 sourceCoord = vertexIn.texcoords;
+    float4 color = sourceTexture.sample(colorSampler,sourceCoord);
+    return colorLookup2DSquareImp(color,dimension,intensity,lutTexture,lutSamper);
+}
+
+fragment float4 colorLookup512x512Blend(VertexOut vertexIn [[ stage_in ]],
+                                texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                sampler colorSampler [[ sampler(0) ]],
+                                texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                sampler overlaySampler [[ sampler(1) ]],
+                                constant float &intensity [[buffer(0)]]
+                                ) {
+    float2 sourceCoord = vertexIn.texcoords;
+    float4 color = colorTexture.sample(colorSampler,sourceCoord);
+    return colorLookup2DSquareImp(color,64,intensity,overlayTexture,overlaySampler);
+}
+
+fragment float4 multilayerCompositeColorLookup512x512Blend(
+                                                   VertexOut vertexIn [[ stage_in ]],
+                                                   float4 currentColor [[color(0)]],
+                                                   constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                                   texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                   sampler colorSampler [[ sampler(0) ]],
+                                                   texture2d<float, access::sample> maskTexture [[ texture(1) ]],
+                                                   sampler maskSampler [[ sampler(1) ]]
+                                                   ) {
+    float intensity = 1.0;
+    if (parameters.hasCompositingMask) {
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        intensity *= maskColor.r;
+    }
+    intensity *= parameters.opacity;
+    return colorLookup2DSquareImp(currentColor,64,intensity,colorTexture,colorSampler);
 }
 
 fragment float4 colorLookup2DHorizontalStrip(
