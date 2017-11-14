@@ -6,6 +6,7 @@
 //
 
 #import "MTIMultilayerCompositingFilter.h"
+#import "MTIMultilayerCompositeKernel.h"
 #import "MTIImage.h"
 
 @implementation MTIMultilayerCompositingFilter

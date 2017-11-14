@@ -6,7 +6,7 @@
 //
 
 #import "MTIFilter.h"
-#import "MTIMultilayerCompositeKernel.h"
+#import "MTICompositingLayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

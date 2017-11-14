@@ -37,6 +37,7 @@
 #import "MTIBlendModes.h"
 #import "MTIColor.h"
 #import "MTIColorMatrix.h"
+#import "MTICompositingLayer.h"
 #import "MTIComputePipeline.h"
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
