@@ -81,7 +81,8 @@ struct MetalPetalShaderGenerator {
                 }
                 if (parameters.hasCompositingMask) {
                     float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
-                    textureColor.a *= maskColor.r;
+                    float maskValue = maskColor[parameters.compositingMaskComponent];
+                    textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
                 }
                 textureColor.a *= parameters.opacity;
                 return %blendModeName%Blend(currentColor,textureColor);

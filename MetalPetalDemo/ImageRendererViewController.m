@@ -85,10 +85,9 @@
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
     
-    self.maskBlendFilter.inputMaskImage = [[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO];
+    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
     self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
     self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.maskBlendFilter.maskComponent = MTIColorComponentAlpha;
     
     self.vibranceFilter = [[MTIVibranceFilter alloc] init];
     self.vibranceFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"P1040808.jpg"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
@@ -192,8 +191,10 @@
 - (MTIImage *)multilayerCompositingTestOutputImage {
     self.compositingFilter.inputBackgroundImage = self.inputImage;
 
+    MTIImage *maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(0.5, 0.5, 0.5, 1) sRGB:NO size:CGSizeMake(1, 1)];
     self.compositingFilter.layers = @[
-                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:[[MTIImage alloc] initWithColor:MTIColorMake(0.5, 0.5, 0.5, 1) sRGB:NO size:CGSizeMake(1, 1)] position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:
+                                                                           [[MTIMask alloc] initWithContent:maskImage] position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       //[[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(200, 200) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTICompositingLayer alloc] initWithContent:self.inputImage position:CGPointMake(900, 900) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
@@ -231,34 +232,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        /*
-        MTITransformFilter *trans = [[MTITransformFilter alloc] init];
-        
-        CATransform3D transformI = CATransform3DIdentity;
-        CATransform3D transformS = CATransform3DMakeScale(0.5, 0.5, 1.0);
-        CATransform3D transformT = CATransform3DMakeTranslation(-1920/2.0, 0, 0);
-        CATransform3D transformR = CATransform3DMakeRotation(CFAbsoluteTimeGetCurrent(), 0, 0, 1);
-        CATransform3D transform = CATransform3DConcat(transformI, transformS);
-        
-        //trans.transform = CATransform3DTranslate(trans.transform, -1920/2, -100, 0);
-        //trans.transform = CATransform3DScale(trans.transform,0.5, 0.5, 1.0);
-        
-        if (starTime == 0) {
-            starTime = CFAbsoluteTimeGetCurrent();
-        }
-        MTIImage *outputImage = self.inputImage;
-      
-        trans.transform = CATransform3DRotate(trans.transform, CFAbsoluteTimeGetCurrent(), 0, 1, 0);
-        trans.transform = CATransform3DTranslate(trans.transform, 0, -0, 0);
-        CATransform3D t = trans.transform;
-        t.m34 = -1/600.0;
-        trans.transform = t;
-        trans.inputImage = self.inputImage;
-        
-        outputImage = trans.outputImage;
-        */
-        
-        MTIImage *outputImage = [self vibranceTestOutputImage];
+        MTIImage *outputImage = [self maskBlendTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

@@ -239,7 +239,7 @@
         [layerContentResolutions addObject:contentResolution];
         
         if (layer.compositingMask) {
-            id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask error:&error];
+            id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask.content error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;
@@ -308,7 +308,7 @@
         if (layer.compositingMask) {
             compositingMaskResolution = layerCompositingMaskResolutions[index];
             [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:1];
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.samplerDescriptor];
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor];
             [commandEncoder setFragmentSamplerState:samplerState atIndex:1];
         }
         
@@ -319,6 +319,8 @@
         parameters.opacity = layer.opacity;
         parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
         parameters.hasCompositingMask = !(layer.compositingMask == nil);
+        parameters.compositingMaskComponent = layer.compositingMask.component;
+        parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
@@ -354,7 +356,7 @@
         for (MTICompositingLayer *layer in layers) {
             [dependencies addObject:layer.content];
             if (layer.compositingMask) {
-                [dependencies addObject:layer.compositingMask];
+                [dependencies addObject:layer.compositingMask.content];
             }
         }
         _dependencies = [dependencies copy];

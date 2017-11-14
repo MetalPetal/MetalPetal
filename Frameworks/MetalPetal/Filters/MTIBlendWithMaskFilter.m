@@ -26,11 +26,13 @@
 }
 
 - (MTIImage *)outputImage {
-    if (!self.inputImage) {
+    if (!self.inputImage || !self.inputMask || !self.inputBackgroundImage) {
         return nil;
     }
-    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputMaskImage, self.inputBackgroundImage]
-                                      parameters:@{@"maskComponent": @((int)_maskComponent)}
+    bool usesOneMinusMaskValue = self.inputMask.mode == MTIMaskModeOneMinusMaskValue;
+    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputMask.content, self.inputBackgroundImage]
+                                      parameters:@{@"maskComponent": @((int)self.inputMask.component),
+                                                   @"usesOneMinusMaskValue": [NSData dataWithBytes:&usesOneMinusMaskValue length:sizeof(usesOneMinusMaskValue)]}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }

@@ -8,18 +8,17 @@
 #import <Foundation/Foundation.h>
 #import "MTIFilter.h"
 #import "MTIColor.h"
+#import "MTIMask.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface  MTIBlendWithMaskFilter: NSObject <MTIFilter>
+@interface MTIBlendWithMaskFilter: NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
-@property (nonatomic, strong, nullable) MTIImage *inputMaskImage;
-
 @property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;
 
-@property (nonatomic, assign) MTIColorComponent maskComponent;
+@property (nonatomic, strong, nullable) MTIMask *inputMask;
 
 @end
 

@@ -10,7 +10,7 @@
 
 @implementation MTICompositingLayer
 
-- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion compositingMask:(MTIImage *)compositingMask position:(CGPoint)position size:(CGSize)size rotation:(CGFloat)rotation opacity:(CGFloat)opacity blendMode:(MTIBlendMode)blendMode {
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion compositingMask:(MTIMask *)compositingMask position:(CGPoint)position size:(CGSize)size rotation:(CGFloat)rotation opacity:(CGFloat)opacity blendMode:(MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
         _contentRegion = contentRegion;
@@ -26,6 +26,10 @@
 
 - (instancetype)initWithContent:(MTIImage *)content position:(CGPoint)position size:(CGSize)size rotation:(CGFloat)rotation opacity:(CGFloat)opacity blendMode:(MTIBlendMode)blendMode {
     return [self initWithContent:content contentRegion:content.extent compositingMask:nil position:position size:size rotation:rotation opacity:opacity blendMode:blendMode];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
 }
 
 @end

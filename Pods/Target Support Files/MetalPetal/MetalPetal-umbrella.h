@@ -50,6 +50,7 @@
 #import "MTIImagePromise.h"
 #import "MTIImageRenderingContext.h"
 #import "MTILock.h"
+#import "MTIMask.h"
 #import "MTIPixelFormat.h"
 #import "MTIRenderPipeline.h"
 #import "MTISamplerDescriptor.h"

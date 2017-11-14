@@ -47,6 +47,8 @@ struct MTIMultilayerCompositingLayerShadingParameters {
     float opacity;
     bool contentHasPremultipliedAlpha;
     bool hasCompositingMask;
+    int compositingMaskComponent;
+    bool usesOneMinusMaskValue;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 

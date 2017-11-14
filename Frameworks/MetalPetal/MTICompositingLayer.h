@@ -7,18 +7,20 @@
 
 #import <Foundation/Foundation.h>
 #import "MTIBlendModes.h"
+#import "MTIColor.h"
+#import "MTIMask.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
-@interface MTICompositingLayer: NSObject
+@interface MTICompositingLayer: NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIImage *content;
 
 @property (nonatomic, readonly) CGRect contentRegion; //pixel
 
-@property (nonatomic, strong, readonly, nullable) MTIImage *compositingMask;
+@property (nonatomic, strong, readonly, nullable) MTIMask *compositingMask;
 
 @property (nonatomic, readonly) CGPoint position; //pixel
 
@@ -42,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContent:(MTIImage *)content
                   contentRegion:(CGRect)contentRegion
-                compositingMask:(nullable MTIImage *)compositingMask
+                compositingMask:(nullable MTIMask *)compositingMask
                        position:(CGPoint)position
                            size:(CGSize)size
                        rotation:(CGFloat)rotation

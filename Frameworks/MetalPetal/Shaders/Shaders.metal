@@ -205,11 +205,13 @@ fragment float4 blendWithMask(
                                      sampler overlaySampler [[sampler(0)]],
                                      sampler maskSampler [[sampler(1)]],
                                      sampler baseSampler [[sampler(2)]],
-                                     constant int &maskComponent [[ buffer(0) ]]) {
+                                     constant int &maskComponent [[ buffer(0) ]],
+                                     constant bool &usesOneMinusMaskValue [[ buffer(1) ]]) {
     float4 overlayColor = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
     float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
+    float maskValue = maskColor[maskComponent];
     float4 baseColor = baseTexture.sample(baseSampler, vertexIn.texcoords);
-    return mix(baseColor, overlayColor, maskColor[maskComponent]);
+    return mix(baseColor, overlayColor, usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue);
 }
 
 fragment float4 vibranceAdjust(
