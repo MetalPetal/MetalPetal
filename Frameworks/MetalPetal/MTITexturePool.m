@@ -159,4 +159,10 @@
     [_lock unlock];
 }
 
+- (void)flush {
+    [_lock lock];
+    [_textureCache removeAllObjects];
+    [_lock unlock];
+}
+
 @end

@@ -31,9 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device;
+- (instancetype)initWithDevice:(id<MTLDevice>)device NS_DESIGNATED_INITIALIZER;
 
 - (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeTexture(descriptor:));
+
+/// Frees as many textures from the pool as possible.
+- (void)flush;
 
 @end
 

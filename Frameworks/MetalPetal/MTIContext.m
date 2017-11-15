@@ -319,4 +319,8 @@
     [table setObject:value forKey:image];
 }
 
+- (void)reclaimResources {
+    [self.texturePool flush];
+}
+
 @end
