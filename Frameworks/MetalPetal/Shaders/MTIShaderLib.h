@@ -155,8 +155,12 @@ namespace metalpetal {
     }
     
      //  softLight
+    METAL_FUNC float softLightBlendSingleChannelD(float b) {
+        return b <= 0.25? (((16 * b - 12) * b + 4) * b): sqrt(b);
+    }
+    
     METAL_FUNC float softLightBlendSingleChannel(float b, float s) {
-        return s < 0.5? ((2 * s * b) + pow(b, 2) * (1 - 2 * s)) : (2 * b * (1 - s) + sqrt(b) * (2 * s - 1));
+        return s < 0.5? (b - (1 - 2 * s) * b * (1 - b)) : (b + (2 * s - 1) * (softLightBlendSingleChannelD(b) - b));
     }
                          
     METAL_FUNC float4 softLightBlend(float4 Cb, float4 Cs) {
