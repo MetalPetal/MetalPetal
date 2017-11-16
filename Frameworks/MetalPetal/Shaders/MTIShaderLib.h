@@ -56,7 +56,7 @@ namespace metalpetal {
     
     typedef struct {
         float4 position [[ position ]];
-        float2 texcoords;
+        float2 textureCoordinate;
     } VertexOut;
     
     METAL_FUNC float4 unpremultiply(float4 s) {

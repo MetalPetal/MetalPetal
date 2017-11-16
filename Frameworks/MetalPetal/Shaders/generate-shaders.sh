@@ -59,7 +59,7 @@ struct MetalPetalShaderGenerator {
                 VertexOut outVertex;
                 VertexIn inVertex = vertices[vid];
                 outVertex.position = inVertex.position * transformMatrix * orthographicMatrix;
-                outVertex.texcoords = inVertex.textureCoordinate;
+                outVertex.textureCoordinate = inVertex.textureCoordinate;
                 return outVertex;
             }
 
@@ -75,12 +75,12 @@ struct MetalPetalShaderGenerator {
                                                                 texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                                 sampler maskSampler [[ sampler(1) ]]
                                                             ) {
-                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
                 if (parameters.contentHasPremultipliedAlpha) {
                     textureColor = unpremultiply(textureColor);
                 }
                 if (parameters.hasCompositingMask) {
-                    float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+                    float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
                     float maskValue = maskColor[parameters.compositingMaskComponent];
                     textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
                 }
@@ -121,7 +121,7 @@ struct MetalPetalShaderGenerator {
                                                         sampler colorSampler [[ sampler(0) ]],
                                                         constant float &intensity [[buffer(0)]]
                                                         ) {
-                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
                 float4 blendedColor = %blendModeName%Blend(currentColor,textureColor);
                 return mix(currentColor,blendedColor,intensity);
             }
@@ -133,8 +133,8 @@ struct MetalPetalShaderGenerator {
                                                 sampler overlaySampler [[ sampler(1) ]],
                                                 constant float &intensity [[buffer(0)]]
                                                 ) {
-                float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-                float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+                float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+                float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
                 float4 blendedColor = %blendModeName%Blend(uCb, uCf);
                 return mix(uCb,blendedColor,intensity);
             }

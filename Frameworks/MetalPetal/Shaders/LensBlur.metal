@@ -33,7 +33,7 @@ fragment float4 lensBlurPre(
                              sampler colorSampler [[ sampler(0) ]],
                              constant float & power [[ buffer(0) ]]
                              ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     textureColor.rgb = pow(textureColor.rgb, float3(power));
     return textureColor;
 }
@@ -52,9 +52,9 @@ fragment LensBlurAlphaPassOutput lensBlurAlpha(
                               constant float2 & delta0 [[ buffer(0) ]],
                               constant float2 & delta1 [[ buffer(1) ]]
                             ) {
-    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
-    float4 color1 = sampleWithDelta(colorTexture, colorSampler, vertexIn.texcoords, delta0 * maskColor.r);
-    float4 color2 = sampleWithDelta(colorTexture, colorSampler, vertexIn.texcoords, delta1 * maskColor.r);
+    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
+    float4 color1 = sampleWithDelta(colorTexture, colorSampler, vertexIn.textureCoordinate, delta0 * maskColor.r);
+    float4 color2 = sampleWithDelta(colorTexture, colorSampler, vertexIn.textureCoordinate, delta1 * maskColor.r);
     LensBlurAlphaPassOutput output;
     output.vertical = color1;
     output.diagonal = color2 + color1;
@@ -73,9 +73,9 @@ fragment float4 lensBlurBravoCharlie(VertexOut vertexIn [[ stage_in ]],
                            constant float2 & delta0 [[ buffer(0) ]],
                            constant float2 & delta1 [[ buffer(1) ]],
                            constant float & power [[ buffer(2) ]]) {
-    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
-    float4 color = (sampleWithDelta(verticalTexture, verticalSampler, vertexIn.texcoords, delta0 * maskColor.r) + sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.texcoords, delta1 * maskColor.r)) * 0.5;
+    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    float4 color = (sampleWithDelta(verticalTexture, verticalSampler, vertexIn.textureCoordinate, delta0 * maskColor.r) + sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.textureCoordinate, delta1 * maskColor.r)) * 0.5;
     color.rgb = pow(color.rgb, float3(power));
     color.a = textureColor.a;
     return color;

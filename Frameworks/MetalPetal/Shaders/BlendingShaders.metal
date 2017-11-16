@@ -11,7 +11,7 @@ fragment float4 normalBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = normalBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -23,8 +23,8 @@ fragment float4 normalBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = normalBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -36,7 +36,7 @@ fragment float4 multiplyBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = multiplyBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -48,8 +48,8 @@ fragment float4 multiplyBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = multiplyBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -61,7 +61,7 @@ fragment float4 hardLightBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = hardLightBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -73,8 +73,8 @@ fragment float4 hardLightBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = hardLightBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -86,7 +86,7 @@ fragment float4 softLightBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = softLightBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -98,8 +98,8 @@ fragment float4 softLightBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = softLightBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -111,7 +111,7 @@ fragment float4 screenBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = screenBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -123,8 +123,8 @@ fragment float4 screenBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = screenBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -136,7 +136,7 @@ fragment float4 overlayBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = overlayBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -148,8 +148,8 @@ fragment float4 overlayBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = overlayBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -161,7 +161,7 @@ fragment float4 darkenBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = darkenBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -173,8 +173,8 @@ fragment float4 darkenBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = darkenBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -186,7 +186,7 @@ fragment float4 lightenBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = lightenBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -198,8 +198,8 @@ fragment float4 lightenBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = lightenBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -211,7 +211,7 @@ fragment float4 colorDodgeBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorDodgeBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -223,8 +223,8 @@ fragment float4 colorDodgeBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorDodgeBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -236,7 +236,7 @@ fragment float4 colorBurnBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorBurnBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -248,8 +248,8 @@ fragment float4 colorBurnBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorBurnBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -261,7 +261,7 @@ fragment float4 differenceBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = differenceBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -273,8 +273,8 @@ fragment float4 differenceBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = differenceBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -286,7 +286,7 @@ fragment float4 exclusionBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = exclusionBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -298,8 +298,8 @@ fragment float4 exclusionBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = exclusionBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -311,7 +311,7 @@ fragment float4 hueBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = hueBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -323,8 +323,8 @@ fragment float4 hueBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = hueBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -336,7 +336,7 @@ fragment float4 saturationBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = saturationBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -348,8 +348,8 @@ fragment float4 saturationBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = saturationBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -361,7 +361,7 @@ fragment float4 colorBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -373,8 +373,8 @@ fragment float4 colorBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = colorBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
@@ -386,7 +386,7 @@ fragment float4 luminosityBlendInPlace(
                                             sampler colorSampler [[ sampler(0) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = luminosityBlend(currentColor,textureColor);
     return mix(currentColor,blendedColor,intensity);
 }
@@ -398,8 +398,8 @@ fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
                                     sampler overlaySampler [[ sampler(1) ]],
                                     constant float &intensity [[buffer(0)]]
                                     ) {
-    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 uCb = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = luminosityBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }

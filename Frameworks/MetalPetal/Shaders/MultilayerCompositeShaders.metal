@@ -13,7 +13,7 @@ vertex VertexOut multilayerCompositeVertexShader(
     VertexOut outVertex;
     VertexIn inVertex = vertices[vid];
     outVertex.position = inVertex.position * transformMatrix * orthographicMatrix;
-    outVertex.texcoords = inVertex.textureCoordinate;
+    outVertex.textureCoordinate = inVertex.textureCoordinate;
     return outVertex;
 }
 
@@ -26,12 +26,12 @@ fragment float4 multilayerCompositeNormalBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -48,12 +48,12 @@ fragment float4 multilayerCompositeMultiplyBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -70,12 +70,12 @@ fragment float4 multilayerCompositeHardLightBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -92,12 +92,12 @@ fragment float4 multilayerCompositeSoftLightBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -114,12 +114,12 @@ fragment float4 multilayerCompositeScreenBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -136,12 +136,12 @@ fragment float4 multilayerCompositeOverlayBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -158,12 +158,12 @@ fragment float4 multilayerCompositeDarkenBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -180,12 +180,12 @@ fragment float4 multilayerCompositeLightenBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -202,12 +202,12 @@ fragment float4 multilayerCompositeColorDodgeBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -224,12 +224,12 @@ fragment float4 multilayerCompositeColorBurnBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -246,12 +246,12 @@ fragment float4 multilayerCompositeDifferenceBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -268,12 +268,12 @@ fragment float4 multilayerCompositeExclusionBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -290,12 +290,12 @@ fragment float4 multilayerCompositeHueBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -312,12 +312,12 @@ fragment float4 multilayerCompositeSaturationBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -334,12 +334,12 @@ fragment float4 multilayerCompositeColorBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }
@@ -356,12 +356,12 @@ fragment float4 multilayerCompositeLuminosityBlend(
                                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                                     sampler maskSampler [[ sampler(1) ]]
                                                 ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
     }

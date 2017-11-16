@@ -19,7 +19,7 @@ vertex VertexOut passthroughVertexShader(
 	VertexOut outVertex;
 	VertexIn inVertex = vertices[vid];
     outVertex.position = inVertex.position;
-	outVertex.texcoords = inVertex.textureCoordinate;
+	outVertex.textureCoordinate = inVertex.textureCoordinate;
 	return outVertex;
 }
 
@@ -28,7 +28,7 @@ fragment float4 passthroughFragmentShader(
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
 ) {
-    return colorTexture.sample(colorSampler, vertexIn.texcoords);
+    return colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
 }
 
 fragment float4 unpremultiplyAlpha(
@@ -36,7 +36,7 @@ fragment float4 unpremultiplyAlpha(
                             texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                             sampler colorSampler [[ sampler(0) ]]
                             ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     return unpremultiply(textureColor);
 }
 
@@ -45,7 +45,7 @@ fragment float4 premultiplyAlpha(
                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                    sampler colorSampler [[ sampler(0) ]]
                                    ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     return premultiply(textureColor);
 }
 
@@ -55,7 +55,7 @@ fragment float4 colorMatrixProjection(
                                  sampler colorSampler [[ sampler(0) ]],
                                  constant MTIColorMatrix & colorMatrix [[ buffer(0) ]]
                                  ) {
-    return colorTexture.sample(colorSampler, vertexIn.texcoords) * colorMatrix.matrix + colorMatrix.bias;
+    return colorTexture.sample(colorSampler, vertexIn.textureCoordinate) * colorMatrix.matrix + colorMatrix.bias;
 }
 
 METAL_FUNC float4 colorLookup2DSquareImp(float4 color,
@@ -103,7 +103,7 @@ fragment float4 colorLookup2DSquare (
                             constant float & intensity [[ buffer(1) ]]
                             )
 {
-    float2 sourceCoord = vertexIn.texcoords;
+    float2 sourceCoord = vertexIn.textureCoordinate;
     float4 color = sourceTexture.sample(colorSampler,sourceCoord);
     return colorLookup2DSquareImp(color,dimension,intensity,lutTexture,lutSamper);
 }
@@ -115,7 +115,7 @@ fragment float4 colorLookup512x512Blend(VertexOut vertexIn [[ stage_in ]],
                                 sampler overlaySampler [[ sampler(1) ]],
                                 constant float &intensity [[buffer(0)]]
                                 ) {
-    float2 sourceCoord = vertexIn.texcoords;
+    float2 sourceCoord = vertexIn.textureCoordinate;
     float4 color = colorTexture.sample(colorSampler,sourceCoord);
     return colorLookup2DSquareImp(color,64,intensity,overlayTexture,overlaySampler);
 }
@@ -131,7 +131,7 @@ fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                    ) {
     float intensity = 1.0;
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.texcoords);
+        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         intensity *= maskColor.r;
     }
     intensity *= parameters.opacity;
@@ -148,7 +148,7 @@ fragment float4 colorLookup2DHorizontalStrip(
                                      constant float & intensity [[ buffer(1) ]]
                                      )
 {
-    float2 sourceCoord = vertexIn.texcoords;
+    float2 sourceCoord = vertexIn.textureCoordinate;
     float4 textureColor = sourceTexture.sample(colorSampler,sourceCoord);
     
     float blueColor = textureColor.b * (dimension - 1);
@@ -193,7 +193,7 @@ vertex VertexOut imageTransformVertexShader(
     VertexIn inVertex = vertices[vid];
     outVertex.position = inVertex.position * transformMatrix;
     outVertex.position.z = 0.0;
-    outVertex.texcoords = inVertex.textureCoordinate;
+    outVertex.textureCoordinate = inVertex.textureCoordinate;
     return outVertex;
 }
 
@@ -207,10 +207,10 @@ fragment float4 blendWithMask(
                                      sampler baseSampler [[sampler(2)]],
                                      constant int &maskComponent [[ buffer(0) ]],
                                      constant bool &usesOneMinusMaskValue [[ buffer(1) ]]) {
-    float4 overlayColor = overlayTexture.sample(overlaySampler, vertexIn.texcoords);
-    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.texcoords);
+    float4 overlayColor = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
     float maskValue = maskColor[maskComponent];
-    float4 baseColor = baseTexture.sample(baseSampler, vertexIn.texcoords);
+    float4 baseColor = baseTexture.sample(baseSampler, vertexIn.textureCoordinate);
     return mix(baseColor, overlayColor, usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue);
 }
 
@@ -222,7 +222,7 @@ fragment float4 vibranceAdjust(
                                constant  float4 & vibranceVector [[ buffer(1) ]],
                                constant  bool & avoidsSaturatingSkinTones [[ buffer(2) ]]
                                ) {
-    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.texcoords);
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
     return amount > 0 ?
     (avoidsSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector) : adjustVibrance(textureColor, amount))
     : adjustSaturation(textureColor, amount);

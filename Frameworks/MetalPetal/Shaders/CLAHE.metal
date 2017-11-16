@@ -15,7 +15,7 @@ fragment float CLAHERGB2Lightness(VertexOut vertexIn [[ stage_in ]],
                         sampler colorSampler [[ sampler(0) ]],
                         constant float2 & scale [[buffer(0)]]
                         ) {
-    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.texcoords * scale);
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate * scale);
     float3 hsl = rgb2hsl(textureColor.rgb);
     return hsl.b;
 }
@@ -73,7 +73,7 @@ fragment float4 CLAHEColorLookup (
                             constant float2 & tileGridSize [[ buffer(0) ]]
                            )
 {
-    float2 sourceCoord = vertexIn.texcoords;
+    float2 sourceCoord = vertexIn.textureCoordinate;
     float4 color = sourceTexture.sample(colorSampler,sourceCoord);
     float3 hslColor = rgb2hsl(color.rgb);
     
