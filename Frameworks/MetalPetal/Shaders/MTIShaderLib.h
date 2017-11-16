@@ -140,8 +140,8 @@ namespace metalpetal {
     }
     
     // overlay
-    METAL_FUNC float overlayBlendSingleChannel(float b, float f ) {
-                return f < 0.5f ? (2 * f * b) : (1 - 2 * (1 - f) * (1 - b));
+    METAL_FUNC float overlayBlendSingleChannel(float b, float s ) {
+                return b < 0.5f ? (2 * s * b) : (1 - 2 * (1 - b) * (1 - s));
     }
     
     METAL_FUNC float4 overlayBlend(float4 Cb, float4 Cs) {
@@ -155,8 +155,8 @@ namespace metalpetal {
     }
     
      //  softLight
-    METAL_FUNC float softLightBlendSingleChannel(float b, float f) {
-        return f < 0.5? ((2 * f * b) + pow(f, 2) * (1 - 2 * b)) : (2 * f * (1 - b) + sqrt(f) * (2 * b - 1));
+    METAL_FUNC float softLightBlendSingleChannel(float b, float s) {
+        return s < 0.5? ((2 * s * b) + pow(b, 2) * (1 - 2 * s)) : (2 * b * (1 - s) + sqrt(b) * (2 * s - 1));
     }
                          
     METAL_FUNC float4 softLightBlend(float4 Cb, float4 Cs) {
