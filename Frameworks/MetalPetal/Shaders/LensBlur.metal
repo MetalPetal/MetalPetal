@@ -38,10 +38,10 @@ fragment float4 lensBlurPre(
     return textureColor;
 }
 
-struct LensBlurAlphaPassOutput {
+typedef struct {
     float4 vertical [[color(0)]];
     float4 diagonal [[color(1)]];
-};
+} LensBlurAlphaPassOutput;
 
 fragment LensBlurAlphaPassOutput lensBlurAlpha(
                               VertexOut vertexIn [[ stage_in ]],

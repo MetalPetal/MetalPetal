@@ -54,11 +54,11 @@ namespace metalpetal {
     
     typedef ::MTIVertex VertexIn;
     
-    struct VertexOut {
+    typedef struct {
         float4 position [[ position ]];
         float2 texcoords;
-    };
-
+    } VertexOut;
+    
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
     }
