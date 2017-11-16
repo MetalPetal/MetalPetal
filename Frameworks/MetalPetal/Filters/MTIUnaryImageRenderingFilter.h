@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipelineKernel;
+@class MTIRenderPipelineKernel, MTIFunctionDescriptor;
 
 @interface MTIUnaryImageRenderingFilter : NSObject <MTIUnaryFilter>
 
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
 
-+ (NSString *)fragmentFunctionName;
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor;
 
 + (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule;
 

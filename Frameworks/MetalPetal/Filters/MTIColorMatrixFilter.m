@@ -18,8 +18,8 @@ NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
 
 @implementation MTIColorMatrixFilter
 
-+ (NSString *)fragmentFunctionName {
-    return MTIFilterColorMatrixFragmentFunctionName;
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:MTIFilterColorMatrixFragmentFunctionName];
 }
 
 - (instancetype)init {

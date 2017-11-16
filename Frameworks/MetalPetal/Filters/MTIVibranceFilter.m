@@ -7,11 +7,12 @@
 
 #import "MTIVibranceFilter.h"
 #import "MTIVector.h"
+#import "MTIFunctionDescriptor.h"
 
 @implementation MTIVibranceFilter
 
-+ (NSString *)fragmentFunctionName {
-    return @"vibranceAdjust";
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:@"vibranceAdjust"];
 }
 
 - (NSDictionary<NSString *,id> *)parameters {

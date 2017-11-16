@@ -24,17 +24,17 @@
         kernelsLock = [[NSLock alloc] init];
     });
     
-    NSString *fragmentFunctionName = [self fragmentFunctionName];
-    
+    MTIFunctionDescriptor *fragmentFunctionDescriptor = [self fragmentFunctionDescriptor];
+
     [kernelsLock lock];
-    MTIRenderPipelineKernel *kernel = kernels[fragmentFunctionName];
+    MTIRenderPipelineKernel *kernel = kernels[fragmentFunctionDescriptor];
     if (!kernel) {
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName]
+                                                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
                                                                   vertexDescriptor:nil
                                                               colorAttachmentCount:1
                                                              alphaTypeHandlingRule:[self alphaTypeHandlingRule]];
-        kernels[fragmentFunctionName] = kernel;
+        kernels[fragmentFunctionDescriptor] = kernel;
     }
     [kernelsLock unlock];
     
@@ -163,8 +163,8 @@
     return @{};
 }
 
-+ (NSString *)fragmentFunctionName {
-    return MTIFilterPassthroughFragmentFunctionName;
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName libraryURL:nil];
 }
 
 + (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {

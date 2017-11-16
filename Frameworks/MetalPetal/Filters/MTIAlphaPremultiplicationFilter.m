@@ -13,8 +13,8 @@
 
 @implementation MTIPremultiplyAlphaFilter
 
-+ (NSString *)fragmentFunctionName {
-    return MTIFilterPremultiplyAlphaFragmentFunctionName;
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:MTIFilterPremultiplyAlphaFragmentFunctionName];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
@@ -36,8 +36,8 @@
 
 @implementation MTIUnpremultiplyAlphaFilter
 
-+ (NSString *)fragmentFunctionName {
-    return MTIFilterUnpremultiplyAlphaFragmentFunctionName;
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:MTIFilterUnpremultiplyAlphaFragmentFunctionName];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
