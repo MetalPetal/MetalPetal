@@ -26,7 +26,10 @@
         "MTIImage+Promise.h",
         "MTIPrint.h",
         "MTIDefer.h"
-      ]
+      ],
+      "user_target_xcconfig": {
+        "MTL_HEADER_SEARCH_PATHS": "$(inherited) \"${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers\""
+      }
     },
     {
       "name": "Swift",

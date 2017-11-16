@@ -16,6 +16,7 @@ s.subspec 'Core' do |ss|
     'MTIPrint.h',
     'MTIDefer.h'
     ]
+    ss.user_target_xcconfig = { 'MTL_HEADER_SEARCH_PATHS' => '$(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers"' }
 end
 
 s.subspec 'Swift' do |ss|

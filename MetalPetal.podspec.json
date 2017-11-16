@@ -23,7 +23,10 @@
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h"
       ],
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}"
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
+      "user_target_xcconfig" : {
+        "MTL_HEADER_SEARCH_PATHS" : "$(inherited) \"${PODS_CONFIGURATION_BUILD_DIR}\/MetalPetal\/MetalPetal.framework\/Headers\""
+      }
     },
     {
       "dependencies" : {
