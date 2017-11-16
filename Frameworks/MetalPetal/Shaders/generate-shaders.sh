@@ -45,7 +45,7 @@ struct MetalPetalShaderGenerator {
             fileName: "MultilayerCompositeShaders.metal",
             header: """
             #include <metal_stdlib>
-            #include "MTIShaderTypes.h"
+            #include "MTIShaderLib.h"
 
             using namespace metal;
             using namespace metalpetal;
@@ -106,7 +106,7 @@ struct MetalPetalShaderGenerator {
             fileName: "BlendingShaders.metal",
             header: """
             #include <metal_stdlib>
-            #include "MTIShaderTypes.h"
+            #include "MTIShaderLib.h"
 
             using namespace metal;
             using namespace metalpetal;

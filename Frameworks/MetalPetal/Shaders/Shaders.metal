@@ -7,7 +7,7 @@
 //
 
 #include <metal_stdlib>
-#include "MTIShaderTypes.h"
+#include "MTIShaderLib.h"
 
 using namespace metal;
 using namespace metalpetal;

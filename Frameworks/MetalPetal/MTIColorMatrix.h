@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MTIShaderTypes.h"
+#import "MTIShaderLib.h"
 
 FOUNDATION_EXPORT const MTIColorMatrix MTIColorMatrixIdentity NS_SWIFT_NAME(MTIColorMatrix.identity);
 FOUNDATION_EXPORT const MTIColorMatrix MTIColorMatrixRGBColorInvert NS_SWIFT_NAME(MTIColorMatrix.rgbColorInvert);

@@ -17,7 +17,7 @@
 #import "MTISamplerDescriptor.h"
 #import "MTIComputePipeline.h"
 #import "MTITextureDescriptor.h"
-#import "MTIShaderTypes.h"
+#import "MTIShaderLib.h"
 
 @import MetalPerformanceShaders;
 

@@ -61,7 +61,7 @@
 #import "MTIVector.h"
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
-#import "MTIShaderTypes.h"
+#import "MTIShaderLib.h"
 #import "MTIImageView.h"
 
 FOUNDATION_EXPORT double MetalPetalVersionNumber;

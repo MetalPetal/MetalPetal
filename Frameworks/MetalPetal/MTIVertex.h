@@ -10,7 +10,7 @@
 #import <Accelerate/Accelerate.h>
 #import <simd/simd.h>
 #import <Metal/Metal.h>
-#import "MTIShaderTypes.h"
+#import "MTIShaderLib.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

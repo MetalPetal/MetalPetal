@@ -7,7 +7,6 @@
 
 #import "MTIVibranceFilter.h"
 #import "MTIVector.h"
-#import "MTIShaderTypes.h"
 
 @implementation MTIVibranceFilter
 

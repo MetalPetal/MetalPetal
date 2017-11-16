@@ -9,17 +9,13 @@
 #ifndef MTIShader_h
 #define MTIShader_h
 
-#if defined(__cplusplus)
-
-#if __has_include(<metal_stdlib>)
+#if __METAL_MACOS__ || __METAL_IOS__
 
 #include <metal_stdlib>
 
 using namespace metal;
 
-#endif
-
-#endif
+#endif /* __METAL_MACOS__ || __METAL_IOS__ */
 
 #import <simd/simd.h>
 
@@ -52,9 +48,7 @@ struct MTIMultilayerCompositingLayerShadingParameters {
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 
-#if defined(__cplusplus)
-
-#if __has_include(<metal_stdlib>)
+#if __METAL_MACOS__ || __METAL_IOS__
 
 namespace metalpetal {
     
@@ -65,7 +59,6 @@ namespace metalpetal {
         float2 texcoords;
     };
 
-    
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
     }
@@ -368,8 +361,6 @@ namespace metalpetal {
     }
 }
 
-#endif
-
-#endif
+#endif /* __METAL_MACOS__ || __METAL_IOS__ */
 
 #endif /* MTIShader_h */
