@@ -15,12 +15,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTICompositingLayer;
+@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTILayer;
 
 @interface MTIMultilayerCompositeKernel : NSObject <MTIKernel>
 
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image
-                              layers:(NSArray<MTICompositingLayer *> *)layers
+                              layers:(NSArray<MTILayer *> *)layers
              outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
                    outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 

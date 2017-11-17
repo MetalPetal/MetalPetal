@@ -19,7 +19,7 @@
 #import "MTIVector.h"
 #import "MTIDefer.h"
 #import "MTITransform.h"
-#import "MTICompositingLayer.h"
+#import "MTILayer.h"
 
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -164,7 +164,7 @@
 
 @property (nonatomic,strong,readonly) MTIMultilayerCompositeKernel *kernel;
 
-@property (nonatomic,copy,readonly) NSArray<MTICompositingLayer *> *layers;
+@property (nonatomic,copy,readonly) NSArray<MTILayer *> *layers;
 
 @property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
 
@@ -227,7 +227,7 @@
         }
     };
     
-    for (MTICompositingLayer *layer in self.layers) {
+    for (MTILayer *layer in self.layers) {
         NSError *error = nil;
         id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
         if (error) {
@@ -282,16 +282,20 @@
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
-        MTICompositingLayer *layer = self.layers[index];
+        MTILayer *layer = self.layers[index];
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
-        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layer.size.width/2.0, -layer.size.height/2.0, layer.size.width, layer.size.height) contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)];
+        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
+        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
+        
+        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
+                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)];
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
         [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
-        transform = CATransform3DTranslate(transform, layer.position.x - self.backgroundImage.size.width/2.0, layer.position.y - self.backgroundImage.size.height/2.0, 0);
+        transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, layerPixelPosition.y - self.backgroundImage.size.height/2.0, 0);
         transform = CATransform3DRotate(transform, layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
@@ -342,7 +346,7 @@
 
 - (instancetype)initWithKernel:(MTIMultilayerCompositeKernel *)kernel
                backgroundImage:(MTIImage *)backgroundImage
-                        layers:(NSArray<MTICompositingLayer *> *)layers
+                        layers:(NSArray<MTILayer *> *)layers
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
              outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
@@ -353,7 +357,7 @@
         _outputPixelFormat = outputPixelFormat;
         NSMutableArray *dependencies = [NSMutableArray arrayWithCapacity:layers.count + 1];
         [dependencies addObject:backgroundImage];
-        for (MTICompositingLayer *layer in layers) {
+        for (MTILayer *layer in layers) {
             [dependencies addObject:layer.content];
             if (layer.compositingMask) {
                 [dependencies addObject:layer.compositingMask.content];
@@ -376,7 +380,7 @@
     return [[MTIMultilayerCompositeKernelState alloc] initWithContext:context colorAttachmentDescriptor:colorAttachmentDescriptor error:error];
 }
 
-- (MTIImage *)applyToBackgroundImage:(MTIImage *)image layers:(NSArray<MTICompositingLayer *> *)layers outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
+- (MTIImage *)applyToBackgroundImage:(MTIImage *)image layers:(NSArray<MTILayer *> *)layers outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIMultilayerCompositingRecipe *receipt = [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self
                                                                                      backgroundImage:image
                                                                                               layers:layers
@@ -393,7 +397,7 @@ id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromis
         MTIImage *lastImage = recipe.backgroundImage;
         if ([lastImage.promise isKindOfClass:[MTIMultilayerCompositingRecipe class]] && [dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
             MTIMultilayerCompositingRecipe *lastPromise = MTIMultilayerCompositingPromiseHandleMerge(lastImage.promise, dependencyGraph);
-            NSArray<MTICompositingLayer *> *layers = recipe.layers;
+            NSArray<MTILayer *> *layers = recipe.layers;
             if (lastImage.cachePolicy == MTIImageCachePolicyTransient && lastPromise.outputPixelFormat == recipe.outputPixelFormat && recipe.kernel == lastPromise.kernel) {
                 layers = [lastPromise.layers arrayByAddingObjectsFromArray:layers];
                 MTIMultilayerCompositingRecipe *promise = [[MTIMultilayerCompositingRecipe alloc] initWithKernel:recipe.kernel

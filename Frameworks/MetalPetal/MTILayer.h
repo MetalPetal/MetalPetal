@@ -14,7 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
-@interface MTICompositingLayer: NSObject <NSCopying>
+typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
+    MTILayerLayoutUnitPixel,
+    MTILayerLayoutUnitFractionOfBackgroundSize
+} NS_SWIFT_NAME(MTILayer.LayoutUnit);
+
+@interface MTILayer: NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIImage *content;
 
@@ -22,13 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly, nullable) MTIMask *compositingMask;
 
-@property (nonatomic, readonly) CGPoint position; //pixel
+@property (nonatomic, readonly) MTILayerLayoutUnit layoutUnit;
 
-@property (nonatomic, readonly) CGSize size; //pixel
+@property (nonatomic, readonly) CGPoint position;
 
-@property (nonatomic, readonly) CGFloat rotation; //rad
+@property (nonatomic, readonly) CGSize size;
 
-@property (nonatomic, readonly) CGFloat opacity;
+@property (nonatomic, readonly) float rotation; //rad
+
+@property (nonatomic, readonly) float opacity;
 
 @property (nonatomic, copy, readonly) MTIBlendMode blendMode;
 
@@ -36,20 +43,26 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithContent:(MTIImage *)content
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
                        position:(CGPoint)position
                            size:(CGSize)size
-                       rotation:(CGFloat)rotation
-                        opacity:(CGFloat)opacity
+                       rotation:(float)rotation
+                        opacity:(float)opacity
                       blendMode:(MTIBlendMode)blendMode;
 
 - (instancetype)initWithContent:(MTIImage *)content
                   contentRegion:(CGRect)contentRegion
                 compositingMask:(nullable MTIMask *)compositingMask
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
                        position:(CGPoint)position
                            size:(CGSize)size
-                       rotation:(CGFloat)rotation
-                        opacity:(CGFloat)opacity
+                       rotation:(float)rotation
+                        opacity:(float)opacity
                       blendMode:(MTIBlendMode)blendMode NS_DESIGNATED_INITIALIZER;
+
+- (CGSize)sizeInPixelForBackgroundSize:(CGSize)backgroundSize;
+
+- (CGPoint)positionInPixelForBackgroundSize:(CGSize)backgroundSize;
 
 @end
 

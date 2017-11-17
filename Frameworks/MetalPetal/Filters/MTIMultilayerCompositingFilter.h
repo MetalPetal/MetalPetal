@@ -6,7 +6,7 @@
 //
 
 #import "MTIFilter.h"
-#import "MTICompositingLayer.h"
+#import "MTILayer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;
 
-@property (nonatomic, copy) NSArray<MTICompositingLayer *> *layers;
+@property (nonatomic, copy) NSArray<MTILayer *> *layers;
 
 @end
 
