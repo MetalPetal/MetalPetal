@@ -14,7 +14,7 @@
 
 @interface MTIImage ()
 
-@property (nonatomic,copy) id<MTIImagePromise> promise;
+@property (nonatomic,copy,readonly) id<MTIImagePromise> promise;
 
 @end
 
