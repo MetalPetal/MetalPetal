@@ -38,7 +38,7 @@
         case MTILayerLayoutUnitPixel:
             return _size;
         case MTILayerLayoutUnitFractionOfBackgroundSize:
-            return CGSizeMake(backgroundSize.width * self.size.width, backgroundSize.height * self.size.height);
+            return CGSizeMake(backgroundSize.width * _size.width, backgroundSize.height * _size.height);
         default:
             NSLog(@"Unknown MTILayerLayoutUnit.");
             abort();
