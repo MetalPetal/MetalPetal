@@ -19,6 +19,7 @@
 #import "MTIDefer.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTILock.h"
+#import "MTIRenderPipelineOutputDescriptor.h"
 
 @interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -197,7 +198,7 @@
 @end
 
 
-@interface MTIImageRenderingRecipeView: NSObject <MTIImagePromise>
+@interface MTIImageRenderingPromise: NSObject <MTIImagePromise>
 
 @property (nonatomic, strong, readonly) MTIImageRenderingRecipe *recipe;
 
@@ -205,7 +206,7 @@
 
 @end
 
-@implementation MTIImageRenderingRecipeView
+@implementation MTIImageRenderingPromise
 
 - (NSArray<MTIImage *> *)dependencies {
     return self.recipe.inputImages;
@@ -224,24 +225,28 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    [self.recipe.resolutionCacheLock lock];
-    @MTI_DEFER {
-        [self.recipe.resolutionCacheLock unlock];
-    };
-    NSArray<MTIImagePromiseRenderTarget *> *renderTargets = [self.recipe.resolutionCache objectForKey:renderingContext];
-    if (renderTargets) {
-        MTIImagePromiseRenderTarget *renderTarget = renderTargets[self.outputIndex];
-        if (renderTarget.texture) {
-            return renderTarget;
+    if (self.recipe.outputDescriptors.count == 1) {
+        return [self.recipe resolveWithContext:renderingContext resolver:self error:error].firstObject;
+    } else {
+        [self.recipe.resolutionCacheLock lock];
+        @MTI_DEFER {
+            [self.recipe.resolutionCacheLock unlock];
+        };
+        NSArray<MTIImagePromiseRenderTarget *> *renderTargets = [self.recipe.resolutionCache objectForKey:renderingContext];
+        if (renderTargets) {
+            MTIImagePromiseRenderTarget *renderTarget = renderTargets[self.outputIndex];
+            if (renderTarget.texture) {
+                return renderTarget;
+            }
+        }
+        renderTargets = [self.recipe resolveWithContext:renderingContext resolver:self error:error];
+        if (renderTargets) {
+            [self.recipe.resolutionCache setObject:renderTargets forKey:renderingContext];
+            return renderTargets[self.outputIndex];
+        } else {
+            return nil;
         }
     }
-    renderTargets = [self.recipe resolveWithContext:renderingContext resolver:self error:error];
-    if (renderTargets) {
-        [self.recipe.resolutionCache setObject:renderTargets forKey:renderingContext];
-        return renderTargets[self.outputIndex];
-    } else {
-        return nil;
-    }
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -253,78 +258,6 @@
 }
 
 @end
-
-
-@interface MTIImageRenderingRecipeSingleOutputView: NSObject <MTIImagePromise>
-
-@property (nonatomic, strong, readonly) MTIImageRenderingRecipe *recipe;
-
-@end
-
-@implementation MTIImageRenderingRecipeSingleOutputView
-
-- (NSArray<MTIImage *> *)dependencies {
-    return self.recipe.inputImages;
-}
-
-- (instancetype)initWithImageRenderingRecipe:(MTIImageRenderingRecipe *)recipe {
-    if (self = [super init]) {
-        _recipe = recipe;
-    }
-    return self;
-}
-
-- (MTITextureDimensions)dimensions {
-    return self.recipe.outputDescriptors[0].dimensions;
-}
-
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    return [self.recipe resolveWithContext:renderingContext resolver:self error:error].firstObject;
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
-- (MTIAlphaType)alphaType {
-    return _recipe.alphaType;
-}
-
-@end
-
-
-@implementation MTIRenderPipelineOutputDescriptor
-
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat {
-    return [self initWithDimensions:dimensions pixelFormat:pixelFormat loadAction:MTLLoadActionDontCare];
-}
-
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction {
-    if (self = [super init]) {
-        _dimensions = dimensions;
-        _pixelFormat = pixelFormat;
-        _loadAction = loadAction;
-    }
-    return self;
-}
-
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
-- (BOOL)isEqual:(id)object {
-    if ([object isKindOfClass:[MTIRenderPipelineOutputDescriptor class]]) {
-        return [self isEqualToOutputDescriptor:object];
-    }
-    return NO;
-}
-
-- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object {
-    return MTITextureDimensionsEqualToTextureDimensions(_dimensions, object.dimensions) && _pixelFormat == object.pixelFormat && _loadAction == object.loadAction;
-}
-
-@end
-
 
 @interface MTIRenderPipelineKernel ()
 
@@ -434,17 +367,12 @@
                                                                           inputImages:images
                                                                    functionParameters:parameters
                                                                     outputDescriptors:outputDescriptors];
-    if (self.colorAttachmentCount == 1) {
-        MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:recipe];
-        return @[[[MTIImage alloc] initWithPromise:promise]];
-    } else {
-        NSMutableArray *outputs = [NSMutableArray array];
-        for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
-            MTIImageRenderingRecipeView *promise = [[MTIImageRenderingRecipeView alloc] initWithImageRenderingRecipe:recipe outputIndex:index];
-            [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
-        }
-        return outputs;
+    NSMutableArray *outputs = [NSMutableArray array];
+    for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
+        MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:recipe outputIndex:index];
+        [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
     }
+    return outputs;
 }
 
 @end
@@ -473,13 +401,13 @@
 @end
 
 id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph) {
-    if ([promise isKindOfClass:[MTIImageRenderingRecipeSingleOutputView class]]) {
-        MTIImageRenderingRecipeSingleOutputView *v = promise;
+    if ([promise isKindOfClass:[MTIImageRenderingPromise class]]) {
+        MTIImageRenderingPromise *v = promise;
         MTIImageRenderingRecipe *recipe = v.recipe;
         MTIImage *lastImage = recipe.inputImages.firstObject;
-        if (recipe.kernel == MTIColorMatrixFilter.kernel && recipe.inputImages.count == 1 && [lastImage.promise isKindOfClass:[MTIImageRenderingRecipeSingleOutputView class]]) {
+        if (recipe.kernel == MTIColorMatrixFilter.kernel && recipe.inputImages.count == 1 && [lastImage.promise isKindOfClass:[MTIImageRenderingPromise class]]) {
             if ([dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
-                MTIImageRenderingRecipeSingleOutputView *lastPromise = MTIColorMatrixRenderingPromiseHandleMerge(lastImage.promise, dependencyGraph);
+                MTIImageRenderingPromise *lastPromise = MTIColorMatrixRenderingPromiseHandleMerge(lastImage.promise, dependencyGraph);
                 MTIColorMatrix colorMatrix = recipe.colorMatrix;
                 if (lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastPromise.recipe.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors]) {
                     colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
@@ -488,7 +416,7 @@ id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise
                                                                                      inputImages:lastPromise.dependencies
                                                                               functionParameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}
                                                                                outputDescriptors:recipe.outputDescriptors];
-                    MTIImageRenderingRecipeSingleOutputView *promise = [[MTIImageRenderingRecipeSingleOutputView alloc] initWithImageRenderingRecipe:r];
+                    MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:r outputIndex:0];
                     return promise;
                 }
             }

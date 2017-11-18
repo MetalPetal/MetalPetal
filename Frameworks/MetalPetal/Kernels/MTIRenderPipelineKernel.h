@@ -9,35 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import "MTIKernel.h"
-#import "MTITextureDimensions.h"
-#import "MTIPixelFormat.h"
 #import "MTIVertex.h"
 #import "MTIAlphaType.h"
 #import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage;
-
-@interface MTIRenderPipelineOutputDescriptor: NSObject <NSCopying>
-
-@property (nonatomic,readonly) MTITextureDimensions dimensions;
-
-@property (nonatomic,readonly) MTLPixelFormat pixelFormat;
-
-@property (nonatomic,readonly) MTLLoadAction loadAction;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat;
-
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction NS_DESIGNATED_INITIALIZER;
-
-- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object;
-
-@end
+@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPipelineOutputDescriptor;
 
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 

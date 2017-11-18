@@ -53,6 +53,7 @@
 #import "MTIMask.h"
 #import "MTIPixelFormat.h"
 #import "MTIRenderPipeline.h"
+#import "MTIRenderPipelineOutputDescriptor.h"
 #import "MTISamplerDescriptor.h"
 #import "MTITextureDescriptor.h"
 #import "MTITextureDimensions.h"

@@ -8,6 +8,7 @@
 #import "MTICropFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
+#import "MTIRenderPipelineOutputDescriptor.h"
 #import "MTIImage.h"
 
 MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {

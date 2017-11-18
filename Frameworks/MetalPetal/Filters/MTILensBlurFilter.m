@@ -10,6 +10,7 @@
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIVector.h"
+#import "MTIRenderPipelineOutputDescriptor.h"
 
 @implementation MTILensBlurFilter
 @synthesize outputPixelFormat = _outputPixelFormat;

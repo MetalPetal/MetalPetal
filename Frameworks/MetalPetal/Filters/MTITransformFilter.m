@@ -10,6 +10,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTITransform.h"
+#import "MTIRenderPipelineOutputDescriptor.h"
 
 @implementation MTITransformFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
