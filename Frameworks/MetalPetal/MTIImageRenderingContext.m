@@ -36,11 +36,13 @@
     for (MTIImage *dependency in dependencies) {
         __auto_type dependents = [self.promiseDenpendentsTable objectForKey:dependency.promise];
         if (!dependents) {
-            dependents = [NSMutableArray array];
+            dependents = [NSMutableArray arrayWithObject:image.promise];
             [self.promiseDenpendentsTable setObject:dependents forKey:dependency.promise];
+            
+            [self addDependenciesForImage:dependency];
+        } else {
+            [dependents addObject:image.promise];
         }
-        [dependents addObject:image.promise];
-        [self addDependenciesForImage:dependency];
     }
 }
 
