@@ -62,6 +62,11 @@
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
 @end
 
 @interface MTICGImagePromise ()
@@ -103,6 +108,11 @@
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
 @end
 
 @interface MTITexturePromise ()
@@ -134,6 +144,11 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     return [renderingContext.context newRenderTargetWithTexture:self.texture];
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
 }
 
 @end
@@ -205,6 +220,11 @@
     return self;
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
 @end
 
 @interface MTIColorImagePromise ()
@@ -255,6 +275,11 @@
         return MTIAlphaTypeAlphaIsOne;
     }
     return MTIAlphaTypeNonPremultiplied;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
 }
 
 @end

@@ -52,8 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@class MTIImageRenderingDependencyGraph;
+@class MTIImageRenderingDependencyGraph, MTIRenderGraphNode;
 
-FOUNDATION_EXPORT id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph);
+FOUNDATION_EXPORT void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node);
 
 NS_ASSUME_NONNULL_END

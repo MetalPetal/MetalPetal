@@ -110,6 +110,11 @@
     return self;
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == self.dependencies.count);
+    return [[MTIMPSProcessingRecipe alloc] initWithKernel:self.kernel inputImages:dependencies parameters:self.parameters outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
+}
+
 @end
 
 @interface MTIMPSKernel ()

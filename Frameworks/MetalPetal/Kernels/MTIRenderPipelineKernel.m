@@ -257,6 +257,11 @@
     return _recipe.alphaType;
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == self.dependencies.count);
+    return [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:[[MTIImageRenderingRecipe alloc] initWithKernel:self.recipe.kernel geometry:self.recipe.geometry inputImages:dependencies functionParameters:self.recipe.functionParameters outputDescriptors:self.recipe.outputDescriptors] outputIndex:self.outputIndex];
+}
+
 @end
 
 @interface MTIRenderPipelineKernel ()
@@ -380,6 +385,7 @@
 #pragma mark - Recipe Merge
 
 #import "MTIColorMatrixFilter.h"
+#import "MTIRenderGraphOptimization.h"
 
 @interface MTIImageRenderingRecipe (MTIColorMatrix)
 
@@ -400,27 +406,26 @@
 
 @end
 
-id<MTIImagePromise> MTIColorMatrixRenderingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph) {
-    if ([promise isKindOfClass:[MTIImageRenderingPromise class]]) {
-        MTIImageRenderingPromise *v = promise;
+void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node) {
+    if (node.inputs.count == 1 && [node.image.promise isKindOfClass:[MTIImageRenderingPromise class]]) {
+        MTIImageRenderingPromise *v = node.image.promise;
         MTIImageRenderingRecipe *recipe = v.recipe;
-        MTIImage *lastImage = recipe.inputImages.firstObject;
-        if (recipe.kernel == MTIColorMatrixFilter.kernel && recipe.inputImages.count == 1 && [lastImage.promise isKindOfClass:[MTIImageRenderingPromise class]]) {
-            if ([dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
-                MTIImageRenderingPromise *lastPromise = MTIColorMatrixRenderingPromiseHandleMerge(lastImage.promise, dependencyGraph);
-                MTIColorMatrix colorMatrix = recipe.colorMatrix;
-                if (lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastPromise.recipe.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors]) {
-                    colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
-                    MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithKernel:recipe.kernel
-                                                                                        geometry:recipe.geometry
-                                                                                     inputImages:lastPromise.dependencies
-                                                                              functionParameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}
-                                                                               outputDescriptors:recipe.outputDescriptors];
-                    MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:r outputIndex:0];
-                    return promise;
-                }
+        MTIRenderGraphNode *lastNode = node.inputs.firstObject;
+        MTIImage *lastImage = node.inputs.firstObject.image;
+        if (lastNode.uniqueDependentCount == 1 && recipe.kernel == MTIColorMatrixFilter.kernel && [lastImage.promise isKindOfClass:[MTIImageRenderingPromise class]]) {
+            MTIImageRenderingPromise *lastPromise = lastImage.promise;
+            MTIColorMatrix colorMatrix = recipe.colorMatrix;
+            if (lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastPromise.recipe.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors]) {
+                colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
+                MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithKernel:recipe.kernel
+                                                                                    geometry:recipe.geometry
+                                                                                 inputImages:lastPromise.dependencies
+                                                                          functionParameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}
+                                                                           outputDescriptors:recipe.outputDescriptors];
+                MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:r outputIndex:0];
+                node.inputs = lastNode.inputs;
+                node.image = [[MTIImage alloc] initWithPromise:promise samplerDescriptor:node.image.samplerDescriptor cachePolicy:node.image.cachePolicy];
             }
         }
     }
-    return promise;
 }

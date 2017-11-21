@@ -52,6 +52,7 @@
 #import "MTILock.h"
 #import "MTIMask.h"
 #import "MTIPixelFormat.h"
+#import "MTIRenderGraphOptimization.h"
 #import "MTIRenderPipeline.h"
 #import "MTIRenderPipelineOutputDescriptor.h"
 #import "MTISamplerDescriptor.h"
