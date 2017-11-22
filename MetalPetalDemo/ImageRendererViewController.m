@@ -216,7 +216,8 @@
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeOverlay]
                                       ];
-    return self.compositingFilter.outputImage;
+    self.saturationFilter.inputImage = self.compositingFilter.outputImage;
+    return self.saturationFilter.outputImage;
 }
 
 - (MTIImage *)blendFilterTestOutputImage
@@ -232,7 +233,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self blendFilterTestOutputImage];
+        MTIImage *outputImage = [self renderTargetCacheAndReuseTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

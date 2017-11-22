@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIRenderGraphNode: NSObject
 
-@property (nonatomic, strong) NSMutableArray<MTIRenderGraphNode *> *inputs;
+@property (nonatomic, strong, nullable) NSMutableArray<MTIRenderGraphNode *> *inputs;
 
-@property (nonatomic, strong) MTIImage *image;
+@property (nonatomic, strong, nullable) MTIImage *image;
 
 @property (nonatomic, readonly) NSInteger uniqueDependentCount;
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIRenderGraphOptimizer : NSObject
 
-- (id<MTIImagePromise>)promiseByOptimizingRenderGraphOfPromise:(id<MTIImagePromise>)promise;
++ (id<MTIImagePromise>)promiseByOptimizingRenderGraphOfPromise:(id<MTIImagePromise>)promise;
 
 @end
 

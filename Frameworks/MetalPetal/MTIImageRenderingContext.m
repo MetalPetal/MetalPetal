@@ -154,8 +154,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         isRootImage = YES;
         
         //Handle promise merge.
-        MTIRenderGraphOptimizer *optimizer = [[MTIRenderGraphOptimizer alloc] init];
-        id<MTIImagePromise> optimizedPromise = [optimizer promiseByOptimizingRenderGraphOfPromise:promise];
+        id<MTIImagePromise> optimizedPromise = [MTIRenderGraphOptimizer promiseByOptimizingRenderGraphOfPromise:promise];
         
         MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
         [dependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy]];
