@@ -37,6 +37,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
+@property (nonatomic) BOOL enablesRenderGraphOptimization;
+
 @end
 
 @interface MTIContext : NSObject
@@ -50,6 +52,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError **)error NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) MTLPixelFormat workingPixelFormat;
+
+@property (nonatomic, readonly) BOOL isRenderGraphOptimizationEnabled;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 

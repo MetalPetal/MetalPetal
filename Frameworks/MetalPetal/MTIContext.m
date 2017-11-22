@@ -70,6 +70,7 @@
     if (self = [super init]) {
         _coreImageContextOptions = @{};
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
+        _enablesRenderGraphOptimization = YES;
     }
     return self;
 }
@@ -78,6 +79,7 @@
     MTIContextOptions *options = [[MTIContextOptions allocWithZone:zone] init];
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
+    options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
     return options;
 }
 
@@ -135,6 +137,7 @@
         }
         
         _workingPixelFormat = options.workingPixelFormat;
+        _isRenderGraphOptimizationEnabled = options.enablesRenderGraphOptimization;
         _device = device;
         _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];

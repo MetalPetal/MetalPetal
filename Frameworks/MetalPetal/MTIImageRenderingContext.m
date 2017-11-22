@@ -153,14 +153,18 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         //If we don't have the dependency graph, we're processing the root image.
         isRootImage = YES;
         
-        //Handle promise merge.
-        id<MTIImagePromise> optimizedPromise = [MTIRenderGraphOptimizer promiseByOptimizingRenderGraphOfPromise:promise];
-        
-        MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
-        [dependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy]];
-        self.dependencyGraph = dependencyGraph;
-        
-        promise = optimizedPromise;
+        if (self.context.isRenderGraphOptimizationEnabled) {
+            id<MTIImagePromise> optimizedPromise = [MTIRenderGraphOptimizer promiseByOptimizingRenderGraphOfPromise:promise];
+            promise = optimizedPromise;
+            
+            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
+            [dependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy]];
+            self.dependencyGraph = dependencyGraph;
+        } else {
+            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
+            [dependencyGraph addDependenciesForImage:image];
+            self.dependencyGraph = dependencyGraph;
+        }
     }
     
     MTIImageRenderingDependencyGraph *dependencyGraph = self.dependencyGraph;

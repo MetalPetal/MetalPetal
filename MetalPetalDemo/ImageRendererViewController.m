@@ -59,6 +59,7 @@
     //[WeakToStrongObjectsMapTableTests test];
     
     MTIContextOptions *options = [[MTIContextOptions alloc] init];
+    //options.enablesRenderGraphOptimization = NO;
     //options.workingPixelFormat = MTLPixelFormatRGBA16Float;
     
     NSError *error;
