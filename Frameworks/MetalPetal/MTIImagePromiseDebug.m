@@ -178,6 +178,16 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
         CGRect layerFrame = [layer convertRect:layer.bounds toLayer:container];
         CGPoint fromPoint = CGPointMake(CGRectGetMidX(layerFrame), CGRectGetMinY(layerFrame));
         CGPoint toPoint = CGPointMake(CGRectGetMidX(rootLayerFrame), CGRectGetMaxY(rootLayerFrame));
+        
+        CGPoint direction = CGPointMake((NSInteger)((toPoint.x - fromPoint.x)/10.0), (NSInteger)((toPoint.y - fromPoint.y)/10.0));
+        if (direction.y > 0) {
+            if (direction.x > 0) {
+                toPoint = CGPointMake(CGRectGetMinX(rootLayerFrame), CGRectGetMidY(rootLayerFrame));
+            } else if (direction.x < 0) {
+                toPoint = CGPointMake(CGRectGetMaxX(rootLayerFrame), CGRectGetMidY(rootLayerFrame));
+            }
+        }
+        
         CGPathMoveToPoint(path, nil, fromPoint.x, fromPoint.y);
         CGPathAddLineToPoint(path, nil, toPoint.x, toPoint.y);
         
