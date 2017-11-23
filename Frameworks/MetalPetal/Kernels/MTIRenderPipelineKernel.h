@@ -19,6 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
+
+@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptor;
+
+@property (nonatomic,copy,readonly,nullable) MTLVertexDescriptor *vertexDescriptor;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;

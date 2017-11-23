@@ -11,6 +11,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImage+Promise.h"
 #import "MTICVPixelBufferPromise.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIImage ()
 
@@ -196,6 +197,10 @@
         image = [[MTIImage alloc] initWithColor:MTIColorMake(0, 0, 0, 0) sRGB:NO size:CGSizeMake(1, 1)];
     });
     return image;
+}
+
+- (id)debugQuickLookObject {
+    return [MTIImagePromiseDebugInfo layerRepresentationOfRenderGraphForPromise:self.promise];
 }
 
 @end

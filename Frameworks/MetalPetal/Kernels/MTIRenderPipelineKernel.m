@@ -20,6 +20,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTILock.h"
 #import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -262,13 +263,9 @@
     return [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:[[MTIImageRenderingRecipe alloc] initWithKernel:self.recipe.kernel geometry:self.recipe.geometry inputImages:dependencies functionParameters:self.recipe.functionParameters outputDescriptors:self.recipe.outputDescriptors] outputIndex:self.outputIndex];
 }
 
-@end
-
-@interface MTIRenderPipelineKernel ()
-
-@property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
-@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptor;
-@property (nonatomic,copy,readonly) MTLVertexDescriptor *vertexDescriptor;
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:@[self.recipe.kernel.vertexFunctionDescriptor,self.recipe.kernel.fragmentFunctionDescriptor] content:self.recipe.functionParameters];
+}
 
 @end
 

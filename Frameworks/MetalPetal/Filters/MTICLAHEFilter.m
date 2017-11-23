@@ -18,6 +18,7 @@
 #import "MTIComputePipeline.h"
 #import "MTITextureDescriptor.h"
 #import "MTIShaderLib.h"
+#import "MTIImagePromiseDebug.h"
 
 @import MetalPerformanceShaders;
 
@@ -168,6 +169,12 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 1);
     return [[MTICLAHELUTRecipe alloc] initWithKernel:self.kernel inputLightnessImage:dependencies.firstObject clipLimit:self.clipLimit tileGridSize:self.tileGridSize];
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:nil content:@{@"clipLimit": @(self.clipLimit),
+                                                                                                                                      @"tileGridSize": @[@(self.tileSize.width),@(self.tileSize.height)]
+                                                                                                                                      }];
 }
 
 @end

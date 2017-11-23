@@ -17,6 +17,7 @@
 #import "MTIComputePipeline.h"
 #import "MTIVector.h"
 #import "MTIDefer.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIImageComputeRecipe : NSObject <MTIImagePromise>
 
@@ -135,11 +136,9 @@
     return [[MTIImageComputeRecipe alloc] initWithKernel:self.kernel inputImages:dependencies functionParameters:self.functionParameters outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
 }
 
-@end
-
-@interface MTIComputePipelineKernel()
-
-@property (nonatomic, copy, readonly) MTIFunctionDescriptor *computeFunctionDescriptor;
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:@[self.kernel.computeFunctionDescriptor] content:self.functionParameters];
+}
 
 @end
 

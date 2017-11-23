@@ -47,6 +47,7 @@
 #import "MTIImage.h"
 #import "MTIImageOrientation.h"
 #import "MTIImagePromise.h"
+#import "MTIImagePromiseDebug.h"
 #import "MTIImageRenderingContext.h"
 #import "MTILayer.h"
 #import "MTILock.h"

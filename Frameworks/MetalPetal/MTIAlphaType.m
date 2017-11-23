@@ -8,6 +8,19 @@
 #import "MTIAlphaType.h"
 #import "MTIImage.h"
 
+NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType) {
+    switch (alphaType) {
+        case MTIAlphaTypePremultiplied:
+            return @"Premultiplied";
+        case MTIAlphaTypeNonPremultiplied:
+            return @"NonPremultiplied";
+        case MTIAlphaTypeAlphaIsOne:
+            return @"AlphaIsOne";
+        default:
+            return @"Unknown";
+    }
+}
+
 @interface MTIAlphaTypeHandlingRule ()
 
 @property (nonatomic,copy,readonly) MTIAlphaTypeHandlingOutputAlphaTypeRule outputAlphaTypeHandler;

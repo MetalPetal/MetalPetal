@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget;
+@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
 
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies;
+
+@property (nonatomic, strong, readonly) MTIImagePromiseDebugInfo *debugInfo;
 
 @end
 

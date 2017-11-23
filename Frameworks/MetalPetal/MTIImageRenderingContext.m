@@ -16,6 +16,7 @@
 #import "MTIMultilayerCompositeKernel.h"
 #import "MTIPrint.h"
 #import "MTIRenderGraphOptimization.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIImageRenderingDependencyGraph ()
 
@@ -158,7 +159,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             promise = optimizedPromise;
             
             MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
-            [dependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy]];
+            MTIImage *optimizedImage = [[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy];
+            [dependencyGraph addDependenciesForImage:optimizedImage];
             self.dependencyGraph = dependencyGraph;
         } else {
             MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
@@ -290,6 +292,10 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 0);
     return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.resolution];
 }
 
 @end

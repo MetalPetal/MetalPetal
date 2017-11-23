@@ -105,7 +105,7 @@
     MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture alphaType:MTIAlphaTypeAlphaIsOne];
     self.inputImage = mtiImageFromTexture;
     self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSoftLight];
-    
+        
     self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
 }
@@ -177,11 +177,13 @@
     self.colorInvertFilter.inputImage = saturatedImage;
     self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
     self.saturationFilter.saturation = 0.0;
+    //self.saturationFilter.inputImage = self.saturationFilter.outputImage;
     MTIImage *invertedAndDesaturatedImage = self.saturationFilter.outputImage;
     
     self.saturationFilter.saturation = 0.0;
     self.saturationFilter.inputImage = saturatedImage;
     self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
+    self.colorInvertFilter.inputImage = self.colorInvertFilter.outputImage;
     MTIImage *desaturatedAndInvertedImage = self.colorInvertFilter.outputImage;
     
     self.blendFilter.inputBackgroundImage = desaturatedAndInvertedImage;
@@ -234,7 +236,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self renderTargetCacheAndReuseTestOutputImage];
+        MTIImage *outputImage = [self claheTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

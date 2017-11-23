@@ -14,6 +14,7 @@
 #import "MTIRenderPipeline.h"
 #import "MTIComputePipeline.h"
 #import "MTIError.h"
+#import "MTIImagePromiseDebug.h"
 #import <simd/simd.h>
 
 static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
@@ -388,6 +389,10 @@ static const ColorConversion kColorConversion709 = {
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 0);
     return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:[CIImage imageWithCVPixelBuffer:self.pixelBuffer]];
 }
 
 @end

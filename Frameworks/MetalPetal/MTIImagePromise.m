@@ -13,6 +13,7 @@
 #import "MTIContext.h"
 #import "MTITextureDescriptor.h"
 #import "MTIError.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIImageURLPromise ()
 
@@ -67,6 +68,10 @@
     return self;
 }
 
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.URL];
+}
+
 @end
 
 @interface MTICGImagePromise ()
@@ -113,6 +118,10 @@
     return self;
 }
 
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:(id)self.image];
+}
+
 @end
 
 @interface MTITexturePromise ()
@@ -149,6 +158,10 @@
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 0);
     return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.texture];
 }
 
 @end
@@ -225,6 +238,10 @@
     return self;
 }
 
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.image];
+}
+
 @end
 
 @interface MTIColorImagePromise ()
@@ -280,6 +297,10 @@
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 0);
     return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:@[@(self.color.red), @(self.color.green), @(self.color.blue), @(self.color.alpha)]];
 }
 
 @end

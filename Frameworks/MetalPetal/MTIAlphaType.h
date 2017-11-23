@@ -16,6 +16,8 @@ typedef NS_ENUM(NSInteger, MTIAlphaType) {
     MTIAlphaTypeAlphaIsOne = 3
 };
 
+FOUNDATION_EXPORT NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType);
+
 @class MTIImage;
 
 typedef MTIAlphaType (^MTIAlphaTypeHandlingOutputAlphaTypeRule)(NSArray<NSNumber *> *inputAlphaTypes);

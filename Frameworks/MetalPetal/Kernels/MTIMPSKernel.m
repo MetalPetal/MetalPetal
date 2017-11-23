@@ -13,6 +13,7 @@
 #import "MTIImageRenderingContext.h"
 #import "MTIError.h"
 #import "MTIDefer.h"
+#import "MTIImagePromiseDebug.h"
 
 @interface MTIMPSProcessingRecipe : NSObject <MTIImagePromise>
 
@@ -113,6 +114,10 @@
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == self.dependencies.count);
     return [[MTIMPSProcessingRecipe alloc] initWithKernel:self.kernel inputImages:dependencies parameters:self.parameters outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:nil content:self.parameters];
 }
 
 @end
