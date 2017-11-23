@@ -26,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@class MTIImageRenderingDependencyGraph;
+@class MTIRenderGraphNode;
 
-FOUNDATION_EXPORT id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph);
+FOUNDATION_EXPORT void MTIMultilayerCompositingRenderGraphNodeOptimize(MTIRenderGraphNode *node);
 
 NS_ASSUME_NONNULL_END

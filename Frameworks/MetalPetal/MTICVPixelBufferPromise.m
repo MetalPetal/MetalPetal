@@ -385,4 +385,9 @@ static const ColorConversion kColorConversion709 = {
     }
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
 @end

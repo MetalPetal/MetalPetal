@@ -15,6 +15,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIMultilayerCompositeKernel.h"
 #import "MTIPrint.h"
+#import "MTIRenderGraphOptimization.h"
 
 @interface MTIImageRenderingDependencyGraph ()
 
@@ -140,13 +141,6 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return self;
 }
 
-+ (id<MTIImagePromise>)recursivelyMergePromise:(id<MTIImagePromise>)promise dependencyGraph:(MTIImageRenderingDependencyGraph *)dependencyGraph {
-    id<MTIImagePromise> mergedPromise;
-    mergedPromise = MTIColorMatrixRenderingPromiseHandleMerge(promise, dependencyGraph);
-    mergedPromise = MTIMultilayerCompositingPromiseHandleMerge(mergedPromise, dependencyGraph);
-    return mergedPromise;
-}
-
 - (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (image == nil) {
         [NSException raise:NSInvalidArgumentException format:@"%@: Application is requesting a resolution of a nil image.", self];
@@ -159,26 +153,17 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         //If we don't have the dependency graph, we're processing the root image.
         isRootImage = YES;
         
-        //Create dependency graph.
-        MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
-        [dependencyGraph addDependenciesForImage:image];
-        
-        //Handle promise merge.
-        id<MTIImagePromise> mergedPromise = [MTIImageRenderingContext recursivelyMergePromise:image.promise dependencyGraph:dependencyGraph];
-        
-        if (mergedPromise == promise) {
-            //If nothing is merged we use the dependency graph created with the input image.
+        if (self.context.isRenderGraphOptimizationEnabled) {
+            id<MTIImagePromise> optimizedPromise = [MTIRenderGraphOptimizer promiseByOptimizingRenderGraphOfPromise:promise];
+            promise = optimizedPromise;
+            
+            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
+            [dependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy]];
             self.dependencyGraph = dependencyGraph;
         } else {
-            //Update the promise we're going to resolve.
-            promise = mergedPromise;
-            
-            //Generate merged dependency graph.
-            MTIImageRenderingDependencyGraph *updatedDependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
-            [updatedDependencyGraph addDependenciesForImage:[[MTIImage alloc] initWithPromise:mergedPromise]];
-            
-            //Use the dependency graph created with the merged promise.
-            self.dependencyGraph = updatedDependencyGraph;
+            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
+            [dependencyGraph addDependenciesForImage:image];
+            self.dependencyGraph = dependencyGraph;
         }
     }
     
@@ -300,6 +285,11 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         _image = nil;
     }
     return _resolution.renderTarget;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
 }
 
 @end

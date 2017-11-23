@@ -130,6 +130,11 @@
     return self;
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == self.dependencies.count);
+    return [[MTIImageComputeRecipe alloc] initWithKernel:self.kernel inputImages:dependencies functionParameters:self.functionParameters outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
+}
+
 @end
 
 @interface MTIComputePipelineKernel()

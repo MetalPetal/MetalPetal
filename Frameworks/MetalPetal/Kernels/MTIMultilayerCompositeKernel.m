@@ -368,6 +368,29 @@
     return self;
 }
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSAssert(dependencies.count == self.dependencies.count, @"");
+    NSInteger pointer = 0;
+    MTIImage *backgroundImage = dependencies[pointer];
+    pointer += 1;
+    NSMutableArray *newLayers = [NSMutableArray arrayWithCapacity:self.layers.count];
+    for (NSUInteger index = 0; index < self.layers.count; index+= 1) {
+        MTILayer *layer = self.layers[index];
+        MTIImage *newContent = dependencies[pointer];
+        pointer += 1;
+        MTIMask *compositingMask = layer.compositingMask;
+        MTIMask *newCompositingMask = nil;
+        if (compositingMask) {
+            MTIImage *newCompositingMaskContent = dependencies[pointer];
+            pointer += 1;
+            newCompositingMask = [[MTIMask alloc] initWithContent:newCompositingMaskContent component:compositingMask.component mode:compositingMask.mode];
+        }
+        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
+        [newLayers addObject:newLayer];
+    }
+    return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self.kernel backgroundImage:backgroundImage layers:newLayers outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
+}
+
 @end
 
 @implementation MTIMultilayerCompositeKernel
@@ -391,12 +414,15 @@
 
 @end
 
-id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromise> promise, MTIImageRenderingDependencyGraph *dependencyGraph) {
-    if ([promise isKindOfClass:[MTIMultilayerCompositingRecipe class]]) {
-        MTIMultilayerCompositingRecipe *recipe = promise;
-        MTIImage *lastImage = recipe.backgroundImage;
-        if ([lastImage.promise isKindOfClass:[MTIMultilayerCompositingRecipe class]] && [dependencyGraph dependentCountForPromise:lastImage.promise] == 1) {
-            MTIMultilayerCompositingRecipe *lastPromise = MTIMultilayerCompositingPromiseHandleMerge(lastImage.promise, dependencyGraph);
+#import "MTIRenderGraphOptimization.h"
+
+void MTIMultilayerCompositingRenderGraphNodeOptimize(MTIRenderGraphNode *node) {
+    if ([node.image.promise isKindOfClass:[MTIMultilayerCompositingRecipe class]]) {
+        MTIMultilayerCompositingRecipe *recipe = node.image.promise;
+        MTIRenderGraphNode *lastNode = node.inputs.firstObject;
+        MTIImage *lastImage = node.inputs.firstObject.image;
+        if (lastNode.uniqueDependentCount == 1 && [lastImage.promise isKindOfClass:[MTIMultilayerCompositingRecipe class]]) {
+            MTIMultilayerCompositingRecipe *lastPromise = lastImage.promise;
             NSArray<MTILayer *> *layers = recipe.layers;
             if (lastImage.cachePolicy == MTIImageCachePolicyTransient && lastPromise.outputPixelFormat == recipe.outputPixelFormat && recipe.kernel == lastPromise.kernel) {
                 layers = [lastPromise.layers arrayByAddingObjectsFromArray:layers];
@@ -405,9 +431,12 @@ id<MTIImagePromise> MTIMultilayerCompositingPromiseHandleMerge(id<MTIImagePromis
                                                                                                           layers:layers
                                                                                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(lastPromise.backgroundImage.size)
                                                                                                outputPixelFormat:recipe.outputPixelFormat];
-                return promise;
+                NSMutableArray *inputs = [NSMutableArray arrayWithArray:lastNode.inputs];
+                [node.inputs removeObjectAtIndex:0];
+                [inputs addObjectsFromArray:node.inputs];
+                node.inputs = inputs;
+                node.image = [[MTIImage alloc] initWithPromise:promise samplerDescriptor:node.image.samplerDescriptor cachePolicy:node.image.cachePolicy];
             }
         }
     }
-    return promise;
 }

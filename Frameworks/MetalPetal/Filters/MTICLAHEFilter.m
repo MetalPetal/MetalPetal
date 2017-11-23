@@ -54,10 +54,11 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @property (nonatomic,strong,readonly) MTICLAHELUTKernel *kernel;
 @property (nonatomic,readonly,strong) MTIImage *inputLightnessImage;
-@property (nonatomic,readonly) NSInteger clipLimit;
+@property (nonatomic,readonly) NSInteger clipLimitValue;
 @property (nonatomic,readonly) MTICLAHESize tileGridSize;
 @property (nonatomic,readonly) MTICLAHESize tileSize;
 @property (nonatomic,readonly) NSUInteger numberOfLUTs;
+@property (nonatomic,readonly) float clipLimit;
 
 @end
 
@@ -73,7 +74,8 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
         _tileGridSize = tileGridSize;
         _inputLightnessImage = inputLightnessImage;
         _tileSize = MTICLAHESizeMake(inputLightnessImage.size.width/tileGridSize.width, inputLightnessImage.size.height/tileGridSize.height);
-        _clipLimit = MAX((NSInteger)(clipLimit * _tileSize.width * _tileSize.height / MTICLAHEHistogramBinCount), 1);
+        _clipLimit = clipLimit;
+        _clipLimitValue = MAX((NSInteger)(clipLimit * _tileSize.width * _tileSize.height / MTICLAHEHistogramBinCount), 1);
         _numberOfLUTs = tileGridSize.width * tileGridSize.height;
     }
     return self;
@@ -113,6 +115,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     //May need to get a copy
     MPSImageHistogram *histogramKernel = kernelState.histogramKernel;
     
+    //todo: Optimize buffer alloc here
     size_t histogramSize = [histogramKernel histogramSizeForSourceFormat:inputLightnessImageResolution.texture.pixelFormat];
     id<MTLBuffer> histogramBuffer = [renderingContext.context.device newBufferWithLength:histogramSize * self.numberOfLUTs options:MTLResourceCPUCacheModeDefaultCache | MTLResourceStorageModeShared];
     
@@ -135,7 +138,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     
     MTICLAHELUTGeneratorInputParameters parameters;
     parameters.histogramBins = (uint)MTICLAHEHistogramBinCount;
-    parameters.clipLimit = (uint)self.clipLimit;
+    parameters.clipLimit = (uint)self.clipLimitValue;
     parameters.totalPixelCountPerTile = (uint)(self.tileSize.width * self.tileSize.height);
     parameters.numberOfLUTs = (uint)self.numberOfLUTs;
     
@@ -160,6 +163,11 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 - (MTIAlphaType)alphaType {
     return MTIAlphaTypeAlphaIsOne;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 1);
+    return [[MTICLAHELUTRecipe alloc] initWithKernel:self.kernel inputLightnessImage:dependencies.firstObject clipLimit:self.clipLimit tileGridSize:self.tileGridSize];
 }
 
 @end

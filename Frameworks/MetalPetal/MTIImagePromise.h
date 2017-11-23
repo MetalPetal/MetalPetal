@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError **)error;
 
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies;
+
 @end
 
 #pragma mark - Promises
