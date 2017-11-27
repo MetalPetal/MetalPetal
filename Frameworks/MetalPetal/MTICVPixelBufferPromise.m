@@ -392,7 +392,7 @@ static const ColorConversion kColorConversion709 = {
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:[CIImage imageWithCVPixelBuffer:self.pixelBuffer]];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[CIImage imageWithCVPixelBuffer:self.pixelBuffer]];
 }
 
 @end

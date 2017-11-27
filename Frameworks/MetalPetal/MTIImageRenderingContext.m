@@ -295,7 +295,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.resolution];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:self.resolution];
 }
 
 @end

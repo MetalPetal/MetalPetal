@@ -117,7 +117,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:nil content:self.parameters];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor content:self.parameters];
 }
 
 @end

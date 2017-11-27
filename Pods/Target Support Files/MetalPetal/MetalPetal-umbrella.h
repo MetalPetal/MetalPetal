@@ -31,6 +31,7 @@
 #import "MTIKernel.h"
 #import "MTIMPSKernel.h"
 #import "MTIMultilayerCompositeKernel.h"
+#import "MTIRenderCommand.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MetalPetal.h"
 #import "MTIAlphaType.h"

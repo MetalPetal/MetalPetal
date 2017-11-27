@@ -12,6 +12,7 @@
 #import "MTIVertex.h"
 #import "MTIAlphaType.h"
 #import "MTIImagePromise.h"
+#import "MTIRenderCommand.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -42,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor
                       fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor;
 
+@end
+
+@interface MTIRenderPipelineKernel (ImageCreation)
+
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
          outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
@@ -55,6 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
                                     withTextures:(NSArray<MTIImage *> *)images
                                       parameters:(NSDictionary<NSString *,id> *)parameters
                                outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
+
+@end
+
+@interface MTIRenderCommand (ImageCreation)
+
++ (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands
+                                        outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
 
 @end
 

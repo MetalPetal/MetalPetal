@@ -137,7 +137,8 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:@[self.kernel.computeFunctionDescriptor] content:self.functionParameters];
+    NSString *content = [NSString stringWithFormat:@"%@\n%@\n",self.kernel.computeFunctionDescriptor.name, self.functionParameters];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor content:content];
 }
 
 @end

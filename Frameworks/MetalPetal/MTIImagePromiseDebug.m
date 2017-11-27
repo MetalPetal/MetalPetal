@@ -22,11 +22,10 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
 
 @implementation MTIImagePromiseDebugInfo
 
-- (instancetype)initWithPromise:(id<MTIImagePromise>)promise type:(MTIImagePromiseType)type associatedFunctions:(NSArray<MTIFunctionDescriptor *> *)associatedFunctions content:(id)content {
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise type:(MTIImagePromiseType)type content:(id)content {
     if (self = [super init]) {
         _identifier = MTIImagePromiseDebugIdentifierForObject(promise);
         _type = type;
-        _associatedFunctions = associatedFunctions ?: @[];
         _content = content;
         _title = NSStringFromClass(promise.class);
         _dimensions = promise.dimensions;
@@ -92,10 +91,6 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     contentTextLayer.fontSize = 10;
     NSString *content = @"";
     content = [content stringByAppendingFormat:@"[%@x%@x%@] Alpha: %@\n",@(self.dimensions.width),@(self.dimensions.height),@(self.dimensions.depth),MTIAlphaTypeGetDescription(self.alphaType)];
-    for (MTIFunctionDescriptor *function in self.associatedFunctions) {
-        content = [content stringByAppendingString:function.name];
-        content = [content stringByAppendingString:@"\n"];
-    }
     content = [content stringByAppendingString:@"\n"];
     content = [content stringByAppendingString:[self.content debugDescription] ?: @""];
     contentTextLayer.string = content;

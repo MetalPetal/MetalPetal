@@ -69,7 +69,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.URL];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:self.URL];
 }
 
 @end
@@ -119,7 +119,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:(id)self.image];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:(id)self.image];
 }
 
 @end
@@ -161,7 +161,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.texture];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:self.texture];
 }
 
 @end
@@ -239,7 +239,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:self.image];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:self.image];
 }
 
 @end
@@ -300,7 +300,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource associatedFunctions:nil content:@[@(self.color.red), @(self.color.green), @(self.color.blue), @(self.color.alpha)]];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:@[@(self.color.red), @(self.color.green), @(self.color.blue), @(self.color.alpha)]];
 }
 
 @end

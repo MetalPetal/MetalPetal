@@ -172,7 +172,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor associatedFunctions:nil content:@{@"clipLimit": @(self.clipLimit),
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeProcessor content:@{@"clipLimit": @(self.clipLimit),
                                                                                                                                       @"tileGridSize": @[@(self.tileSize.width),@(self.tileSize.height)]
                                                                                                                                       }];
 }

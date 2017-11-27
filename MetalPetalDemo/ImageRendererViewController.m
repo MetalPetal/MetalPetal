@@ -236,7 +236,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         
-        MTIImage *outputImage = [self claheTestOutputImage];
+        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;

@@ -18,13 +18,17 @@
 
 @property (nonatomic,readonly) MTLLoadAction loadAction;
 
+@property (nonatomic,readonly) MTLStoreAction storeAction;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat;
 
-- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction;
+
+- (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction storeAction:(MTLStoreAction)storeAction NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object;
 

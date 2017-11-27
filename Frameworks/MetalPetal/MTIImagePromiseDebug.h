@@ -27,15 +27,12 @@ FOUNDATION_EXPORT NSString * MTIImagePromiseDebugIdentifierForObject(id object);
 
 @property (nonatomic,strong,readonly,nullable) id content;
 
-@property (nonatomic,copy,readonly) NSArray<MTIFunctionDescriptor *> *associatedFunctions;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise
                            type:(MTIImagePromiseType)type
-            associatedFunctions:(nullable NSArray<MTIFunctionDescriptor *> *)associatedFunctions
                         content:(id)content;
 
 @end
