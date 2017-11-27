@@ -176,8 +176,8 @@
         [renderTargets addObject:renderTarget];
     }
     
-    __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-
+    id<MTLRenderCommandEncoder> commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    
     NSUInteger resolutionIndex = 0;
     
     for (MTIRenderCommand *command in self.renderCommands) {
@@ -187,6 +187,8 @@
             if (inOutError) {
                 *inOutError = error;
             }
+            
+            [commandEncoder endEncoding];
             return nil;
         }
         
@@ -200,7 +202,7 @@
             [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
         }
         
-        for (NSUInteger index = 0; index < inputResolutions.count; index += 1) {
+        for (NSUInteger index = 0; index < command.images.count; index += 1) {
             [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
             MTIImage *image = command.images[index];
             NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
@@ -213,19 +215,21 @@
         if (command.parameters.count > 0) {
             [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:command.parameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
             if (error) {
-                [commandEncoder endEncoding];
                 if (inOutError) {
                     *inOutError = error;
                 }
+                
+                [commandEncoder endEncoding];
                 return nil;
             }
             
             [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:command.parameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
             if (error) {
-                [commandEncoder endEncoding];
                 if (inOutError) {
                     *inOutError = error;
                 }
+                
+                [commandEncoder endEncoding];
                 return nil;
             }
         }
