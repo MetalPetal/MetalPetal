@@ -53,40 +53,24 @@
     return [self initWithValues:values count:4];
 }
 
-- (instancetype)initWithCGAffineTransform:(CGAffineTransform)t {
-    float values[6] = {(float)t.a, (float)t.b, (float)t.c, (float)t.d, (float)t.tx, (float)t.ty};
-    return [self initWithValues:values count:6];
-}
-
-- (instancetype)initWithCATransform3D:(CATransform3D)t {
-    float values[16] = {
-        (float)t.m11, (float)t.m12, (float)t.m13, (float)t.m14,
-        (float)t.m21, (float)t.m22, (float)t.m23, (float)t.m24,
-        (float)t.m31, (float)t.m32, (float)t.m33, (float)t.m34,
-        (float)t.m41, (float)t.m42, (float)t.m43, (float)t.m44
-    };
-    return [self initWithValues:values count:16];
-}
-
 - (instancetype)initWithFloat4x4:(simd_float4x4)m {
-    SCNMatrix4 t = SCNMatrix4FromMat4(m);
-    float values[16] = {
-        (float)t.m11, (float)t.m12, (float)t.m13, (float)t.m14,
-        (float)t.m21, (float)t.m22, (float)t.m23, (float)t.m24,
-        (float)t.m31, (float)t.m32, (float)t.m33, (float)t.m34,
-        (float)t.m41, (float)t.m42, (float)t.m43, (float)t.m44
-    };
-    return [self initWithValues:values count:16];
+    const float * values = (void *)&m;
+    return [self initWithValues:values count:sizeof(m)/sizeof(float)];
 }
 
 - (instancetype)initWithFloat2:(simd_float2)v {
-    float values[2] = {v[0],v[1]};
-    return [self initWithValues:values count:2];
+    const float * values = (void *)&v;
+    return [self initWithValues:values count:sizeof(v)/sizeof(float)];
 }
 
 - (instancetype)initWithFloat4:(simd_float4)v {
-    float values[4] = {v[0],v[1],v[2],v[3]};
-    return [self initWithValues:values count:4];
+    const float * values = (void *)&v;
+    return [self initWithValues:values count:sizeof(v)/sizeof(float)];
+}
+
+- (instancetype)initWithFloat3:(simd_float3)v {
+    simd_float4 float4 = simd_make_float4(v, 0);
+    return [self initWithFloat4:float4];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -129,56 +113,33 @@
     return CGRectZero;
 }
 
-- (CGAffineTransform)CGAffineTransformValue {
-    if (self.count == 6) {
-        const float * bytes = self.bytes;
-        return CGAffineTransformMake(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5]);
-    }
-    return CGAffineTransformIdentity;
-}
-
 - (simd_float4x4)float4x4Value {
-    if (self.count == 16) {
-        const float * bytes = self.bytes;
-        SCNMatrix4 m = (SCNMatrix4){
-            bytes[0], bytes[1], bytes[2], bytes[3],
-            bytes[4], bytes[5], bytes[6], bytes[7],
-            bytes[8], bytes[9], bytes[10], bytes[11],
-            bytes[12], bytes[13], bytes[14], bytes[15]
-        };
-        return SCNMatrix4ToMat4(m);
+    if (self.count == sizeof(simd_float4x4)/sizeof(float)) {
+        simd_float4x4 m;
+        [self.data getBytes:&m length:sizeof(m)];
     }
     return matrix_identity_float4x4;
 }
 
 - (simd_float2)float2Value {
-    if (self.count == 2) {
-        const float * bytes = self.bytes;
-        return (simd_float2){bytes[0], bytes[1]};
+    if (self.count == sizeof(simd_float2)/sizeof(float)) {
+        simd_float2 v;
+        [self.data getBytes:&v length:sizeof(v)];
     }
     return (simd_float2){0,0};
 }
 
 - (simd_float4)float4Value {
-    if (self.count == 4) {
-        const float * bytes = self.bytes;
-        return (simd_float4){bytes[0], bytes[1], bytes[2], bytes[3]};
+    if (self.count == sizeof(simd_float4)/sizeof(float)) {
+        simd_float4 v;
+        [self.data getBytes:&v length:sizeof(v)];
     }
     return (simd_float4){0,0,0,0};
 }
 
-- (CATransform3D)CATransform3DValue {
-    if (self.count == 16) {
-        const float * bytes = self.bytes;
-        CATransform3D m = (CATransform3D){
-            bytes[0], bytes[1], bytes[2], bytes[3],
-            bytes[4], bytes[5], bytes[6], bytes[7],
-            bytes[8], bytes[9], bytes[10], bytes[11],
-            bytes[12], bytes[13], bytes[14], bytes[15]
-        };
-        return m;
-    }
-    return CATransform3DIdentity;
+- (simd_float3)float3Value {
+    simd_float4 float4 = self.float4Value;
+    return float4.xyz;
 }
 
 - (NSUInteger)hash {

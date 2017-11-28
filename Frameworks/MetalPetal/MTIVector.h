@@ -24,11 +24,10 @@
 - (instancetype)initWithCGPoint:(CGPoint)p;
 - (instancetype)initWithCGSize:(CGSize)s;
 - (instancetype)initWithCGRect:(CGRect)r;
-- (instancetype)initWithCGAffineTransform:(CGAffineTransform)t;
-- (instancetype)initWithCATransform3D:(CATransform3D)t;
 - (instancetype)initWithFloat4x4:(simd_float4x4)m;
 - (instancetype)initWithFloat2:(simd_float2)v;
 - (instancetype)initWithFloat4:(simd_float4)v;
+- (instancetype)initWithFloat3:(simd_float3)v;
 
 @property (readonly) NSUInteger count;
 
@@ -40,14 +39,12 @@
 
 @property (readonly) CGRect CGRectValue;
 
-@property (readonly) CGAffineTransform CGAffineTransformValue;
-
-@property (readonly) CATransform3D CATransform3DValue;
-
 @property (readonly) simd_float4x4 float4x4Value;
 
 @property (readonly) simd_float2 float2Value;
 
 @property (readonly) simd_float4 float4Value;
+
+@property (readonly) simd_float3 float3Value;
 
 @end
