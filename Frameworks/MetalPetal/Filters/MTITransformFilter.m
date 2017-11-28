@@ -29,20 +29,6 @@
     return kernel;
 }
 
-- (MTIVertices *)verticesForRect:(CGRect)rect {
-    CGFloat l = CGRectGetMinX(rect);
-    CGFloat r = CGRectGetMaxX(rect);
-    CGFloat t = CGRectGetMinY(rect);
-    CGFloat b = CGRectGetMaxY(rect);
-    
-    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
-    } count:4];
-}
-
 - (instancetype)init {
     if (self = [super init]) {
         _transform = CATransform3DIdentity;
@@ -81,7 +67,7 @@
         matrix = simd_mul(transformMatrix, orthographicMatrix);
     }
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTIPixelFormatUnspecified loadAction:MTLLoadActionClear];
-    return [[MTITransformFilter kernel] imagesByDrawingGeometry:[self verticesForRect:CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height)]
+    return [[MTITransformFilter kernel] imagesByDrawingGeometry:[MTIVertices squareVerticesForRect:CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height)]
                                                    withTextures:@[self.inputImage]
                                                      parameters:@{@"transformMatrix": [NSData dataWithBytes:&matrix length:sizeof(matrix)]}
                                               outputDescriptors:@[outputDescriptor]].firstObject;

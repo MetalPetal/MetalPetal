@@ -34,9 +34,9 @@ FOUNDATION_EXPORT BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) NS_SWI
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithVertices:(const MTIVertex * _Nonnull)vertices count:(NSInteger)count; //MTLPrimitiveTypeTriangleStrip
-
 - (instancetype)initWithVertices:(const MTIVertex * _Nonnull)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
+
++ (instancetype)squareVerticesForRect:(CGRect)rect;
 
 @end
 

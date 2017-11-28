@@ -100,7 +100,7 @@
         { .position = {widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 1, 1 } },
         { .position = {-widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 0, 0 } },
         { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
-    } count:4];
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
     NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
     
@@ -264,12 +264,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
         renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
         
-        MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-            { .position = {-1, -1, 0, 1} , .textureCoordinate = { 0, 1 } },
-            { .position = {1, -1, 0, 1} , .textureCoordinate = { 1, 1 } },
-            { .position = {-1, 1, 0, 1} , .textureCoordinate = { 0, 0 } },
-            { .position = {1, 1, 0, 1} , .textureCoordinate = { 1, 0 } }
-        } count:4];
+        MTIVertices *vertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
         
         NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
         

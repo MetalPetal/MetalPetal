@@ -72,7 +72,7 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
         { .position = {r, t, 0, 1} , .textureCoordinate = { maxX, maxY } },
         { .position = {l, b, 0, 1} , .textureCoordinate = { minX, minY } },
         { .position = {r, b, 0, 1} , .textureCoordinate = { maxX, minY } }
-    } count:4];
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width, .height = self.inputImage.size.height * cropRect.size.height, .depth = 1} pixelFormat:self.outputPixelFormat];
     

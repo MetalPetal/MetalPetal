@@ -153,7 +153,7 @@
         { .position = {r, t, 0, 1} , .textureCoordinate = textureCoordinates[1] },
         { .position = {l, b, 0, 1} , .textureCoordinate = textureCoordinates[2] },
         { .position = {r, b, 0, 1} , .textureCoordinate = textureCoordinates[3] }
-    } count:4];
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
 @end

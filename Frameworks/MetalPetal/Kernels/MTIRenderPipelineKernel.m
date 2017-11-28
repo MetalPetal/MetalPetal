@@ -363,17 +363,7 @@
     static MTIVertices *defaultVertices;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        CGRect rect = CGRectMake(-1, -1, 2, 2);
-        CGFloat l = CGRectGetMinX(rect);
-        CGFloat r = CGRectGetMaxX(rect);
-        CGFloat t = CGRectGetMinY(rect);
-        CGFloat b = CGRectGetMaxY(rect);
-        defaultVertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-            { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-            { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
-            { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-            { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
-        } count:4];
+        defaultVertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
     });
     return defaultVertices;
 }

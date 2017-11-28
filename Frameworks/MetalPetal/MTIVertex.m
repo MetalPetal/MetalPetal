@@ -62,10 +62,6 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 @synthesize vertexCount = _vertexCount;
 @synthesize bufferLength = _bufferLength;
 
-- (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count {
-    return [self initWithVertices:vertices count:count primitiveType:MTLPrimitiveTypeTriangleStrip];
-}
-
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType {
     if (self = [super init]) {
         _vertexCount = count;
@@ -123,6 +119,19 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
     } else {
         return NO;
     }
+}
+
++ (instancetype)squareVerticesForRect:(CGRect)rect {
+    CGFloat l = CGRectGetMinX(rect);
+    CGFloat r = CGRectGetMaxX(rect);
+    CGFloat t = CGRectGetMinY(rect);
+    CGFloat b = CGRectGetMaxY(rect);
+    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
 @end

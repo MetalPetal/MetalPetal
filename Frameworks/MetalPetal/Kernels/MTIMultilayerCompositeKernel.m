@@ -186,7 +186,7 @@
         { .position = {r, t, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMaxY(contentRegion) } },
         { .position = {l, b, 0, 1} , .textureCoordinate = { CGRectGetMinX(contentRegion), CGRectGetMinY(contentRegion) } },
         { .position = {r, b, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMinY(contentRegion) } }
-    } count:4];
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
