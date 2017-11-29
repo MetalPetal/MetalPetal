@@ -47,10 +47,24 @@
     }
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.frame device:_context.device];
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    renderView.enableSetNeedsDisplay = YES;
     renderView.delegate = self;
     [self addSubview:renderView];
     _renderView = renderView;
+    
+    _renderView.paused = YES;
+    _renderView.enableSetNeedsDisplay = NO;
+    _drawsImmediately = YES;
+}
+
+- (void)setDrawsImmediately:(BOOL)drawsImmediately {
+    _drawsImmediately = drawsImmediately;
+    if (drawsImmediately) {
+        _renderView.paused = YES;
+        _renderView.enableSetNeedsDisplay = YES;
+    } else {
+        _renderView.paused = YES;
+        _renderView.enableSetNeedsDisplay = NO;
+    }
 }
 
 - (void)didMoveToWindow {
@@ -89,7 +103,20 @@
 
 - (void)setImage:(MTIImage *)image {
     _image = image;
-    [self.renderView setNeedsDisplay];
+    if (_drawsImmediately) {
+        [_renderView draw];
+    } else {
+        [_renderView setNeedsDisplay];
+    }
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (_drawsImmediately) {
+        [_renderView draw];
+    } else {
+        [_renderView setNeedsDisplay];
+    }
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {

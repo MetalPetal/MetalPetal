@@ -220,6 +220,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         if (!persistResolution) {
             persistResolution = [[MTIPersistImageResolutionHolder alloc] initWithRenderTarget:renderTarget];
             [self.context setValue:persistResolution forImage:image inTable:MTIContextImagePersistentResolutionHolderTable];
+        } else {
+            [persistResolution.renderTarget retainTexture];
         }
     }
     
@@ -281,6 +283,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             if (error) {
                 *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToGetRenderedBuffer userInfo:@{}];
             }
+            _image = nil;
             return nil;
         }
         _resolution = persistResolution;
