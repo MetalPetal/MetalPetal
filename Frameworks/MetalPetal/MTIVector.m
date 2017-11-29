@@ -7,8 +7,11 @@
 //
 
 #import "MTIVector.h"
+#import <AssertMacros.h>
 @import Accelerate;
 @import SceneKit;
+
+__Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
 
 @implementation MTIVector
 
