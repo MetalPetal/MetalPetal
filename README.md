@@ -62,11 +62,19 @@ However, `MTIFilter` objects are mutable and thus cannot be shared safely among 
 
 A `MTIContext` contains a lot of states and caches thus cannot be shared safely among threads currently. We are still evaluating whether it's necessary to implement a thread-safe mechanism for `MTIContext` objects.
 
+### Alpha Type Handling
+
+*[Stub]*
+
+### Render Graph Optimization
+
+*[Stub]*
+
 ### Advantages over Core Image
 
 - Fully customizable vertex and fragment functions.
 
-- Works seemlessly with [GPUImage](https://github.com/BradLarson/GPUImage) and Core Image.
+- MRT (Multiple Render Targets) support.
 
 - Generally better performance. (Detailed benchmark data needed)
 
@@ -74,39 +82,75 @@ A `MTIContext` contains a lot of states and caches thus cannot be shared safely 
 
 ### Color Matrix
 
+*[Stub]*
+
 ### Color Lookup
+
+*[Stub]*
 
 ### Opacity
 
+*[Stub]*
+
 ### Exposure
+
+*[Stub]*
 
 ### Saturation
 
+*[Stub]*
+
 ### Brightness
+
+*[Stub]*
 
 ### Contrast
 
+*[Stub]*
+
 ### Color Invert
+
+*[Stub]*
 
 ### Vibrance
 
+*[Stub]*
+
 ### Blend Modes
+
+*[Stub]*
 
 ### Blend with Mask
 
+*[Stub]*
+
 ### Transform
+
+*[Stub]*
 
 ### Crop
 
+*[Stub]*
+
 ### Multilayer Composite
+
+*[Stub]*
 
 ### MPS Convolution
 
+*[Stub]*
+
 ### MPS Gaussian Blur
+
+*[Stub]*
 
 ### CLAHE
 
+*[Stub]*
+
 ### Lens Blur (Hexagonal Bokeh Blur)
+
+*[Stub]*
 
 ## Example Code
 
@@ -152,6 +196,10 @@ do {
 }
 ```
 
+### Quick Look Debug Support
+
+*[Stub]*
+
 ## Best Practices
 
 - Reuse a `MTIContext` whenever possible.
@@ -195,7 +243,13 @@ do {
     filterB.inputImage = filterA.outputImage
     filterC.inputImage = filterA.outputImage
     ```
-    
+
+## Build Custom Filter
+
+If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to set the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`) to `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers`
+
+*[Stub]*
+
 ## Install
 
 We do not recommend you to use MetalPetal in your project right now.
@@ -211,12 +265,6 @@ pod 'MetalPetal', :git => 'https://github.com/MetalPetal/MetalPetal.git'
 pod 'MetalPetal/Swift', :git => 'https://github.com/MetalPetal/MetalPetal.git'
 
 ```
-
-## Roadmap
-
-We're going to release an alpha version of MetalPetal in Nov 2017.
-
-You can follow our progress on the "Project" page. https://github.com/MetalPetal/MetalPetal/projects/1
 
 ## Contribute
 

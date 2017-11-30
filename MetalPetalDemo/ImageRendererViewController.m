@@ -8,7 +8,6 @@
 
 #import "ImageRendererViewController.h"
 #import "MetalPetalDemo-Swift.h"
-#import "WeakToStrongObjectsMapTableTests.h"
 #import "CameraViewController.h"
 #import <sys/kdebug_signpost.h>
 @import MetalPetal;
@@ -55,8 +54,6 @@
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.redColor;
     [MetalPetalSwiftInterfaceTest test];
-    
-    //[WeakToStrongObjectsMapTableTests test];
     
     MTIContextOptions *options = [[MTIContextOptions alloc] init];
     //options.enablesRenderGraphOptimization = NO;
