@@ -8,7 +8,6 @@
 
 #import "MTIKernel.h"
 #import "MTIDefer.h"
-#import "MTIContext.h"
 #import "MTIVector.h"
 #import "MTIError.h"
 
