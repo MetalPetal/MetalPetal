@@ -54,21 +54,27 @@ A `MTIFilter` represents an image processing effect and any parameters that cont
 
 A `MTIKernel` represents an image processing routine. `MTIKernel` is responsible for creating the cooresponding render or compute pipeline state for the filter, as well as building the `MTIImagePromise` for a `MTIImage`.
 
-### Concurrency Considerations
-
-`MTIImage` objects are immutable, which means they can be shared safely among threads. 
-
-However, `MTIFilter` objects are mutable and thus cannot be shared safely among threads.
-
-A `MTIContext` contains a lot of states and caches thus cannot be shared safely among threads currently. We are still evaluating whether it's necessary to implement a thread-safe mechanism for `MTIContext` objects.
-
 ### Alpha Type Handling
+
+If an alpha channel is used in an image, there are two common representations that are available: unpremultiplied (straight/unassociated) alpha, and premultiplied (associated) alpha.
+
+With unpremultiplied alpha, the RGB components represent the color of the pixel, disregarding its opacity.
+
+With premultiplied alpha, the RGB components represent the color of the pixel, adjusted for its opacity by multiplication.
 
 *[Stub]*
 
 ### Render Graph Optimization
 
 *[Stub]*
+
+### Concurrency Considerations
+
+`MTIImage` objects are immutable, which means they can be shared safely among threads.
+
+However, `MTIFilter` objects are mutable and thus cannot be shared safely among threads.
+
+A `MTIContext` contains a lot of states and caches thus cannot be shared safely among threads currently. We are still evaluating whether it's necessary to implement a thread-safe mechanism for `MTIContext` objects.
 
 ### Advantages over Core Image
 
