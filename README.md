@@ -252,7 +252,7 @@ do {
 
 ## Build Custom Filter
 
-If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to set the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`) to `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers`
+If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
 
 *[Stub]*
 
