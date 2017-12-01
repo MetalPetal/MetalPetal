@@ -57,6 +57,10 @@
 
 @property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaRenderPipeline;
 
+@property (nonatomic,copy,readonly) MTIRenderPipeline *passthroughToColorAttachmentOneRenderPipeline;
+
+@property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaToColorAttachmentOneRenderPipeline;
+
 @end
 
 @implementation MTIMultilayerCompositeKernelState
@@ -73,7 +77,7 @@
         return nil;
     }
     
-    id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] error:&error];
+    id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName] error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -85,6 +89,7 @@
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
     renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
+    renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
@@ -103,6 +108,22 @@
         }
         
         _unpremultiplyAlphaRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:MTIFilterUnpremultiplyAlphaFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        
+        _passthroughToColorAttachmentOneRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"passthroughToColorAttachmentOne" colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        
+        _unpremultiplyAlphaToColorAttachmentOneRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"unpremultiplyAlphaToColorAttachmentOne" colorAttachmentDescriptor:colorAttachmentDescriptor context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -135,6 +156,7 @@
             renderPipelineDescriptor.fragmentFunction = fragmentFunction;
             
             renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
+            renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
             renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
             renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
             
@@ -263,6 +285,25 @@
     renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+
+    //Set up color attachment 1 for compositing mask
+    id<MTLTexture> compositingMaskTexture;
+    MTIImagePromiseRenderTarget *compositingMaskRenderTarget;
+    @MTI_DEFER {
+        [compositingMaskRenderTarget releaseTexture];
+    };
+    if (@available(iOS 10.0, *)) {
+        MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor copy];
+        tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
+    } else {
+        compositingMaskRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+        compositingMaskTexture = compositingMaskRenderTarget.texture;
+    }
+    renderPassDescriptor.colorAttachments[1].texture = compositingMaskTexture;
+    renderPassDescriptor.colorAttachments[1].clearColor = MTLClearColorMake(0, 0, 0, 0);
+    renderPassDescriptor.colorAttachments[1].loadAction = MTLLoadActionDontCare;
+    renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
     
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1)];
@@ -284,6 +325,22 @@
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         MTILayer *layer = self.layers[index];
+        
+        id<MTIImagePromiseResolution> compositingMaskResolution = nil;
+        if (layer.compositingMask) {
+            compositingMaskResolution = layerCompositingMaskResolutions[index];
+            if (layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied) {
+                [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaToColorAttachmentOneRenderPipeline].state];
+            } else {
+                [commandEncoder setRenderPipelineState:[kernelState passthroughToColorAttachmentOneRenderPipeline].state];
+            }
+            [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+            [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:0];
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor];
+            [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+            [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+        }
+        
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
         CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
@@ -308,14 +365,6 @@
         [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
         id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
-        
-        id<MTIImagePromiseResolution> compositingMaskResolution = nil;
-        if (layer.compositingMask) {
-            compositingMaskResolution = layerCompositingMaskResolutions[index];
-            [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:1];
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor];
-            [commandEncoder setFragmentSamplerState:samplerState atIndex:1];
-        }
         
         //parameters
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);

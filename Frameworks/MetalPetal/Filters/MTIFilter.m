@@ -11,8 +11,8 @@
 #import "MTIImage.h"
 #import "MTIFunctionDescriptor.h"
 
-NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertexShader";
-NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthroughFragmentShader";
+NSString * const MTIFilterPassthroughVertexFunctionName = @"passthroughVertex";
+NSString * const MTIFilterPassthroughFragmentFunctionName = @"passthrough";
 
 NSString * const MTIFilterUnpremultiplyAlphaFragmentFunctionName = @"unpremultiplyAlpha";
 NSString * const MTIFilterPremultiplyAlphaFragmentFunctionName = @"premultiplyAlpha";

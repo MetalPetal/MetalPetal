@@ -12,7 +12,7 @@
 using namespace metal;
 using namespace metalpetal;
 
-vertex VertexOut passthroughVertexShader(
+vertex VertexOut passthroughVertex(
     const device VertexIn * vertices [[ buffer(0) ]],
 	uint vid [[ vertex_id ]]
 ) {
@@ -23,7 +23,7 @@ vertex VertexOut passthroughVertexShader(
 	return outVertex;
 }
 
-fragment float4 passthroughFragmentShader(
+fragment float4 passthrough(
 	VertexOut vertexIn [[ stage_in ]],
 	texture2d<float, access::sample> colorTexture [[ texture(0) ]],
 	sampler colorSampler [[ sampler(0) ]]
@@ -38,6 +38,31 @@ fragment float4 unpremultiplyAlpha(
                             ) {
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     return unpremultiply(textureColor);
+}
+
+typedef struct {
+    float4 color [[color(1)]];
+} ColorAttachmentOneOutput;
+
+fragment ColorAttachmentOneOutput passthroughToColorAttachmentOne(
+                                          VertexOut vertexIn [[ stage_in ]],
+                                          texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                          sampler colorSampler [[ sampler(0) ]]
+                                          ) {
+    ColorAttachmentOneOutput output;
+    output.color = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    return output;
+}
+
+fragment ColorAttachmentOneOutput unpremultiplyAlphaToColorAttachmentOne(
+                                   VertexOut vertexIn [[ stage_in ]],
+                                   texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                   sampler colorSampler [[ sampler(0) ]]
+                                   ) {
+    ColorAttachmentOneOutput output;
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    output.color = unpremultiply(textureColor);
+    return output;
 }
 
 fragment float4 premultiplyAlpha(

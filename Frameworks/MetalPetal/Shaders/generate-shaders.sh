@@ -69,18 +69,16 @@ struct MetalPetalShaderGenerator {
             fragment float4 multilayerComposite%BlendModeName%Blend(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 float4 currentColor [[color(0)]],
+                                                                float4 maskColor [[color(1)]],
                                                                 constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                                 texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                                sampler colorSampler [[ sampler(0) ]],
-                                                                texture2d<float, access::sample> maskTexture [[ texture(1) ]],
-                                                                sampler maskSampler [[ sampler(1) ]]
+                                                                sampler colorSampler [[ sampler(0) ]]
                                                             ) {
                 float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
                 if (parameters.contentHasPremultipliedAlpha) {
                     textureColor = unpremultiply(textureColor);
                 }
                 if (parameters.hasCompositingMask) {
-                    float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
                     float maskValue = maskColor[parameters.compositingMaskComponent];
                     textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
                 }
@@ -114,18 +112,7 @@ struct MetalPetalShaderGenerator {
             
             """,
             content: """
-            fragment float4 %blendModeName%BlendInPlace(
-                                                        VertexOut vertexIn [[ stage_in ]],
-                                                        float4 currentColor [[color(0)]],
-                                                        texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                        sampler colorSampler [[ sampler(0) ]],
-                                                        constant float &intensity [[buffer(0)]]
-                                                        ) {
-                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
-                float4 blendedColor = %blendModeName%Blend(currentColor,textureColor);
-                return mix(currentColor,blendedColor,intensity);
-            }
-
+            
             fragment float4 %blendModeName%Blend(VertexOut vertexIn [[ stage_in ]],
                                                 texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                                 sampler colorSampler [[ sampler(0) ]],
