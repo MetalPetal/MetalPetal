@@ -282,7 +282,6 @@
 
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
-    renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
 
@@ -301,7 +300,6 @@
         compositingMaskTexture = compositingMaskRenderTarget.texture;
     }
     renderPassDescriptor.colorAttachments[1].texture = compositingMaskTexture;
-    renderPassDescriptor.colorAttachments[1].clearColor = MTLClearColorMake(0, 0, 0, 0);
     renderPassDescriptor.colorAttachments[1].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
     
