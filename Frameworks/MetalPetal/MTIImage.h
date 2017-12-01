@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 /// Return a 1x1 transparent image
 + (instancetype)transparentImage;
 
-- (instancetype)initWithBitmapData:(NSData *)data width:(NSInteger)width height:(NSInteger)height bytesPerRow:(NSInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
+- (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
 @end
 

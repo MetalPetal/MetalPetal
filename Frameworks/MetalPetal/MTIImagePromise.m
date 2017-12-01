@@ -311,7 +311,7 @@
 
 @property (nonatomic,readonly) MTLPixelFormat pixelFormat;
 
-@property (nonatomic,readonly) NSInteger bytesPerRow;
+@property (nonatomic,readonly) NSUInteger bytesPerRow;
 
 @end
 
@@ -319,7 +319,7 @@
 @synthesize alphaType = _alphaType;
 @synthesize dimensions = _dimensions;
 
-- (instancetype)initWithBitmapData:(NSData *)data width:(NSInteger)width height:(NSInteger)height bytesPerRow:(NSInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         NSParameterAssert(width > 0);
         NSParameterAssert(height > 0);
