@@ -67,5 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface MTIBitmapDataImagePromise: NSObject <MTIImagePromise>
+
+- (instancetype)initWithBitmapData:(NSData *)data width:(NSInteger)width height:(NSInteger)height bytesPerRow:(NSInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
+
+@end
+
 NS_ASSUME_NONNULL_END
 

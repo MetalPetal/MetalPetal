@@ -304,3 +304,62 @@
 }
 
 @end
+
+@interface MTIBitmapDataImagePromise ()
+
+@property (nonatomic,copy,readonly) NSData *data;
+
+@property (nonatomic,readonly) MTLPixelFormat pixelFormat;
+
+@property (nonatomic,readonly) NSInteger bytesPerRow;
+
+@end
+
+@implementation MTIBitmapDataImagePromise
+@synthesize alphaType = _alphaType;
+@synthesize dimensions = _dimensions;
+
+- (instancetype)initWithBitmapData:(NSData *)data width:(NSInteger)width height:(NSInteger)height bytesPerRow:(NSInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        NSParameterAssert(width > 0);
+        NSParameterAssert(height > 0);
+        NSParameterAssert(data.length == height * bytesPerRow);
+        _data = [data copy];
+        _dimensions = (MTITextureDimensions){.width = width, .height = height, .depth = 1};
+        _pixelFormat = pixelFormat;
+        _alphaType = alphaType;
+        _bytesPerRow = bytesPerRow;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+    textureDescriptor.width = _dimensions.width;
+    textureDescriptor.height = _dimensions.height;
+    textureDescriptor.depth = _dimensions.depth;
+    textureDescriptor.textureType = MTLTextureType2D;
+    textureDescriptor.pixelFormat = _pixelFormat;
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+    [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
+    return renderTarget;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:@"BitmapData"];
+}
+
+@end

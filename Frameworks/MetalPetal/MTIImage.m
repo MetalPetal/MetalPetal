@@ -199,6 +199,10 @@
     return image;
 }
 
+- (instancetype)initWithBitmapData:(NSData *)data width:(NSInteger)width height:(NSInteger)height bytesPerRow:(NSInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType {
+    return [self initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:data width:width height:height bytesPerRow:bytesPerRow pixelFormat:pixelFormat alphaType:alphaType] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
 - (id)debugQuickLookObject {
     return [MTIImagePromiseDebugInfo layerRepresentationOfRenderGraphForPromise:self.promise];
 }
