@@ -56,11 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
                                  parameters:(NSDictionary<NSString *,id> *)parameters
                           outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
 
-- (NSArray<MTIImage *> *)imagesByDrawingGeometry:(id<MTIGeometry>)geometry
-                                    withTextures:(NSArray<MTIImage *> *)images
-                                      parameters:(NSDictionary<NSString *,id> *)parameters
-                               outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
-
 @end
 
 @interface MTIRenderCommand (ImageCreation)

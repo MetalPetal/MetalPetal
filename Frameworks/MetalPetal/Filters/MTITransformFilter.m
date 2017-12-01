@@ -67,10 +67,10 @@
         matrix = simd_mul(transformMatrix, orthographicMatrix);
     }
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTIPixelFormatUnspecified loadAction:MTLLoadActionClear];
-    return [[MTITransformFilter kernel] imagesByDrawingGeometry:[MTIVertices squareVerticesForRect:CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height)]
-                                                   withTextures:@[self.inputImage]
-                                                     parameters:@{@"transformMatrix": [NSData dataWithBytes:&matrix length:sizeof(matrix)]}
-                                              outputDescriptors:@[outputDescriptor]].firstObject;
+    
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTITransformFilter.kernel geometry:[MTIVertices squareVerticesForRect:CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height)] images:@[self.inputImage] parameters:@{@"transformMatrix": [NSData dataWithBytes:&matrix length:sizeof(matrix)]}];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
+                                            outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
 @end

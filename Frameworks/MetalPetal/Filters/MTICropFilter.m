@@ -76,10 +76,9 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
     
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width, .height = self.inputImage.size.height * cropRect.size.height, .depth = 1} pixelFormat:self.outputPixelFormat];
     
-    return [[MTICropFilter kernel] imagesByDrawingGeometry:geometry
-                                              withTextures:@[self.inputImage]
-                                                parameters:@{}
-                                         outputDescriptors:@[outputDescriptor]].firstObject;
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTICropFilter.kernel geometry:geometry images:@[self.inputImage] parameters:@{}];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
+                                            outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
 @end

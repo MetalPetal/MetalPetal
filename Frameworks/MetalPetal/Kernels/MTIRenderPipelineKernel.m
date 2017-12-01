@@ -369,26 +369,9 @@
 }
 
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
-    return [self imagesByDrawingGeometry:[MTIRenderPipelineKernel defaultRenderingVertices]
-                            withTextures:images
-                              parameters:parameters
-                       outputDescriptors:outputDescriptors];
-}
-
-- (NSArray<MTIImage *> *)imagesByDrawingGeometry:(id<MTIGeometry>)geometry
-                                    withTextures:(NSArray<MTIImage *> *)images
-                                      parameters:(NSDictionary<NSString *,id> *)parameters
-                               outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
-    NSParameterAssert(outputDescriptors.count == self.colorAttachmentCount);
-    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:geometry images:images parameters:parameters];
-    MTIImageRenderingRecipe *recipe = [[MTIImageRenderingRecipe alloc] initWithRenderCommands:@[command]
-                                                                            outputDescriptors:outputDescriptors];
-    NSMutableArray *outputs = [NSMutableArray array];
-    for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
-        MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:recipe outputIndex:index];
-        [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
-    }
-    return outputs;
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:[MTIRenderPipelineKernel defaultRenderingVertices] images:images parameters:parameters];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
+                                            outputDescriptors:outputDescriptors];
 }
 
 @end

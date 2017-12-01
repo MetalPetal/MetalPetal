@@ -61,10 +61,9 @@
     }
     MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(size) pixelFormat:outputPixelFormat];
     MTIVertices *geometry = [MTIUnaryImageRenderingFilter verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2) rotation:rotation];
-    return [[self kernel] imagesByDrawingGeometry:geometry
-                                     withTextures:@[image]
-                                       parameters:parameters
-                                outputDescriptors:@[outputDescriptor]].firstObject;
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self.kernel geometry:geometry images:@[image] parameters:parameters];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
+                                            outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
 + (BOOL)shouldSwipeWidthAndHeightWhenRotatingToOrientation:(MTIImageOrientation)orientation {
