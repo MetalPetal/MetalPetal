@@ -10,7 +10,7 @@
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIVector.h"
-#import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIRenderPassOutputDescriptor.h"
 
 @implementation MTILensBlurFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
@@ -78,7 +78,7 @@
                                                                                      parameters:@{@"delta0": deltas[0],
                                                                                                   @"delta1": deltas[1],
                                                                                                   }
-                                                                              outputDescriptors:@[[[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
+                                                                              outputDescriptors:@[[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
     MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1],maskImage,self.inputImage]
                                                                                 parameters:@{@"delta0": deltas[1],
                                                                                              @"delta1": deltas[2],

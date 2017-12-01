@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "MTIVertex.h"
 
-@class MTIRenderPipelineKernel, MTIImage, MTIRenderPipelineOutputDescriptor;
+@class MTIRenderPipelineKernel, MTIImage, MTIRenderPassOutputDescriptor;
 
 @interface MTIRenderCommand : NSObject <NSCopying>
 

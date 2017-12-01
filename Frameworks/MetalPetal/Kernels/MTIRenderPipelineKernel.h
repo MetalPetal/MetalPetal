@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPipelineOutputDescriptor;
+@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPassOutputDescriptor;
 
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
@@ -54,14 +54,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images
                                  parameters:(NSDictionary<NSString *,id> *)parameters
-                          outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
+                          outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors;
 
 @end
 
 @interface MTIRenderCommand (ImageCreation)
 
 + (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands
-                                        outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors;
+                                        outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors;
 
 @end
 

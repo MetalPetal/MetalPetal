@@ -19,7 +19,7 @@
 #import "MTIDefer.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTILock.h"
-#import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIRenderPassOutputDescriptor.h"
 #import "MTIImagePromiseDebug.h"
 
 @interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
@@ -116,7 +116,7 @@
 
 @property (nonatomic, copy, readonly) NSArray<MTIRenderCommand *> *renderCommands;
 
-@property (nonatomic,copy,readonly) NSArray<MTIRenderPipelineOutputDescriptor *> *outputDescriptors;
+@property (nonatomic,copy,readonly) NSArray<MTIRenderPassOutputDescriptor *> *outputDescriptors;
 
 @property (nonatomic, strong, readonly) MTIWeakToStrongObjectsMapTable *resolutionCache;
 @property (nonatomic, strong, readonly) id<NSLocking> resolutionCacheLock;
@@ -150,7 +150,7 @@
     }
     
     NSMutableArray<NSNumber *> *pixelFormats = [NSMutableArray array];
-    for (MTIRenderPipelineOutputDescriptor *outputDescriptor in self.outputDescriptors) {
+    for (MTIRenderPassOutputDescriptor *outputDescriptor in self.outputDescriptors) {
         MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
         [pixelFormats addObject:@(pixelFormat)];
     }
@@ -162,7 +162,7 @@
     for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
         MTLPixelFormat pixelFormat = [pixelFormats[index] MTLPixelFormatValue];
         
-        MTIRenderPipelineOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
+        MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
         
@@ -247,7 +247,7 @@
 }
 
 - (instancetype)initWithRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands
-                     outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
+                     outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
     if (self = [super init]) {
         NSParameterAssert(renderCommands.count > 0);
         _renderCommands = [renderCommands copy];
@@ -355,7 +355,7 @@
 @implementation MTIRenderPipelineKernel (ImageCreation)
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:outputTextureDimensions pixelFormat:outputPixelFormat];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:outputTextureDimensions pixelFormat:outputPixelFormat];
     return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
@@ -368,7 +368,7 @@
     return defaultVertices;
 }
 
-- (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
+- (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:[MTIRenderPipelineKernel defaultRenderingVertices] images:images parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
                                             outputDescriptors:outputDescriptors];
@@ -378,7 +378,7 @@
 
 @implementation MTIRenderCommand (ImageCreation)
 
-+ (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands outputDescriptors:(NSArray<MTIRenderPipelineOutputDescriptor *> *)outputDescriptors {
++ (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
     MTIImageRenderingRecipe *recipe = [[MTIImageRenderingRecipe alloc] initWithRenderCommands:renderCommands
                                                                             outputDescriptors:outputDescriptors];
     NSMutableArray *outputs = [NSMutableArray array];

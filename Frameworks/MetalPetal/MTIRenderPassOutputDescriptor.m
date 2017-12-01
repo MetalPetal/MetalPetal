@@ -5,9 +5,9 @@
 //  Created by YuAo on 18/11/2017.
 //
 
-#import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIRenderPassOutputDescriptor.h"
 
-@implementation MTIRenderPipelineOutputDescriptor
+@implementation MTIRenderPassOutputDescriptor
 
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat {
     return [self initWithDimensions:dimensions pixelFormat:pixelFormat loadAction:MTLLoadActionDontCare];
@@ -36,13 +36,13 @@
 }
 
 - (BOOL)isEqual:(id)object {
-    if ([object isKindOfClass:[MTIRenderPipelineOutputDescriptor class]]) {
+    if ([object isKindOfClass:[MTIRenderPassOutputDescriptor class]]) {
         return [self isEqualToOutputDescriptor:object];
     }
     return NO;
 }
 
-- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object {
+- (BOOL)isEqualToOutputDescriptor:(MTIRenderPassOutputDescriptor *)object {
     return MTITextureDimensionsEqualToTextureDimensions(_dimensions, object.dimensions) && _pixelFormat == object.pixelFormat && _loadAction == object.loadAction && _storeAction == object.storeAction;
 }
 

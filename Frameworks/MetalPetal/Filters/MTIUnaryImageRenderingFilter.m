@@ -10,7 +10,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIFilterUtilities.h"
-#import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIRenderPassOutputDescriptor.h"
 
 @implementation MTIUnaryImageRenderingFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
@@ -59,7 +59,7 @@
         size.width = image.size.height;
         size.height = image.size.width;
     }
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(size) pixelFormat:outputPixelFormat];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(size) pixelFormat:outputPixelFormat];
     MTIVertices *geometry = [MTIUnaryImageRenderingFilter verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2) rotation:rotation];
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self.kernel geometry:geometry images:@[image] parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]

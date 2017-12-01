@@ -10,7 +10,7 @@
 #import "MTITextureDimensions.h"
 #import "MTIPixelFormat.h"
 
-@interface MTIRenderPipelineOutputDescriptor: NSObject <NSCopying>
+@interface MTIRenderPassOutputDescriptor: NSObject <NSCopying>
 
 @property (nonatomic,readonly) MTITextureDimensions dimensions;
 
@@ -30,6 +30,6 @@
 
 - (instancetype)initWithDimensions:(MTITextureDimensions)dimensions pixelFormat:(MTLPixelFormat)pixelFormat loadAction:(MTLLoadAction)loadAction storeAction:(MTLStoreAction)storeAction NS_DESIGNATED_INITIALIZER;
 
-- (BOOL)isEqualToOutputDescriptor:(MTIRenderPipelineOutputDescriptor *)object;
+- (BOOL)isEqualToOutputDescriptor:(MTIRenderPassOutputDescriptor *)object;
 
 @end

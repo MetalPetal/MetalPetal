@@ -8,7 +8,7 @@
 #import "MTICropFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
-#import "MTIRenderPipelineOutputDescriptor.h"
+#import "MTIRenderPassOutputDescriptor.h"
 #import "MTIImage.h"
 
 MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
@@ -74,7 +74,7 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
         { .position = {r, b, 0, 1} , .textureCoordinate = { maxX, minY } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
-    MTIRenderPipelineOutputDescriptor *outputDescriptor = [[MTIRenderPipelineOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width, .height = self.inputImage.size.height * cropRect.size.height, .depth = 1} pixelFormat:self.outputPixelFormat];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width, .height = self.inputImage.size.height * cropRect.size.height, .depth = 1} pixelFormat:self.outputPixelFormat];
     
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTICropFilter.kernel geometry:geometry images:@[self.inputImage] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
