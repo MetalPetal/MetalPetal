@@ -68,11 +68,21 @@ namespace metalpetal {
     }
     
     METAL_FUNC float hue2rgb(float p, float q, float t){
-        if(t < 0.0) t += 1.0;
-        if(t > 1.0) t -= 1.0;
-        if(t < 1.0/6.0) return p + (q - p) * 6.0 * t;
-        if(t < 1.0/2.0) return q;
-        if(t < 2.0/3.0) return p + (q - p) * (2.0/3.0 - t) * 6.0;
+        if(t < 0.0) {
+            t += 1.0;
+        }
+        if(t > 1.0) {
+            t -= 1.0;
+        }
+        if(t < 1.0/6.0) {
+            return p + (q - p) * 6.0 * t;
+        }
+        if(t < 1.0/2.0) {
+            return q;
+        }
+        if(t < 2.0/3.0) {
+            return p + (q - p) * (2.0/3.0 - t) * 6.0;
+        }
         return p;
     }
     
@@ -141,7 +151,7 @@ namespace metalpetal {
     
     // overlay
     METAL_FUNC float overlayBlendSingleChannel(float b, float s ) {
-                return b < 0.5f ? (2 * s * b) : (1 - 2 * (1 - b) * (1 - s));
+        return b < 0.5f ? (2 * s * b) : (1 - 2 * (1 - b) * (1 - s));
     }
     
     METAL_FUNC float4 overlayBlend(float4 Cb, float4 Cs) {
@@ -189,9 +199,13 @@ namespace metalpetal {
     
     // colorDodge
     METAL_FUNC float colorDodgeBlendSingleChannel(float b, float f) {
-         if  (b == 0) return 0;
-        else if (f == 1) return 1;
-        else return min(1.0, b / (1 - f));
+        if (b == 0) {
+            return 0;
+        } else if (f == 1) {
+            return 1;
+        } else {
+            return min(1.0, b / (1 - f));
+        }
     }
     METAL_FUNC float4 colorDodgeBlend(float4 Cb, float4 Cs) {
         float4 B = float4(colorDodgeBlendSingleChannel(Cb.r, Cs.r), colorDodgeBlendSingleChannel(Cb.g, Cs.g), colorDodgeBlendSingleChannel(Cb.b, Cs.b), Cs.a);
@@ -200,9 +214,13 @@ namespace metalpetal {
 
     // colorBurn
     METAL_FUNC float colorBurnBlendSingleChannel(float b, float f) {
-        if  (b == 1) return 1;
-        else if (f == 0) return 0;
-        else return min(1.0, (1 - b) / f);
+        if (b == 1) {
+            return 1;
+        } else if (f == 0) {
+            return 0;
+        } else {
+            return 1.0 - min(1.0, (1 - b) / f);
+        }
     }
     METAL_FUNC float4 colorBurnBlend(float4 Cb, float4 Cs) {
         float4 B = float4(colorBurnBlendSingleChannel(Cb.r, Cs.r), colorBurnBlendSingleChannel(Cb.g, Cs.g), colorBurnBlendSingleChannel(Cb.b, Cs.b), Cs.a);
