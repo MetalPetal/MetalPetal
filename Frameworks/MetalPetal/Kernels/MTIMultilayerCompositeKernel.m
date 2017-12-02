@@ -326,6 +326,7 @@
         
         id<MTIImagePromiseResolution> compositingMaskResolution = nil;
         if (layer.compositingMask) {
+            NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
             compositingMaskResolution = layerCompositingMaskResolutions[index];
             if (layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied) {
                 [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaToColorAttachmentOneRenderPipeline].state];
@@ -339,6 +340,7 @@
             [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
         }
         
+        NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
         CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
@@ -365,8 +367,6 @@
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
         //parameters
-        NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
-        
         MTIMultilayerCompositingLayerShadingParameters parameters;
         parameters.opacity = layer.opacity;
         parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
