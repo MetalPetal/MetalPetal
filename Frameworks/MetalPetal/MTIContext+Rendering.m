@@ -156,6 +156,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         return nil;
     }
     [renderingContext.commandBuffer commit];
+    [renderingContext.commandBuffer waitUntilScheduled];
     CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
     if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
         //ref: https://developer.apple.com/documentation/coreimage/ciimage/1645894-premultiplyingalpha
@@ -255,6 +256,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
                           destinationOrigin:MTLOriginMake(0, 0, 0)];
         [blitCommandEncoder endEncoding];
         [renderingContext.commandBuffer commit];
+        [renderingContext.commandBuffer waitUntilScheduled];
         return YES;
     } else {
         //Render
@@ -294,6 +296,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [commandEncoder endEncoding];
         
         [renderingContext.commandBuffer commit];
+        [renderingContext.commandBuffer waitUntilScheduled];
         return YES;
     }
 #else
