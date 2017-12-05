@@ -118,6 +118,7 @@
     [renderingContext.commandBuffer presentDrawable:drawable];
     
     [renderingContext.commandBuffer commit];
+    [renderingContext.commandBuffer waitUntilScheduled];
     
     return YES;
 }
