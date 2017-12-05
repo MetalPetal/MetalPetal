@@ -16,39 +16,20 @@
 #import "MTIDrawableRendering.h"
 #import "MTIError.h"
 #import "MTIDefer.h"
+#import "MTIRenderPipelineKernel.h"
+#import "MTIAlphaPremultiplicationFilter.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
 
 @implementation MTIContext (Rendering)
 
-- (nullable MTIRenderPipeline *)renderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentPixelFormat:(MTLPixelFormat)pixelFormat error:(NSError **)inOutError {
-    MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    
-    NSError *error;
-    id<MTLFunction> vertextFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    id<MTLFunction> fragmentFunction = [self functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionName] error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    renderPipelineDescriptor.vertexFunction = vertextFunction;
-    renderPipelineDescriptor.fragmentFunction = fragmentFunction;
-    
-    renderPipelineDescriptor.colorAttachments[0].pixelFormat = pixelFormat;
-    renderPipelineDescriptor.colorAttachments[0].blendingEnabled = NO;
-    
-    return [self renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
++ (MTIRenderPipelineKernel *)premultiplyAlphaKernel {
+    return MTIPremultiplyAlphaFilter.kernel;
+}
+
++ (MTIRenderPipelineKernel *)passthroughKernel {
+    return MTIUnaryImageRenderingFilter.kernel;
 }
 
 - (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
@@ -105,12 +86,16 @@
     NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
     
     //iOS drawables always require premultiplied alpha.
-    NSString *fragmentFunctionName = MTIFilterPassthroughFragmentFunctionName;
+    MTIRenderPipelineKernel *kernel;
     if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
-        fragmentFunctionName = MTIFilterPremultiplyAlphaFragmentFunctionName;
+        kernel = MTIContext.premultiplyAlphaKernel;
+    } else {
+        kernel = MTIContext.passthroughKernel;
     }
     
-    MTIRenderPipeline *renderPipeline = [self renderPipelineWithFragmentFunctionName:fragmentFunctionName colorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat error:&error];
+    MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(renderPassDescriptor.colorAttachments[0].texture.pixelFormat)]];
+    MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+    
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -221,25 +206,8 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
     };
     
-    MTIAlphaType preferredAlphaType = MTIAlphaTypePremultiplied;
-    NSString *alphaTypeConvertFunctionName = nil;
-    switch (preferredAlphaType) {
-        case MTIAlphaTypePremultiplied:
-            if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
-                alphaTypeConvertFunctionName = MTIFilterPremultiplyAlphaFragmentFunctionName;
-            }
-            break;
-        case MTIAlphaTypeNonPremultiplied:
-            if (image.alphaType == MTIAlphaTypePremultiplied) {
-                alphaTypeConvertFunctionName = MTIFilterUnpremultiplyAlphaFragmentFunctionName;
-            }
-            break;
-        default:
-            break;
-    }
-    
     if (resolution.texture.pixelFormat == targetPixelFormat &&
-        (image.alphaType == preferredAlphaType || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
+        (image.alphaType == MTIAlphaTypePremultiplied || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
         (size_t)image.size.width == frameWidth &&
         (size_t)image.size.height == frameHeight)
     {
@@ -271,12 +239,16 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
         
         //Prefers premultiplied alpha here.
-        NSString *fragmentFunctionName = MTIFilterPassthroughFragmentFunctionName;
-        if (alphaTypeConvertFunctionName) {
-            fragmentFunctionName = alphaTypeConvertFunctionName;
+        MTIRenderPipelineKernel *kernel;
+        if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
+            kernel = MTIContext.premultiplyAlphaKernel;
+        } else {
+            kernel = MTIContext.passthroughKernel;
         }
         
-        MTIRenderPipeline *renderPipeline = [self renderPipelineWithFragmentFunctionName:fragmentFunctionName colorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat error:&error];
+        MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(metalTexture.pixelFormat)]];
+        MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+        
         if (error) {
             if (inOutError) {
                 *inOutError = error;

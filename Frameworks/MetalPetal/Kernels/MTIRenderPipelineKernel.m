@@ -22,12 +22,6 @@
 #import "MTIRenderPassOutputDescriptor.h"
 #import "MTIImagePromiseDebug.h"
 
-@interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
-
-@property (nonatomic,copy,readonly) NSArray<NSNumber *> *colorAttachmentPixelFormats;
-
-@end
-
 @implementation MTIRenderPipelineKernelConfiguration
 
 - (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {

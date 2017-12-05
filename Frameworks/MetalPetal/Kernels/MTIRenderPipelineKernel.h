@@ -18,6 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPassOutputDescriptor;
 
+@interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
+
+@property (nonatomic,copy,readonly) NSArray<NSNumber *> *colorAttachmentPixelFormats;
+
+- (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats;
+
+@end
+
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;
