@@ -96,11 +96,8 @@
         -1, 0, 1
     };
     self.convolutionFilter = [[MTIMPSConvolutionFilter alloc] initWithKernelWidth:3 kernelHeight:3 weights:matrix];
-    //MTIImage *mtiImageFromCGImage = [[MTIImage alloc] initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:image.CGImage]];
-    
-    id<MTLTexture> texture = [context.textureLoader newTextureWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} error:&error];
-    MTIImage *mtiImageFromTexture = [[MTIImage alloc] initWithTexture:texture alphaType:MTIAlphaTypeAlphaIsOne];
-    self.inputImage = mtiImageFromTexture;
+
+    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSoftLight];
         
     self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];

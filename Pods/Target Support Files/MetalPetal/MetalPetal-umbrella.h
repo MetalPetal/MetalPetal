@@ -65,6 +65,7 @@
 #import "MTIVector.h"
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
+#import "MTKTextureLoaderExtensions.h"
 #import "MTIShaderLib.h"
 #import "MTIImageView.h"
 

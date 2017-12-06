@@ -14,6 +14,18 @@
 #import "MTITextureDescriptor.h"
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTKTextureLoaderExtensions.h"
+
+static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<NSString *, id> *options) {
+    if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
+        NSMutableDictionary *opt = [NSMutableDictionary dictionaryWithDictionary:options];
+        if (opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] == nil) {
+            opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] = @(4);
+        }
+        return opt;
+    }
+    return options;
+}
 
 @interface MTIImageURLPromise ()
 
@@ -53,7 +65,7 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     id<MTLTexture> texture;
-    texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];
+    texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
     if (!texture) {
         if (error) {
             *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToLoadTexture userInfo:@{}];
@@ -109,7 +121,7 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:self.options error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
