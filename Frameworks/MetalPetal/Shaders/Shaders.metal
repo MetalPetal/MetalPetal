@@ -148,15 +148,13 @@ fragment float4 colorLookup512x512Blend(VertexOut vertexIn [[ stage_in ]],
 fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                    VertexOut vertexIn [[ stage_in ]],
                                                    float4 currentColor [[color(0)]],
+                                                   float4 maskColor [[color(1)]],
                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                   sampler colorSampler [[ sampler(0) ]],
-                                                   texture2d<float, access::sample> maskTexture [[ texture(1) ]],
-                                                   sampler maskSampler [[ sampler(1) ]]
+                                                   sampler colorSampler [[ sampler(0) ]]
                                                    ) {
     float intensity = 1.0;
     if (parameters.hasCompositingMask) {
-        float4 maskColor = maskTexture.sample(colorSampler, vertexIn.textureCoordinate);
         intensity *= maskColor.r;
     }
     intensity *= parameters.opacity;

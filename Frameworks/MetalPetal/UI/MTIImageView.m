@@ -60,10 +60,10 @@
     _drawsImmediately = drawsImmediately;
     if (drawsImmediately) {
         _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = YES;
+        _renderView.enableSetNeedsDisplay = NO;
     } else {
         _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = NO;
+        _renderView.enableSetNeedsDisplay = YES;
     }
 }
 
