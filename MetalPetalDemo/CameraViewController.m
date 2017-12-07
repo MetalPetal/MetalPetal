@@ -48,7 +48,7 @@
     [self.captureSession beginConfiguration];
     
     if ([self.captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
-        [self.captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720];
+        [self.captureSession setSessionPreset:AVCaptureSessionPreset1280x720];
     }
     
     for (AVCaptureDevice *videoDevice in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {

@@ -103,6 +103,14 @@
 
 - (void)setImage:(MTIImage *)image {
     _image = image;
+    if (_renderView.frame.size.width > 0 && _renderView.frame.size.height > 0 && _image && image.size.width > 0 && image.size.height > 0) {
+        CGSize imageSize = _image.size;
+        CGFloat widthScale = imageSize.width/_renderView.bounds.size.width;
+        CGFloat heightScale = imageSize.height/_renderView.bounds.size.height;
+        CGFloat nativeScale = self.window.screen.nativeScale;
+        CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
+        _renderView.contentScaleFactor = scale;
+    }
     if (_drawsImmediately) {
         [_renderView draw];
     } else {
