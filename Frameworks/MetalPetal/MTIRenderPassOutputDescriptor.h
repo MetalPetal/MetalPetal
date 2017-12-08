@@ -10,6 +10,8 @@
 #import "MTITextureDimensions.h"
 #import "MTIPixelFormat.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MTIRenderPassOutputDescriptor: NSObject <NSCopying>
 
 @property (nonatomic,readonly) MTITextureDimensions dimensions;
@@ -33,3 +35,5 @@
 - (BOOL)isEqualToOutputDescriptor:(MTIRenderPassOutputDescriptor *)object;
 
 @end
+
+NS_ASSUME_NONNULL_END

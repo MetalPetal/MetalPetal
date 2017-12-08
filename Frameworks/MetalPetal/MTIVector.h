@@ -10,6 +10,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import <simd/simd.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MTIVector : NSObject <NSCopying, NSSecureCoding>
 
 /* Create a new vector object. */
@@ -48,3 +50,5 @@
 @property (readonly) simd_float3 float3Value;
 
 @end
+
+NS_ASSUME_NONNULL_END
