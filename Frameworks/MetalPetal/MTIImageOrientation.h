@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+// https://developer.apple.com/documentation/uikit/uiimageorientation?language=objc
+
 typedef NS_ENUM(NSInteger, MTIImageOrientation) {
     MTIImageOrientationUnknown = 0,
     MTIImageOrientationUp = 1,

@@ -17,9 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MTIRenderPipelineKernel *)kernel;
 
-@property (nonatomic) MTIImageOrientation inputRotation; //Rotate the input image to that orientation.
+@property (nonatomic) MTIImageOrientation orientation; //Rotate the canvas to that orientation.
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
 @end
 
