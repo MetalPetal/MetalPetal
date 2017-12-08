@@ -11,7 +11,7 @@
 
 @interface MTIWeakToStrongObjectsMapTable ()
 
-@property (nonatomic,strong,readonly) NSHashTable *items;
+@property (nonatomic,strong,readonly) NSPointerArray *items;
 
 @end
 
@@ -23,7 +23,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _items = [[NSHashTable alloc] initWithOptions:NSHashTableWeakMemory|NSHashTableObjectPointerPersonality capacity:0];
+        _items = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsWeakMemory|NSPointerFunctionsObjectPointerPersonality];
     }
     return self;
 }
@@ -33,12 +33,28 @@
 }
 
 - (void)setObject:(id)anObject forKey:(id)aKey {
+    NSParameterAssert(aKey);
+    
     //Safe to use `(__bridge const void *)(self)` here, since we'll remove all the associations on deallocation.
     objc_setAssociatedObject(aKey, (__bridge const void *)(self), anObject, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (anObject) {
-        [_items addObject:aKey];
+        [_items addPointer:(__bridge void *)(aKey)];
     } else {
-        [_items removeObject:aKey];
+        [_items addPointer:nil];
+        [_items compact];
+        NSUInteger index = NSNotFound;
+        NSUInteger i = 0;
+        for (id object in _items) {
+            if (object == aKey) {
+                index = i;
+                break;
+            }
+            i += 1;
+        }
+        NSAssert(index != NSNotFound, @"");
+        if (index != NSNotFound) {
+            [_items removePointerAtIndex:index];
+        }
     }
 }
 
@@ -47,15 +63,14 @@
 }
 
 - (void)removeAllObjects {
-    NSArray *allKeys = [[_items allObjects] copy];
-    for (id key in allKeys) {
+    // http://www.openradar.me/15396578
+    // https://stackoverflow.com/questions/31322290/nspointerarray-weird-compaction
+    [_items addPointer:nil];
+    [_items compact];
+    for (id key in _items) {
         objc_setAssociatedObject(key, (__bridge const void *)(self), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
-    [_items removeAllObjects];
-}
-
-- (NSUInteger)count {
-    return _items.count;
+    _items.count = 0;
 }
 
 @end

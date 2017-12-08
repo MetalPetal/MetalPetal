@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setObject:(nullable ObjectType)anObject forKey:(nullable KeyType)aKey;
 
-@property (readonly) NSUInteger count;
-
 - (void)removeAllObjects;
 
 @end

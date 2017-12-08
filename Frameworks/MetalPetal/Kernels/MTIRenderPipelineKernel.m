@@ -252,8 +252,10 @@
         }
         _dependencies = [dependencies copy];
         _alphaType = [renderCommands.lastObject.kernel.alphaTypeHandlingRule outputAlphaTypeForInputImages:renderCommands.lastObject.images];
-        _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
-        _resolutionCacheLock = MTILockCreate();
+        if (outputDescriptors.count > 1) {
+            _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
+            _resolutionCacheLock = MTILockCreate();
+        }
     }
     return self;
 }
