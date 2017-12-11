@@ -17,7 +17,7 @@ FOUNDATION_EXPORT BOOL MTIColorMatrixIsIdentity(MTIColorMatrix matrix) NS_SWIFT_
 FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixConcat(MTIColorMatrix a, MTIColorMatrix b) NS_SWIFT_NAME(MTIColorMatrix.concat(self:with:));
 
 FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithExposure(float exposure) NS_SWIFT_NAME(MTIColorMatrix.init(exposure:));
-FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithSaturation(float saturation) NS_SWIFT_NAME(MTIColorMatrix.init(saturation:));
+FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithSaturation(float saturation, simd_float3 grayColorTransform) NS_SWIFT_NAME(MTIColorMatrix.init(saturation:grayColorTransform:));
 FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithBrightness(float brightness) NS_SWIFT_NAME(MTIColorMatrix.init(brightness:));
 FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithContrast(float contrast) NS_SWIFT_NAME(MTIColorMatrix.init(contrast:));
 FOUNDATION_EXPORT MTIColorMatrix MTIColorMatrixMakeWithOpacity(float opacity) NS_SWIFT_NAME(MTIColorMatrix.init(opacity:));

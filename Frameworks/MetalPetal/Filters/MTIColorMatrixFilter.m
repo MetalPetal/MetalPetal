@@ -48,6 +48,7 @@ NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
 
 - (instancetype)init {
     if (self = [super init]) {
+        self.grayColorTransform = MTIGrayColorTransformDefault;
         self.saturation = 1;
     }
     return self;
@@ -55,7 +56,12 @@ NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
 
 - (void)setSaturation:(float)saturation {
     _saturation = saturation;
-    [super setColorMatrix:MTIColorMatrixMakeWithSaturation(saturation)];
+    [super setColorMatrix:MTIColorMatrixMakeWithSaturation(self.saturation,self.grayColorTransform)];
+}
+
+- (void)setGrayColorTransform:(simd_float3)grayColorTransform {
+    _grayColorTransform = grayColorTransform;
+    [super setColorMatrix:MTIColorMatrixMakeWithSaturation(self.saturation,self.grayColorTransform)];
 }
 
 @end

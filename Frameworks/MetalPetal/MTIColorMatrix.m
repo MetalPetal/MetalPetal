@@ -120,10 +120,10 @@ MTIColorMatrix MTIColorMatrixMakeWithExposure(float exposure) {
     return m;
 }
 
-MTIColorMatrix MTIColorMatrixMakeWithSaturation(float saturation) {
-    float lumR = 0.2125;
-    float lumG = 0.7154;
-    float lumB = 0.0721;
+MTIColorMatrix MTIColorMatrixMakeWithSaturation(float saturation, simd_float3 grayColorTransform) {
+    float lumR = grayColorTransform.r;
+    float lumG = grayColorTransform.g;
+    float lumB = grayColorTransform.b;
     float s = saturation;
     float sr = (1 - s) * lumR;
     float sg = (1 - s) * lumG;

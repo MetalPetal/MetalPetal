@@ -8,11 +8,19 @@
 #import "MTIVibranceFilter.h"
 #import "MTIVector.h"
 #import "MTIFunctionDescriptor.h"
+#import "MTIColor.h"
 
 @implementation MTIVibranceFilter
 
 + (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
     return [[MTIFunctionDescriptor alloc] initWithName:@"vibranceAdjust"];
+}
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _grayColorTransform = MTIGrayColorTransformDefault;
+    }
+    return self;
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
@@ -25,7 +33,8 @@
     return @{
              @"amount": @(_amount),
              @"vibranceVector": [[MTIVector alloc] initWithFloat4:vector],
-             @"avoidsSaturatingSkinTones": @(_avoidsSaturatingSkinTones)
+             @"avoidsSaturatingSkinTones": @(_avoidsSaturatingSkinTones),
+             @"grayColorTransform": [[MTIVector alloc] initWithFloat3:_grayColorTransform]
              };
 }
 

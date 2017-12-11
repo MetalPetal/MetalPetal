@@ -241,12 +241,13 @@ fragment float4 vibranceAdjust(
                                VertexOut vertexIn [[stage_in]],
                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
                                sampler sourceSampler [[sampler(0)]],
-                               constant  float & amount [[ buffer(0) ]],
-                               constant  float4 & vibranceVector [[ buffer(1) ]],
-                               constant  bool & avoidsSaturatingSkinTones [[ buffer(2) ]]
+                               constant float & amount [[ buffer(0) ]],
+                               constant float4 & vibranceVector [[ buffer(1) ]],
+                               constant bool & avoidsSaturatingSkinTones [[ buffer(2) ]],
+                               constant float3 & grayColorTransform [[ buffer(3) ]]
                                ) {
     float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
     return amount > 0 ?
-    (avoidsSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector) : adjustVibrance(textureColor, amount))
-    : adjustSaturation(textureColor, amount);
+    (avoidsSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector) : adjustVibrance(textureColor, amount, grayColorTransform))
+    : adjustSaturation(textureColor, amount, grayColorTransform);
 }

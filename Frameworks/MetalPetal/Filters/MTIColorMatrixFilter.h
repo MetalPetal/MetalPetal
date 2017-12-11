@@ -32,6 +32,8 @@ FOUNDATION_EXPORT NSString * const MTIColorMatrixFilterColorMatrixParameterKey;
 
 - (void)setColorMatrix:(MTIColorMatrix)colorMatrix NS_UNAVAILABLE;
 
+@property (nonatomic) simd_float3 grayColorTransform;
+
 @property (nonatomic) float saturation;
 
 @end

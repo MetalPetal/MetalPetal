@@ -5,6 +5,7 @@
 //  Created by 杨乃川 on 2017/11/6.
 //
 
+#import <simd/simd.h>
 #import "MTIUnaryImageRenderingFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) float amount;
 
 @property (nonatomic) BOOL avoidsSaturatingSkinTones;
+
+@property (nonatomic) simd_float3 grayColorTransform;
 
 @end
 

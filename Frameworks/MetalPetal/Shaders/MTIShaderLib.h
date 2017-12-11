@@ -349,8 +349,8 @@ namespace metalpetal {
         return pixel;
     }
     
-    METAL_FUNC float4 adjustVibrance(float4 colorInput, float vibrance) {
-        float luma = dot(float3(0.2125, 0.7154, 0.0721), colorInput.rgb); //calculate luma (grey)
+    METAL_FUNC float4 adjustVibrance(float4 colorInput, float vibrance, float3 grayColorTransform) {
+        float luma = dot(grayColorTransform, colorInput.rgb); //calculate luma (grey)
         float max_color = max(colorInput.r, max(colorInput.g,colorInput.b)); //Find the strongest color
         float min_color = min(colorInput.r, min(colorInput.g,colorInput.b)); //Find the weakest color
         float color_saturation = max_color - min_color; //The difference between the two is the saturation
@@ -361,7 +361,7 @@ namespace metalpetal {
         //return color_saturation.xxxx; //Visualize the saturation
     }
     
-    METAL_FUNC float4 adjustSaturation(float4 textureColor, float saturation) {
+    METAL_FUNC float4 adjustSaturation(float4 textureColor, float saturation, float3 grayColorTransform) {
         /*
         float4 pixel = clamp(textureColor, 0.0001, 0.9999);
         float4 pdelta = textureColor - pixel;
@@ -378,7 +378,7 @@ namespace metalpetal {
         pixel.rgb += pdelta.rgb;
         return pixel;
         */
-        float luma = dot(float3(0.2125, 0.7154, 0.0721), textureColor.rgb); //calculate luma (grey)
+        float luma = dot(grayColorTransform, textureColor.rgb); //calculate luma (grey)
         return float4(mix(float3(luma), textureColor.rgb, saturation + 1.0), textureColor.a);
     }
 }
