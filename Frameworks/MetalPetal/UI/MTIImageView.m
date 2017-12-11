@@ -10,6 +10,7 @@
 #import "MTIImageView.h"
 #import "MTIContext+Rendering.h"
 #import "MTIImage.h"
+#import "MTIPrint.h"
 #import <MetalKit/MetalKit.h>
 
 @interface MTIImageView () <MTKViewDelegate>
@@ -45,7 +46,7 @@
     if (error) {
         NSLog(@"%@: Failed to create MTIContext - %@",self,error);
     }
-    MTKView *renderView = [[MTKView alloc] initWithFrame:self.frame device:_context.device];
+    MTKView *renderView = [[MTKView alloc] initWithFrame:self.bounds device:_context.device];
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     renderView.delegate = self;
     [self addSubview:renderView];
@@ -141,7 +142,7 @@
             NSError *error;
             [_context renderImage:_image toDrawableWithRequest:request error:&error];
             if (error) {
-                NSLog(@"%@: Failed to render image %@ - %@",self,_image,error);
+                MTIPrint(@"%@: Failed to render image %@ - %@",self,_image,error);
             }
         }
     }
