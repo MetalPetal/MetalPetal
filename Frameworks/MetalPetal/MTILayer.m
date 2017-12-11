@@ -40,9 +40,7 @@
         case MTILayerLayoutUnitFractionOfBackgroundSize:
             return CGSizeMake(backgroundSize.width * _size.width, backgroundSize.height * _size.height);
         default:
-            NSLog(@"Unknown MTILayerLayoutUnit.");
-            abort();
-            break;
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unknown MTILayerLayoutUnit" userInfo:@{@"Unit": @(_layoutUnit)}];
     }
 }
 
@@ -53,9 +51,7 @@
         case MTILayerLayoutUnitFractionOfBackgroundSize:
             return CGPointMake(backgroundSize.width * _position.x, backgroundSize.height * _position.y);
         default:
-            NSLog(@"Unknown MTILayerLayoutUnit.");
-            abort();
-            break;
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unknown MTILayerLayoutUnit" userInfo:@{@"Unit": @(_layoutUnit)}];
     }
 }
 

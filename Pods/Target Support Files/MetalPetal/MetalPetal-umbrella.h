@@ -18,7 +18,6 @@
 #import "MTIColorMatrixFilter.h"
 #import "MTICropFilter.h"
 #import "MTIFilter.h"
-#import "MTIFilterUtilities.h"
 #import "MTIImage+Filters.h"
 #import "MTILensBlurFilter.h"
 #import "MTIMPSConvolutionFilter.h"

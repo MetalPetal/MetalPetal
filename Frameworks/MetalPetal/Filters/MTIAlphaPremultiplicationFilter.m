@@ -9,7 +9,6 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
-#import "MTIFilterUtilities.h"
 
 @implementation MTIPremultiplyAlphaFilter
 

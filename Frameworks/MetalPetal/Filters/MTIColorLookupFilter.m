@@ -8,7 +8,6 @@
 #import "MTIColorLookupFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
-#import "MTIFilterUtilities.h"
 #import "MTIImage.h"
 
 @implementation MTIColorLookupTableInfo

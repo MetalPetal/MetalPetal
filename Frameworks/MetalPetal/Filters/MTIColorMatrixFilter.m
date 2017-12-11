@@ -7,7 +7,6 @@
 //
 
 #import "MTIColorMatrixFilter.h"
-#import "MTIFilterUtilities.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIKernel.h"
