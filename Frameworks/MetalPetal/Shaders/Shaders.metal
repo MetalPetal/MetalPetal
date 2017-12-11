@@ -251,3 +251,13 @@ fragment float4 vibranceAdjust(
     (avoidsSaturatingSkinTones ? adjustVibranceWhileKeepingSkinTones(textureColor, vibranceVector) : adjustVibrance(textureColor, amount, grayColorTransform))
     : adjustSaturation(textureColor, amount, grayColorTransform);
 }
+
+fragment float4 rToGray(
+                        VertexOut vertexIn [[stage_in]],
+                        texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                        sampler sourceSampler [[sampler(0)]],
+                        constant bool & invert [[buffer(0)]]
+                       ) {
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+    return float4(float3(invert ? 1.0 - textureColor.r : textureColor.r),1.0);
+}

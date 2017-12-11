@@ -22,6 +22,7 @@
 #import "MTILensBlurFilter.h"
 #import "MTIMPSConvolutionFilter.h"
 #import "MTIMPSGaussianBlurFilter.h"
+#import "MTIMPSSobelFilter.h"
 #import "MTIMultilayerCompositingFilter.h"
 #import "MTITransformFilter.h"
 #import "MTIUnaryImageRenderingFilter.h"
