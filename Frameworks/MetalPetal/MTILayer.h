@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
     MTILayerLayoutUnitFractionOfBackgroundSize
 } NS_SWIFT_NAME(MTILayer.LayoutUnit);
 
+/// A MTILayer represents a compositing layer for MTIMultilayerCompositingFilter. MTILayers use a UIKit like coordinate system.
 @interface MTILayer: NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIImage *content;

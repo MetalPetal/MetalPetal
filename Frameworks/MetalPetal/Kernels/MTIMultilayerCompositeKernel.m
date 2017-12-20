@@ -354,7 +354,7 @@
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
         transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, -(layerPixelPosition.y - self.backgroundImage.size.height/2.0), 0);
-        transform = CATransform3DRotate(transform, layer.rotation, 0, 0, 1);
+        transform = CATransform3DRotate(transform, -layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
