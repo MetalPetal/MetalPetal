@@ -1,3 +1,7 @@
+//
+// This is an auto-generated source file. See `generate-shaders.sh` for detail.
+//
+
 #include <metal_stdlib>
 #include "MTIShaderLib.h"
 

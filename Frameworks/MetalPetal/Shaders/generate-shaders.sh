@@ -44,6 +44,10 @@ struct MetalPetalShaderGenerator {
         let multilayerCompositeShaderTemplate = ShaderTemplate(
             fileName: "MultilayerCompositeShaders.metal",
             header: """
+            //
+            // This is an auto-generated source file. See `generate-shaders.sh` for detail.
+            //
+
             #include <metal_stdlib>
             #include "MTIShaderLib.h"
 
@@ -103,6 +107,10 @@ struct MetalPetalShaderGenerator {
         let blendingShaderTemplate = ShaderTemplate(
             fileName: "BlendingShaders.metal",
             header: """
+            //
+            // This is an auto-generated source file. See `generate-shaders.sh` for detail.
+            //
+            
             #include <metal_stdlib>
             #include "MTIShaderLib.h"
 
