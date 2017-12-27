@@ -104,7 +104,7 @@
 
 - (void)setImage:(MTIImage *)image {
     _image = image;
-    if (_renderView.frame.size.width > 0 && _renderView.frame.size.height > 0 && _image && image.size.width > 0 && image.size.height > 0) {
+    if (_renderView.frame.size.width > 0 && _renderView.frame.size.height > 0 && _image && image.size.width > 0 && image.size.height > 0 && self.window.screen != nil) {
         CGSize imageSize = _image.size;
         CGFloat widthScale = imageSize.width/_renderView.bounds.size.width;
         CGFloat heightScale = imageSize.height/_renderView.bounds.size.height;
