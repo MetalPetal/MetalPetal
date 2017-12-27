@@ -41,6 +41,8 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 @end
 
+FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bundle);
+
 @interface MTIContext : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

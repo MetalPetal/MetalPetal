@@ -85,6 +85,10 @@
 
 @end
 
+NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
+    return [bundle URLForResource:@"default" withExtension:@"metallib"];
+}
+
 @interface MTIContext()
 
 @property (nonatomic,strong,readonly) NSMutableDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
@@ -127,7 +131,7 @@
         }
         
         NSError *libraryError = nil;
-        NSURL *url = [[NSBundle bundleForClass:self.class] URLForResource:@"default" withExtension:@"metallib"];
+        NSURL *url = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
         id<MTLLibrary> defaultLibrary = [device newLibraryWithFile:url.path error:&libraryError];
         if (!defaultLibrary || libraryError) {
             if (inOutError) {
