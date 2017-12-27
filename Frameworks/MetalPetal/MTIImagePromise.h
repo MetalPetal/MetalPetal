@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <simd/simd.h>
+#import <CoreImage/CoreImage.h>
 #import "MTIColor.h"
 #import "MTITextureDimensions.h"
 #import "MTIAlphaType.h"

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreImage/CoreImage.h>
 #import "MTIContext.h"
 
 NS_ASSUME_NONNULL_BEGIN

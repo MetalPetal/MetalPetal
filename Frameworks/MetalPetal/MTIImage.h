@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import <CoreImage/CoreImage.h>
 #import "MTICVPixelBufferPromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
