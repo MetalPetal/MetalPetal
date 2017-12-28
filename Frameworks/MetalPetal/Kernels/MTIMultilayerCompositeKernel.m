@@ -197,17 +197,27 @@
 @synthesize dimensions = _dimensions;
 @synthesize dependencies = _dependencies;
 
-- (MTIVertices *)verticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion {
+- (MTIVertices *)verticesForRect:(CGRect)rect contentIsFlipped:(BOOL)contentIsFlipped contentRegion:(CGRect)contentRegion {
     CGFloat l = CGRectGetMinX(rect);
     CGFloat r = CGRectGetMaxX(rect);
     CGFloat t = CGRectGetMinY(rect);
     CGFloat b = CGRectGetMaxY(rect);
     
+    CGFloat contentL = CGRectGetMinX(contentRegion);
+    CGFloat contentR = CGRectGetMaxX(contentRegion);
+    CGFloat contentT = CGRectGetMaxY(contentRegion);
+    CGFloat contentB = CGRectGetMinY(contentRegion);
+    
+    if (contentIsFlipped) {
+        contentT = 1.0 - contentT;
+        contentB = 1.0 - contentB;
+    }
+    
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { CGRectGetMinX(contentRegion), CGRectGetMaxY(contentRegion) } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMaxY(contentRegion) } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { CGRectGetMinX(contentRegion), CGRectGetMinY(contentRegion) } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { CGRectGetMaxX(contentRegion), CGRectGetMinY(contentRegion) } }
+        { .position = {l, t, 0, 1} , .textureCoordinate = { contentL, contentT } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { contentR, contentT } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { contentL, contentB } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { contentR, contentB } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
@@ -304,7 +314,7 @@
     renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
     
     //render background
-    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1)];
+    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentIsFlipped:NO contentRegion:CGRectMake(0, 0, 1, 1)];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
@@ -347,7 +357,9 @@
         CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
         
         MTIVertices *vertices = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
+                                     contentIsFlipped:layer.contentIsFlipped
                                         contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)];
+        
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
         [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         
@@ -433,7 +445,7 @@
             pointer += 1;
             newCompositingMask = [[MTIMask alloc] initWithContent:newCompositingMaskContent component:compositingMask.component mode:compositingMask.mode];
         }
-        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
+        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentIsFlipped:layer.contentIsFlipped contentRegion:layer.contentRegion compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
         [newLayers addObject:newLayer];
     }
     return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self.kernel backgroundImage:backgroundImage layers:newLayers outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];

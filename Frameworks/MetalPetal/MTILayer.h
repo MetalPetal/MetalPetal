@@ -24,6 +24,8 @@ typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
 
 @property (nonatomic, strong, readonly) MTIImage *content;
 
+@property (nonatomic, readonly) BOOL contentIsFlipped;
+
 @property (nonatomic, readonly) CGRect contentRegion; //pixel
 
 @property (nonatomic, strong, readonly, nullable) MTIMask *compositingMask;
@@ -52,6 +54,17 @@ typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
                       blendMode:(MTIBlendMode)blendMode;
 
 - (instancetype)initWithContent:(MTIImage *)content
+                  contentRegion:(CGRect)contentRegion
+                compositingMask:(nullable MTIMask *)compositingMask
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
+                       position:(CGPoint)position
+                           size:(CGSize)size
+                       rotation:(float)rotation
+                        opacity:(float)opacity
+                      blendMode:(MTIBlendMode)blendMode;
+
+- (instancetype)initWithContent:(MTIImage *)content
+               contentIsFlipped:(BOOL)contentIsFlipped
                   contentRegion:(CGRect)contentRegion
                 compositingMask:(nullable MTIMask *)compositingMask
                      layoutUnit:(MTILayerLayoutUnit)layoutUnit
