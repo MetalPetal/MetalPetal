@@ -259,3 +259,29 @@ fragment float4 rToGray(
     float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
     return float4(float3(invert ? 1.0 - textureColor.r : textureColor.r),1.0);
 }
+
+
+fragment float4 chromaKeyBlend(
+                              VertexOut vertexIn [[stage_in]],
+                              texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                              texture2d<float, access::sample> backgroundTexture [[texture(1)]],
+                              sampler sourceSampler [[sampler(0)]],
+                              sampler backgroundSampler [[sampler(1)]],
+                              constant float4 &color [[buffer(0)]],
+                              constant float &thresholdSensitivity [[buffer(1)]],
+                              constant float &smoothing [[buffer(2)]]) {
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+    float4 textureColor2 = backgroundTexture.sample(backgroundSampler, vertexIn.textureCoordinate);
+    
+    float maskY = 0.2989 * color.r + 0.5866 * color.g + 0.1145 * color.b;
+    float maskCr = 0.7132 * (color.r - maskY);
+    float maskCb = 0.5647 * (color.b - maskY);
+    
+    float Y = 0.2989 * textureColor.r + 0.5866 * textureColor.g + 0.1145 * textureColor.b;
+    float Cr = 0.7132 * (textureColor.r - Y);
+    float Cb = 0.5647 * (textureColor.b - Y);
+    
+    float blendValue = 1.0 - smoothstep(thresholdSensitivity, thresholdSensitivity + smoothing, distance(float2(Cr, Cb), float2(maskCr, maskCb)));
+    
+    return mix(textureColor, textureColor2, blendValue);
+}

@@ -35,8 +35,4 @@
                                outputPixelFormat:_outputPixelFormat];
 }
 
-+ (nonnull NSSet<NSString *> *)inputParameterKeys {
-    return [NSSet set];
-}
-
 @end
