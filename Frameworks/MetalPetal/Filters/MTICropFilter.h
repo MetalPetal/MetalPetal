@@ -27,6 +27,7 @@ FOUNDATION_EXPORT MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit
 
 @property (nonatomic) MTICropRegion cropRegion;
 
+@property (nonatomic) float scale;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -22,6 +22,14 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
 @synthesize outputPixelFormat = _outputPixelFormat;
 @synthesize inputImage = _inputImage;
 
+- (instancetype)init {
+    if (self = [super init]) {
+        _cropRegion = MTICropRegionMake((CGRect){0, 0, 1, 1}, MTICropRegionUnitPercentage);
+        _scale = 1;
+    }
+    return self;
+}
+
 + (MTIRenderPipelineKernel *)kernel {
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
@@ -74,7 +82,7 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
         { .position = {r, b, 0, 1} , .textureCoordinate = { maxX, minY } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width, .height = self.inputImage.size.height * cropRect.size.height, .depth = 1} pixelFormat:self.outputPixelFormat];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width * self.scale, .height = self.inputImage.size.height * cropRect.size.height * self.scale, .depth = 1} pixelFormat:self.outputPixelFormat];
     
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTICropFilter.kernel geometry:geometry images:@[self.inputImage] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]

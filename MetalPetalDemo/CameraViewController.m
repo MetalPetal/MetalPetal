@@ -17,6 +17,7 @@
 @property (nonatomic, strong) MTISaturationFilter *saturationFilter;
 @property (nonatomic, strong) MTIColorInvertFilter *colorInvertFilter;
 @property (nonatomic, strong) MTIColorLookupFilter *lutFilter;
+@property (nonatomic, strong) MTICropFilter *cropFilter;
 
 @property (nonatomic, strong) dispatch_queue_t queue;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
@@ -35,6 +36,9 @@
     self.renderView = [[MTIImageView alloc] initWithFrame:self.view.bounds];
     self.renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:self.renderView];
+
+    self.cropFilter = [[MTICropFilter alloc] init];
+    self.cropFilter.scale = 0.1;
     
     self.saturationFilter = [[MTISaturationFilter alloc] init];
     self.colorInvertFilter = [[MTIColorInvertFilter alloc] init];
