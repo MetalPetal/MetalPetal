@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFunctionDescriptor, MTISamplerDescriptor, MTIRenderPipeline, MTIComputePipeline, MTITextureDescriptor;
+@class MTIFunctionDescriptor, MTISamplerDescriptor, MTIRenderPipeline, MTIComputePipeline, MTITextureDescriptor, MTICVMetalTextureCache;
 
 @interface MTIImagePromiseRenderTarget : NSObject
 
@@ -69,11 +69,7 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 #pragma mark - Pool
 
-#if COREVIDEO_SUPPORTS_METAL
-
-@property (nonatomic, readonly) CVMetalTextureCacheRef coreVideoTextureCache;
-
-#endif
+@property (nonatomic, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
 
 #pragma mark - Cache
 
@@ -91,6 +87,7 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));
+
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture NS_SWIFT_NAME(makeRenderTarget(texture:));
 
 

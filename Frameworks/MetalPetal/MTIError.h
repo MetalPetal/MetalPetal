@@ -16,8 +16,6 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     //Core errors
     MTIErrorDeviceNotFound = 1001,
     MTIErrorFunctionNotFound = 1002,
-    MTIErrorCoreVideoDoesNotSupportMetal = 1003,
-    MTIErrorCoreVideoMetalTextureCacheFailedToCreateTexture = 1004,
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,

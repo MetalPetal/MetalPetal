@@ -42,6 +42,7 @@
 #import "MTIComputePipeline.h"
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
+#import "MTICVMetalTextureCache.h"
 #import "MTICVPixelBufferPromise.h"
 #import "MTIDrawableRendering.h"
 #import "MTIError.h"

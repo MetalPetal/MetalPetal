@@ -18,6 +18,7 @@
 #import "MTIDefer.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIAlphaPremultiplicationFilter.h"
+#import "MTICVMetalTextureCache.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -163,7 +164,6 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
-#if COREVIDEO_SUPPORTS_METAL
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
@@ -183,29 +183,16 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
     size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
     
-    CVMetalTextureRef renderTexture = NULL;
-    CVReturn err = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                             self.coreVideoTextureCache,
-                                                             pixelBuffer,
-                                                             NULL,
-                                                             targetPixelFormat,
-                                                             frameWidth,
-                                                             frameHeight,
-                                                             0,
-                                                             &renderTexture);
-    if (!renderTexture || err) {
-        NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoMetalTextureCacheFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil]}];
+    MTICVMetalTexture *renderTexture = [self.coreVideoTextureCache newTextureWithCVImageBuffer:pixelBuffer attributes:NULL pixelFormat:targetPixelFormat width:frameWidth height:frameHeight planeIndex:0 error:&error];
+    if (!renderTexture || error) {
+        [self.coreVideoTextureCache flush];
         if (inOutError) {
             *inOutError = error;
         }
         return NO;
     }
     
-    id<MTLTexture> metalTexture = CVMetalTextureGetTexture(renderTexture);
-    @MTI_DEFER {
-        CFRelease(renderTexture);
-        CVMetalTextureCacheFlush(self.coreVideoTextureCache, 0);
-    };
+    id<MTLTexture> metalTexture = renderTexture.texture;
     
     if (resolution.texture.pixelFormat == targetPixelFormat &&
         (image.alphaType == MTIAlphaTypePremultiplied || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
@@ -272,13 +259,6 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [renderingContext.commandBuffer waitUntilScheduled];
         return YES;
     }
-#else
-    NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorCoreVideoDoesNotSupportMetal userInfo:@{}];
-    if (inOutError) {
-        *inOutError = error;
-    }
-    return NO;
-#endif
 }
 
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {

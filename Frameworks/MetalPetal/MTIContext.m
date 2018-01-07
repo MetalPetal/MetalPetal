@@ -17,6 +17,7 @@
 #import "MTIKernel.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
+#import "MTICVMetalTextureCache.h"
 
 @interface MTIImagePromiseRenderTarget ()
 
@@ -111,15 +112,6 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 @implementation MTIContext
 
-- (void)dealloc {
-#if COREVIDEO_SUPPORTS_METAL
-    if (_coreVideoTextureCache) {
-        CVMetalTextureCacheFlush(_coreVideoTextureCache, 0);
-        CFRelease(_coreVideoTextureCache);
-    }
-#endif
-}
-
 - (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (self = [super init]) {
         NSParameterAssert(device != nil);
@@ -157,10 +149,15 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory capacity:0];
         _promiseKeyValueTables = [NSMutableDictionary dictionary];
         _imageKeyValueTables = [NSMutableDictionary dictionary];
-#if COREVIDEO_SUPPORTS_METAL
-        CVReturn __unused coreVideoTextureCacheError = CVMetalTextureCacheCreate(kCFAllocatorDefault, NULL, self.device, NULL, &_coreVideoTextureCache);
-        NSAssert(coreVideoTextureCacheError == kCVReturnSuccess, @"");
-#endif
+        
+        NSError *coreVideoTextureCacheError = nil;
+        _coreVideoTextureCache = [[MTICVMetalTextureCache alloc] initWithDevice:device cacheAttributes:nil textureAttributes:nil error:&coreVideoTextureCacheError];
+        if (coreVideoTextureCacheError || _coreVideoTextureCache == nil) {
+            if (inOutError) {
+                *inOutError = coreVideoTextureCacheError;
+            }
+            return nil;
+        }
     }
     return self;
 }
