@@ -25,6 +25,8 @@ typedef NS_ERROR_ENUM(MTICVMetalTextureCacheErrorDomain, MTICVMetalTextureCacheE
 
 @end
 
+/// Thread-safe object-orientated CVMetalTextureCache.
+
 @interface MTICVMetalTextureCache : NSObject
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device

@@ -6,6 +6,7 @@
 //
 
 #import "MTICVMetalTextureCache.h"
+#import "MTILock.h"
 
 NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErrorDomain";
 
@@ -49,6 +50,8 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 
 #endif
 
+@property (nonatomic, strong, readonly) id<NSLocking> lock;
+
 @end
 
 @implementation MTICVMetalTextureCache
@@ -79,6 +82,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
             }
             return nil;
         }
+        _lock = MTILockCreate();
     }
     return self;
 #else
@@ -91,6 +95,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 
 - (nullable MTICVMetalTexture *)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer attributes:(NSDictionary *)textureAttributes pixelFormat:(MTLPixelFormat)pixelFormat width:(size_t)width height:(size_t)height planeIndex:(size_t)planeIndex error:(NSError * _Nullable __autoreleasing *)error {
 #if COREVIDEO_SUPPORTS_METAL
+    [_lock lock];
     CVMetalTextureRef textureRef = NULL;
     CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _cache, imageBuffer, (__bridge CFDictionaryRef)textureAttributes, pixelFormat, width, height, planeIndex, &textureRef);
     if (status != kCVReturnSuccess || textureRef == NULL) {
@@ -101,6 +106,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
     }
     MTICVMetalTexture *texture = [[MTICVMetalTexture alloc] initWithCVMetalTexture:textureRef];
     CFRelease(textureRef);
+    [_lock unlock];
     return texture;
 #else
     if (error) {
@@ -112,7 +118,9 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 
 - (void)flush {
 #if COREVIDEO_SUPPORTS_METAL
+    [_lock lock];
     CVMetalTextureCacheFlush(_cache, 0);
+    [_lock unlock];
 #endif
 }
 
