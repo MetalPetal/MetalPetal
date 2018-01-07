@@ -67,9 +67,7 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
-#pragma mark - Pool
-
-@property (nonatomic, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
+@property (nonatomic, strong, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
 
 #pragma mark - Cache
 
