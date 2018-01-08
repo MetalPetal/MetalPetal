@@ -21,6 +21,7 @@
 #import "MTILock.h"
 #import "MTIRenderPassOutputDescriptor.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @implementation MTIRenderPipelineKernelConfiguration
 

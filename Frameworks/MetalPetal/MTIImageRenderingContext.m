@@ -17,6 +17,7 @@
 #import "MTIPrint.h"
 #import "MTIRenderGraphOptimization.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @interface MTIImageRenderingDependencyGraph ()
 

@@ -6,7 +6,6 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
@@ -16,20 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIFunctionDescriptor, MTISamplerDescriptor, MTIRenderPipeline, MTIComputePipeline, MTITextureDescriptor, MTICVMetalTextureCache;
-
-@interface MTIImagePromiseRenderTarget : NSObject
-
-@property (nonatomic,strong,readonly,nullable) id<MTLTexture> texture;
-
-- (BOOL)retainTexture;
-
-- (void)releaseTexture;
-
-@end
-
-typedef NSString * MTIContextPromiseAssociatedValueTableName NS_EXTENSIBLE_STRING_ENUM;
-typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_ENUM;
+@class MTICVMetalTextureCache;
 
 @interface MTIContextOptions : NSObject <NSCopying>
 
@@ -68,35 +54,6 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
 @property (nonatomic, strong, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
-
-#pragma mark - Cache
-
-- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
-
-- (nullable id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError **)error;
-
-- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
-
-- (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
-
-- (nullable MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)descriptor error:(NSError **)error;
-
-- (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(nullable id<MTIKernelConfiguration>)configuration error:(NSError **)error;
-
-
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));
-
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture NS_SWIFT_NAME(makeRenderTarget(texture:));
-
-
-- (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
-
-- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
-
-- (nullable id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
-
-- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
-
 
 - (void)reclaimResources;
 

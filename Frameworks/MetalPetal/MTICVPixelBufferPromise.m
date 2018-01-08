@@ -16,6 +16,7 @@
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTICVMetalTextureCache.h"
+#import "MTIContext+Internal.h"
 #import <simd/simd.h>
 
 static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";

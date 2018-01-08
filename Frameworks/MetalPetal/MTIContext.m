@@ -7,6 +7,7 @@
 //
 
 #import "MTIContext.h"
+#import "MTIContext+Internal.h"
 #import "MTIVertex.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTISamplerDescriptor.h"
@@ -18,52 +19,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTICVMetalTextureCache.h"
-
-@interface MTIImagePromiseRenderTarget ()
-
-@property (nonatomic,strong) id<MTLTexture> nonreusableTexture;
-
-@property (nonatomic,strong) MTIReusableTexture *resuableTexture;
-
-@end
-
-@implementation MTIImagePromiseRenderTarget
-
-- (instancetype)initWithTexture:(id<MTLTexture>)texture {
-    if (self = [super init]) {
-        _nonreusableTexture = texture;
-        _resuableTexture = nil;
-    }
-    return self;
-}
-
-- (instancetype)initWithResuableTexture:(MTIReusableTexture *)texture {
-    if (self = [super init]) {
-        _nonreusableTexture = nil;
-        _resuableTexture = texture;
-    }
-    return self;
-}
-
-- (id<MTLTexture>)texture {
-    if (_nonreusableTexture) {
-        return _nonreusableTexture;
-    }
-    return _resuableTexture.texture;
-}
-
-- (BOOL)retainTexture {
-    if (_nonreusableTexture) {
-        return YES;
-    }
-    return [_resuableTexture retainTexture];
-}
-
-- (void)releaseTexture {
-    [_resuableTexture releaseTexture];
-}
-
-@end
+#import "MTILock.h"
 
 @implementation MTIContextOptions
 
@@ -92,21 +48,23 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 @interface MTIContext()
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSURL *, id<MTLLibrary>> *libraryCache;
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<MTIFunctionDescriptor *, id<MTLFunction>> *functionCache;
+@property (nonatomic, strong, readonly) NSMutableDictionary<MTIFunctionDescriptor *, id<MTLFunction>> *functionCache;
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineCache;
-@property (nonatomic,strong,readonly) NSMutableDictionary<MTLComputePipelineDescriptor *, MTIComputePipeline *> *computePipelineCache;
+@property (nonatomic, strong, readonly) NSMutableDictionary<MTLRenderPipelineDescriptor *, MTIRenderPipeline *> *renderPipelineCache;
+@property (nonatomic, strong, readonly) NSMutableDictionary<MTLComputePipelineDescriptor *, MTIComputePipeline *> *computePipelineCache;
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
+@property (nonatomic, strong, readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
 @property (nonatomic, strong, readonly) MTITexturePool *texturePool;
 
-@property (nonatomic,strong,readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
+@property (nonatomic, strong, readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
 
-@property (nonatomic,strong,readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *promiseKeyValueTables;
-@property (nonatomic,strong,readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *imageKeyValueTables;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *promiseKeyValueTables;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *imageKeyValueTables;
+
+@property (nonatomic, strong, readonly) id<MTILocking> renderingLock;
 
 @end
 
@@ -158,6 +116,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
             }
             return nil;
         }
+        _renderingLock = MTILockCreate();
     }
     return self;
 }
@@ -166,9 +125,89 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return [self initWithDevice:device options:[[MTIContextOptions alloc] init] error:error];
 }
 
+- (void)reclaimResources {
+    [self.texturePool flush];
+}
+
+@end
+
+#pragma mark - MTIImagePromiseRenderTarget
+
+@interface MTIImagePromiseRenderTarget ()
+
+@property (nonatomic,strong) id<MTLTexture> nonreusableTexture;
+
+@property (nonatomic,strong) MTIReusableTexture *resuableTexture;
+
+@end
+
+@implementation MTIImagePromiseRenderTarget
+
+- (instancetype)initWithTexture:(id<MTLTexture>)texture {
+    if (self = [super init]) {
+        _nonreusableTexture = texture;
+        _resuableTexture = nil;
+    }
+    return self;
+}
+
+- (instancetype)initWithResuableTexture:(MTIReusableTexture *)texture {
+    if (self = [super init]) {
+        _nonreusableTexture = nil;
+        _resuableTexture = texture;
+    }
+    return self;
+}
+
+- (id<MTLTexture>)texture {
+    if (_nonreusableTexture) {
+        return _nonreusableTexture;
+    }
+    return _resuableTexture.texture;
+}
+
+- (BOOL)retainTexture {
+    if (_nonreusableTexture) {
+        return YES;
+    }
+    return [_resuableTexture retainTexture];
+}
+
+- (void)releaseTexture {
+    [_resuableTexture releaseTexture];
+}
+
+@end
+
+#pragma mark - MTIContext Internal
+
+@implementation MTIContext (Internal)
+
+#pragma mark - Render Target
+
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture {
+    return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
+}
+
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor {
+    MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor];
+    return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
+}
+
+#pragma mark - Lock
+
+- (void)lockForRendering {
+    [_renderingLock lock];
+}
+
+- (void)unlockForRendering {
+    [_renderingLock unlock];
+}
+
 #pragma mark - Cache
 
 - (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * _Nullable __autoreleasing *)error {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     id<MTLLibrary> library = self.libraryCache[URL];
     if (!library) {
         library = [self.device newLibraryWithFile:URL.path error:error];
@@ -180,6 +219,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError * __autoreleasing *)inOutError {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     id<MTLFunction> cachedFunction = self.functionCache[descriptor];
     if (!cachedFunction) {
         NSError *error = nil;
@@ -223,6 +263,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     MTIRenderPipeline *renderPipeline = self.renderPipelineCache[renderPipelineDescriptor];
     if (!renderPipeline) {
         MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
@@ -243,6 +284,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)computePipelineDescriptor error:(NSError * _Nullable __autoreleasing *)inOutError {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     MTIComputePipeline *computePipeline = self.computePipelineCache[computePipelineDescriptor];
     if (!computePipeline) {
         MTLComputePipelineDescriptor *key = [computePipelineDescriptor copy];
@@ -263,6 +305,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     NSMutableDictionary *states = [self.kernelStateMap objectForKey:kernel];
     id<NSCopying> cacheKey = configuration.identifier ?: [NSNull null];
     id cachedState = states[cacheKey];
@@ -280,6 +323,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     id<MTLSamplerState> state = self.samplerStateCache[descriptor];
     if (!state) {
         state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
@@ -288,20 +332,13 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return state;
 }
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture {
-    return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
-}
-
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor {
-    MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor];
-    return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
-}
-
 - (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     return [self.promiseKeyValueTables[tableName] objectForKey:promise];
 }
 
 - (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     MTIWeakToStrongObjectsMapTable *table = self.promiseKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
@@ -311,20 +348,18 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     return [self.imageKeyValueTables[tableName] objectForKey:image];
 }
 
 - (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
+    NSAssert([self.renderingLock tryLock] == NO, @"");
     MTIWeakToStrongObjectsMapTable *table = self.imageKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
         self.imageKeyValueTables[tableName] = table;
     }
     [table setObject:value forKey:image];
-}
-
-- (void)reclaimResources {
-    [self.texturePool flush];
 }
 
 @end

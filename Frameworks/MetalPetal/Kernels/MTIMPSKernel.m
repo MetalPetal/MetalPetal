@@ -14,6 +14,7 @@
 #import "MTIError.h"
 #import "MTIDefer.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @interface MTIMPSProcessingRecipe : NSObject <MTIImagePromise>
 

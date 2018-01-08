@@ -18,6 +18,7 @@
 #import "MTIVector.h"
 #import "MTIDefer.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @interface MTIImageComputeRecipe : NSObject <MTIImagePromise>
 

@@ -15,6 +15,7 @@
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTKTextureLoaderExtensions.h"
+#import "MTIContext+Internal.h"
 
 static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<NSString *, id> *options) {
     if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {

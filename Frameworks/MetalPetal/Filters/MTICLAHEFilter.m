@@ -19,6 +19,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIShaderLib.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @import MetalPerformanceShaders;
 

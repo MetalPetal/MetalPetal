@@ -19,6 +19,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIAlphaPremultiplicationFilter.h"
 #import "MTICVMetalTextureCache.h"
+#import "MTIContext+Internal.h"
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
@@ -34,6 +35,11 @@
 }
 
 - (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
@@ -127,6 +133,11 @@
 static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImageAssociationKey;
 
 - (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
     NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
     
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
@@ -164,6 +175,11 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;

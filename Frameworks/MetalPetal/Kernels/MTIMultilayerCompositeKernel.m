@@ -21,6 +21,7 @@
 #import "MTITransform.h"
 #import "MTILayer.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIContext+Internal.h"
 
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
