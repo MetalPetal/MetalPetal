@@ -2,8 +2,6 @@
 
 An image processing framework based on Metal.
 
-**MetalPetal is still in its early phase and isn't ready for day-to-day usage.**
-
 ## Design Overview
 
 MetalPetal is an image processing framework based on [Metal](https://developer.apple.com/metal/) designed to provide real-time processing for still image and video with easy to use programming interfaces.
