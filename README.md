@@ -74,7 +74,7 @@ With premultiplied alpha, the RGB components represent the color of the pixel, a
 
 However, `MTIFilter` objects are mutable and thus cannot be shared safely among threads.
 
-A `MTIContext` contains a lot of states and caches thus cannot be shared safely among threads currently. We are still evaluating whether it's necessary to implement a thread-safe mechanism for `MTIContext` objects.
+A `MTIContext` contains a lot of states and caches. There's a thread-safe mechanism for `MTIContext` objects, making it safe to share a `MTIContext` object among threads.
 
 ### Advantages over Core Image
 
