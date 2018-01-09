@@ -12,6 +12,7 @@ MTK_EXTERN MTKTextureLoaderOption __nonnull const MTIMTKTextureLoaderOptionOverr
 
 @interface MTIMTKTextureLoaderExtensions: NSObject
 
+/// MTKTextureLoaderOption + @{ MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9: @4 }
 @property (nonatomic,class) BOOL automaticallyFlipsTextureOniOS9;
 
 @end
