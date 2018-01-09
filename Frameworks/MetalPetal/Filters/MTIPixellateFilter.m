@@ -6,6 +6,7 @@
 //
 
 #import "MTIPixellateFilter.h"
+#import "MTIFunctionDescriptor.h"
 
 @implementation MTIPixellateFilter
 
