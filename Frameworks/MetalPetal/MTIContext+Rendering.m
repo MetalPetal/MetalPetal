@@ -194,7 +194,32 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         return NO;
     }
     
-    const MTLPixelFormat targetPixelFormat = MTLPixelFormatBGRA8Unorm;
+    OSType pixelFormatType = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    MTLPixelFormat targetPixelFormat;
+    switch (pixelFormatType) {
+        case kCVPixelFormatType_32BGRA: {
+            targetPixelFormat = MTLPixelFormatBGRA8Unorm;
+        } break;
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
+            if (MTIDeviceSupportsYCBCRPixelFormat(renderingContext.context.device)) {
+                targetPixelFormat = MTIPixelFormatYCBCR8_420_2P;
+            } else {
+                NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return NO;
+            }
+        } break;
+        default: {
+            NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return NO;
+        } break;
+    }
     
     size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
     size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
