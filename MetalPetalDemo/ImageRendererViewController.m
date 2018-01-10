@@ -53,7 +53,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.redColor;
-    [MetalPetalSwiftInterfaceTest test];
     
     MTIContextOptions *options = [[MTIContextOptions alloc] init];
     //options.enablesRenderGraphOptimization = NO;
@@ -233,7 +232,6 @@
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
-        
         MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;

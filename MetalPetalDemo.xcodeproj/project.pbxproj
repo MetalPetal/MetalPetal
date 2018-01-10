@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0611EAF71F90708E00CD3168 /* P1030510.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0611EAF61F90708700CD3168 /* P1030510.jpg */; };
+		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
 		7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */; };
 		81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */; };
 		9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D1FCE3B1F21A99400264194 /* MainTableViewController.m */; };
@@ -19,11 +20,11 @@
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
 		9D4F1C361F02B7E700FA48BE /* P1040602.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4F1C351F02B7E700FA48BE /* P1040602.jpg */; };
 		9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D7933A51F07A50B00135D46 /* P1040808.jpg */; };
-		9D9B4DE91F0558C40084ED0D /* SwiftInterfaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0611EAF61F90708700CD3168 /* P1030510.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1030510.jpg; sourceTree = "<group>"; };
+		062816152005BBE1005D81BC /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		06AD314A1F9463B100AAAF35 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		06D668BB1F989C070091A8A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		0A8FE4D1B0592FC3147A79BB /* Pods-MetalPetalDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -45,7 +46,6 @@
 		9D4F1C351F02B7E700FA48BE /* P1040602.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040602.jpg; sourceTree = "<group>"; };
 		9D7933A51F07A50B00135D46 /* P1040808.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040808.jpg; sourceTree = "<group>"; };
 		9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalPetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
-		9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftInterfaceTest.swift; sourceTree = "<group>"; };
 		B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -92,6 +92,7 @@
 		9D3928AB1EFF678800BA6B09 /* MetalPetalDemo */ = {
 			isa = PBXGroup;
 			children = (
+				9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */,
 				9D3928AF1EFF678800BA6B09 /* AppDelegate.h */,
 				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
 				9D1FCE3A1F21A99400264194 /* MainTableViewController.h */,
@@ -100,8 +101,7 @@
 				9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */,
 				81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */,
 				81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */,
-				9D9B4DE81F0558C40084ED0D /* SwiftInterfaceTest.swift */,
-				9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */,
+				062816152005BBE1005D81BC /* Camera.swift */,
 				0611EAF61F90708700CD3168 /* P1030510.jpg */,
 				9D4F1C351F02B7E700FA48BE /* P1040602.jpg */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
@@ -266,9 +266,9 @@
 			files = (
 				9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */,
 				9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */,
-				9D9B4DE91F0558C40084ED0D /* SwiftInterfaceTest.swift in Sources */,
 				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
+				062816162005BBE1005D81BC /* Camera.swift in Sources */,
 				9D3928AE1EFF678800BA6B09 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
