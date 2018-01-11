@@ -72,15 +72,21 @@ There are three alpha types in MetalPetal.
 
 `MTIAlphaType.alphaIsOne`: there's no alpha channel in the image or the image is opaque.
 
-Typically, `CGImage`, `CVPixelBuffer`, `CIImage` objects have premultiplied alpha channel. `MTIAlphaTypeAlphaIsOne` is strongly recommanded if the image is opaque, e.g. a `CVPixelBuffer` from camera feed, or a `CGImage` loaded from a `jpg` file.
+Typically, `CGImage`, `CVPixelBuffer`, `CIImage` objects have premultiplied alpha channel. `MTIAlphaType.alphaIsOne` is strongly recommanded if the image is opaque, e.g. a `CVPixelBuffer` from camera feed, or a `CGImage` loaded from a `jpg` file.
 
-You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage` to convert the alpha type of an image.
+You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage` to convert the alpha type of the image.
 
 *For performance reasons, alpha type validation only happens in debug build.*
 
-### Render Graph Optimization
+### Optimizations
 
-*[Stub]*
+MetalPetal does a lot of optimizations for you under the hood.
+
+It automatically caches functions, kernel states, samplers, etc.
+
+Before rendering, MetalPetal can look into your image render graph and figure out the minimal number of intermedinate textures needed to do the rendering, saving memory, energy and time.
+
+It can also re-organize the image render graph if multiple “recipes” can be concatenated to eliminate redundant render passes. (`MTIContext.isRenderGraphOptimizationEnabled`)
 
 ### Concurrency Considerations
 
