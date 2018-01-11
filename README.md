@@ -374,17 +374,15 @@ You can use `MTIRenderCommand` to issue multiple draw calls in one render pass.
 
 ## Install
 
-We do not recommend you to use MetalPetal in your project right now.
-
-However if you'd like to give it a try, you can use [CocoaPods](https://cocoapods.org/) to install the lastest version.
+You can use [CocoaPods](https://cocoapods.org/) to install the lastest version.
 
 ```
 use_frameworks!
 
-pod 'MetalPetal', :git => 'https://github.com/MetalPetal/MetalPetal.git'
+pod 'MetalPetal'
 
 # Swift extensions (optional).
-pod 'MetalPetal/Swift', :git => 'https://github.com/MetalPetal/MetalPetal.git'
+pod 'MetalPetal/Swift'
 
 ```
 
