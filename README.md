@@ -224,7 +224,7 @@ do {
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
 
-*[Stub] with Image*
+![Quick Look Debug Preview](https://github.com/MetalPetal/MetalPetal/blob/master/Assets/quick_look_debug_preview.jpg)
 
 ## Best Practices
 
@@ -274,7 +274,7 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
 
-### Simple single input/output filters.
+### Simple single input/output filters
 
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
 
@@ -305,7 +305,7 @@ To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` 
 @end
 ```
 
-### Fully custom filters.
+### Fully custom filters
 
 To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
 
