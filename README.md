@@ -60,7 +60,23 @@ With unpremultiplied alpha, the RGB components represent the color of the pixel,
 
 With premultiplied alpha, the RGB components represent the color of the pixel, adjusted for its opacity by multiplication.
 
-*[Stub]*
+Most of the filters in MetalPetal accept unpremultiplied alpha and opaque images and output unpremultiplied alpha images. Some filters, such as  `MTIMultilayerCompositingFilter` accepts both unpremultiplied/premultiplied alpha images.
+
+MetalPetal handles alpha type explicitly. You are responsible for providing the correct alpha type during image creation.
+
+There are three alpha types in MetalPetal.
+
+`MTIAlphaType.nonPremultiplied`: the alpha value in the image is not premultiplied.
+
+`MTIAlphaType.premultiplied`: the alpha value in the image is premultiplied.
+
+`MTIAlphaType.alphaIsOne`: there's no alpha channel in the image or the image is opaque.
+
+Typically, `CGImage`, `CVPixelBuffer`, `CIImage` objects have premultiplied alpha channel. `MTIAlphaTypeAlphaIsOne` is strongly recommanded if the image is opaque, e.g. a `CVPixelBuffer` from camera feed, or a `CGImage` loaded from a `jpg` file.
+
+You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage` to convert the alpha type of an image.
+
+*For performance reasons, alpha type validation only happens in debug build.*
 
 ### Render Graph Optimization
 
@@ -136,6 +152,10 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 *[Stub]*
 
+### Pixellate
+
+*[Stub]*
+
 ### Multilayer Composite
 
 *[Stub]*
@@ -202,7 +222,9 @@ do {
 
 ### Quick Look Debug Support
 
-*[Stub]*
+If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
+
+*[Stub] with Image*
 
 ## Best Practices
 
@@ -252,7 +274,91 @@ do {
 
 If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
 
-*[Stub]*
+To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
+
+```ObjectiveC
+@interface MTIPixellateFilter : MTIUnaryImageRenderingFilter
+
+@property (nonatomic) float fractionalWidthOfAPixel;
+
+@end
+
+@implementation MTIPixellateFilter
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _fractionalWidthOfAPixel = 0.05;
+    }
+    return self;
+}
+
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:@"pixellateEffect" libraryURL:[bundle URLForResource:@"default" withExtension:@"metallib"]];
+}
+
+- (NSDictionary<NSString *,id> *)parameters {
+    return @{@"fractionalWidthOfAPixel": @(self.fractionalWidthOfAPixel)};
+}
+
+@end
+```
+
+To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel.h`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
+
+```ObjectiveC
+
+@interface MTIChromaKeyBlendFilter : NSObject <MTIFilter>
+
+@property (nonatomic, strong, nullable) MTIImage *inputImage;
+
+@property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;
+
+@property (nonatomic) float thresholdSensitivity;
+
+@property (nonatomic) float smoothing;
+
+@property (nonatomic) MTIColor color;
+
+@end
+
+@implementation MTIChromaKeyBlendFilter
+
+@synthesize outputPixelFormat = _outputPixelFormat;
+
++ (MTIRenderPipelineKernel *)kernel {
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"chromaKeyBlend"]];
+    });
+    return kernel;
+}
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _thresholdSensitivity = 0.4;
+        _smoothing = 0.1;
+        _color = MTIColorMake(0.0, 1.0, 0.0, 1.0);
+    }
+    return self;
+}
+
+- (MTIImage *)outputImage {
+    if (!self.inputImage || !self.inputBackgroundImage) {
+        return nil;
+    }
+    return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputBackgroundImage]
+                                      parameters:@{@"color": [[MTIVector alloc] initWithFloat4:(simd_float4){self.color.red, self.color.green, self.color.blue,self.color.alpha}],
+                                    @"thresholdSensitivity": @(self.thresholdSensitivity),
+                                               @"smoothing": @(self.smoothing)}
+                         outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
+                               outputPixelFormat:self.outputPixelFormat];
+}
+
+@end
+```
+
+You can use `MTIRenderCommand` to issue multiple draw calls in one render pass.
 
 ## Install
 

@@ -46,5 +46,4 @@
                                outputPixelFormat:self.outputPixelFormat];
 }
 
-
 @end
