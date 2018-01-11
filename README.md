@@ -274,6 +274,8 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
 
+### Simple single input/output filters.
+
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
 
 ```ObjectiveC
@@ -303,7 +305,9 @@ To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` 
 @end
 ```
 
-To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel.h`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
+### Fully custom filters.
+
+To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
 
 ```ObjectiveC
 
@@ -357,6 +361,8 @@ To build more complex filters, all you need to do is create a kernel (`MTIRender
 
 @end
 ```
+
+### Multiple draw calls in one render pass
 
 You can use `MTIRenderCommand` to issue multiple draw calls in one render pass.
 
