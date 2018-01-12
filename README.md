@@ -2,6 +2,32 @@
 
 An image processing framework based on Metal.
 
+- [Design Overview](#design-overview)
+    - [Goals](#goals)
+    - [Core Components](#core-components)
+        - [MTIContext](#mticontext)
+        - [MTIImage](#mtiimage)
+        - [MTIFilter](#mtifilter)
+        - [MTIKernel](#mtikernel)
+    - [Alpha Type Handling](#alpha-type-handling)
+    - [Optimizations](#optimizations)
+    - [Concurrency Considerations](#concurrency-considerations)
+    - [Advantages over Core Image](#advantages-over-core-image)
+- [Builtin Filters](#builtin-filters)
+- [Example Code](#example-code)
+    - [Create a `MTIImage`](#create-a-mtiimage)
+    - [Create a filtered image](#create-a-filtered-image)
+    - [Render a `MTIImage`](#render-a-mtiimage)
+- [Quick Look Debug Support](#quick-look-debug-support)
+- [Best Practices](#best-practices)
+- [Build Custom Filter](#build-custom-filter)
+    - [Simple single input/output filters](#simple-single-inputoutput-filters)
+    - [Fully custom filters](#fully-custom-filters)
+    - [Multiple draw calls in one render pass](#multiple-draw-calls-in-one-render-pass)
+- [Install](#install)
+- [Contribute](#contribute)
+- [License](#license)
+
 ## Design Overview
 
 MetalPetal is an image processing framework based on [Metal](https://developer.apple.com/metal/) designed to provide real-time processing for still image and video with easy to use programming interfaces.
@@ -40,10 +66,6 @@ Provides an evaluation context for rendering `MTIImage`s. It also stores a lot o
 
  A `MTIImage` object is a representation of an image to be processed or produced. It does directly represent image bitmap data instead it has all the information necessary to produce an image or more precisely a `MTLTexture`. It consists of two parts, a recipe of how to produce the texture (`MTIImagePromise`) and other information such as how a context caches the image (`cachePolicy`), and how the texture should be sampled (`samplerDescriptor`).
 
-#### MTIImagePromise
-
-A `MTIImagePromise` is a "recipe" specifying how to create a texture with the specified kernel, parameters, and input.
-
 #### MTIFilter
 
 A `MTIFilter` represents an image processing effect and any parameters that control that effect. It produces a `MTIImage` object as output. To use a filter, you create a filter object, set its input images and parameters, and then access its output image. Typically, a filter class owns a static kernel (`MTIKernel`), when you access its `outputImage` property, it asks the kernel with the input images and parameters to produce a output `MTIImage`. 
@@ -76,7 +98,7 @@ Typically, `CGImage`, `CVPixelBuffer`, `CIImage` objects have premultiplied alph
 
 You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage` to convert the alpha type of the image.
 
-*For performance reasons, alpha type validation only happens in debug build.*
+For performance reasons, alpha type validation only happens in debug build.
 
 ### Optimizations
 
@@ -106,85 +128,68 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 ## Builtin Filters
 
-### Color Matrix
+- Color Matrix
 
-*[Stub]*
+- Color Lookup
 
-### Color Lookup
+    Uses an color lookup table to remap the colors in an image.
 
-*[Stub]*
+- Opacity
 
-### Opacity
+- Exposure
 
-*[Stub]*
+- Saturation
 
-### Exposure
+- Brightness
 
-*[Stub]*
+- Contrast
 
-### Saturation
+- Color Invert
 
-*[Stub]*
+- Vibrance
 
-### Brightness
+    Adjusts the saturation of an image while keeping pleasing skin tones.
 
-*[Stub]*
+- Blend Modes
 
-### Contrast
+    - Normal
+    - Multiply
+    - Overlay
+    - Screen
+    - HardLight
+    - SoftLight
+    - Darken
+    - Lighten
+    - ColorDodge
+    - Difference
+    - Exclusion
+    - Hue
+    - Saturation
+    - Color
+    - Luminosity
+    - ColorLookup512x512
 
-*[Stub]*
+- Blend with Mask
 
-### Color Invert
+- Transform
 
-*[Stub]*
+- Crop
 
-### Vibrance
+- Pixellate
 
-*[Stub]*
+- Multilayer Composite
 
-### Blend Modes
+- MPS Convolution
 
-*[Stub]*
+- MPS Gaussian Blur
 
-### Blend with Mask
+- CLAHE (Contrast-Limited Adaptive Histogram Equalization)
 
-*[Stub]*
-
-### Transform
-
-*[Stub]*
-
-### Crop
-
-*[Stub]*
-
-### Pixellate
-
-*[Stub]*
-
-### Multilayer Composite
-
-*[Stub]*
-
-### MPS Convolution
-
-*[Stub]*
-
-### MPS Gaussian Blur
-
-*[Stub]*
-
-### CLAHE
-
-*[Stub]*
-
-### Lens Blur (Hexagonal Bokeh Blur)
-
-*[Stub]*
+- Lens Blur (Hexagonal Bokeh Blur)
 
 ## Example Code
 
-#### Create a `MTIImage`
+### Create a `MTIImage`
 
 ```Swift
 let imageFromCGImage = MTIImage(cgImage: cgImage)
@@ -196,7 +201,7 @@ let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer)
 let imageFromContentsOfURL = MTIImage(contentsOf: url)
 ```
 
-#### Create a filtered image
+### Create a filtered image
 
 ```Swift
 let inputImage = ...
@@ -208,7 +213,7 @@ filter.inputImage = inputImage
 let outputImage = filter.outputImage
 ```
 
-#### Render a `MTIImage`
+### Render a `MTIImage`
 
 ```Swift
 let context = MTIContext()
@@ -226,7 +231,7 @@ do {
 }
 ```
 
-### Quick Look Debug Support
+## Quick Look Debug Support
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
 
