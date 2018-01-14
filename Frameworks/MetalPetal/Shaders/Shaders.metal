@@ -295,3 +295,17 @@ fragment float4 pixellateEffect(VertexOut vertexIn [[stage_in]],
     float2 samplePos = textureCoordinate - fmod(textureCoordinate, sampleDivisor) + 0.5 * sampleDivisor;
     return sourceTexture.sample(sourceSampler, samplePos);
 }
+
+fragment float4 rgbToneCurveAdjust(
+                               VertexOut vertexIn [[stage_in]],
+                               texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                               texture2d<float, access::sample> toneCurveTexture [[texture(1)]],
+                               sampler sourceSampler [[sampler(0)]],
+                               sampler toneCurveSampler [[sampler(1)]],
+                               constant float &intensity [[buffer(0)]]) {
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+    float r = toneCurveTexture.sample(toneCurveSampler, float2((textureColor.r * 255.0 + 0.5)/256.0, 0.5)).r;
+    float g = toneCurveTexture.sample(toneCurveSampler, float2((textureColor.g * 255.0 + 0.5)/256.0, 0.5)).g;
+    float b = toneCurveTexture.sample(toneCurveSampler, float2((textureColor.b * 255.0 + 0.5)/256.0, 0.5)).b;
+    return mix(textureColor, float4(r,g,b,textureColor.a), intensity);
+}

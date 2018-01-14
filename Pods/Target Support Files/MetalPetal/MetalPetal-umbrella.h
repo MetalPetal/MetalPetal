@@ -26,6 +26,7 @@
 #import "MTIMPSSobelFilter.h"
 #import "MTIMultilayerCompositingFilter.h"
 #import "MTIPixellateFilter.h"
+#import "MTIRGBToneCurveFilter.h"
 #import "MTITransformFilter.h"
 #import "MTIUnaryImageRenderingFilter.h"
 #import "MTIVibranceFilter.h"
