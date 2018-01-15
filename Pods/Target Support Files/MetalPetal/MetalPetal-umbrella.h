@@ -19,6 +19,7 @@
 #import "MTIColorMatrixFilter.h"
 #import "MTICropFilter.h"
 #import "MTIFilter.h"
+#import "MTIHighPassSkinSmoothingFilter.h"
 #import "MTIImage+Filters.h"
 #import "MTILensBlurFilter.h"
 #import "MTIMPSConvolutionFilter.h"

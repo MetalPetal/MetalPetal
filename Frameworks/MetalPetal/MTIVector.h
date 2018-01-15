@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFloat4:(simd_float4)v;
 - (instancetype)initWithFloat3:(simd_float3)v;
 
++ (instancetype)vectorWithX:(float)X Y:(float)Y;
+
 @property (readonly) NSUInteger count;
 
 @property (nonatomic,copy,readonly) NSData *data;

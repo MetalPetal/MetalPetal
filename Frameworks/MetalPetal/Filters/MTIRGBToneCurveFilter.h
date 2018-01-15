@@ -14,12 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
-@property (nonatomic, copy) NSArray<MTIVector *> *inputRedControlPoints;
-@property (nonatomic, copy) NSArray<MTIVector *> *inputGreenControlPoints;
-@property (nonatomic, copy) NSArray<MTIVector *> *inputBlueControlPoints;
-@property (nonatomic, copy) NSArray<MTIVector *> *inputRGBCompositeControlPoints;
+@property (nonatomic, copy) NSArray<MTIVector *> *redControlPoints;
+@property (nonatomic, copy) NSArray<MTIVector *> *greenControlPoints;
+@property (nonatomic, copy) NSArray<MTIVector *> *blueControlPoints;
+@property (nonatomic, copy) NSArray<MTIVector *> *RGBCompositeControlPoints;
 
 @property (nonatomic) float intensity; //default 1.0
+
+@property (nonatomic, strong, readonly) MTIImage *toneCurveColorLookupImage;
 
 @end
 

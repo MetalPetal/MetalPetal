@@ -76,6 +76,10 @@ __Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
     return [self initWithFloat4:float4];
 }
 
++ (instancetype)vectorWithX:(float)X Y:(float)Y {
+    return [[MTIVector alloc] initWithCGPoint:CGPointMake(X, Y)];
+}
+
 - (instancetype)initWithCoder:(NSCoder *)coder {
     NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
     if (!data) {

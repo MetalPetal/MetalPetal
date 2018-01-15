@@ -150,6 +150,8 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
     Adjusts the saturation of an image while keeping pleasing skin tones.
 
+- RGB Tone Curve
+
 - Blend Modes
 
     - Normal
@@ -182,6 +184,8 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 - MPS Convolution
 
 - MPS Gaussian Blur
+
+- High Pass Skin Smoothing
 
 - CLAHE (Contrast-Limited Adaptive Histogram Equalization)
 
