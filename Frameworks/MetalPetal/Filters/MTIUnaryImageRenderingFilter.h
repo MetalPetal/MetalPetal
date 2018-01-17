@@ -23,11 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat outputImageSize:(CGSize)outputImageSize;
+
 @end
 
 @interface MTIUnaryImageRenderingFilter (SubclassingHooks)
 
 @property (nonatomic,copy,readonly) NSDictionary<NSString *, id> *parameters;
+
+- (CGSize)outputImageSizeForInputImage:(MTIImage *)inputImage;
 
 + (MTIFunctionDescriptor *)fragmentFunctionDescriptor;
 

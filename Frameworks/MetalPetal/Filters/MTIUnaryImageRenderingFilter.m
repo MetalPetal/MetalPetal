@@ -49,10 +49,10 @@
 }
 
 - (MTIImage *)outputImage {
-    if (!_inputImage) {
+    if (!self.inputImage) {
         return nil;
     }
-    return [self.class imageByProcessingImage:_inputImage orientation:_orientation parameters:self.parameters outputPixelFormat:_outputPixelFormat];
+    return [self.class imageByProcessingImage:self.inputImage orientation:self.orientation parameters:self.parameters outputPixelFormat:self.outputPixelFormat outputImageSize:[self outputImageSizeForInputImage:self.inputImage]];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image withInputParameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
@@ -60,12 +60,11 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    CGSize size = image.size;
-    if ([MTIUnaryImageRenderingFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:orientation]) {
-        size.width = image.size.height;
-        size.height = image.size.width;
-    }
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(size) pixelFormat:outputPixelFormat];
+    [self imageByProcessingImage:image orientation:orientation parameters:parameters outputPixelFormat:outputPixelFormat outputImageSize:[MTIUnaryImageRenderingFilter defaultOutputImageSizeForInputImage:image orientation:orientation]];
+}
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat outputImageSize:(CGSize)outputImageSize {
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(outputImageSize) pixelFormat:outputPixelFormat];
     MTIVertices *geometry = [MTIUnaryImageRenderingFilter verticesForDrawingInRect:CGRectMake(-1, -1, 2, 2) orientation:orientation];
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self.kernel geometry:geometry images:@[image] parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
@@ -161,12 +160,25 @@
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
++ (CGSize)defaultOutputImageSizeForInputImage:(MTIImage *)inputImage orientation:(MTIImageOrientation)orientation {
+    CGSize size = inputImage.size;
+    if ([MTIUnaryImageRenderingFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:orientation]) {
+        size.width = image.size.height;
+        size.height = image.size.width;
+    }
+    return size;
+}
+
 @end
 
 @implementation MTIUnaryImageRenderingFilter (SubclassingHooks)
 
 - (NSDictionary<NSString *,id> *)parameters {
     return @{};
+}
+
+- (CGSize)outputImageSizeForInputImage:(MTIImage *)inputImage {
+    return [MTIUnaryImageRenderingFilter defaultOutputImageSizeForInputImage:inputImage orientation:self.orientation];
 }
 
 + (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
