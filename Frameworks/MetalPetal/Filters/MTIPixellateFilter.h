@@ -9,6 +9,6 @@
 
 @interface MTIPixellateFilter : MTIUnaryImageRenderingFilter
 
-@property (nonatomic) float fractionalWidthOfAPixel;
+@property (nonatomic) CGSize scale;
 
 @end

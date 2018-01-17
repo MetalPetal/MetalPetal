@@ -7,22 +7,23 @@
 
 #import "MTIPixellateFilter.h"
 #import "MTIFunctionDescriptor.h"
+#import "MTIVector.h"
 
 @implementation MTIPixellateFilter
 
 - (instancetype)init {
     if (self = [super init]) {
-        _fractionalWidthOfAPixel = 0.05;
+        _scale = CGSizeMake(16.0, 16.0);
     }
     return self;
 }
 
 + (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
-    return [[MTIFunctionDescriptor alloc] initWithName:@"pixellateEffect"];
+    return [[MTIFunctionDescriptor alloc] initWithName:@"pixellate"];
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
-    return @{@"fractionalWidthOfAPixel": @(self.fractionalWidthOfAPixel)};
+    return @{@"scale": [[MTIVector alloc] initWithCGSize:self.scale]};
 }
 
 @end

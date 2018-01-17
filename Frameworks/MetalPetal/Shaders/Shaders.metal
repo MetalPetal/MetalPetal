@@ -285,15 +285,15 @@ fragment float4 chromaKeyBlend(
     return mix(textureColor, textureColor2, blendValue);
 }
 
-fragment float4 pixellateEffect(VertexOut vertexIn [[stage_in]],
+fragment float4 pixellate(VertexOut vertexIn [[stage_in]],
                         texture2d<float, access::sample> sourceTexture [[texture(0)]],
                         sampler sourceSampler [[sampler(0)]],
-                        constant float & fractionalWidthOfAPixel [[buffer(0)]]
+                        constant float2 &scale [[buffer(0)]]
                         ) {
-    float2 textureCoordinate = vertexIn.textureCoordinate;
-    float2 sampleDivisor = float2(fractionalWidthOfAPixel, fractionalWidthOfAPixel / sourceTexture.get_height() * sourceTexture.get_width());
-    float2 samplePos = textureCoordinate - fmod(textureCoordinate, sampleDivisor) + 0.5 * sampleDivisor;
-    return sourceTexture.sample(sourceSampler, samplePos);
+    float2 textureSize = float2(sourceTexture.get_width(), sourceTexture.get_height());
+    float2 textureCoordinate = vertexIn.textureCoordinate * textureSize;
+    float2 samplePos = textureCoordinate - fmod(textureCoordinate, scale) + scale * 0.5;
+    return sourceTexture.sample(sourceSampler, samplePos/textureSize);
 }
 
 fragment float4 rgbToneCurveAdjust(
