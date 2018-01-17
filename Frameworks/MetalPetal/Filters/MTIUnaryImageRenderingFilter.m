@@ -60,7 +60,7 @@
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
-    [self imageByProcessingImage:image orientation:orientation parameters:parameters outputPixelFormat:outputPixelFormat outputImageSize:[MTIUnaryImageRenderingFilter defaultOutputImageSizeForInputImage:image orientation:orientation]];
+    return [self imageByProcessingImage:image orientation:orientation parameters:parameters outputPixelFormat:outputPixelFormat outputImageSize:[MTIUnaryImageRenderingFilter defaultOutputImageSizeForInputImage:image orientation:orientation]];
 }
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image orientation:(MTIImageOrientation)orientation parameters:(NSDictionary<NSString *,id> *)parameters outputPixelFormat:(MTLPixelFormat)outputPixelFormat outputImageSize:(CGSize)outputImageSize {
@@ -163,8 +163,8 @@
 + (CGSize)defaultOutputImageSizeForInputImage:(MTIImage *)inputImage orientation:(MTIImageOrientation)orientation {
     CGSize size = inputImage.size;
     if ([MTIUnaryImageRenderingFilter shouldSwipeWidthAndHeightWhenRotatingToOrientation:orientation]) {
-        size.width = image.size.height;
-        size.height = image.size.width;
+        size.width = inputImage.size.height;
+        size.height = inputImage.size.width;
     }
     return size;
 }
