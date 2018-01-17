@@ -15,6 +15,7 @@
 #import "MTIBlendWithMaskFilter.h"
 #import "MTIChromaKeyBlendFilter.h"
 #import "MTICLAHEFilter.h"
+#import "MTIColorHalftoneFilter.h"
 #import "MTIColorLookupFilter.h"
 #import "MTIColorMatrixFilter.h"
 #import "MTICropFilter.h"
