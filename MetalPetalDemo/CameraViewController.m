@@ -43,6 +43,9 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
 
 @property (nonatomic, strong) MTIColorLookupFilter *colorLookupFilter;
 @property (nonatomic, strong) MTIVibranceFilter *vibranceFilter;
+@property (nonatomic, strong) MTIPixellateFilter *pixellateFilter;
+@property (nonatomic, strong) MTIColorHalftoneFilter *halftoneFilter;
+@property (nonatomic, strong) MTIDotScreenFilter *dotScreenFilter;
 
 @end
 
@@ -75,9 +78,14 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
     _vibranceFilter = [[MTIVibranceFilter alloc] init];
     _vibranceFilter.amount = 1.0;
     
+    _pixellateFilter = [[MTIPixellateFilter alloc] init];
+    
     _colorLookupFilter = [[MTIColorLookupFilter alloc] init];
     _colorLookupFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ColorLookup512"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     
+    _halftoneFilter = [[MTIColorHalftoneFilter alloc] init];
+    
+    _dotScreenFilter = [[MTIDotScreenFilter alloc] init];
     
     CVPixelBufferPoolCreate(kCFAllocatorDefault,
                             (__bridge CFDictionaryRef)@{(id)kCVPixelBufferPoolMinimumBufferCountKey: @(30)},
@@ -143,7 +151,7 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
         MTIImage *outputImage = inputImage;
         if (self.isFilterEnabled) {
             self.colorLookupFilter.inputImage = inputImage;
-            outputImage = self.colorLookupFilter.outputImage;
+            outputImage = [self.colorLookupFilter.outputImage imageWithCachePolicy:MTIImageCachePolicyPersistent];
             
             /// render output image to pixelbuffer
             CVPixelBufferRef outputPixelBuffer;

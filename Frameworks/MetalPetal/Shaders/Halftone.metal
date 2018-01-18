@@ -72,7 +72,8 @@ namespace metalpetal {
         
         float2 neighborSamplePosition(float2 textureCoordinate, float2 samplePosition, float scale, float2x2 m) {
             float2 p = (textureCoordinate - samplePosition) * m;
-            float2 direction;
+            float2 direction = (p.y > p.x) ? ( -p.x > p.y ? float2(-1, 0) : float2(0, 1)) : (-p.y > p.x ? float2(0, -1) : float2(1, 0));
+            /*
             if (p.y > p.x) {
                 if (-p.x > p.y) {
                     //left
@@ -90,6 +91,7 @@ namespace metalpetal {
                     direction = float2(1, 0);
                 }
             }
+            */
             return samplePosition + (m * direction) * scale;
         }
     }
