@@ -49,7 +49,7 @@
     if (ceil(self.radius) <= 0) {
         return self.inputImage;
     }
-    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
+    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{@"edgeMode": @(MPSImageEdgeModeClamp)} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }
 
 @end

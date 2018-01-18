@@ -9,19 +9,12 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIVector.h"
 
-@interface MTIColorHalftoneFilter ()
-
-@property (nonatomic, readonly) simd_float2 center;
-
-@end
-
 @implementation MTIColorHalftoneFilter
 
 - (instancetype)init {
     if (self = [super init]) {
         _scale = 20;
-        _angles = simd_make_float4(0, 0, 0, 0);
-        _center = simd_make_float2(0, 0);
+        _angles = simd_make_float4(M_PI_4, M_PI_4, M_PI_4, 0);
     }
     return self;
 }
@@ -31,9 +24,13 @@
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
+    BOOL allAnglesAreEqual = NO;
+    if (self.angles.x == self.angles.y && self.angles.y == self.angles.z) {
+        allAnglesAreEqual = YES;
+    }
     return @{@"scale": @(self.scale),
              @"angles": [[MTIVector alloc] initWithFloat4:self.angles],
-             @"center": [[MTIVector alloc] initWithFloat2:self.center]};
+             @"singleAngleMode": @(allAnglesAreEqual)};
 }
 
 @end
