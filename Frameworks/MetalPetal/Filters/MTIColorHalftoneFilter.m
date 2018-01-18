@@ -19,9 +19,8 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _radius = 20;
+        _scale = 20;
         _angles = simd_make_float4(0, 0, 0, 0);
-        _mode = MTIColorHalftoneModeCMYK;
         _center = simd_make_float2(0, 0);
     }
     return self;
@@ -32,8 +31,7 @@
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
-    return @{@"mode": @((int)self.mode),
-             @"radius": @(self.radius),
+    return @{@"scale": @(self.scale),
              @"angles": [[MTIVector alloc] initWithFloat4:self.angles],
              @"center": [[MTIVector alloc] initWithFloat2:self.center]};
 }

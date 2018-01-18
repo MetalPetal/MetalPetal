@@ -8,16 +8,9 @@
 #import "MTIUnaryImageRenderingFilter.h"
 #import <simd/simd.h>
 
-typedef NS_ENUM(NSInteger, MTIColorHalftoneMode) {
-    MTIColorHalftoneModeCMYK = 0,
-    MTIColorHalftoneModeGrayscale = 1
-};
-
 @interface MTIColorHalftoneFilter : MTIUnaryImageRenderingFilter
 
-@property (nonatomic) MTIColorHalftoneMode mode;
-
-@property (nonatomic) float radius;
+@property (nonatomic) float scale;
 
 @property (nonatomic) simd_float4 angles;
 
