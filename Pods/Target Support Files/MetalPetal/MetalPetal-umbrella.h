@@ -24,6 +24,7 @@
 #import "MTIHighPassSkinSmoothingFilter.h"
 #import "MTIImage+Filters.h"
 #import "MTILensBlurFilter.h"
+#import "MTIMPSBoxBlurFilter.h"
 #import "MTIMPSConvolutionFilter.h"
 #import "MTIMPSGaussianBlurFilter.h"
 #import "MTIMPSSobelFilter.h"

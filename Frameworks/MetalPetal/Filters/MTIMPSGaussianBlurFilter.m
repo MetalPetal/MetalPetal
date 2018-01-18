@@ -33,7 +33,9 @@
         //ceil(sqrt(-log(0.01)*2)*sigma) ~ ceil(3.7*sigma)
         float sigma = radius;
         kernel = [[MTIMPSKernel alloc] initWithMPSKernelBuilder:^MPSKernel * _Nonnull(id<MTLDevice>  _Nonnull device) {
-            return [[MPSImageGaussianBlur alloc] initWithDevice:device sigma:sigma];
+            MPSImageGaussianBlur *k = [[MPSImageGaussianBlur alloc] initWithDevice:device sigma:sigma];
+            k.edgeMode = MPSImageEdgeModeClamp;
+            return k;
         }];
         kernels[@(radius)] = kernel;
     }
@@ -49,7 +51,7 @@
     if (ceil(self.radius) <= 0) {
         return self.inputImage;
     }
-    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{@"edgeMode": @(MPSImageEdgeModeClamp)} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
+    return [[self.class kernelWithRadius:ceil(self.radius)] applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }
 
 @end
