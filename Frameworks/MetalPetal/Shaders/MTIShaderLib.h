@@ -60,7 +60,7 @@ namespace metalpetal {
     } VertexOut;
     
     // GLSL mod func for metal
-    METAL_FUNC float4 mod(float x, float y) {
+    METAL_FUNC float floatMod(float x, float y) {
         return x - y * floor(x/y);
     }
     
