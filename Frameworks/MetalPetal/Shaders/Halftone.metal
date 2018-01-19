@@ -20,10 +20,6 @@ namespace metalpetal {
                             float2(sr,cr));
         }
         
-        float2 mod(float2 x, float2 y) {
-            return x - y * floor(x/y);
-        }
-        
         float2 samplePosition(float2 textureCoordinate, float2x2 m, float scale) {
             float2 rotatedTextureCoordinate = m * textureCoordinate;
             return (rotatedTextureCoordinate - mod(rotatedTextureCoordinate, float2(scale)) + scale * 0.5) * m;

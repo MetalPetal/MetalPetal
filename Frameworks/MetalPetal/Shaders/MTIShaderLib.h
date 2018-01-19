@@ -60,7 +60,8 @@ namespace metalpetal {
     } VertexOut;
     
     // GLSL mod func for metal
-    METAL_FUNC float floatMod(float x, float y) {
+    template <typename T, typename _E = typename enable_if<is_same<float, typename make_scalar<T>::type>::value>::type>
+    METAL_FUNC T mod(T x, T y) {
         return x - y * floor(x/y);
     }
     
