@@ -59,6 +59,11 @@ namespace metalpetal {
         float2 textureCoordinate;
     } VertexOut;
     
+    // GLSL mod func for metal
+    METAL_FUNC float floatMod(float x, float y) {
+        return x - y * floor(x/y);
+    }
+    
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
     }
