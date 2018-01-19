@@ -43,6 +43,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, readonly) BOOL isRenderGraphOptimizationEnabled;
 
+@property (nonatomic, readonly) BOOL isMetalPerformanceShadersSupported;
+
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
 @property (nonatomic, strong, readonly) id<MTLLibrary> defaultLibrary;

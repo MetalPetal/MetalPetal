@@ -20,6 +20,7 @@
 #import "MTIError.h"
 #import "MTICVMetalTextureCache.h"
 #import "MTILock.h"
+#import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 @implementation MTIContextOptions
 
@@ -96,6 +97,8 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
+        
+        _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
         
         _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
