@@ -290,7 +290,7 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
             }
         } break;
         default:{
-            NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+            NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
             if (inOutError) {
                 *inOutError = error;
             }
@@ -306,7 +306,7 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
         case MTICVPixelBufferRenderingAPICoreImage:
             return [self resolveWithContext_CI:renderingContext error:inOutError];
         default: {
-            NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorInvalidCVPixelBufferRenderingAPI userInfo:@{}];
+            NSError *error = MTIErrorCreate(MTIErrorInvalidCVPixelBufferRenderingAPI, nil);
             if (inOutError) {
                 *inOutError = error;
             }

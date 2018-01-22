@@ -19,7 +19,6 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,
-    MTIErrorFailedToLoadTexture = 2002,
     
     //Image errors
     MTIErrorUnsupportedImageCachePolicy = 3001,
@@ -37,5 +36,10 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
     MTIErrorFailedToGetRenderedBuffer = 5005,
 };
+
+/// Create a NSError with MTIErrorDomain and the specified error code and user info. Creating a symbolic breakpoint for `_MTIErrorCreate` can help you locate the source of the error.
+FOUNDATION_EXPORT NSError * _MTIErrorCreate(MTIError code, NSString *defaultDescription, NSDictionary * _Nullable userInfo);
+
+#define MTIErrorCreate(code, userInfo) _MTIErrorCreate(code, @#code, userInfo)
 
 NS_ASSUME_NONNULL_END

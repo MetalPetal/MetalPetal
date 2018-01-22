@@ -76,7 +76,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         NSParameterAssert(device != nil);
         if (!device) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorDeviceNotFound userInfo:nil];
+                *inOutError = MTIErrorCreate(MTIErrorDeviceNotFound, nil);
             }
             return nil;
         }
@@ -209,8 +209,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 #pragma mark - Cache
 
+static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Context is peformaning a render-releated operation without aquiring the renderingLock.";
+
 - (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * _Nullable __autoreleasing *)error {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLLibrary> library = self.libraryCache[URL];
     if (!library) {
         library = [self.device newLibraryWithFile:URL.path error:error];
@@ -222,7 +224,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError * __autoreleasing *)inOutError {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLFunction> cachedFunction = self.functionCache[descriptor];
     if (!cachedFunction) {
         NSError *error = nil;
@@ -256,7 +258,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         
         if (!cachedFunction) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFunctionNotFound userInfo:@{@"MTIFunctionDescriptor": descriptor}];
+                *inOutError = MTIErrorCreate(MTIErrorFunctionNotFound, @{@"MTIFunctionDescriptor": descriptor});
             }
             return nil;
         }
@@ -266,7 +268,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)renderPipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     MTIRenderPipeline *renderPipeline = self.renderPipelineCache[renderPipelineDescriptor];
     if (!renderPipeline) {
         MTLRenderPipelineDescriptor *key = [renderPipelineDescriptor copy];
@@ -287,7 +289,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)computePipelineDescriptor error:(NSError * _Nullable __autoreleasing *)inOutError {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     MTIComputePipeline *computePipeline = self.computePipelineCache[computePipelineDescriptor];
     if (!computePipeline) {
         MTLComputePipelineDescriptor *key = [computePipelineDescriptor copy];
@@ -308,7 +310,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     NSMutableDictionary *states = [self.kernelStateMap objectForKey:kernel];
     id<NSCopying> cacheKey = configuration.identifier ?: [NSNull null];
     id cachedState = states[cacheKey];
@@ -326,7 +328,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLSamplerState> state = self.samplerStateCache[descriptor];
     if (!state) {
         state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
@@ -336,12 +338,12 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     return [self.promiseKeyValueTables[tableName] objectForKey:promise];
 }
 
 - (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     MTIWeakToStrongObjectsMapTable *table = self.promiseKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
@@ -351,12 +353,12 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     return [self.imageKeyValueTables[tableName] objectForKey:image];
 }
 
 - (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, @"");
+    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     MTIWeakToStrongObjectsMapTable *table = self.imageKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];

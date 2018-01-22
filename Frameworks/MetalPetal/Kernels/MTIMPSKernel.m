@@ -84,7 +84,7 @@
         [encoder encodeToCommandBuffer:renderingContext.commandBuffer primaryTexture:inputResolutions.firstObject.texture secondaryTexture:inputResolutions.lastObject.texture destinationTexture:renderTarget.texture];
     } else {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorMPSKernelInputCountMismatch userInfo:@{}];
+            *inOutError = MTIErrorCreate(MTIErrorMPSKernelInputCountMismatch, nil);
         }
         return nil;
     }
@@ -144,9 +144,9 @@
 }
 
 - (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
-    if (!MPSSupportsMTLDevice(context.device)) {
+    if (!context.isMetalPerformanceShadersSupported) {
         if (error) {
-            *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorMPSKernelNotSupported userInfo:nil];
+            *error = MTIErrorCreate(MTIErrorMPSKernelNotSupported, nil);
         }
         return nil;
     }

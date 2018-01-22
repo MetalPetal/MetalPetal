@@ -65,12 +65,8 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture;
-    texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
     if (!texture) {
-        if (error) {
-            *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToLoadTexture userInfo:@{}];
-        }
         return nil;
     }
     return [renderingContext.context newRenderTargetWithTexture:texture];

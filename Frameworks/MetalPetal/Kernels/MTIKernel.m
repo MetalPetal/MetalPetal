@@ -56,7 +56,7 @@
                 };
                 if (argument.bufferDataSize != size) {
                     if (inOutError != nil) {
-                        *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorDataBufferSizeMismatch userInfo:@{@"argument": argument, @"value": value}];
+                        *inOutError = MTIErrorCreate(MTIErrorDataBufferSizeMismatch, (@{@"Argument": argument, @"Value": value}));
                     }
                     return NO;
                 }
@@ -69,7 +69,7 @@
                 encodeBytes(vector.data.bytes, vector.data.length, argument.index);
             }else {
                 if (inOutError != nil) {
-                    *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorParameterDataTypeNotSupported userInfo:@{@"argument": argument, @"value": value}];
+                    *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));
                 }
                 return NO;
             }

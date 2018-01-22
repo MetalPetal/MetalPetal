@@ -57,7 +57,7 @@
     MTLRenderPassDescriptor *renderPassDescriptor = [request.drawableProvider renderPassDescriptorForRequest:request];
     if (renderPassDescriptor == nil) {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorEmptyDrawable userInfo:nil];
+            *inOutError = MTIErrorCreate(MTIErrorEmptyDrawable, nil);
         }
         return NO;
     }
@@ -205,7 +205,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             if (MTIDeviceSupportsYCBCRPixelFormat(renderingContext.context.device)) {
                 targetPixelFormat = MTIPixelFormatYCBCR8_420_2P;
             } else {
-                NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+                NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
                 if (inOutError) {
                     *inOutError = error;
                 }
@@ -213,7 +213,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             }
         } break;
         default: {
-            NSError *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorUnsupportedCVPixelBufferFormat userInfo:@{}];
+            NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
             if (inOutError) {
                 *inOutError = error;
             }
@@ -304,7 +304,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
     CVPixelBufferRef pixelBuffer;
-    CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
+    CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
     if (pixelBuffer) {
         NSError *error;
         [self renderImage:image toCVPixelBuffer:pixelBuffer error:&error];
@@ -319,14 +319,14 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         CVPixelBufferRelease(pixelBuffer);
         if (returnCode != noErr) {
             if (inOutError) {
-                *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToCreateCGImageFromCVPixelBuffer userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:@{}]}];
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCGImageFromCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:nil]});
             }
             return NULL;
         }
         return image;
     } else {
         if (inOutError) {
-            *inOutError = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToCreateCVPixelBuffer userInfo:@{}];
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:errorCode userInfo:nil]});
         }
         return NULL;
     }

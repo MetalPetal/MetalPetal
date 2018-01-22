@@ -282,7 +282,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         MTIPersistImageResolutionHolder *persistResolution = [renderingContext.context valueForImage:_image inTable:MTIContextImagePersistentResolutionHolderTable];
         if (!persistResolution) {
             if (error) {
-                *error = [NSError errorWithDomain:MTIErrorDomain code:MTIErrorFailedToGetRenderedBuffer userInfo:@{}];
+                *error = MTIErrorCreate(MTIErrorFailedToGetRenderedBuffer, nil);
             }
             _image = nil;
             return nil;
