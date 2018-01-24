@@ -56,6 +56,20 @@
                                     <action selector="recordButtonTouchUp:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="KTO-rP-5rQ"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaZ-t5-i80">
+                                <rect key="frame" x="10" y="74" width="55" height="46"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="contentEdgeInsets" minX="20" minY="14" maxX="20" maxY="14"/>
+                                <state key="normal" title="⇋"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="rotateCamera:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="Byw-GS-cP5"/>
+                                </connections>
+                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="roL-vy-2sv">
                                 <rect key="frame" x="182" y="74" width="128" height="45"/>
                                 <subviews>
@@ -93,9 +107,11 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="EaZ-t5-i80" firstAttribute="leading" secondItem="5lH-8g-4dM" secondAttribute="leading" constant="10" id="0U8-Uu-sv6"/>
                             <constraint firstItem="roL-vy-2sv" firstAttribute="top" secondItem="Bng-Ig-1Pk" secondAttribute="bottom" constant="10" id="G7T-L0-Qtu"/>
                             <constraint firstItem="zad-pD-3fr" firstAttribute="top" secondItem="EtK-Oh-uvf" secondAttribute="bottom" constant="44" id="Kql-1o-Zsz"/>
                             <constraint firstAttribute="trailing" secondItem="roL-vy-2sv" secondAttribute="trailing" constant="10" id="gEv-Zh-4bM"/>
+                            <constraint firstItem="EaZ-t5-i80" firstAttribute="top" secondItem="Bng-Ig-1Pk" secondAttribute="bottom" constant="10" id="kI1-Rz-gK1"/>
                             <constraint firstItem="EtK-Oh-uvf" firstAttribute="centerX" secondItem="5lH-8g-4dM" secondAttribute="centerX" id="pbW-ox-ynN"/>
                         </constraints>
                     </view>

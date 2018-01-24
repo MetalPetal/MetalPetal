@@ -115,6 +115,10 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
     [self.camera stopRunningCaptureSession];
 }
 
+- (IBAction)rotateCamera:(id)sender {
+    [self.camera useVideoCaptureDeviceAtPosition:self.camera.videoCaptureDevice.position == AVCaptureDevicePositionBack ? AVCaptureDevicePositionFront: AVCaptureDevicePositionBack];
+}
+
 - (IBAction)recordButtonTouchDown:(id)sender {
     self.currentVideoURL = [[[[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:CameraViewControllerCapturedVideosFolderName] URLByAppendingPathComponent:[NSUUID UUID].UUIDString] URLByAppendingPathExtension:@"mp4"];
     self.recorder = [[Recorder alloc] initWithOutputURL:self.currentVideoURL];
