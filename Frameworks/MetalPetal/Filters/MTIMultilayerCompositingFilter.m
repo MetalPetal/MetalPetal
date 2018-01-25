@@ -26,6 +26,9 @@
     if (!_inputBackgroundImage) {
         return nil;
     }
+    if (_layers.count == 0) {
+        return _inputBackgroundImage;
+    }
     return [self.class.kernel applyToBackgroundImage:_inputBackgroundImage
                                               layers:_layers
                              outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
