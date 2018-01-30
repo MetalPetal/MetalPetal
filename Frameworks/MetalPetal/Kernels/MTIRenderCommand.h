@@ -10,6 +10,8 @@
 
 @class MTIRenderPipelineKernel, MTIImage, MTIRenderPassOutputDescriptor;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface MTIRenderCommand : NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIRenderPipelineKernel *kernel;
@@ -27,7 +29,8 @@
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel
                       geometry:(id<MTIGeometry>)geometry
                         images:(NSArray<MTIImage *> *)images
-                    parameters:(NSDictionary<NSString *,id> *)parameters;
+                    parameters:(NSDictionary<NSString *,id> *)parameters NS_DESIGNATED_INITIALIZER;
 
 @end
 
+NS_ASSUME_NONNULL_END
