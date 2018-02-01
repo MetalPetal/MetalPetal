@@ -212,6 +212,12 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
                 return NO;
             }
         } break;
+        case kCVPixelFormatType_64RGBAHalf: {
+            targetPixelFormat = MTLPixelFormatRGBA16Float;
+        } break;
+        case kCVPixelFormatType_128RGBAFloat: {
+            targetPixelFormat = MTLPixelFormatRGBA32Float;
+        } break;
         default: {
             NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
             if (inOutError) {
