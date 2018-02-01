@@ -36,7 +36,6 @@
 #import "MTIMultilayerCompositeKernel.h"
 #import "MTIRenderCommand.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MetalPetal.h"
 #import "MTIAlphaType.h"
 #import "MTIBlendModes.h"
 #import "MTIColor.h"
