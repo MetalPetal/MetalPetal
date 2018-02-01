@@ -17,14 +17,13 @@
   "platforms": {
     "ios": "9.0"
   },
+  "module_map": "MetalPetal.modulemap",
   "default_subspecs": "Core",
   "subspecs": [
     {
       "name": "Core",
       "source_files": "**/*.{h,m,c,mm,metal}",
       "private_header_files": [
-        "MTIContext+Internal.h",
-        "MTIImage+Promise.h",
         "MTIPrint.h",
         "MTIDefer.h"
       ]
