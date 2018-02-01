@@ -147,6 +147,7 @@
 				9D3928A71EFF678800BA6B09 /* Resources */,
 				AA0599CC4E8484835B5D9123 /* [CP] Embed Pods Frameworks */,
 				CF1F38EA30A7641DBF200350 /* [CP] Copy Pods Resources */,
+				0672CF762022F10F00ADFB19 /* Update Umbrella Header */,
 			);
 			buildRules = (
 			);
@@ -209,6 +210,20 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0672CF762022F10F00ADFB19 /* Update Umbrella Header */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Update Umbrella Header";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Frameworks/MetalPetal/umbrella-header-update.sh\"\n";
+		};
 		AA0599CC4E8484835B5D9123 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
