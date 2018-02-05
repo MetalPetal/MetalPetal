@@ -246,6 +246,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @property (nonatomic,strong) MTIImage *image;
 
+@property (nonatomic,strong) MTIImage *fallbackImage;
+
 @property (nonatomic,strong) MTIPersistImageResolutionHolder *resolution;
 
 @end
@@ -256,7 +258,11 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @synthesize alphaType = _alphaType;
 
 + (MTIImage *)bufferForImage:(MTIImage *)image {
-    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image fallbackImage:nil] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
++ (MTIImage *)bufferForImage:(MTIImage *)image fallbackImage:(nullable MTIImage *)fallbackImage {
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image fallbackImage:fallbackImage] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -267,11 +273,16 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return @[];
 }
 
-- (instancetype)initWithImage:(MTIImage *)image {
+- (instancetype)initWithImage:(MTIImage *)image fallbackImage:(MTIImage *)fallbackImage {
     if (self = [super init]) {
-        NSAssert(image.cachePolicy == MTIImageCachePolicyPersistent, @"Invalid cache policy.");
+        NSParameterAssert(image.cachePolicy == MTIImageCachePolicyPersistent);
+        if (fallbackImage) {
+            NSParameterAssert(fallbackImage.cachePolicy == MTIImageCachePolicyPersistent);
+            NSParameterAssert(fallbackImage.alphaType == image.alphaType);
+        }
         _dimensions = image.promise.dimensions;
         _image = image;
+        _fallbackImage = fallbackImage;
         _alphaType = image.alphaType;
     }
     return self;
@@ -281,17 +292,22 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     if (!_resolution) {
         MTIPersistImageResolutionHolder *persistResolution = [renderingContext.context valueForImage:_image inTable:MTIContextImagePersistentResolutionHolderTable];
         if (!persistResolution) {
-            if (error) {
-                *error = MTIErrorCreate(MTIErrorFailedToGetRenderedBuffer, nil);
+            persistResolution = [renderingContext.context valueForImage:_fallbackImage inTable:MTIContextImagePersistentResolutionHolderTable];
+            if (!persistResolution) {
+                if (error) {
+                    *error = MTIErrorCreate(MTIErrorFailedToGetRenderedBuffer, nil);
+                }
+                _image = nil;
+                return nil;
             }
-            _image = nil;
-            return nil;
         }
         _resolution = persistResolution;
         _image = nil;
     }
+    [_resolution.renderTarget retainTexture];
     return _resolution.renderTarget;
 }
+
 
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
     NSParameterAssert(dependencies.count == 0);

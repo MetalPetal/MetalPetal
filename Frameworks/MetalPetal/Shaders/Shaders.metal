@@ -81,41 +81,6 @@ fragment float4 colorMatrixProjection(
     return colorTexture.sample(colorSampler, vertexIn.textureCoordinate) * colorMatrix.matrix + colorMatrix.bias;
 }
 
-METAL_FUNC float4 colorLookup2DSquareImp(float4 color,
-                                         int dimension,
-                                         float intensity,
-                                         texture2d<float, access::sample> lutTexture,
-                                         sampler lutSamper) {
-    int row = round(sqrt((float)dimension));
-    float blueColor = color.b * (dimension - 1);
-    
-    int2 quad1;
-    quad1.y = floor(floor(blueColor) / row);
-    quad1.x = floor(blueColor) - (quad1.y * row);
-    
-    int2 quad2;
-    
-    quad2.y = floor(ceil(blueColor) / row);
-    quad2.x = ceil(blueColor) - (quad2.y * row);;
-    
-    float2 texPos1;
-    texPos1.x = (quad1.x * (1.0/row)) + 0.5/lutTexture.get_width() + ((1.0/row - 1.0/lutTexture.get_width()) * color.r);
-    texPos1.y = (quad1.y * (1.0/row)) + 0.5/lutTexture.get_height() + ((1.0/row - 1.0/lutTexture.get_height()) * color.g);
-    
-    float2 texPos2;
-    texPos2.x = (quad2.x * (1.0/row)) + 0.5/lutTexture.get_width() + ((1.0/row - 1.0/lutTexture.get_width()) * color.r);
-    texPos2.y = (quad2.y * (1.0/row)) + 0.5/lutTexture.get_height() + ((1.0/row - 1.0/lutTexture.get_height()) * color.g);
-    
-    float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
-    float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
-    
-    float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
-    
-    float4 finalColor = mix(color, float4(newColor.rgb, color.a), intensity);
-    
-    return finalColor;
-}
-
 fragment float4 colorLookup2DSquare (
                             VertexOut vertexIn [[stage_in]],
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
@@ -128,7 +93,7 @@ fragment float4 colorLookup2DSquare (
 {
     float2 sourceCoord = vertexIn.textureCoordinate;
     float4 color = sourceTexture.sample(colorSampler,sourceCoord);
-    return colorLookup2DSquareImp(color,dimension,intensity,lutTexture,lutSamper);
+    return colorLookup2DSquareLUT(color,dimension,intensity,lutTexture,lutSamper);
 }
 
 fragment float4 colorLookup512x512Blend(VertexOut vertexIn [[ stage_in ]],
@@ -140,7 +105,7 @@ fragment float4 colorLookup512x512Blend(VertexOut vertexIn [[ stage_in ]],
                                 ) {
     float2 sourceCoord = vertexIn.textureCoordinate;
     float4 color = colorTexture.sample(colorSampler,sourceCoord);
-    return colorLookup2DSquareImp(color,64,intensity,overlayTexture,overlaySampler);
+    return colorLookup2DSquareLUT(color,64,intensity,overlayTexture,overlaySampler);
 }
 
 fragment float4 multilayerCompositeColorLookup512x512Blend(
@@ -156,7 +121,7 @@ fragment float4 multilayerCompositeColorLookup512x512Blend(
         intensity *= maskColor.r;
     }
     intensity *= parameters.opacity;
-    return colorLookup2DSquareImp(currentColor,64,intensity,colorTexture,colorSampler);
+    return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
 }
 
 fragment float4 colorLookup2DHorizontalStrip(

@@ -387,6 +387,42 @@ namespace metalpetal {
         float luma = dot(grayColorTransform, textureColor.rgb); //calculate luma (grey)
         return float4(mix(float3(luma), textureColor.rgb, saturation + 1.0), textureColor.a);
     }
+    
+    
+    METAL_FUNC float4 colorLookup2DSquareLUT(float4 color,
+                                             int dimension,
+                                             float intensity,
+                                             texture2d<float, access::sample> lutTexture,
+                                             sampler lutSamper) {
+        int row = round(sqrt((float)dimension));
+        float blueColor = color.b * (dimension - 1);
+        
+        int2 quad1;
+        quad1.y = floor(floor(blueColor) / row);
+        quad1.x = floor(blueColor) - (quad1.y * row);
+        
+        int2 quad2;
+        
+        quad2.y = floor(ceil(blueColor) / row);
+        quad2.x = ceil(blueColor) - (quad2.y * row);;
+        
+        float2 texPos1;
+        texPos1.x = (quad1.x * (1.0/row)) + 0.5/lutTexture.get_width() + ((1.0/row - 1.0/lutTexture.get_width()) * color.r);
+        texPos1.y = (quad1.y * (1.0/row)) + 0.5/lutTexture.get_height() + ((1.0/row - 1.0/lutTexture.get_height()) * color.g);
+        
+        float2 texPos2;
+        texPos2.x = (quad2.x * (1.0/row)) + 0.5/lutTexture.get_width() + ((1.0/row - 1.0/lutTexture.get_width()) * color.r);
+        texPos2.y = (quad2.y * (1.0/row)) + 0.5/lutTexture.get_height() + ((1.0/row - 1.0/lutTexture.get_height()) * color.g);
+        
+        float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
+        float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
+        
+        float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
+        
+        float4 finalColor = mix(color, float4(newColor.rgb, color.a), intensity);
+        
+        return finalColor;
+    }
 }
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
