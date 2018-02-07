@@ -244,25 +244,24 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @interface MTIImageBuffer () <MTIImagePromise>
 
-@property (nonatomic,strong) MTIImage *image;
+@property (nonatomic, strong, readonly) MTIPersistImageResolutionHolder *resolution;
 
-@property (nonatomic,strong) MTIImage *fallbackImage;
-
-@property (nonatomic,strong) MTIPersistImageResolutionHolder *resolution;
+@property (nonatomic, weak, readonly) MTIContext *context;
 
 @end
 
 @implementation MTIImageBuffer
-
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-+ (MTIImage *)bufferForImage:(MTIImage *)image {
-    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image fallbackImage:nil] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
-}
-
-+ (MTIImage *)bufferForImage:(MTIImage *)image fallbackImage:(nullable MTIImage *)fallbackImage {
-    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithImage:image fallbackImage:fallbackImage] samplerDescriptor:image.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
++ (MTIImage *)renderedBufferForImage:(MTIImage *)targetImage inContext:(MTIContext *)context {
+    [context lockForRendering];
+    MTIPersistImageResolutionHolder *persistResolution = [context valueForImage:targetImage inTable:MTIContextImagePersistentResolutionHolderTable];
+    [context unlockForRendering];
+    if (!persistResolution) {
+        return nil;
+    }
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithPersistImageResolutionHolder:persistResolution alphaType:targetImage.alphaType context:context] samplerDescriptor:targetImage.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -273,37 +272,18 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return @[];
 }
 
-- (instancetype)initWithImage:(MTIImage *)image fallbackImage:(MTIImage *)fallbackImage {
+- (instancetype)initWithPersistImageResolutionHolder:(MTIPersistImageResolutionHolder *)holder alphaType:(MTIAlphaType)alphaType context:(MTIContext *)context {
     if (self = [super init]) {
-        NSParameterAssert(image.cachePolicy == MTIImageCachePolicyPersistent);
-        if (fallbackImage) {
-            NSParameterAssert(fallbackImage.cachePolicy == MTIImageCachePolicyPersistent);
-            NSParameterAssert(fallbackImage.alphaType == image.alphaType);
-        }
-        _dimensions = image.promise.dimensions;
-        _image = image;
-        _fallbackImage = fallbackImage;
-        _alphaType = image.alphaType;
+        _dimensions = (MTITextureDimensions){holder.renderTarget.texture.width,holder.renderTarget.texture.height,holder.renderTarget.texture.depth};
+        _alphaType = alphaType;
+        _resolution = holder;
+        _context = context;
     }
     return self;
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    if (!_resolution) {
-        MTIPersistImageResolutionHolder *persistResolution = [renderingContext.context valueForImage:_image inTable:MTIContextImagePersistentResolutionHolderTable];
-        if (!persistResolution) {
-            persistResolution = [renderingContext.context valueForImage:_fallbackImage inTable:MTIContextImagePersistentResolutionHolderTable];
-            if (!persistResolution) {
-                if (error) {
-                    *error = MTIErrorCreate(MTIErrorFailedToGetRenderedBuffer, nil);
-                }
-                _image = nil;
-                return nil;
-            }
-        }
-        _resolution = persistResolution;
-        _image = nil;
-    }
+    NSParameterAssert(renderingContext.context == self.context);
     [_resolution.renderTarget retainTexture];
     return _resolution.renderTarget;
 }

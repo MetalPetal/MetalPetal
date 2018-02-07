@@ -50,10 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 
-/// Returns an image representing the render result for the target image. The target image's cache policy must be MTIImageCachePolicyPersistent. You should render the buffer image after the target image is rendered. Rendering the buffer image before the target image is rendered produces an error (MTIErrorFailedToGetRenderedBuffer). The buffer image retains the target image till it is rendered.
-+ (MTIImage *)bufferForImage:(MTIImage *)targetImage;
-
-+ (MTIImage *)bufferForImage:(MTIImage *)targetImage fallbackImage:(nullable MTIImage *)fallbackImage;
++ (nullable MTIImage *)renderedBufferForImage:(MTIImage *)targetImage inContext:(MTIContext *)context;
 
 @end
 
