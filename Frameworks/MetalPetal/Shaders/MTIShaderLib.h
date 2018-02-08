@@ -388,7 +388,6 @@ namespace metalpetal {
         return float4(mix(float3(luma), textureColor.rgb, saturation + 1.0), textureColor.a);
     }
     
-    
     METAL_FUNC float4 colorLookup2DSquareLUT(float4 color,
                                              int dimension,
                                              float intensity,
@@ -422,21 +421,6 @@ namespace metalpetal {
         float4 finalColor = mix(color, float4(newColor.rgb, color.a), intensity);
         
         return finalColor;
-    }
-    
-    METAL_FUNC float3 rgb2yuv(float3 color) {
-        float y =  0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
-        float u = -0.147 * color.r - 0.289 * color.g + 0.436 * color.b;
-        float v =  0.615 * color.r - 0.515 * color.g - 0.100 * color.b;
-        return float3(y, u, v);
-    }
-    
-    METAL_FUNC float3 yuv2rgb(float3 color) {
-        float y = color.r; float u = color.g; float v = color.b;
-        float r = y + 1.14 * v;
-        float g = y - 0.39 * u - 0.58 * v;
-        float b = y + 2.03 * u;
-        return float3(r, g, b);
     }
 }
 

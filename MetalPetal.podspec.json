@@ -1,15 +1,16 @@
 {
-  "summary" : "A image processing framework based on Metal.",
+  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
   "requires_arc" : true,
-  "name" : "MetalPetal",
+  "summary" : "A image processing framework based on Metal.",
   "source" : {
     "git" : "https:\/\/github.com\/YuAo\/MetalPetal.git",
-    "tag" : "0.2.7"
+    "tag" : "0.3.0"
   },
+  "name" : "MetalPetal",
   "authors" : {
     "YuAo" : "me@imyuao.com"
   },
-  "version" : "0.2.7",
+  "version" : "0.3.0",
   "license" : {
     "type" : "MIT"
   },
@@ -19,8 +20,6 @@
     {
       "name" : "Core",
       "private_header_files" : [
-        "Frameworks\/MetalPetal\/MTIContext+Internal.h",
-        "Frameworks\/MetalPetal\/MTIImage+Promise.h",
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h"
       ],

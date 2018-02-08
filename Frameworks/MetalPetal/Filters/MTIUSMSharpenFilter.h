@@ -8,6 +8,7 @@
 #import "MTIFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
 @interface MTIUSMSharpenFilter : NSObject  <MTIUnaryFilter>
 
 @property (nonatomic) float scale; //(0, 1]. Default is 0.5.
@@ -15,4 +16,5 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) float threshold; //[0, 1). Default is 0.
 
 @end
+
 NS_ASSUME_NONNULL_END

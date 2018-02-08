@@ -11,6 +11,12 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 
+@interface MTIUSMSharpenFilter ()
+
+@property (nonatomic,strong) MTIMPSGaussianBlurFilter *gaussianBlurFilter;
+
+@end
+
 @implementation MTIUSMSharpenFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
 @synthesize inputImage = _inputImage;
@@ -22,6 +28,7 @@
         _scale = 0.5;
         _threshold = 0;
         _radius = 2.0;
+        _gaussianBlurFilter = [[MTIMPSGaussianBlurFilter alloc] init];
     }
     return self;
 }
@@ -40,11 +47,13 @@
     if (!self.inputImage) {
         return nil;
     }
-    MTIMPSGaussianBlurFilter *blurFilter = [[MTIMPSGaussianBlurFilter alloc] init];
-    blurFilter.inputImage = self.inputImage;
-    blurFilter.radius = self.radius;
-    MTIImage *blurImage = blurFilter.outputImage;
-    
+    self.gaussianBlurFilter.outputPixelFormat = self.outputPixelFormat;
+    self.gaussianBlurFilter.inputImage = self.inputImage;
+    self.gaussianBlurFilter.radius = self.radius;
+    MTIImage *blurImage = self.gaussianBlurFilter.outputImage;
+    if (!blurImage) {
+        return nil;
+    }
     return [[[self class] kernel] applyToInputImages:@[self.inputImage, blurImage]
                                           parameters:@{@"scale": @(self.scale), @"threshold": @(self.threshold)}
                              outputTextureDimensions: MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
