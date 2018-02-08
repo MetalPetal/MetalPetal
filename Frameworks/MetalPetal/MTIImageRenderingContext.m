@@ -255,9 +255,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @synthesize alphaType = _alphaType;
 
 + (MTIImage *)renderedBufferForImage:(MTIImage *)targetImage inContext:(MTIContext *)context {
-    [context lockForRendering];
     MTIPersistImageResolutionHolder *persistResolution = [context valueForImage:targetImage inTable:MTIContextImagePersistentResolutionHolderTable];
-    [context unlockForRendering];
     if (!persistResolution) {
         return nil;
     }

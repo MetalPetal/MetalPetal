@@ -66,6 +66,8 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *imageKeyValueTables;
 
 @property (nonatomic, strong, readonly) id<MTILocking> renderingLock;
+@property (nonatomic, strong, readonly) id<MTILocking> imageKeyValueTablesLock;
+@property (nonatomic, strong, readonly) id<MTILocking> promiseKeyValueTablesLock;
 
 @end
 
@@ -119,7 +121,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
             }
             return nil;
         }
+        
         _renderingLock = MTILockCreate();
+        _promiseKeyValueTablesLock = MTILockCreate();
+        _imageKeyValueTablesLock = MTILockCreate();
     }
     return self;
 }
@@ -338,33 +343,39 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
 }
 
 - (id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
-    return [self.promiseKeyValueTables[tableName] objectForKey:promise];
+    [_promiseKeyValueTablesLock lock];
+    id value = [self.promiseKeyValueTables[tableName] objectForKey:promise];
+    [_promiseKeyValueTablesLock unlock];
+    return value;
 }
 
 - (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
+    [_promiseKeyValueTablesLock lock];
     MTIWeakToStrongObjectsMapTable *table = self.promiseKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
         self.promiseKeyValueTables[tableName] = table;
     }
     [table setObject:value forKey:promise];
+    [_promiseKeyValueTablesLock unlock];
 }
 
 - (id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
-    return [self.imageKeyValueTables[tableName] objectForKey:image];
+    [_imageKeyValueTablesLock lock];
+    id value = [self.imageKeyValueTables[tableName] objectForKey:image];
+    [_imageKeyValueTablesLock unlock];
+    return value;
 }
 
 - (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName {
-    NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
+    [_imageKeyValueTablesLock lock];
     MTIWeakToStrongObjectsMapTable *table = self.imageKeyValueTables[tableName];
     if (!table) {
         table = [[MTIWeakToStrongObjectsMapTable alloc] init];
         self.imageKeyValueTables[tableName] = table;
     }
     [table setObject:value forKey:image];
+    [_imageKeyValueTablesLock unlock];
 }
 
 @end
