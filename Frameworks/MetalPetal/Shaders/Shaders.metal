@@ -274,3 +274,24 @@ fragment float4 rgbToneCurveAdjust(
     float b = toneCurveTexture.sample(toneCurveSampler, float2((textureColor.b * 255.0 + 0.5)/256.0, 0.5)).b;
     return mix(textureColor, float4(r,g,b,textureColor.a), intensity);
 }
+
+fragment float4 usmSharpenSecondPass(
+                                     VertexOut vertexIn [[stage_in]],
+                                     texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                     texture2d<float, access::sample> blurTexture [[texture(1)]],
+                                     sampler sourceSampler [[sampler(0)]],
+                                     sampler blurSampler [[sampler(1)]],
+                                     constant float &scale [[buffer(0)]],
+                                     constant float &threshold [[buffer(1)]]) {
+    float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+    float4 blurColor = blurTexture.sample(blurSampler, vertexIn.textureCoordinate);
+    float3 textureYUV = rgb2yuv(textureColor.rgb);
+    float3 blurYUV = rgb2yuv(blurColor.rgb);
+    if (abs(textureYUV.r - blurYUV.r) < threshold) {
+        return textureColor;
+    }
+    float sharpenY = textureYUV.r*(1+scale) - scale*blurYUV.r;
+    float3 temp = yuv2rgb(float3(sharpenY, textureYUV.gb));
+    return float4(temp, textureColor.a);
+}
+
