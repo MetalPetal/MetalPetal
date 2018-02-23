@@ -139,6 +139,7 @@
     
     if (!texture) {
         texture = [_device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
+        NSAssert(texture, @"Cannot create texture with device.");
         MTIPrint(@"%@: New texture created.", self);
     }
     
