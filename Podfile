@@ -32,5 +32,7 @@ post_install do |installer|
         config.build_settings['CLANG_WARN_RANGE_LOOP_ANALYSIS'] = 'YES'
         config.build_settings['CLANG_WARN_STRICT_PROTOTYPES'] = 'YES'
         config.build_settings['CLANG_WARN_COMMA'] = 'YES'
+        config.build_settings['CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF'] = 'YES'
+        config.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'YES'
     end
 end
