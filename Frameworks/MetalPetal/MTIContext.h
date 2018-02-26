@@ -59,6 +59,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 - (void)reclaimResources;
 
+@property (nonatomic, class, readonly) BOOL defaultMetalDeviceSupportsMPS;
+
 @end
 
 

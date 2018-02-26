@@ -137,6 +137,16 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     [self.texturePool flush];
 }
 
++ (BOOL)defaultMetalDeviceSupportsMPS {
+    static BOOL _defaultMetalDeviceSupportsMPS;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        _defaultMetalDeviceSupportsMPS = MPSSupportsMTLDevice(device);
+    });
+    return _defaultMetalDeviceSupportsMPS;
+}
+
 @end
 
 #pragma mark - MTIImagePromiseRenderTarget
