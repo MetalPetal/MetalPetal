@@ -124,13 +124,13 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 + (instancetype)squareVerticesForRect:(CGRect)rect {
     CGFloat l = CGRectGetMinX(rect);
     CGFloat r = CGRectGetMaxX(rect);
-    CGFloat t = CGRectGetMinY(rect);
-    CGFloat b = CGRectGetMaxY(rect);
+    CGFloat b = CGRectGetMinY(rect);
+    CGFloat t = CGRectGetMaxY(rect);
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 1 } },
-        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 0 } }
+        { .position = {l, t, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {r, t, 0, 1} , .textureCoordinate = { 1, 0 } },
+        { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 1 } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
