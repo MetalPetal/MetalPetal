@@ -5,19 +5,19 @@
 //  Created by yi chen on 2018/2/7.
 //
 
-#import "MTIUSMSharpenFilter.h"
+#import "MTIMPSUnsharpMaskFilter.h"
 #import "MTIMPSGaussianBlurFilter.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 
-@interface MTIUSMSharpenFilter ()
+@interface MTIMPSUnsharpMaskFilter ()
 
 @property (nonatomic,strong) MTIMPSGaussianBlurFilter *gaussianBlurFilter;
 
 @end
 
-@implementation MTIUSMSharpenFilter
+@implementation MTIMPSUnsharpMaskFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
 @synthesize inputImage = _inputImage;
 
@@ -29,6 +29,7 @@
         _threshold = 0;
         _radius = 2.0;
         _gaussianBlurFilter = [[MTIMPSGaussianBlurFilter alloc] init];
+        _gaussianBlurFilter.radius = _radius;
     }
     return self;
 }
@@ -38,7 +39,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"usmSharpenSecondPass"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"usmSecondPass"]];
     });
     return kernel;
 }

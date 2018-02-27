@@ -7,7 +7,6 @@
 #import <MetalPetal/MTIColorMatrixFilter.h>
 #import <MetalPetal/MTIColorLookupFilter.h>
 #import <MetalPetal/MTIFilter.h>
-#import <MetalPetal/MTIUSMSharpenFilter.h>
 #import <MetalPetal/MTIChromaKeyBlendFilter.h>
 #import <MetalPetal/MTIRGBToneCurveFilter.h>
 #import <MetalPetal/MTIUnaryImageRenderingFilter.h>
@@ -20,6 +19,7 @@
 #import <MetalPetal/MTIColorHalftoneFilter.h>
 #import <MetalPetal/MTIAlphaPremultiplicationFilter.h>
 #import <MetalPetal/MTIDotScreenFilter.h>
+#import <MetalPetal/MTIMPSUnsharpMaskFilter.h>
 #import <MetalPetal/MTIImage+Filters.h>
 #import <MetalPetal/MTICLAHEFilter.h>
 #import <MetalPetal/MTICropFilter.h>

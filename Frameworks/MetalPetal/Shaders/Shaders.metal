@@ -276,7 +276,7 @@ namespace metalpetal {
         return mix(textureColor, float4(r,g,b,textureColor.a), intensity);
     }
 
-    namespace usmsharpen {
+    namespace usm {
         
         METAL_FUNC float3 rgb2yuv(float3 color) {
             float y =  0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
@@ -293,7 +293,7 @@ namespace metalpetal {
             return float3(r, g, b);
         }
         
-        fragment float4 usmSharpenSecondPass(
+        fragment float4 usmSecondPass(
                                              VertexOut vertexIn [[stage_in]],
                                              texture2d<float, access::sample> sourceTexture [[texture(0)]],
                                              texture2d<float, access::sample> blurTexture [[texture(1)]],
