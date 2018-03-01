@@ -17,7 +17,7 @@
 #import "MTKTextureLoaderExtensions.h"
 #import "MTIContext+Internal.h"
 
-static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<NSString *, id> *options) {
+static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
     if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
         NSMutableDictionary *opt = [NSMutableDictionary dictionaryWithDictionary:options];
         if (opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] == nil) {
@@ -32,7 +32,7 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 
 @property (nonatomic,copy) NSURL *URL;
 
-@property (nonatomic,copy) NSDictionary<NSString *, id> *options;
+@property (nonatomic,copy) NSDictionary<MTKTextureLoaderOption, id> *options;
 
 @property (nonatomic,strong) MDLURLTexture *texture;
 
@@ -42,7 +42,7 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<NSString *, id> *)options alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _URL = [URL copy];
         _options = [options copy];
@@ -87,7 +87,7 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 
 @property (nonatomic) CGImageRef image;
 
-@property (nonatomic,copy) NSDictionary<NSString *, id> *options;
+@property (nonatomic,copy) NSDictionary<MTKTextureLoaderOption, id> *options;
 
 @end
 
@@ -95,7 +95,7 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<NSString *,id> *)options alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _image = CGImageRetain(cgImage);
         _dimensions = (MTITextureDimensions){CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 1};
@@ -119,6 +119,9 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
     id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    if (!texture) {
+        return nil;
+    }
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
@@ -369,6 +372,62 @@ static NSDictionary<NSString *, id> * MTIProcessMTKTextureLoaderOptions(NSDictio
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
     return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:@"BitmapData"];
+}
+
+@end
+
+@interface MTINamedImagePromise ()
+
+@property (nonatomic, copy) NSDictionary<MTKTextureLoaderOption,id> *options;
+
+@end
+
+@implementation MTINamedImagePromise
+@synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
+
+- (instancetype)initWithName:(NSString *)name bundle:(NSBundle *)bundle size:(CGSize)size scaleFactor:(CGFloat)scaleFactor options:(NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _name = [name copy];
+        _bundle = bundle;
+        _dimensions = MTITextureDimensionsMake2DFromCGSize(size);
+        _scaleFactor = scaleFactor;
+        _options = [options copy];
+        _alphaType = alphaType;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithName:self.name scaleFactor:self.scaleFactor bundle:self.bundle options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    if (!texture) {
+        return nil;
+    }
+    if (texture.width == self.dimensions.width && texture.height == self.dimensions.height && texture.depth == self.dimensions.depth) {
+        return [renderingContext.context newRenderTargetWithTexture:texture];
+    } else {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorTextureDimensionsMismatch, nil);
+        }
+        return nil;
+    }
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[NSString stringWithFormat:@"Name: %@\nBundle: %@\nScale:%@\nSize:%@",self.name,self.bundle,@(self.scaleFactor),NSStringFromCGSize(CGSizeMake(self.dimensions.width, self.dimensions.height))]];
 }
 
 @end

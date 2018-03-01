@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 #import <simd/simd.h>
 #import <CoreImage/CoreImage.h>
 #import "MTIColor.h"
@@ -38,13 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary <NSString *, id> *)options alphaType:(MTIAlphaType)alphaType;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary <NSString *, id> *)options alphaType:(MTIAlphaType)alphaType;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
@@ -71,6 +72,22 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MTIBitmapDataImagePromise: NSObject <MTIImagePromise>
 
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
+
+@end
+
+NS_AVAILABLE(10_12, 10_0)
+@interface MTINamedImagePromise: NSObject <MTIImagePromise>
+
+@property (nonatomic, copy, readonly) NSString *name;
+@property (nonatomic, strong, readonly, nullable) NSBundle *bundle;
+@property (nonatomic, readonly) CGFloat scaleFactor;
+
+- (instancetype)initWithName:(NSString *)name
+                      bundle:(nullable NSBundle *)bundle
+                        size:(CGSize)size
+                 scaleFactor:(CGFloat)scaleFactor
+                     options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                   alphaType:(MTIAlphaType)alphaType;
 
 @end
 

@@ -84,6 +84,13 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
+- (instancetype)initWithName:(NSString *)name
+                      bundle:(nullable NSBundle *)bundle
+                        size:(CGSize)size
+                 scaleFactor:(CGFloat)scaleFactor
+                     options:(nullable NSDictionary <NSString *, id> *)options
+                   alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
+
 @end
 
 

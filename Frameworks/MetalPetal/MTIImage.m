@@ -203,6 +203,10 @@
     return [self initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:data width:width height:height bytesPerRow:bytesPerRow pixelFormat:pixelFormat alphaType:alphaType] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
+- (instancetype)initWithName:(NSString *)name bundle:(NSBundle *)bundle size:(CGSize)size scaleFactor:(CGFloat)scaleFactor options:(NSDictionary<NSString *,id> *)options alphaType:(MTIAlphaType)alphaType {
+    return [self initWithPromise:[[MTINamedImagePromise alloc] initWithName:name bundle:bundle size:size scaleFactor:scaleFactor options:options alphaType:alphaType] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
 - (id)debugQuickLookObject {
     return [MTIImagePromiseDebugInfo layerRepresentationOfRenderGraphForPromise:self.promise];
 }
