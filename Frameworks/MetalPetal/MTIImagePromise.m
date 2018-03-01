@@ -221,13 +221,19 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor];
+    NSError *error;
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
     if (@available(iOS 11.0, *)) {
         CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
         renderDestination.flipped = YES;
         renderDestination.colorSpace = (CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB());
         renderDestination.alphaMode = CIRenderDestinationAlphaUnpremultiplied;
-        NSError *error;
         [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
         if (error) {
             if (inOutError) {
@@ -293,7 +299,10 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     } else {
         textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
     }
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:error];
+    if (!renderTarget) {
+        return nil;
+    }
     uint8_t colors[4] = {_color.blue * 255, _color.green * 255, _color.red * 255, _color.alpha * 255};
     [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     return renderTarget;
@@ -360,7 +369,10 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     textureDescriptor.depth = _dimensions.depth;
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = _pixelFormat;
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:error];
+    if (!renderTarget) {
+        return nil;
+    }
     [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
     return renderTarget;
 }

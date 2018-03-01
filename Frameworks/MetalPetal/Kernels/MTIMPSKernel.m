@@ -59,7 +59,6 @@
     
     //May need to get a copy
     MPSKernel *kernel = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
-    
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -74,7 +73,13 @@
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
 
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
     
     if (self.inputImages.count == 1) {
         MPSUnaryImageKernel *encoder = (MPSUnaryImageKernel *)kernel;

@@ -10,6 +10,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIPrint.h"
 #import "MTILock.h"
+#import "MTIError.h"
 
 @interface MTITexturePool ()
 
@@ -123,7 +124,7 @@
     return self;
 }
 
-- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor {
+- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * _Nullable __autoreleasing * _Nullable)error {
     [_lock lock];
 
     __auto_type avaliableTextures = _textureCache[textureDescriptor];
@@ -139,7 +140,12 @@
     
     if (!texture) {
         texture = [_device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
-        NSAssert(texture, @"Cannot create texture with device.");
+        if (!texture) {
+            if (error) {
+                *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+            }
+            return nil;
+        }
         MTIPrint(@"%@: New texture created.", self);
     }
     
@@ -152,7 +158,7 @@
     
     __auto_type avaliableTextures = _textureCache[textureDescriptor];
     if (!avaliableTextures) {
-        avaliableTextures = [[NSMutableArray alloc] init];
+        avaliableTextures = [NSMutableArray array];
         _textureCache[textureDescriptor] = avaliableTextures;
     }
     [avaliableTextures addObject:texture];

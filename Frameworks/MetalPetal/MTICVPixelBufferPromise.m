@@ -161,10 +161,16 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext_CI:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.coreImageRendererDefaultTextureDescriptor];
+    NSError *error;
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.coreImageRendererDefaultTextureDescriptor error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
     CIImage *image = [CIImage imageWithCVPixelBuffer:self.pixelBuffer];
     if (@available(iOS 11.0, *)) {
-        NSError *error;
         CIRenderDestination *destination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
         destination.colorSpace = (CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB());
         destination.flipped = YES;
@@ -262,7 +268,13 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 }
                 
                 // Render Pipeline
-                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.metalPetalRendererDefaultTextureDescriptor];
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.metalPetalRendererDefaultTextureDescriptor error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
                 
                 MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
                 renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;

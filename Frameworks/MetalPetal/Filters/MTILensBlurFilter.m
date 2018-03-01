@@ -61,11 +61,11 @@
         maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(1, 1, 1, 1) sRGB:NO size:CGSizeMake(1, 1)];
     }
     
-    NSMutableArray *deltas = [NSMutableArray array];
+    MTIVector * deltas[3];
     for (NSInteger i = 0; i < 3; ++i) {
         float a = self.angle + i * M_PI * 2.0 / 3.0;
         MTIVector *delta = [[MTIVector alloc] initWithFloat2:(simd_float2){self.radius * sin(a)/self.inputImage.size.width, self.radius * cos(a)/self.inputImage.size.height}];
-        [deltas addObject:delta];
+        deltas[i] = delta;
     }
     
     float power = pow(10, MIN(MAX(self.brightness, -1), 1));

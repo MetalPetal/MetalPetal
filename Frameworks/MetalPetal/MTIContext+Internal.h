@@ -32,7 +32,7 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 #pragma mark - Render Target
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));
+- (nullable MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError **)error NS_SWIFT_NAME(makeRenderTarget(resuableTextureDescriptor:));
 
 - (MTIImagePromiseRenderTarget *)newRenderTargetWithTexture:(id<MTLTexture>)texture NS_SWIFT_NAME(makeRenderTarget(texture:));
 
@@ -48,7 +48,7 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError **)error;
 
-- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor;
+- (nullable id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor error:(NSError **)error;
 
 - (nullable MTIRenderPipeline *)renderPipelineWithDescriptor:(MTLRenderPipelineDescriptor *)descriptor error:(NSError **)error;
 

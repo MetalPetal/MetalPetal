@@ -71,7 +71,13 @@
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
 
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
     
     __auto_type commandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
     [commandEncoder setComputePipelineState:computePipeline.state];

@@ -22,6 +22,7 @@
 #import "MTILayer.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
+#import "MTIError.h"
 
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -289,8 +290,14 @@
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
-
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     renderPassDescriptor.colorAttachments[0].texture = renderTarget.texture;
     renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
@@ -306,13 +313,59 @@
         MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor copy];
         tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
         compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
+        if (!compositingMaskTexture) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+            }
+            return nil;
+        }
     } else {
-        compositingMaskRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+        compositingMaskRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
         compositingMaskTexture = compositingMaskRenderTarget.texture;
     }
     renderPassDescriptor.colorAttachments[1].texture = compositingMaskTexture;
     renderPassDescriptor.colorAttachments[1].loadAction = MTLLoadActionDontCare;
     renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
+    
+    id<MTLSamplerState> backgroundSamplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    id<MTLSamplerState> compositingMaskSamplerStates[self.layers.count];
+    id<MTLSamplerState> layerSamplerStates[self.layers.count];
+    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
+        MTILayer *layer = self.layers[index];
+        {
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            compositingMaskSamplerStates[index] = samplerState;
+        }
+        {
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            layerSamplerStates[index] = samplerState;
+        }
+    }
     
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentIsFlipped:NO contentRegion:CGRectMake(0, 0, 1, 1)];
@@ -327,8 +380,7 @@
     }
     [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
-    id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor];
-    [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+    [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
     [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
     
     //render layers
@@ -346,8 +398,7 @@
             }
             [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
             [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:0];
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor];
-            [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+            [commandEncoder setFragmentSamplerState:compositingMaskSamplerStates[index] atIndex:0];
             [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
         }
         
@@ -376,8 +427,7 @@
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
-        id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor];
-        [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+        [commandEncoder setFragmentSamplerState:layerSamplerStates[index] atIndex:0];
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;

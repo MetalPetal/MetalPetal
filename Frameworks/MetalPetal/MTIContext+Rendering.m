@@ -102,7 +102,14 @@
     
     MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(renderPassDescriptor.colorAttachments[0].texture.pixelFormat)]];
     MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return NO;
+    }
     
+    id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -115,7 +122,6 @@
     [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
     
     [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
-    id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
     
     [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
@@ -283,7 +289,14 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         
         MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(metalTexture.pixelFormat)]];
         MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return NO;
+        }
         
+        id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -296,7 +309,6 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         
         [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
-        id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
         [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];

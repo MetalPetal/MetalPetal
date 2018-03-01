@@ -161,7 +161,13 @@
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
         
-        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor]];
+        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
         
         renderPassDescriptor.colorAttachments[index].texture = renderTarget.texture;
         renderPassDescriptor.colorAttachments[index].clearColor = MTLClearColorMake(0, 0, 0, 0);
@@ -197,12 +203,24 @@
             [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
         }
         
+        id<MTLSamplerState> samplerStates[command.images.count];
+        for (NSUInteger index = 0; index < command.images.count; index += 1) {
+            MTIImage *image = command.images[index];
+            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            samplerStates[index] = samplerState;
+        }
+        
         for (NSUInteger index = 0; index < command.images.count; index += 1) {
             [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
             MTIImage *image = command.images[index];
             NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor];
-            [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
+            [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
         }
         resolutionIndex += command.images.count;
         

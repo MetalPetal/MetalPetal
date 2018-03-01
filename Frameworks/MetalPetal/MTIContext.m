@@ -207,8 +207,11 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
 }
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor {
-    MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor];
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+    MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor error:error];
+    if (!texture) {
+        return nil;
+    }
     return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
 }
 
@@ -342,11 +345,17 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     return cachedState;
 }
 
-- (id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor {
+- (nullable id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor error:(NSError **)error {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLSamplerState> state = self.samplerStateCache[descriptor];
     if (!state) {
         state = [self.device newSamplerStateWithDescriptor:[descriptor newMTLSamplerDescriptor]];
+        if (!state) {
+            if (error) {
+                *error = MTIErrorCreate(MTIErrorFailedToCreateSamplerState, nil);
+            }
+            return nil;
+        }
         self.samplerStateCache[descriptor] = state;
     }
     return state;
