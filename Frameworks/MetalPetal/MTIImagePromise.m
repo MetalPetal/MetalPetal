@@ -299,12 +299,17 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     } else {
         textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
     }
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:error];
-    if (!renderTarget) {
+    //It's not safe to reuse a GPU texture here, 'cause we're going to fill its content using CPU.
+    id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
+    if (!texture) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        }
         return nil;
     }
     uint8_t colors[4] = {_color.blue * 255, _color.green * 255, _color.red * 255, _color.alpha * 255};
-    [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
+    [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }
 
@@ -369,11 +374,16 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     textureDescriptor.depth = _dimensions.depth;
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = _pixelFormat;
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:error];
-    if (!renderTarget) {
+    //It's not safe to reuse a GPU texture here, 'cause we're going to fill its content using CPU.
+    id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
+    if (!texture) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        }
         return nil;
     }
-    [renderTarget.texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
+    [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }
 
