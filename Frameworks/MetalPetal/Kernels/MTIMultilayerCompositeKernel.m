@@ -346,14 +346,16 @@
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         MTILayer *layer = self.layers[index];
         {
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
+            if (layer.compositingMask) {
+                id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
                 }
-                return nil;
+                compositingMaskSamplerStates[index] = samplerState;
             }
-            compositingMaskSamplerStates[index] = samplerState;
         }
         {
             id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor error:&error];
