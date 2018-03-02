@@ -133,10 +133,6 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return [self initWithDevice:device options:[[MTIContextOptions alloc] init] error:error];
 }
 
-- (void)reclaimResources {
-    [self.texturePool flush];
-}
-
 + (BOOL)defaultMetalDeviceSupportsMPS {
     static BOOL _defaultMetalDeviceSupportsMPS;
     static dispatch_once_t onceToken;
@@ -145,6 +141,18 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _defaultMetalDeviceSupportsMPS = MPSSupportsMTLDevice(device);
     });
     return _defaultMetalDeviceSupportsMPS;
+}
+
+- (void)reclaimResources {
+    [self.texturePool flush];
+}
+
+- (NSUInteger)idleResourceSize {
+    return self.texturePool.idleResourceSize;
+}
+
+- (NSUInteger)idleResourceCount {
+    return self.texturePool.idleResourceCount;
 }
 
 @end

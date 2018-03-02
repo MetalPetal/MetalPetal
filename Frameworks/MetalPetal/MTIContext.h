@@ -57,9 +57,13 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, strong, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
 
+@property (nonatomic, class, readonly) BOOL defaultMetalDeviceSupportsMPS;
+
 - (void)reclaimResources;
 
-@property (nonatomic, class, readonly) BOOL defaultMetalDeviceSupportsMPS;
+@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
+
+@property (nonatomic, readonly) NSUInteger idleResourceCount;
 
 @end
 

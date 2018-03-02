@@ -38,6 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// Frees as many textures from the pool as possible.
 - (void)flush;
 
+/*!
+ @property allocatedSize
+ @abstrace The size in bytes occupied by idle resources
+ */
+@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
+
+@property (nonatomic, readonly) NSUInteger idleResourceCount;
+
 @end
 
 NS_ASSUME_NONNULL_END

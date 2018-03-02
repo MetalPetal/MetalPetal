@@ -172,4 +172,26 @@
     [_lock unlock];
 }
 
+- (NSUInteger)idleResourceSize {
+    [_lock lock];
+    NSUInteger __block size = 0;
+    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, NSMutableArray<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
+        for (id<MTLTexture> texture in obj) {
+            size += texture.allocatedSize;
+        }
+    }];
+    [_lock unlock];
+    return size;
+}
+
+- (NSUInteger)idleResourceCount {
+    [_lock lock];
+    NSUInteger __block count = 0;
+    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, NSMutableArray<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
+        count += obj.count;
+    }];
+    [_lock unlock];
+    return count;
+}
+
 @end
