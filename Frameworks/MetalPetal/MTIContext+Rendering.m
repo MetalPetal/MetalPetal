@@ -100,7 +100,7 @@
         kernel = MTIContext.passthroughKernel;
     }
     
-    MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(renderPassDescriptor.colorAttachments[0].texture.pixelFormat)]];
+    MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat];
     MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
     if (error) {
         if (inOutError) {
@@ -287,7 +287,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             kernel = MTIContext.passthroughKernel;
         }
         
-        MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:@[@(metalTexture.pixelFormat)]];
+        MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormat:metalTexture.pixelFormat];
         MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
         if (error) {
             if (inOutError) {

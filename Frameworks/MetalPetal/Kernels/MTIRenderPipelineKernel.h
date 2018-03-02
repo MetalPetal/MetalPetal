@@ -18,11 +18,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPassOutputDescriptor;
 
+FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
+
 @interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
 
-@property (nonatomic,copy,readonly) NSArray<NSNumber *> *colorAttachmentPixelFormats;
+@property (nonatomic, readonly) const MTLPixelFormat *colorAttachmentPixelFormats;
 
-- (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats;
+@property (nonatomic, readonly) NSUInteger colorAttachmentCount;
+
+- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat[_Nonnull])colorAttachmentPixelFormats count:(NSUInteger)count;
+
+- (instancetype)initWithColorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat;
 
 @end
 

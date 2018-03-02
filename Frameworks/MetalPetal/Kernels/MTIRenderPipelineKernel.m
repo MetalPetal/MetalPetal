@@ -23,25 +23,74 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 
+NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
+
+@interface MTIRenderPipelineKernelConfiguration () {
+    MTLPixelFormat _pixelFormats[MTIRenderPipelineMaximumColorAttachmentCount];
+}
+@end
+
 @implementation MTIRenderPipelineKernelConfiguration
 
-- (instancetype)initWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {
+- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat [])colorAttachmentPixelFormats count:(NSUInteger)count {
     if (self = [super init]) {
-        _colorAttachmentPixelFormats = colorAttachmentPixelFormats;
+        NSParameterAssert(count <= MTIRenderPipelineMaximumColorAttachmentCount);
+        count = MIN(count, MTIRenderPipelineMaximumColorAttachmentCount);
+        for (NSUInteger index = 0; index < count; index += 1) {
+            _pixelFormats[index] = colorAttachmentPixelFormats[index];
+        }
+        _colorAttachmentCount = count;
     }
     return self;
 }
 
+- (instancetype)initWithColorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
+    if (self = [super init]) {
+        _pixelFormats[0] = colorAttachmentPixelFormat;
+        _colorAttachmentCount = 1;
+    }
+    return self;
+}
+
+- (const MTLPixelFormat *)colorAttachmentPixelFormats {
+    return _pixelFormats;
+}
+
+- (NSUInteger)hash {
+    NSUInteger hash = 0;
+    for (NSUInteger index = 0; index < _colorAttachmentCount; index += 1) {
+        hash ^= _pixelFormats[index];
+    }
+    return hash;
+}
+
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+    MTIRenderPipelineKernelConfiguration *obj = object;
+    if ([obj isKindOfClass:MTIRenderPipelineKernelConfiguration.class] && obj.colorAttachmentCount == _colorAttachmentCount) {
+        for (NSUInteger index = 0; index < _colorAttachmentCount; index += 1) {
+            if (obj.colorAttachmentPixelFormats[index] != _pixelFormats[index]) {
+                return NO;
+            }
+        }
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (id<NSCopying>)identifier {
-    return _colorAttachmentPixelFormats;
+    return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
     return self;
 }
 
-+ (instancetype)configurationWithColorAttachmentPixelFormats:(NSArray<NSNumber *> *)colorAttachmentPixelFormats {
-    return [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:colorAttachmentPixelFormats];
++ (instancetype)configurationWithColorAttachmentPixelFormats:(MTLPixelFormat[])colorAttachmentPixelFormats count:(NSUInteger)count {
+    return [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormats:colorAttachmentPixelFormats count:count];
 }
 
 @end
@@ -68,7 +117,7 @@
 }
 
 - (id)newKernelStateWithContext:(MTIContext *)context configuration:(MTIRenderPipelineKernelConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
-    NSParameterAssert(configuration.colorAttachmentPixelFormats.count == self.colorAttachmentCount);
+    NSParameterAssert(configuration.colorAttachmentCount == self.colorAttachmentCount);
     
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     renderPipelineDescriptor.vertexDescriptor = self.vertexDescriptor;
@@ -95,7 +144,7 @@
     
     for (NSUInteger index = 0; index < self.colorAttachmentCount; index += 1) {
         MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor = [[MTLRenderPipelineColorAttachmentDescriptor alloc] init];
-        colorAttachmentDescriptor.pixelFormat = [configuration.colorAttachmentPixelFormats[index] MTLPixelFormatValue];
+        colorAttachmentDescriptor.pixelFormat = configuration.colorAttachmentPixelFormats[index];
         colorAttachmentDescriptor.blendingEnabled = NO;
         renderPipelineDescriptor.colorAttachments[index] = colorAttachmentDescriptor;
     }
@@ -144,10 +193,11 @@
         [inputResolutions addObject:resolution];
     }
     
-    NSMutableArray<NSNumber *> *pixelFormats = [NSMutableArray array];
-    for (MTIRenderPassOutputDescriptor *outputDescriptor in self.outputDescriptors) {
+    MTLPixelFormat pixelFormats[self.outputDescriptors.count];
+    for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
+        MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
         MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
-        [pixelFormats addObject:@(pixelFormat)];
+        pixelFormats[index] = pixelFormat;
     }
     
     NSMutableArray<MTIImagePromiseRenderTarget *> *renderTargets = [NSMutableArray array];
@@ -155,7 +205,7 @@
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     
     for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
-        MTLPixelFormat pixelFormat = [pixelFormats[index] MTLPixelFormatValue];
+        MTLPixelFormat pixelFormat = pixelFormats[index];
         
         MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
@@ -182,7 +232,7 @@
     NSUInteger resolutionIndex = 0;
     
     for (MTIRenderCommand *command in self.renderCommands) {
-        MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:command.kernel configuration:[MTIRenderPipelineKernelConfiguration configurationWithColorAttachmentPixelFormats:pixelFormats] error:&error];
+        MTIRenderPipeline *renderPipeline = [renderingContext.context kernelStateForKernel:command.kernel configuration:[MTIRenderPipelineKernelConfiguration configurationWithColorAttachmentPixelFormats:pixelFormats count:self.outputDescriptors.count] error:&error];
         
         if (error) {
             if (inOutError) {
