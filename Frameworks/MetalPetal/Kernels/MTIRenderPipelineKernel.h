@@ -72,6 +72,12 @@ FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
 @end
 
+@interface MTIRenderPipelineKernel (PassthroughKernel)
+
+@property (nonatomic, class, strong, readonly) MTIRenderPipelineKernel *passthroughRenderPipelineKernel;
+
+@end
+
 @interface MTIRenderCommand (ImageCreation)
 
 + (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands

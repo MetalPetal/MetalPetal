@@ -441,6 +441,21 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 @end
 
+#import "MTIFilter.h"
+
+@implementation MTIRenderPipelineKernel (PassthroughKernel)
+
++ (MTIRenderPipelineKernel *)passthroughRenderPipelineKernel {
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName]];
+    });
+    return kernel;
+}
+
+@end
+
 @implementation MTIRenderCommand (ImageCreation)
 
 + (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
