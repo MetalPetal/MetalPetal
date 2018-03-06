@@ -31,7 +31,7 @@
 }
 
 + (MTIRenderPipelineKernel *)passthroughKernel {
-    return MTIUnaryImageRenderingFilter.kernel;
+    return MTIRenderPipelineKernel.passthroughRenderPipelineKernel;
 }
 
 - (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
