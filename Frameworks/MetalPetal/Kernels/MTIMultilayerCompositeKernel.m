@@ -248,21 +248,26 @@
     }
     
     //calc layerContentResolutions early to avoid recursive command encoding.
-    NSMutableArray<id<MTIImagePromiseResolution>> *layerContentResolutions = [NSMutableArray array];
-    NSMutableArray *layerCompositingMaskResolutions = [NSMutableArray array];
+    const NSUInteger layerCount = self.layers.count;
+    
+    id<MTIImagePromiseResolution> layerContentResolutions[layerCount];
+    memset(layerContentResolutions, 0, sizeof layerContentResolutions);
+    const id<MTIImagePromiseResolution> * layerContentResolutionsRef = layerContentResolutions;
+
+    id<MTIImagePromiseResolution> layerCompositingMaskResolutions[layerCount];
+    memset(layerCompositingMaskResolutions, 0, sizeof layerCompositingMaskResolutions);
+    const id<MTIImagePromiseResolution> * layerCompositingMaskResolutionsRef = layerCompositingMaskResolutions;
     
     @MTI_DEFER {
-        for (id<MTIImagePromiseResolution> resolution in layerContentResolutions) {
-            [resolution markAsConsumedBy:self];
-        }
-        for (id<MTIImagePromiseResolution> resolution in layerCompositingMaskResolutions) {
-            if (![resolution isKindOfClass:[NSNull class]]) {
-                [resolution markAsConsumedBy:self];
-            }
+        for (NSUInteger index = 0; index < layerCount; index += 1) {
+            [layerContentResolutionsRef[index] markAsConsumedBy:self];
+            [layerCompositingMaskResolutionsRef[index] markAsConsumedBy:self];
         }
     };
     
-    for (MTILayer *layer in self.layers) {
+    for (NSUInteger index = 0; index < layerCount; index += 1) {
+        MTILayer *layer = self.layers[index];
+        
         NSError *error = nil;
         id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
         if (error) {
@@ -271,7 +276,7 @@
             }
             return nil;
         }
-        [layerContentResolutions addObject:contentResolution];
+        layerContentResolutions[index] = contentResolution;
         
         if (layer.compositingMask) {
             id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask.content error:&error];
@@ -281,9 +286,7 @@
                 }
                 return nil;
             }
-            [layerCompositingMaskResolutions addObject:compositingMaskResolution];
-        } else {
-            [layerCompositingMaskResolutions addObject:[NSNull null]];
+            layerCompositingMaskResolutions[index] = compositingMaskResolution;
         }
     }
     
@@ -343,6 +346,7 @@
     
     id<MTLSamplerState> compositingMaskSamplerStates[self.layers.count];
     id<MTLSamplerState> layerSamplerStates[self.layers.count];
+    
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         MTILayer *layer = self.layers[index];
         {

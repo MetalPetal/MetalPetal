@@ -175,13 +175,18 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 - (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
-    NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
+    
+    NSUInteger inputResolutionsCount = self.dependencies.count;
+    id<MTIImagePromiseResolution> inputResolutions[inputResolutionsCount];
+    memset(inputResolutions, 0, sizeof inputResolutions);
+    const id<MTIImagePromiseResolution> * inputResolutionsRef = inputResolutions;
     @MTI_DEFER {
-        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-            [resolution markAsConsumedBy:promise];
+        for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
+            [inputResolutionsRef[index] markAsConsumedBy:promise];
         }
     };
-    for (MTIImage *image in self.dependencies) {
+    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
+        MTIImage *image = self.dependencies[index];
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
@@ -190,7 +195,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             return nil;
         }
         NSAssert(resolution != nil, @"");
-        [inputResolutions addObject:resolution];
+        inputResolutions[index] = resolution;
     }
     
     MTLPixelFormat pixelFormats[self.outputDescriptors.count];
@@ -200,10 +205,9 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         pixelFormats[index] = pixelFormat;
     }
     
-    NSMutableArray<MTIImagePromiseRenderTarget *> *renderTargets = [NSMutableArray array];
-    
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     
+    MTIImagePromiseRenderTarget *renderTargets[self.outputDescriptors.count];
     for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
         MTLPixelFormat pixelFormat = pixelFormats[index];
         
@@ -224,7 +228,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
         renderPassDescriptor.colorAttachments[index].storeAction = outputDescriptor.storeAction;
         
-        [renderTargets addObject:renderTarget];
+        renderTargets[index] = renderTarget;
     }
     
     id<MTLRenderCommandEncoder> commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
@@ -302,7 +306,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     
     [commandEncoder endEncoding];
     
-    return renderTargets;
+    return [NSArray arrayWithObjects:renderTargets count:self.outputDescriptors.count];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -314,8 +318,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     if (self = [super init]) {
         NSParameterAssert(renderCommands.count > 0);
         _renderCommands = [renderCommands copy];
-        _outputDescriptors = outputDescriptors;
-        NSMutableArray *dependencies = [NSMutableArray array];
+        _outputDescriptors = [outputDescriptors copy];
+        NSMutableArray<MTIImage *> *dependencies = [NSMutableArray array];
         for (MTIRenderCommand *command in renderCommands) {
             [dependencies addObjectsFromArray:command.images];
         }

@@ -38,13 +38,18 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
-    NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
+    
+    NSUInteger inputResolutionsCount = self.inputImages.count;
+    id<MTIImagePromiseResolution> inputResolutions[inputResolutionsCount];
+    memset(inputResolutions, 0, sizeof inputResolutions);
+    const id<MTIImagePromiseResolution> * inputResolutionsRef = inputResolutions;
     @MTI_DEFER {
-        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-            [resolution markAsConsumedBy:self];
+        for (NSUInteger index = 0; index < inputResolutionsCount; index+=1) {
+            [inputResolutionsRef[index] markAsConsumedBy:self];
         }
     };
-    for (MTIImage *image in self.inputImages) {
+    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
+        MTIImage *image = self.inputImages[index];
         NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
@@ -54,7 +59,7 @@
             return nil;
         }
         NSAssert(resolution != nil, @"");
-        [inputResolutions addObject:resolution];
+        inputResolutions[index] = resolution;
     }
     
     //May need to get a copy
@@ -83,10 +88,10 @@
     
     if (self.inputImages.count == 1) {
         MPSUnaryImageKernel *encoder = (MPSUnaryImageKernel *)kernel;
-        [encoder encodeToCommandBuffer:renderingContext.commandBuffer sourceTexture:inputResolutions.firstObject.texture destinationTexture:renderTarget.texture];
+        [encoder encodeToCommandBuffer:renderingContext.commandBuffer sourceTexture:inputResolutions[0].texture destinationTexture:renderTarget.texture];
     } else if (self.inputImages.count == 2) {
         MPSBinaryImageKernel *encoder = (MPSBinaryImageKernel *)kernel;
-        [encoder encodeToCommandBuffer:renderingContext.commandBuffer primaryTexture:inputResolutions.firstObject.texture secondaryTexture:inputResolutions.lastObject.texture destinationTexture:renderTarget.texture];
+        [encoder encodeToCommandBuffer:renderingContext.commandBuffer primaryTexture:inputResolutions[0].texture secondaryTexture:inputResolutions[1].texture destinationTexture:renderTarget.texture];
     } else {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorMPSKernelInputCountMismatch, nil);

@@ -38,13 +38,18 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
     NSError *error = nil;
-    NSMutableArray<id<MTIImagePromiseResolution>> *inputResolutions = [NSMutableArray array];
+    
+    NSUInteger inputResolutionsCount = self.inputImages.count;
+    id<MTIImagePromiseResolution> inputResolutions[inputResolutionsCount];
+    memset(inputResolutions, 0, sizeof inputResolutions);
+    const id<MTIImagePromiseResolution> * inputResolutionsRef = inputResolutions;
     @MTI_DEFER {
-        for (id<MTIImagePromiseResolution> resolution in inputResolutions) {
-            [resolution markAsConsumedBy:self];
+        for (NSUInteger index = 0; index < inputResolutionsCount; index+=1) {
+            [inputResolutionsRef[index] markAsConsumedBy:self];
         }
     };
-    for (MTIImage *image in self.inputImages) {
+    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
+        MTIImage *image = self.inputImages[index];
         NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
@@ -54,7 +59,7 @@
             return nil;
         }
         NSAssert(resolution != nil, @"");
-        [inputResolutions addObject:resolution];
+        inputResolutions[index] = resolution;
     }
     
     MTIComputePipeline *computePipeline = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
@@ -82,10 +87,10 @@
     __auto_type commandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
     [commandEncoder setComputePipelineState:computePipeline.state];
 
-    for (NSUInteger index = 0; index < inputResolutions.count; index += 1) {
+    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
         [commandEncoder setTexture:inputResolutions[index].texture atIndex:index];
     }
-    [commandEncoder setTexture:renderTarget.texture atIndex:inputResolutions.count];
+    [commandEncoder setTexture:renderTarget.texture atIndex:inputResolutionsCount];
     
     [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     
