@@ -197,7 +197,6 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
             if (cvMetalTexture) {
                 [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
             } else {
-                [renderingContext.context.coreVideoTextureCache flush];
                 if (inOutError) {
                     *inOutError = error;
                 }
@@ -213,7 +212,6 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 if (cvMetalTexture) {
                     [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
                 } else {
-                    [renderingContext.context.coreVideoTextureCache flush];
                     if (inOutError) {
                         *inOutError = error;
                     }
@@ -249,7 +247,6 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 size_t plane0Height = CVPixelBufferGetHeightOfPlane(self.pixelBuffer, 0);
                 MTICVMetalTexture *cvMetalTextureY = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:MTLPixelFormatR8Unorm width:plane0Width height:plane0Height planeIndex:0 error:&error];
                 if (error || !cvMetalTextureY) {
-                    [renderingContext.context.coreVideoTextureCache flush];
                     if (inOutError) {
                         *inOutError = error;
                     }
@@ -260,7 +257,6 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 size_t plane1height = CVPixelBufferGetHeightOfPlane(self.pixelBuffer, 1);
                 MTICVMetalTexture *cvMetalTextureCbCr = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:MTLPixelFormatRG8Unorm width:plane1width height:plane1height planeIndex:1 error:&error];
                 if (error || !cvMetalTextureCbCr) {
-                    [renderingContext.context.coreVideoTextureCache flush];
                     if (inOutError) {
                         *inOutError = error;
                     }

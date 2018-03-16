@@ -7,6 +7,7 @@
 
 #import "MTICVMetalTextureCache.h"
 #import "MTILock.h"
+#import "MTIDefer.h"
 
 NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErrorDomain";
 
@@ -98,15 +99,16 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
     [_lock lock];
     CVMetalTextureRef textureRef = NULL;
     CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _cache, imageBuffer, (__bridge CFDictionaryRef)textureAttributes, pixelFormat, width, height, planeIndex, &textureRef);
+    [_lock unlock];
     if (status != kCVReturnSuccess || textureRef == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:MTICVMetalTextureCacheErrorDomain code:MTICVMetalTextureCacheErrorFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:@{}]}];
         }
+        [self flush];
         return nil;
     }
     MTICVMetalTexture *texture = [[MTICVMetalTexture alloc] initWithCVMetalTexture:textureRef];
     CFRelease(textureRef);
-    [_lock unlock];
     return texture;
 #else
     if (error) {

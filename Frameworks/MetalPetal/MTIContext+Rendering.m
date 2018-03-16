@@ -238,7 +238,6 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     
     MTICVMetalTexture *renderTexture = [self.coreVideoTextureCache newTextureWithCVImageBuffer:pixelBuffer attributes:NULL pixelFormat:targetPixelFormat width:frameWidth height:frameHeight planeIndex:0 error:&error];
     if (!renderTexture || error) {
-        [self.coreVideoTextureCache flush];
         if (inOutError) {
             *inOutError = error;
         }
