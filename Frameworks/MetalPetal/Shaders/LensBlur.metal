@@ -19,7 +19,7 @@ namespace metalpetal {
         METAL_FUNC float4 sampleWithDelta(texture2d<float, access::sample> texture, sampler textureSampler, float2 position, float2 delta) {
             /* randomize the lookup values to hide the fixed number of samples */
             float offset = randomize(float3(delta, 151.7182), 0.0, position);
-            const int samples = 16;
+            constexpr int samples = 16;
             float4 color = float4(0.0);
             for (int t = 0.0; t <= samples; t++) {
                 float percent = (float(t) + offset) / float(samples);
