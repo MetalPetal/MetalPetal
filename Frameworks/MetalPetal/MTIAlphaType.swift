@@ -10,7 +10,7 @@ import Foundation
 extension MTIAlphaTypeHandlingRule {
     
     public var acceptableAlphaTypes: [MTIAlphaType] {
-        return self.__acceptableAlphaTypes.flatMap({ value in
+        return self.__acceptableAlphaTypes.compactMap({ value in
             return MTIAlphaType(rawValue: value.intValue)
         })
     }
