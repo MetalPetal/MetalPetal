@@ -110,6 +110,8 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
 - (MTLPixelFormat)pixelFormat:(OSType)type {
     switch (type) {
         case kCVPixelFormatType_32BGRA:
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
             return MTLPixelFormatBGRA8Unorm;
         case kCVPixelFormatType_32RGBA:
             return MTLPixelFormatRGBA8Unorm;
