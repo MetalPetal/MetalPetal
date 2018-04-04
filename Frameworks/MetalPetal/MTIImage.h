@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTISamplerDescriptor;
+@class MTISamplerDescriptor, MTICIImageRenderingOptions;
 
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
@@ -64,6 +64,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 - (instancetype)initWithCIImage:(CIImage *)ciImage;
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;

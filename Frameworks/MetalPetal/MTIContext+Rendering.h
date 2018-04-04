@@ -12,13 +12,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIDrawableRenderingRequest;
+@class MTIDrawableRenderingRequest, MTICIImageCreationOptions;
 
 @interface MTIContext (Rendering)
 
 - (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error NS_SWIFT_NAME(render(_:toDrawableWithRequest:));
 
 - (nullable CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError **)error NS_SWIFT_NAME(makeCIImage(from:));
+
+- (nullable CIImage *)createCIImageFromImage:(MTIImage *)image options:(MTICIImageCreationOptions *)options error:(NSError **)error NS_SWIFT_NAME(makeCIImage(from:options:));
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError **)error NS_SWIFT_NAME(render(_:to:));
 

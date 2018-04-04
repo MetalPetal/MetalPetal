@@ -57,6 +57,7 @@
 #import <MetalPetal/MTITextureDimensions.h>
 #import <MetalPetal/MTIImageRenderingContext.h>
 #import <MetalPetal/MTIShaderLib.h>
+#import <MetalPetal/MTICoreImageRendering.h>
 #import <MetalPetal/MTIColorMatrix.h>
 #import <MetalPetal/MTIError.h>
 #import <MetalPetal/MTIFunctionDescriptor.h>

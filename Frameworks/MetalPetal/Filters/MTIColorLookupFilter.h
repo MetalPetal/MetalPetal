@@ -5,6 +5,7 @@
 //  Created by 杨乃川 on 2017/10/12.
 //
 
+#import <CoreGraphics/CoreGraphics.h>
 #import "MTIFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN

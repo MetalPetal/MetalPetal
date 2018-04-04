@@ -23,6 +23,7 @@
 #import <objc/runtime.h>
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
+#import "MTICoreImageRendering.h"
 
 @implementation MTIContext (Rendering)
 
@@ -138,7 +139,7 @@
 
 static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImageAssociationKey;
 
-- (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CIImage *)createCIImageFromImage:(MTIImage *)image options:(MTICIImageCreationOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -161,7 +162,12 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
     [renderingContext.commandBuffer commit];
     [renderingContext.commandBuffer waitUntilScheduled];
-    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{}];
+    
+    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{kCIImageColorSpace: (id)options.colorSpace ?: [NSNull null]}];
+    if (options.isFlipped) {
+        ciImage = [ciImage imageByApplyingOrientation:4];
+    }
+    
     if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
         //ref: https://developer.apple.com/documentation/coreimage/ciimage/1645894-premultiplyingalpha
         //Premultiplied alpha speeds up the rendering of images, so Core Image filters require that input image data be premultiplied. If you have an image without premultiplied alpha that you want to feed into a filter, use this method before applying the filter.
@@ -178,6 +184,10 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
     objc_setAssociatedObject(ciImage, MTICIImageMTIImageAssociationKey, persistentImage, OBJC_ASSOCIATION_RETAIN);
     return ciImage;
+}
+
+- (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    return [self createCIImageFromImage:image options:MTICIImageCreationOptions.defaultOptions error:inOutError];
 }
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {

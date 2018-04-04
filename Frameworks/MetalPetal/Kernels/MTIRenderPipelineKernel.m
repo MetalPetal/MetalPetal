@@ -272,8 +272,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         
         for (NSUInteger index = 0; index < command.images.count; index += 1) {
             [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
-            MTIImage *image = command.images[index];
-            NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
+            NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:command.images[index].alphaType]);
             [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
         }
         resolutionIndex += command.images.count;

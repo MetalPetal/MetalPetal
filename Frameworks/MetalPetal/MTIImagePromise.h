@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo;
+@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 

@@ -16,6 +16,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTKTextureLoaderExtensions.h"
 #import "MTIContext+Internal.h"
+#import "MTICoreImageRendering.h"
 
 static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
     if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
@@ -186,20 +187,23 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @property (nonatomic,readonly) BOOL isOpaque;
 
+@property (nonatomic,copy) MTICIImageRenderingOptions *options;
+
 @end
 
 @implementation MTICIImagePromise
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque {
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
     if (self = [super init]) {
         _image = ciImage;
         _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
-        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
+        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
         textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
         _textureDescriptor = [textureDescriptor newMTITextureDescriptor];
+        _options = [options copy];
     }
     return self;
 }
@@ -212,11 +216,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     if (_isOpaque) {
         return MTIAlphaTypeAlphaIsOne;
     } else {
-        if (@available(iOS 11.0, *)) {
-            return MTIAlphaTypeNonPremultiplied;
-        } else {
-            return MTIAlphaTypePremultiplied;
-        }
+        return MTIAlphaTypePremultiplied;
     }
 }
 
@@ -231,9 +231,9 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     }
     if (@available(iOS 11.0, *)) {
         CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
-        renderDestination.flipped = YES;
-        renderDestination.colorSpace = (CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB());
-        renderDestination.alphaMode = CIRenderDestinationAlphaUnpremultiplied;
+        renderDestination.flipped = self.options.isFlipped;
+        renderDestination.colorSpace = self.options.colorSpace;
+        renderDestination.alphaMode = CIRenderDestinationAlphaPremultiplied;
         [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
         if (error) {
             if (inOutError) {
@@ -242,7 +242,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
             return nil;
         }
     } else {
-        [renderingContext.context.coreImageContext render:[self.image imageByApplyingOrientation:4] toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
+        [renderingContext.context.coreImageContext render:self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:self.options.colorSpace];
     }
     return renderTarget;
 }

@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreGraphics/CoreGraphics.h>
 #import "MTIBlendModes.h"
 #import "MTIColor.h"
 #import "MTIMask.h"

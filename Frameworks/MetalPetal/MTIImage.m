@@ -11,6 +11,7 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImage+Promise.h"
 #import "MTICVPixelBufferPromise.h"
+#import "MTICoreImageRendering.h"
 #import "MTIImagePromiseDebug.h"
 
 @interface MTIImage ()
@@ -144,7 +145,11 @@
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque {
-    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:MTICIImageRenderingOptions.defaultOptions] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:options] samplerDescriptor:MTIImage.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType {
