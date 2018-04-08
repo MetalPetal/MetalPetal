@@ -73,12 +73,36 @@ static const ColorConversion kColorConversion709 = {
 
 MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable = @"MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable";
 
+static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sRGB) {
+    switch (type) {
+        case kCVPixelFormatType_32BGRA:
+            return sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+            
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
+            return sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+            
+        case kCVPixelFormatType_32RGBA:
+            return sRGB ? MTLPixelFormatRGBA8Unorm_sRGB : MTLPixelFormatRGBA8Unorm;
+            
+        case kCVPixelFormatType_DisparityFloat16:
+        case kCVPixelFormatType_DepthFloat16:
+            return MTLPixelFormatR16Float;
+            
+        case kCVPixelFormatType_DisparityFloat32:
+        case kCVPixelFormatType_DepthFloat32:
+            return MTLPixelFormatR32Float;
+            
+        default:
+            return MTLPixelFormatInvalid;
+    }
+}
+
 @interface MTICVPixelBufferPromise ()
 
-@property (nonatomic) CVPixelBufferRef pixelBuffer;
+@property (nonatomic, readonly) CVPixelBufferRef pixelBuffer;
 
 @property (nonatomic, strong, readonly) MTITextureDescriptor *coreImageRendererDefaultTextureDescriptor;
-@property (nonatomic, strong, readonly) MTITextureDescriptor *metalPetalRendererDefaultTextureDescriptor;
 
 @end
 
@@ -86,44 +110,23 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(nonnull MTICVPixelBufferRenderingOptions *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         NSParameterAssert(pixelBuffer);
         _alphaType = alphaType;
-        _renderingAPI = renderingAPI;
+        _renderingAPI = options.renderingAPI;
         _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
         _dimensions = (MTITextureDimensions){CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer), 1};
-        
-        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:[self mtlPixelFormatForCVPixelFormat:CVPixelBufferGetPixelFormatType(pixelBuffer)]
-                                                                                              width:CVPixelBufferGetWidth(_pixelBuffer)
-                                                                                             height:CVPixelBufferGetHeight(_pixelBuffer)
-                                                                                          mipmapped:NO];
-
+        _sRGB = options.sRGB;
+        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor
+                                            texture2DDescriptorWithPixelFormat:MTIMTLPixelFormatForCVPixelFormatType(CVPixelBufferGetPixelFormatType(pixelBuffer), _sRGB)
+                                            width:CVPixelBufferGetWidth(_pixelBuffer)
+                                            height:CVPixelBufferGetHeight(_pixelBuffer)
+                                            mipmapped:NO];
         descriptor.usage =  MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
         _coreImageRendererDefaultTextureDescriptor = [descriptor newMTITextureDescriptor];
-        descriptor.usage = MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
-        _metalPetalRendererDefaultTextureDescriptor = [descriptor newMTITextureDescriptor];
     }
     return self;
-}
-
-- (MTLPixelFormat)mtlPixelFormatForCVPixelFormat:(OSType)type {
-    switch (type) {
-        case kCVPixelFormatType_32BGRA:
-        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-        case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
-            return MTLPixelFormatBGRA8Unorm;
-        case kCVPixelFormatType_32RGBA:
-            return MTLPixelFormatRGBA8Unorm;
-        case kCVPixelFormatType_DisparityFloat16:
-        case kCVPixelFormatType_DepthFloat16:
-            return MTLPixelFormatR16Float;
-        case kCVPixelFormatType_DisparityFloat32:
-        case kCVPixelFormatType_DepthFloat32:
-            return MTLPixelFormatR32Float;
-        default:
-            return MTLPixelFormatInvalid;
-    }
 }
 
 - (void)dealloc {
@@ -183,7 +186,7 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext_CI:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
-    if (self.metalPetalRendererDefaultTextureDescriptor.pixelFormat == MTLPixelFormatInvalid) {
+    if (self.coreImageRendererDefaultTextureDescriptor.pixelFormat == MTLPixelFormatInvalid) {
         NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
         if (inOutError) {
             *inOutError = error;
@@ -218,20 +221,14 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext_MTI:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
-    if (self.metalPetalRendererDefaultTextureDescriptor.pixelFormat == MTLPixelFormatInvalid) {
-        NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
     OSType pixelFormatType = CVPixelBufferGetPixelFormatType(self.pixelBuffer);
     switch (pixelFormatType) {
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
             if (MTIDeviceSupportsYCBCRPixelFormat(renderingContext.context.device)) {
+                MTLPixelFormat pixelFormat = self.sRGB ? MTIPixelFormatYCBCR8_420_2P_sRGB : MTIPixelFormatYCBCR8_420_2P;
                 NSError *error = nil;
-                MTICVMetalTexture *cvMetalTexture = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:MTIPixelFormatYCBCR8_420_2P width:CVPixelBufferGetWidth(self.pixelBuffer) height:CVPixelBufferGetHeight(self.pixelBuffer) planeIndex:0 error:&error];
+                MTICVMetalTexture *cvMetalTexture = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:pixelFormat width:CVPixelBufferGetWidth(self.pixelBuffer) height:CVPixelBufferGetHeight(self.pixelBuffer) planeIndex:0 error:&error];
                 if (cvMetalTexture) {
                     [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
                 } else {
@@ -242,7 +239,7 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 }
                 return [renderingContext.context newRenderTargetWithTexture:cvMetalTexture.texture];
             } else {
-                BOOL isFullYUVRange = pixelFormatType == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange ? YES : NO;
+                BOOL isFullYUVRange = (pixelFormatType == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange ? YES : NO);
                 
                 ColorConversion const *preferredConversion = nil;
                 CFTypeRef colorAttachments = CVBufferGetAttachment(self.pixelBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
@@ -287,7 +284,15 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
                 }
                 
                 // Render Pipeline
-                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.metalPetalRendererDefaultTextureDescriptor error:&error];
+                MTLPixelFormat pixelFormat = self.sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+                MTLTextureDescriptor *descriptor = [MTLTextureDescriptor
+                                                    texture2DDescriptorWithPixelFormat:pixelFormat
+                                                    width:CVPixelBufferGetWidth(_pixelBuffer)
+                                                    height:CVPixelBufferGetHeight(_pixelBuffer)
+                                                    mipmapped:NO];
+                descriptor.usage = MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
+                MTITextureDescriptor *textureDescriptor = [descriptor newMTITextureDescriptor];
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
                 if (error) {
                     if (inOutError) {
                         *inOutError = error;
@@ -321,8 +326,16 @@ MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCV
             }
         } break;
         default:{
+            MTLPixelFormat pixelFormat = MTIMTLPixelFormatForCVPixelFormatType(CVPixelBufferGetPixelFormatType(self.pixelBuffer), self.sRGB);
+            if (pixelFormat == MTLPixelFormatInvalid) {
+                NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
             NSError *error = nil;
-            MTICVMetalTexture *cvMetalTexture = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:self.metalPetalRendererDefaultTextureDescriptor.pixelFormat width:CVPixelBufferGetWidth(self.pixelBuffer) height:CVPixelBufferGetHeight(self.pixelBuffer) planeIndex:0 error:&error];
+            MTICVMetalTexture *cvMetalTexture = [renderingContext.context.coreVideoTextureCache newTextureWithCVImageBuffer:self.pixelBuffer attributes:nil pixelFormat:pixelFormat width:CVPixelBufferGetWidth(self.pixelBuffer) height:CVPixelBufferGetHeight(self.pixelBuffer) planeIndex:0 error:&error];
             if (cvMetalTexture) {
                 [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
             } else {

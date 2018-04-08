@@ -7,6 +7,7 @@
 //
 
 #import "MTIImage.h"
+#import "MTIImagePromise.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

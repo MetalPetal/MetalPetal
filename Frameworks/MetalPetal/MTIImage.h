@@ -9,11 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <CoreImage/CoreImage.h>
-#import "MTICVPixelBufferPromise.h"
+#import <MetalKit/MetalKit.h>
+#import "MTICVPixelBufferRendering.h"
+#import "MTIColor.h"
+#import "MTIAlphaType.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTISamplerDescriptor, MTICIImageRenderingOptions;
+@class MTISamplerDescriptor, MTICIImageRenderingOptions, MTICVPixelBufferRenderingOptions;
 
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
@@ -51,6 +54,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer alphaType:(MTIAlphaType)alphaType;
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType;
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(MTICVPixelBufferRenderingOptions *)options alphaType:(MTIAlphaType)alphaType;
 
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;

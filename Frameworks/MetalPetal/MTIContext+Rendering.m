@@ -190,7 +190,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     return [self createCIImageFromImage:image options:MTICIImageCreationOptions.defaultOptions error:inOutError];
 }
 
-- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -214,12 +214,12 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     MTLPixelFormat targetPixelFormat;
     switch (pixelFormatType) {
         case kCVPixelFormatType_32BGRA: {
-            targetPixelFormat = MTLPixelFormatBGRA8Unorm;
+            targetPixelFormat = sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
         } break;
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
             if (MTIDeviceSupportsYCBCRPixelFormat(renderingContext.context.device)) {
-                targetPixelFormat = MTIPixelFormatYCBCR8_420_2P;
+                targetPixelFormat = sRGB ? MTIPixelFormatYCBCR8_420_2P_sRGB : MTIPixelFormatYCBCR8_420_2P;
             } else {
                 NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
                 if (inOutError) {
@@ -329,12 +329,20 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
 }
 
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    return [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:NO error:inOutError];
+}
+
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    return [self createCGImageFromImage:image sRGB:NO error:inOutError];
+}
+
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
     CVPixelBufferRef pixelBuffer;
     CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
     if (pixelBuffer) {
         NSError *error;
-        [self renderImage:image toCVPixelBuffer:pixelBuffer error:&error];
+        [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
