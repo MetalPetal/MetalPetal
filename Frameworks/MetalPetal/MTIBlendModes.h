@@ -24,11 +24,14 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorDodge;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDifference;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeExclusion;
 
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeAdd;
+
 // non-separable
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHue;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSaturation;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColor;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLuminosity;
+
 
 //custom
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorLookup512x512;

@@ -93,7 +93,7 @@ namespace metalpetal {
     }
     
     METAL_FUNC float3 rgb2hsl(float3 inputColor) {
-        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
+        float3 color = saturate(inputColor);
         
         //Compute min and max component values
         float MAX = max(color.r, max(color.g, color.b));
@@ -117,7 +117,7 @@ namespace metalpetal {
     }
     
     METAL_FUNC float3 hsl2rgb(float3 inputColor) {
-        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
+        float3 color = saturate(inputColor);
         
         float h = color.r;
         float s = color.g;
@@ -144,14 +144,14 @@ namespace metalpetal {
     }
 
     METAL_FUNC float4 blendBaseAlpha(float4 Cb, float4 Cs, float4 B) {
-        float4 Cr = float4((1 - Cb.a) * Cs.rgb + Cb.a * clamp(B.rgb, float3(0), float3(1)), Cs.a);
+        float4 Cr = float4((1 - Cb.a) * Cs.rgb + Cb.a * saturate(B.rgb), Cs.a);
         return normalBlend(Cb, Cr);
     }
     
     
     // multiply
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
-        float4 B = clamp(float4(Cb.rgb * Cs.rgb, Cs.a), float4(0), float4(1));
+        float4 B = saturate(float4(Cb.rgb * Cs.rgb, Cs.a));
         return blendBaseAlpha(Cb, Cs, B);
     }
     
@@ -242,6 +242,12 @@ namespace metalpetal {
     // exclusion
     METAL_FUNC float4 exclusionBlend(float4 Cb, float4 Cs) {
         float4 B = float4(Cb.rgb + Cs.rgb - 2 * Cb.rgb * Cs.rgb, Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // add
+    METAL_FUNC float4 addBlend(float4 Cb, float4 Cs) {
+        float4 B = min(Cb + Cs, 1.0);
         return blendBaseAlpha(Cb, Cs, B);
     }
     
