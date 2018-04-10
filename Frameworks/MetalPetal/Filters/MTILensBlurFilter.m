@@ -70,16 +70,16 @@
     
     float power = pow(10, MIN(MAX(self.brightness, -1), 1));
     
-    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage]
+    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, maskImage]
                                                                               parameters:@{@"power": @(power)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
-    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage, maskImage]
+    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage]
                                                                                      parameters:@{@"delta0": deltas[0],
                                                                                                   @"delta1": deltas[1],
                                                                                                   }
                                                                               outputDescriptors:@[[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
-    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1],maskImage,self.inputImage]
+    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1]]
                                                                                 parameters:@{@"delta0": deltas[1],
                                                                                              @"delta1": deltas[2],
                                                                                              @"power": @((float)1.0/power)
@@ -90,3 +90,4 @@
 }
 
 @end
+
