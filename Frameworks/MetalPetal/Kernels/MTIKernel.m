@@ -43,6 +43,9 @@
     
     for (NSUInteger index = 0; index < arguments.count; index += 1) {
         MTLArgument *argument = arguments[index];
+        if (argument.type != MTLArgumentTypeBuffer) {
+            continue;
+        }
         id value = parameters[argument.name];
         if (value) {
             if ([value isKindOfClass:[NSValue class]]) {
