@@ -64,6 +64,7 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType {
     if (self = [super init]) {
+        NSParameterAssert(count > 0);
         _vertexCount = count;
         _primitiveType = primitiveType;
         NSUInteger bufferLength = count * sizeof(MTIVertex);
