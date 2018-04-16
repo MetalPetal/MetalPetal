@@ -32,18 +32,18 @@ namespace metalpetal {
             return blurAmount < 0.01 ? texture.sample(textureSampler, position) : float4(color / blurAmount, 1.0);
         }
         
-        fragment float4 lensBlurPre(
-                                    VertexOut vertexIn [[ stage_in ]],
+        fragment float4 lensBlurPre(VertexOut vertexIn [[ stage_in ]],
                                     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                     sampler colorSampler [[ sampler(0) ]],
                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
                                     sampler maskSampler [[ sampler(1) ]],
-                                    constant float & power [[ buffer(0) ]]
-                                    ) {
-            float coc = maskTexture.sample(maskSampler, vertexIn.textureCoordinate).r;
+                                    constant float & power [[ buffer(0) ]],
+                                    constant int &maskComponent [[ buffer(1) ]],
+                                    constant bool &usesOneMinusMaskValue [[ buffer(2) ]]) {
+            float coc = maskTexture.sample(maskSampler, vertexIn.textureCoordinate)[maskComponent];
             float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
             textureColor.rgb = pow(textureColor.rgb, float3(power));
-            return float4(textureColor.rgb, coc);
+            return float4(textureColor.rgb, usesOneMinusMaskValue ? 1.0 - coc : coc);
         }
         
         typedef struct {

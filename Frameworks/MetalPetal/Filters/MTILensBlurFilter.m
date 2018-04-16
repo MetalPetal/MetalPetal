@@ -56,9 +56,10 @@
         return self.inputImage;
     }
     
-    MTIImage *maskImage = self.inputMaskImage;
-    if (!maskImage) {
-        maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(1, 1, 1, 1) sRGB:NO size:CGSizeMake(1, 1)];
+    MTIMask *mask = self.inputMask;
+    if (!mask) {
+        MTIImage *maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(1, 1, 1, 1) sRGB:NO size:CGSizeMake(1, 1)];
+        mask = [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal];
     }
     
     MTIVector * deltas[3];
@@ -69,9 +70,11 @@
     }
     
     float power = pow(10, MIN(MAX(self.brightness, -1), 1));
-    
-    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, maskImage]
-                                                                              parameters:@{@"power": @(power)}
+    BOOL usesOneMinusMaskValue = mask.mode == MTIMaskModeOneMinusMaskValue;
+    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, mask.content]
+                                                                              parameters:@{@"power": @(power),
+                                                                                           @"maskComponent": @((int)mask.component),
+                                                                                           @"usesOneMinusMaskValue": @(usesOneMinusMaskValue)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
     NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage]
