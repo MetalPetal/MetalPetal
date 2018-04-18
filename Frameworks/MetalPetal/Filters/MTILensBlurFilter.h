@@ -6,6 +6,7 @@
 //
 
 #import "MTIFilter.h"
+#import "MTIMask.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MTILensBlurFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
-@property (nonatomic, strong, nullable) MTIImage *inputMaskImage;
+@property (nonatomic, strong, nullable) MTIMask *inputMask;
 
 @property (nonatomic) float radius;
 @property (nonatomic) float brightness;
