@@ -11,6 +11,10 @@
 
 - (instancetype)initWithKernel:(MTIRenderPipelineKernel *)kernel geometry:(id<MTIGeometry>)geometry images:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters {
     if (self = [super init]) {
+        NSParameterAssert(kernel);
+        NSParameterAssert(images);
+        NSParameterAssert(parameters);
+        NSParameterAssert(geometry);
         _kernel = kernel;
         _geometry = [geometry copyWithZone:nil];
         _images = [images copy];
