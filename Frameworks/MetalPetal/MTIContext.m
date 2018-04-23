@@ -99,6 +99,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
+        _commandQueue.label = @"MetalPetal";
         
         _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
         
