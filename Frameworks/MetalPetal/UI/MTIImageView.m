@@ -53,8 +53,8 @@
     _renderView = renderView;
     
     _renderView.paused = YES;
-    _renderView.enableSetNeedsDisplay = NO;
-    _drawsImmediately = YES;
+    _renderView.enableSetNeedsDisplay = YES;
+    _drawsImmediately = NO;
 }
 
 - (void)setDrawsImmediately:(BOOL)drawsImmediately {
@@ -116,6 +116,7 @@
 }
 
 - (void)setImage:(MTIImage *)image {
+    NSAssert(NSThread.isMainThread, @"-[MTIImageView setImage:] can only be called on main thread.");
     _image = image;
     [self updateContentScaleFactor];
     if (_drawsImmediately) {
