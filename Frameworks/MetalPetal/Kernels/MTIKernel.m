@@ -41,8 +41,7 @@
         }
     };
     
-    for (NSUInteger index = 0; index < arguments.count; index += 1) {
-        MTLArgument *argument = arguments[index];
+    for (MTLArgument *argument in arguments) {
         if (argument.type != MTLArgumentTypeBuffer) {
             continue;
         }

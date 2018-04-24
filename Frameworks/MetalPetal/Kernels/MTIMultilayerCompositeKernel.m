@@ -491,8 +491,7 @@
     MTIImage *backgroundImage = dependencies[pointer];
     pointer += 1;
     NSMutableArray *newLayers = [NSMutableArray arrayWithCapacity:self.layers.count];
-    for (NSUInteger index = 0; index < self.layers.count; index+= 1) {
-        MTILayer *layer = self.layers[index];
+    for (MTILayer *layer in self.layers) {
         MTIImage *newContent = dependencies[pointer];
         pointer += 1;
         MTIMask *compositingMask = layer.compositingMask;
