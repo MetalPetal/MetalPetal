@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)imageByPremultiplyingAlpha;
 
+- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -80,15 +80,6 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
-/// Return a 1x1 white image
-+ (instancetype)whiteImage;
-
-/// Return a 1x1 black image
-+ (instancetype)blackImage;
-
-/// Return a 1x1 transparent image
-+ (instancetype)transparentImage;
-
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
 - (instancetype)initWithName:(NSString *)name
@@ -97,6 +88,15 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                    alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
+
+/// A 1x1 white image
+@property (class, readonly) MTIImage *whiteImage;
+
+/// A 1x1 black image
+@property (class, readonly) MTIImage *blackImage;
+
+/// A 1x1 transparent image
+@property (class, readonly) MTIImage *transparentImage;
 
 @end
 

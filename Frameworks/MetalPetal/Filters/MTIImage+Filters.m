@@ -7,6 +7,7 @@
 
 #import "MTIImage+Filters.h"
 #import "MTIAlphaPremultiplicationFilter.h"
+#import "MTIUnaryImageRenderingFilter.h"
 
 @implementation MTIImage (Filters)
 
@@ -16,6 +17,11 @@
 
 - (MTIImage *)imageByPremultiplyingAlpha {
     return [MTIPremultiplyAlphaFilter imageByProcessingImage:self];
+}
+
+- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation {
+    MTIImageOrientation imageOrientation = MTIImageOrientationFromCGImagePropertyOrientation(orientation);
+    return [MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
 }
 
 @end
