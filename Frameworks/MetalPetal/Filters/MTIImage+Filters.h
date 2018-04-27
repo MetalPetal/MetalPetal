@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)imageByPremultiplyingAlpha;
 
-- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation;
+- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation NS_SWIFT_NAME(oriented(_:));
 
 @end
 
