@@ -20,7 +20,36 @@
 }
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation {
-    MTIImageOrientation imageOrientation = MTIImageOrientationFromCGImagePropertyOrientation(orientation);
+    MTIImageOrientation imageOrientation;
+    switch (orientation) {
+        case kCGImagePropertyOrientationUp:
+            imageOrientation = MTIImageOrientationUp;
+            break;
+        case kCGImagePropertyOrientationDown:
+            imageOrientation = MTIImageOrientationDown;
+            break;
+        case kCGImagePropertyOrientationLeft:
+            imageOrientation = MTIImageOrientationRight;
+            break;
+        case kCGImagePropertyOrientationRight:
+            imageOrientation = MTIImageOrientationLeft;
+            break;
+        case kCGImagePropertyOrientationUpMirrored:
+            imageOrientation = MTIImageOrientationUpMirrored;
+            break;
+        case kCGImagePropertyOrientationDownMirrored:
+            imageOrientation = MTIImageOrientationDownMirrored;
+            break;
+        case kCGImagePropertyOrientationLeftMirrored:
+            imageOrientation = MTIImageOrientationRightMirrored;
+            break;
+        case kCGImagePropertyOrientationRightMirrored:
+            imageOrientation = MTIImageOrientationLeftMirrored;
+            break;
+        default:
+            imageOrientation = MTIImageOrientationUnknown;
+            break;
+    }
     return [MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
 }
 
