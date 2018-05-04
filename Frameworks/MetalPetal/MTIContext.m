@@ -145,7 +145,19 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (void)reclaimResources {
-    [self.texturePool flush];
+    [_texturePool flush];
+    
+    [_imageKeyValueTablesLock lock];
+    for (NSString *key in _imageKeyValueTables) {
+        [_imageKeyValueTables[key] compact];
+    }
+    [_imageKeyValueTablesLock unlock];
+    
+    [_promiseKeyValueTablesLock lock];
+    for (NSString *key in _promiseKeyValueTables) {
+        [_promiseKeyValueTables[key] compact];
+    }
+    [_promiseKeyValueTablesLock unlock];
 }
 
 - (NSUInteger)idleResourceSize {
