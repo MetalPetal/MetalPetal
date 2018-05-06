@@ -32,9 +32,9 @@
     };
     return @{
              @"amount": @(_amount),
-             @"vibranceVector": [[MTIVector alloc] initWithFloat4:vector],
+             @"vibranceVector": [MTIVector vectorWithFloat4:vector],
              @"avoidsSaturatingSkinTones": @(_avoidsSaturatingSkinTones),
-             @"grayColorTransform": [[MTIVector alloc] initWithFloat3:_grayColorTransform]
+             @"grayColorTransform": [MTIVector vectorWithFloat3:_grayColorTransform]
              };
 }
 

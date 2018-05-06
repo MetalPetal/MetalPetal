@@ -28,7 +28,7 @@
 - (NSDictionary<NSString *,id> *)parameters {
     return @{@"angle": @(self.angle),
              @"scale": @(self.scale),
-             @"grayColorTransform": [[MTIVector alloc] initWithFloat3:self.grayColorTransform]};
+             @"grayColorTransform": [MTIVector vectorWithFloat3:self.grayColorTransform]};
 }
 
 @end

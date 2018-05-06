@@ -19,18 +19,10 @@ __Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
     return self.data.bytes;
 }
 
-+ (instancetype)vectorWithValues:(const float *)values count:(NSUInteger)count {
-    return [[self alloc] initWithValues:values count:count];
-}
-
-+ (instancetype)vectorWithDoubleValues:(const double *)values count:(NSUInteger)count {
-    float result[count];
-    vDSP_vdpsp(values, 1, result, 1, count);
-    return [[self alloc] initWithValues:result count:count];
-}
-
 - (instancetype)initWithValues:(const float *)values count:(NSUInteger)count {
     if (self = [super init]) {
+        NSParameterAssert(values);
+        NSParameterAssert(count > 0);
         _count = count;
         _data = [NSData dataWithBytes:values length:count * sizeof(float)];
     }
@@ -41,32 +33,11 @@ __Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
     return self;
 }
 
-- (instancetype)initWithCGPoint:(CGPoint)p {
-    float values[2] = {(float)p.x, (float)p.y};
-    return [self initWithValues:values count:2];
-}
-
-- (instancetype)initWithCGSize:(CGSize)s {
-    float values[2] = {(float)s.width, (float)s.height};
-    return [self initWithValues:values count:2];
-}
-
-- (instancetype)initWithCGRect:(CGRect)r {
-    float values[4] = {(float)r.origin.x, (float)r.origin.y, (float)r.size.width, (float)r.size.height};
-    return [self initWithValues:values count:4];
-}
-
-- (instancetype)initWithFloat4x4:(simd_float4x4)m {
-    const float * values = (void *)&m;
-    return [self initWithValues:values count:sizeof(m)/sizeof(float)];
++ (instancetype)vectorWithValues:(const float *)values count:(NSUInteger)count {
+    return [[self alloc] initWithValues:values count:count];
 }
 
 - (instancetype)initWithFloat2:(simd_float2)v {
-    const float * values = (void *)&v;
-    return [self initWithValues:values count:sizeof(v)/sizeof(float)];
-}
-
-- (instancetype)initWithFloat4:(simd_float4)v {
     const float * values = (void *)&v;
     return [self initWithValues:values count:sizeof(v)/sizeof(float)];
 }
@@ -76,8 +47,50 @@ __Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
     return [self initWithFloat4:float4];
 }
 
+- (instancetype)initWithFloat4:(simd_float4)v {
+    const float * values = (void *)&v;
+    return [self initWithValues:values count:sizeof(v)/sizeof(float)];
+}
+
+- (instancetype)initWithFloat4x4:(simd_float4x4)m {
+    const float * values = (void *)&m;
+    return [self initWithValues:values count:sizeof(m)/sizeof(float)];
+}
+
 + (instancetype)vectorWithX:(float)X Y:(float)Y {
-    return [[MTIVector alloc] initWithCGPoint:CGPointMake(X, Y)];
+    float values[2] = {X, Y};
+    return [[self alloc] initWithValues:values count:2];
+}
+
++ (instancetype)vectorWithCGPoint:(CGPoint)p {
+    float values[2] = {(float)p.x, (float)p.y};
+    return [[self alloc] initWithValues:values count:2];
+}
+
++ (instancetype)vectorWithCGSize:(CGSize)s {
+    float values[2] = {(float)s.width, (float)s.height};
+    return [[self alloc] initWithValues:values count:2];
+}
+
++ (instancetype)vectorWithCGRect:(CGRect)r {
+    float values[4] = {(float)r.origin.x, (float)r.origin.y, (float)r.size.width, (float)r.size.height};
+    return [[self alloc] initWithValues:values count:4];
+}
+
++ (instancetype)vectorWithFloat2:(simd_float2)v {
+    return [[self alloc] initWithFloat2:v];
+}
+
++ (instancetype)vectorWithFloat3:(simd_float3)v {
+    return [[self alloc] initWithFloat3:v];
+}
+
++ (instancetype)vectorWithFloat4:(simd_float4)v {
+    return [[self alloc] initWithFloat4:v];
+}
+
++ (instancetype)vectorWithFloat4x4:(simd_float4x4)m {
+    return [[self alloc] initWithFloat4x4:m];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder {
@@ -145,8 +158,7 @@ __Check_Compile_Time(sizeof(simd_float4) == sizeof(simd_float3));
 }
 
 - (simd_float3)float3Value {
-    simd_float4 float4 = self.float4Value;
-    return float4.xyz;
+    return self.float4Value.xyz;
 }
 
 - (NSUInteger)hash {

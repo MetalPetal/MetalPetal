@@ -275,7 +275,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     NSInteger dX = (self.tileGridSize.width - ((NSInteger)self.inputImage.size.width % self.tileGridSize.width)) % self.tileGridSize.width;
     
     MTITextureDimensions lightnessTextureDimensions = MTITextureDimensionsMake2DFromCGSize(CGSizeMake(self.inputImage.size.width + dX, self.inputImage.size.height + dY));
-    MTIVector *lightnessImageScale = [[MTIVector alloc] initWithFloat2:(simd_float2){(self.inputImage.size.width + dX)/self.inputImage.size.width, (self.inputImage.size.height + dY)/self.inputImage.size.height}];
+    MTIVector *lightnessImageScale = [MTIVector vectorWithFloat2:(simd_float2){(self.inputImage.size.width + dX)/self.inputImage.size.width, (self.inputImage.size.height + dY)/self.inputImage.size.height}];
     
     MTIImage *lightnessImage = [MTICLAHEFilter.RGB2LightnessKernel applyToInputImages:@[inputImageForLUT]
                                                                            parameters:@{@"scale": lightnessImageScale}
@@ -285,7 +285,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
                                                                                  inputLightnessImage:lightnessImage
                                                                                            clipLimit:self.clipLimit
                                                                                         tileGridSize:self.tileGridSize]];
-    MTIVector *tileGridSize = [[MTIVector alloc]  initWithFloat2:(simd_float2){self.tileGridSize.width, self.tileGridSize.height}];
+    MTIVector *tileGridSize = [MTIVector vectorWithFloat2:(simd_float2){self.tileGridSize.width, self.tileGridSize.height}];
     MTIImage *outputImage = [MTICLAHEFilter.CLAHELookupKernel applyToInputImages:@[self.inputImage, lutImage]
                                                                       parameters:@{@"tileGridSize": tileGridSize}
                                                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
