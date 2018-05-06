@@ -17,7 +17,7 @@ NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType) {
         case MTIAlphaTypeAlphaIsOne:
             return @"AlphaIsOne";
         default:
-            return @"Unknown";
+            return @"UnknownAlphaType";
     }
 }
 

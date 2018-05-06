@@ -193,4 +193,8 @@
     return [[MTIImage alloc] initWithPromise:receipt];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p; %@>",self.class, self, self.computeFunctionDescriptor];
+}
+
 @end

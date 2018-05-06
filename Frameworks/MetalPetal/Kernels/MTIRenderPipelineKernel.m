@@ -154,6 +154,10 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p; vertexFunctionDescriptor = %@; fragmentFunctionDescriptor = %@>",self.class, self, self.vertexFunctionDescriptor, self.fragmentFunctionDescriptor];
+}
+
 @end
 
 @interface MTIImageRenderingRecipe : NSObject

@@ -74,4 +74,12 @@
     return self;
 }
 
+- (NSString *)description {
+    if (@available(iOS 10_0, *)) {
+        return [NSString stringWithFormat:@"<%@: %p; name = %@; constantValues = %@; libraryURL = %@>",self.class, self, self.name, self.constantValues, self.libraryURL];
+    } else {
+        return [NSString stringWithFormat:@"<%@: %p; name = %@; libraryURL = %@>",self.class, self, self.name, self.libraryURL];
+    }
+}
+
 @end
