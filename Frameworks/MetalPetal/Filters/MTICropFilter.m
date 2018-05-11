@@ -61,6 +61,7 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
         } break;
         default: {
             NSAssert(NO, @"Unsupported MTICropRegionUnit");
+            return nil;
         } break;
     }
     
