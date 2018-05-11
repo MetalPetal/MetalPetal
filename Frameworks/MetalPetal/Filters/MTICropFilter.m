@@ -101,6 +101,10 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
     NSUInteger outputWidth = roundingFunction(cropRect.size.width * self.scale);
     NSUInteger outputHeight = roundingFunction(cropRect.size.height * self.scale);
     
+    if (outputWidth == self.inputImage.size.width && outputHeight == self.inputImage.size.height && cropRect.origin.x == 0 && cropRect.origin.y == 0) {
+        return self.inputImage;
+    }
+    
     MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = outputWidth, .height = outputHeight, .depth = 1} pixelFormat:self.outputPixelFormat];
     
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTICropFilter.kernel geometry:geometry images:@[self.inputImage] parameters:@{}];
