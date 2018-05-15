@@ -234,6 +234,15 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         case kCVPixelFormatType_128RGBAFloat: {
             targetPixelFormat = MTLPixelFormatRGBA32Float;
         } break;
+        case kCVPixelFormatType_OneComponent8: {
+            targetPixelFormat = sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
+        } break;
+        case kCVPixelFormatType_OneComponent16Half: {
+            targetPixelFormat = MTLPixelFormatR16Float;
+        } break;
+        case kCVPixelFormatType_OneComponent32Float: {
+            targetPixelFormat = MTLPixelFormatR32Float;
+        } break;
         default: {
             NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
             if (inOutError) {
