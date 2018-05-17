@@ -87,11 +87,16 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             
         case kCVPixelFormatType_DisparityFloat16:
         case kCVPixelFormatType_DepthFloat16:
+        case kCVPixelFormatType_OneComponent16Half:
             return MTLPixelFormatR16Float;
             
         case kCVPixelFormatType_DisparityFloat32:
         case kCVPixelFormatType_DepthFloat32:
+        case kCVPixelFormatType_OneComponent32Float:
             return MTLPixelFormatR32Float;
+            
+        case kCVPixelFormatType_OneComponent8:
+            return sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
             
         default:
             return MTLPixelFormatInvalid;
