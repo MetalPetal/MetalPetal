@@ -22,16 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 
-/*!
- @method addCompletedHandler:block:
- @abstract Add a block to be called when this command buffer has completed execution.
- */
-- (void)addCompletedHandler:(MTLCommandBufferHandler)block;
-
-/*!
- @method waitUntilCompleted
- @abstract Synchronously wait for this command buffer to complete.
- */
 - (void)waitUntilCompleted;
 
 /*!

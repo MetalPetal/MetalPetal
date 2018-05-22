@@ -27,10 +27,6 @@
     return _commandBuffer.error;
 }
 
-- (void)addCompletedHandler:(MTLCommandBufferHandler)block {
-    [_commandBuffer addCompletedHandler:block];
-}
-
 - (void)waitUntilCompleted {
     [_commandBuffer waitUntilCompleted];
 }
