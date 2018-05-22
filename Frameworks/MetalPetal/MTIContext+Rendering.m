@@ -24,6 +24,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <VideoToolbox/VideoToolbox.h>
 #import "MTICoreImageRendering.h"
+#import "MTIRenderTask.h"
 
 @implementation MTIContext (Rendering)
 
@@ -191,6 +192,28 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:inOutError];
+    if (renderTask) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+    return [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:NO error:inOutError];
+}
+
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+    return [self createCGImageFromImage:image sRGB:NO error:inOutError];
+}
+
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
+    CGImageRef outImage = NULL;
+    __unused MTIRenderTask *renderTask = [self startTaskToCreateCGImage:&outImage fromImage:image sRGB:sRGB error:inOutError];
+    return outImage;
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -207,7 +230,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         if (inOutError) {
             *inOutError = error;
         }
-        return NO;
+        return nil;
     }
     
     OSType pixelFormatType = CVPixelBufferGetPixelFormatType(pixelBuffer);
@@ -225,7 +248,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
                 if (inOutError) {
                     *inOutError = error;
                 }
-                return NO;
+                return nil;
             }
         } break;
         case kCVPixelFormatType_64RGBAHalf: {
@@ -248,7 +271,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             if (inOutError) {
                 *inOutError = error;
             }
-            return NO;
+            return nil;
         } break;
     }
     
@@ -260,7 +283,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         if (inOutError) {
             *inOutError = error;
         }
-        return NO;
+        return nil;
     }
     
     id<MTLTexture> metalTexture = renderTexture.texture;
@@ -284,7 +307,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [blitCommandEncoder endEncoding];
         [renderingContext.commandBuffer commit];
         [renderingContext.commandBuffer waitUntilScheduled];
-        return YES;
+        return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
     } else {
         //Render
         MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -311,7 +334,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             if (inOutError) {
                 *inOutError = error;
             }
-            return NO;
+            return nil;
         }
         
         id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
@@ -319,7 +342,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             if (inOutError) {
                 *inOutError = error;
             }
-            return NO;
+            return nil;
         }
         
         __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
@@ -334,45 +357,36 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         
         [renderingContext.commandBuffer commit];
         [renderingContext.commandBuffer waitUntilScheduled];
-        return YES;
+        return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
     }
 }
 
-- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
-    return [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:NO error:inOutError];
-}
-
-- (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
-    return [self createCGImageFromImage:image sRGB:NO error:inOutError];
-}
-
-- (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
     CVPixelBufferRef pixelBuffer;
     CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
     if (pixelBuffer) {
         NSError *error;
-        [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error];
+        MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
             }
-            return NULL;
+            return nil;
         }
-        CGImageRef image;
-        OSStatus returnCode = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, NULL, &image);
+        OSStatus returnCode = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, NULL, outImage);
         CVPixelBufferRelease(pixelBuffer);
         if (returnCode != noErr) {
             if (inOutError) {
                 *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCGImageFromCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:nil]});
             }
-            return NULL;
+            return nil;
         }
-        return image;
+        return renderTask;
     } else {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:errorCode userInfo:nil]});
         }
-        return NULL;
+        return nil;
     }
 }
 
