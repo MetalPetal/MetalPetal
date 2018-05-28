@@ -375,14 +375,17 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = _pixelFormat;
     //It's not safe to reuse a GPU texture here, 'cause we're going to fill its content using CPU.
-    id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
+    CFDataRef data = CFBridgingRetain(self.data);
+    id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytesNoCopy:(void *)CFDataGetBytePtr(data) length:CFDataGetLength(data) options:MTLResourceOptionCPUCacheModeDefault deallocator:^(void * _Nonnull pointer, NSUInteger length) {
+        CFRelease(data);
+    }];
+    id<MTLTexture> texture = [buffer newTextureWithDescriptor:textureDescriptor offset:0 bytesPerRow:_bytesPerRow];
     if (!texture) {
         if (error) {
             *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
         }
         return nil;
     }
-    [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }
