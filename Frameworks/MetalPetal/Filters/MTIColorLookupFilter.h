@@ -17,7 +17,9 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
     MTIColorLookupTableType2DSquare,
     
     /// The look up table contents must a 2D image representing `n` slices of a unit color cube texture, arranged in an horizontal row of `n` images. For instance, a color cube of dimension 16x16x16 should be provided as an image of size 256x16.
-    MTIColorLookupTableType2DHorizontalStrip
+    MTIColorLookupTableType2DHorizontalStrip,
+    
+    MTIColorLookupTableType2DVerticalStrip
 };
 
 @interface MTIColorLookupTableInfo: NSObject <NSCopying>

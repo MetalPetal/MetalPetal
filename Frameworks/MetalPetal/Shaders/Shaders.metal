@@ -137,38 +137,22 @@ namespace metalpetal {
     {
         float2 sourceCoord = vertexIn.textureCoordinate;
         float4 textureColor = sourceTexture.sample(colorSampler,sourceCoord);
-        
-        float blueColor = textureColor.b * (dimension - 1);
-        
-        float2 quad1;
-        quad1.x = floor(blueColor);
-        quad1.y = 0.0;
-        
-        float2 quad2;
-        quad2.x = ceil(blueColor);
-        quad2.y = 0.0;
-        
-        float widthForQuard  = 1.0/dimension;
-        float heightForQuard = 1.0;
-        float pixelWidthOnX  = 1.0/lutTexture.get_width();
-        float pixelWidthOnY  = 1.0/lutTexture.get_height();
-        
-        float2 texPos1;
-        texPos1.x = (quad1.x*widthForQuard)  + (0.5*pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
-        texPos1.y = (quad1.y*heightForQuard) + (0.5*pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
-        
-        float2 texPos2;
-        texPos2.x = (quad2.x*widthForQuard)  + (0.5*pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
-        texPos2.y = (quad2.y*heightForQuard) + (0.5*pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
-        
-        float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
-        float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
-        
-        float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
-        
-        float4 finalColor = mix(textureColor, float4(newColor.rgb, textureColor.a), intensity);
-        
-        return finalColor;
+        return colorLookup2DStripLUT(textureColor, dimension, true, intensity, lutTexture, lutSamper);
+    }
+    
+    fragment float4 colorLookup2DVerticalStrip(
+                                                 VertexOut vertexIn [[stage_in]],
+                                                 texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                                 texture2d<float, access::sample> lutTexture [[texture(1)]],
+                                                 sampler colorSampler [[sampler(0)]],
+                                                 sampler lutSamper [[sampler(1)]],
+                                                 constant int & dimension [[buffer(0)]],
+                                                 constant float & intensity [[ buffer(1) ]]
+                                                 )
+    {
+        float2 sourceCoord = vertexIn.textureCoordinate;
+        float4 textureColor = sourceTexture.sample(colorSampler,sourceCoord);
+        return colorLookup2DStripLUT(textureColor, dimension, false, intensity, lutTexture, lutSamper);
     }
 
     vertex VertexOut imageTransformVertexShader(

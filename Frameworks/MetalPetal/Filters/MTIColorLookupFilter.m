@@ -37,6 +37,9 @@
         if (height * height == width) {
             type = MTIColorLookupTableType2DHorizontalStrip;
             dimension = height;
+        } else if (width * width == height) {
+            type = MTIColorLookupTableType2DVerticalStrip;
+            dimension = width;
         }
     }
     return [self initWithType:type dimension:dimension];
@@ -72,6 +75,16 @@
     return kernel;
 }
 
++ (MTIRenderPipelineKernel *)verticalStripLookupKernel {
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookup2DVerticalStrip"]];
+    });
+    return kernel;
+}
+
 - (instancetype)init {
     if (self = [super init]) {
         _intensity = 1.0;
@@ -99,6 +112,9 @@
             break;
         case MTIColorLookupTableType2DHorizontalStrip:
             kernel = MTIColorLookupFilter.horizontalStripLookupKernel;
+            break;
+        case MTIColorLookupTableType2DVerticalStrip:
+            kernel = MTIColorLookupFilter.verticalStripLookupKernel;
             break;
         default:
             break;

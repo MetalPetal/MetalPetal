@@ -428,6 +428,47 @@ namespace metalpetal {
         
         return finalColor;
     }
+    
+    
+    METAL_FUNC float4 colorLookup2DStripLUT(float4 color,
+                                            int dimension,
+                                            bool isHorizontal,
+                                            float intensity,
+                                            texture2d<float, access::sample> lutTexture,
+                                            sampler lutSamper) {
+        float4 textureColor = color;
+        float blueColor = textureColor.b * (dimension - 1);
+        
+        float2 quad1;
+        quad1.x = isHorizontal ? floor(blueColor) : 0.0;
+        quad1.y = isHorizontal ? 0.0 : floor(blueColor);
+        
+        float2 quad2;
+        quad2.x = isHorizontal ? ceil(blueColor) : 0.0;
+        quad2.y = isHorizontal ? 0.0 : ceil(blueColor);
+        
+        float widthForQuard  = isHorizontal ? 1.0/dimension : 1.0;
+        float heightForQuard = isHorizontal ? 1.0 : 1.0/dimension;
+        float pixelWidthOnX  = 1.0/lutTexture.get_width();
+        float pixelWidthOnY  = 1.0/lutTexture.get_height();
+        
+        float2 texPos1;
+        texPos1.x = (quad1.x * widthForQuard)  + (0.5 * pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
+        texPos1.y = (quad1.y * heightForQuard) + (0.5 * pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
+        
+        float2 texPos2;
+        texPos2.x = (quad2.x * widthForQuard)  + (0.5 * pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
+        texPos2.y = (quad2.y * heightForQuard) + (0.5 * pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
+        
+        float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
+        float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
+        
+        float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
+        
+        float4 finalColor = mix(textureColor, float4(newColor.rgb, textureColor.a), intensity);
+        
+        return finalColor;
+    }
 }
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
