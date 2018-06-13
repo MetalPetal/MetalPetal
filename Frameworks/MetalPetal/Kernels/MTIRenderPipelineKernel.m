@@ -253,12 +253,14 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
-        if (command.geometry.bufferLength < 4096) {
-            //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
-            [commandEncoder setVertexBytes:command.geometry.bufferBytes length:command.geometry.bufferLength atIndex:0];
-        } else {
-            id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:command.geometry.bufferBytes length:command.geometry.bufferLength options:0];
-            [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
+        if (command.geometry.bufferLength > 0) {
+            if (command.geometry.bufferLength < 4096) {
+                //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
+                [commandEncoder setVertexBytes:command.geometry.bufferBytes length:command.geometry.bufferLength atIndex:0];
+            } else {
+                id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:command.geometry.bufferBytes length:command.geometry.bufferLength options:0];
+                [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
+            }
         }
         
         id<MTLSamplerState> samplerStates[command.images.count];
@@ -279,6 +281,15 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:command.images[index].alphaType]);
             [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
         }
+        
+        for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
+            if (argument.type == MTLArgumentTypeTexture) {
+                NSUInteger index = argument.index;
+                [commandEncoder setVertexTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
+                [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+            }
+        }
+        
         resolutionIndex += command.images.count;
         
         //encode parameters
