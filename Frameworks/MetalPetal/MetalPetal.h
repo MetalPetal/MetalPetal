@@ -23,6 +23,7 @@
 #import <MetalPetal/MTIImage+Filters.h>
 #import <MetalPetal/MTICLAHEFilter.h>
 #import <MetalPetal/MTICropFilter.h>
+#import <MetalPetal/MTIMPSHistogramFilter.h>
 #import <MetalPetal/MTIMPSSobelFilter.h>
 #import <MetalPetal/MTIHighPassSkinSmoothingFilter.h>
 #import <MetalPetal/MTITransformFilter.h>

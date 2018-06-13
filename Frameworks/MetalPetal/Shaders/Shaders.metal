@@ -296,5 +296,36 @@ namespace metalpetal {
             float3 temp = yuv2rgb(float3(sharpenY, textureYUV.gb));
             return float4(temp, textureColor.a);
         }
+        
+        kernel void histogramDisplayFindMax(
+                                     texture2d<uint, access::read> sourceTexture [[texture(0)]],
+                                     texture2d<uint, access::write> outTexture [[texture(1)]],
+                                     uint2 gid [[ thread_position_in_grid ]]) {
+            if (gid.x > 0 || gid.y > 0) {
+                return;
+            }
+            uint4 maximum = 0;
+            for (ushort x = 0; x < sourceTexture.get_width(); x += 1) {
+                for (ushort channel = 0; channel < 4; channel += 1) {
+                    uint v = sourceTexture.read(uint2(x, channel)).r;
+                    maximum[channel] = v > maximum[channel] ? v : maximum[channel];
+                }
+            }
+            outTexture.write(maximum, uint2(0, 0));
+        }
+        
+        fragment float4 histogramDisplay(VertexOut vertexIn [[stage_in]],
+                                      texture2d<uint, access::sample> sourceTexture [[texture(0)]],
+                                      sampler sourceSampler [[sampler(0)]],
+                                      texture2d<uint, access::read> maxValueTexture [[texture(1)]]) {
+            uint rValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 0.5/4.0)).r;
+            uint gValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 1.5/4.0)).r;
+            uint bValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 2.5/4.0)).r;
+            uint4 maxValue = maxValueTexture.read(uint2(0,0));
+            float3 height = float3(rValue, gValue, bValue)/float3(max(max(maxValue.r, maxValue.g),maxValue.b));
+            bool3 fill = vertexIn.textureCoordinate.y > 1.0 - height;
+            return float4(float3(fill), 1.0);
+            //return float4(float3(value.rgb)/float3(maxValue.rgb), 1.0);
+        }
     }
 }
