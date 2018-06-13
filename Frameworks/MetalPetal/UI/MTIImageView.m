@@ -142,7 +142,7 @@
 
 - (void)drawInMTKView:(MTKView *)view {
     @autoreleasepool {
-        if (_image) {
+        if (_image && !self.isHidden && self.alpha > 0) {
             NSAssert(_context != nil, @"Context is nil.");
             MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
             request.drawableProvider = _renderView;
