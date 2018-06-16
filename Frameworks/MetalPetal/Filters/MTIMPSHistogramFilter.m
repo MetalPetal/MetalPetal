@@ -121,6 +121,8 @@
 
 @interface MTIMPSHistogramFilter ()
 
+@property (nonatomic) MPSImageHistogramInfo histogramInfo;
+
 @end
 
 @implementation MTIMPSHistogramFilter

@@ -23,11 +23,9 @@ typedef NS_OPTIONS(NSUInteger, MTIHistogramType) {
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
 
-@property (nonatomic) MPSImageHistogramInfo histogramInfo;
+@property (nonatomic) float scaleFactor; //Unimplemented
 
-@property (nonatomic) float scaleFactor;
-
-@property (nonatomic) MTIHistogramType type;
+@property (nonatomic) MTIHistogramType type; //Unimplemented
 
 @end
 
