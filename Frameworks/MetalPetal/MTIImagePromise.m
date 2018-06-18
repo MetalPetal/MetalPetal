@@ -29,13 +29,25 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     return options;
 }
 
+static NSString * const MTIMTKTextureLoaderCannotDecodeImageMessage = @"MetalPetal uses `MTKTextureLoader` to load `CGImage`s. However this image may not be able to load using MTKTextureLoader, see http://www.openradar.me/31722523. You can use `MTIImage(ciImage:isOpaque:)` to load the image using CoreImage. Or use a texture asset with `MTIImage(named:in:...)`";
+
+__unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
+    NSCParameterAssert(image);
+    CGColorSpaceRef colorspace = CGImageGetColorSpace(image);
+    CGColorSpaceModel model = CGColorSpaceGetModel(colorspace);
+    if (model == kCGColorSpaceModelRGB) {
+        return YES;
+    }
+    return NO;
+}
+
 @interface MTIImageURLPromise ()
 
-@property (nonatomic,copy) NSURL *URL;
+@property (nonatomic, copy, readonly) NSURL *URL;
 
-@property (nonatomic,copy) NSDictionary<MTKTextureLoaderOption, id> *options;
+@property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption, id> *options;
 
-@property (nonatomic,strong) MDLURLTexture *texture;
+@property (nonatomic, copy, readonly) CIImage *ciImage;
 
 @end
 
@@ -47,9 +59,12 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
     if (self = [super init]) {
         _URL = [URL copy];
         _options = [options copy];
-        _texture = [[MDLURLTexture alloc] initWithURL:URL name:URL.lastPathComponent];
-        _dimensions = (MTITextureDimensions){_texture.dimensions.x, _texture.dimensions.y, 1};
         _alphaType = alphaType;
+        _ciImage = [CIImage imageWithContentsOfURL:URL];
+        if (!_ciImage) {
+            return nil;
+        }
+        _dimensions = MTITextureDimensionsMake2DFromCGSize(_ciImage.extent.size);
         if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
             return nil;
         }
@@ -86,9 +101,9 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTICGImagePromise ()
 
-@property (nonatomic) CGImageRef image;
+@property (nonatomic, readonly) CGImageRef image;
 
-@property (nonatomic,copy) NSDictionary<MTKTextureLoaderOption, id> *options;
+@property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption, id> *options;
 
 @end
 
@@ -98,6 +113,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
+        NSAssert(MTIMTKTextureLoaderCanDecodeImage(cgImage), MTIMTKTextureLoaderCannotDecodeImageMessage);
         _image = CGImageRetain(cgImage);
         _dimensions = (MTITextureDimensions){CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 1};
         _options = [options copy];
@@ -139,7 +155,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTITexturePromise ()
 
-@property (nonatomic,strong) id<MTLTexture> texture;
+@property (nonatomic, strong, readonly) id<MTLTexture> texture;
 
 @end
 
@@ -181,13 +197,13 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTICIImagePromise ()
 
-@property (nonatomic,strong) CIImage *image;
+@property (nonatomic, copy, readonly) CIImage *image;
 
-@property (nonatomic,copy) MTITextureDescriptor *textureDescriptor;
+@property (nonatomic, copy, readonly) MTITextureDescriptor *textureDescriptor;
 
-@property (nonatomic,readonly) BOOL isOpaque;
+@property (nonatomic, readonly) BOOL isOpaque;
 
-@property (nonatomic,copy) MTICIImageRenderingOptions *options;
+@property (nonatomic, copy, readonly) MTICIImageRenderingOptions *options;
 
 @end
 
@@ -264,7 +280,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTIColorImagePromise ()
 
-@property (nonatomic,readonly) BOOL sRGB;
+@property (nonatomic, readonly) BOOL sRGB;
 
 @end
 
@@ -333,11 +349,11 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTIBitmapDataImagePromise ()
 
-@property (nonatomic,copy,readonly) NSData *data;
+@property (nonatomic, copy, readonly) NSData *data;
 
-@property (nonatomic,readonly) MTLPixelFormat pixelFormat;
+@property (nonatomic, readonly) MTLPixelFormat pixelFormat;
 
-@property (nonatomic,readonly) NSUInteger bytesPerRow;
+@property (nonatomic, readonly) NSUInteger bytesPerRow;
 
 @end
 
@@ -413,7 +429,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 @interface MTINamedImagePromise ()
 
-@property (nonatomic, copy) NSDictionary<MTKTextureLoaderOption,id> *options;
+@property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption,id> *options;
 
 @end
 

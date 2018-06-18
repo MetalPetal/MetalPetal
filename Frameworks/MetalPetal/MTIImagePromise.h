@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
 
-@property (nonatomic,readonly) MTIColor color;
+@property (nonatomic, readonly) MTIColor color;
 
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
