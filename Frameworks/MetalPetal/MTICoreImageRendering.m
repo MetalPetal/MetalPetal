@@ -16,6 +16,17 @@
 - (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat colorSpace:(CGColorSpaceRef)colorSpace flipped:(BOOL)flipped {
     if (self = [super init]) {
         _destinationPixelFormat = pixelFormat;
+        _alphaMode = CIRenderDestinationAlphaPremultiplied;
+        _colorSpace = CGColorSpaceRetain(colorSpace);
+        _flipped = flipped;
+    }
+    return self;
+}
+
+- (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat alphaMode:(CIRenderDestinationAlphaMode)alphaMode colorSpace:(CGColorSpaceRef)colorSpace flipped:(BOOL)flipped {
+    if (self = [super init]) {
+        _destinationPixelFormat = pixelFormat;
+        _alphaMode = alphaMode;
         _colorSpace = CGColorSpaceRetain(colorSpace);
         _flipped = flipped;
     }

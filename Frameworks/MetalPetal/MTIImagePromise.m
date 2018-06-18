@@ -232,6 +232,19 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     if (_isOpaque) {
         return MTIAlphaTypeAlphaIsOne;
     } else {
+        if (@available(iOS 11.0, *)) {
+            switch (self.options.alphaMode) {
+                case CIRenderDestinationAlphaNone:
+                    return MTIAlphaTypeAlphaIsOne;
+                case CIRenderDestinationAlphaPremultiplied:
+                    return MTIAlphaTypePremultiplied;
+                case CIRenderDestinationAlphaUnpremultiplied:
+                    return MTIAlphaTypeNonPremultiplied;
+                default:
+                    NSAssert(NO, @"Unknown CIRenderDestinationAlphaMode");
+                    break;
+            }
+        }
         return MTIAlphaTypePremultiplied;
     }
 }
@@ -249,7 +262,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
         renderDestination.flipped = self.options.isFlipped;
         renderDestination.colorSpace = self.options.colorSpace;
-        renderDestination.alphaMode = CIRenderDestinationAlphaPremultiplied;
+        renderDestination.alphaMode = self.options.alphaMode;
         [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
         if (error) {
             if (inOutError) {
@@ -258,7 +271,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
             return nil;
         }
     } else {
-        [renderingContext.context.coreImageContext render:self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:self.options.colorSpace];
+        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:self.options.colorSpace];
     }
     return renderTarget;
 }
