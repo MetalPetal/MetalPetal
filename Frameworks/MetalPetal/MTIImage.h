@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @interface MTIImage (Creation)
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer __attribute__((deprecated("Replaced by MTIImage(cvPixelBuffer:alphaType:)")));
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer alphaType:(MTIAlphaType)alphaType;
 
