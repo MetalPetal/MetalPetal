@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTICVMetalTextureCache;
 
+FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
+
 @interface MTIContextOptions : NSObject <NSCopying>
 
 @property (nonatomic,copy,nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
@@ -24,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
 @property (nonatomic) BOOL enablesRenderGraphOptimization;
+
+/*! @brief A string to help identify this object */
+@property (nonatomic, copy) NSString *label;
 
 @end
 
@@ -42,6 +47,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 @property (nonatomic, readonly) MTLPixelFormat workingPixelFormat;
 
 @property (nonatomic, readonly) BOOL isRenderGraphOptimizationEnabled;
+
+@property (nonatomic, copy, readonly) NSString *label;
 
 @property (nonatomic, readonly) BOOL isMetalPerformanceShadersSupported;
 
