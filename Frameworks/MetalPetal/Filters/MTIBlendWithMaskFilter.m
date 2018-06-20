@@ -31,7 +31,7 @@
     return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputMask.content, self.inputBackgroundImage]
                                       parameters:@{@"maskComponent": @((int)self.inputMask.component),
                                                    @"usesOneMinusMaskValue": @(usesOneMinusMaskValue)}
-                         outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size)
+                         outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
                                outputPixelFormat:_outputPixelFormat];
 }
 
