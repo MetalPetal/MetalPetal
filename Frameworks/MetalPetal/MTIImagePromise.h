@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions;
+@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions, MTIImageProperties;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
@@ -39,7 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
+                                    properties:(MTIImageProperties *)properties
+                                       options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                                     alphaType:(MTIAlphaType)alphaType;
 
 @end
 

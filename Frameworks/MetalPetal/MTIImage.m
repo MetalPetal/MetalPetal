@@ -13,6 +13,7 @@
 #import "MTICVPixelBufferPromise.h"
 #import "MTICoreImageRendering.h"
 #import "MTIImagePromiseDebug.h"
+#import "MTIImageProperties.h"
 
 @interface MTIImage ()
 
@@ -80,35 +81,9 @@ static MTIAlphaType MTIPreferredAlphaTypeForCVPixelBuffer(CVPixelBufferRef pixel
     return alphaType;
 }
 
-static MTIAlphaType MTIPreferredAlphaTypeForImageWithURL(NSURL *url) {
-    static NSSet *opaqueImagePathExtensions;
-    static NSSet *premultipliedAlphaImagePathExtensions;
-    static NSSet *nonPremultipliedAlphaImagePathExtensions;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        opaqueImagePathExtensions = [NSSet setWithObjects:@"jpg", @"jpeg", nil];
-        nonPremultipliedAlphaImagePathExtensions = [NSSet set];
-        premultipliedAlphaImagePathExtensions = [NSSet setWithObjects:@"png", nil];
-    });
-    MTIAlphaType alphaType = MTIAlphaTypeUnknown;
-    if ([opaqueImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
-        alphaType = MTIAlphaTypeAlphaIsOne;
-    } else if ([nonPremultipliedAlphaImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
-        alphaType = MTIAlphaTypeNonPremultiplied;
-    } else if ([premultipliedAlphaImagePathExtensions containsObject:url.pathExtension.lowercaseString]) {
-        alphaType = MTIAlphaTypePremultiplied;
-    }
-    NSCAssert(alphaType != MTIAlphaTypeUnknown, @"Cannot predicate alpha type. Please call the init method with the alphaType parameter.");
-    if (alphaType == MTIAlphaTypeUnknown) {
-        //We assume the alpha type to be non-premultiplied.
-        alphaType = MTIAlphaTypeNonPremultiplied;
-    }
-    return alphaType;
-}
-
-static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
-    CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(cgImage);
-    CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
+static MTIAlphaType MTIPreferredAlphaTypeForImageWithProperties(MTIImageProperties *properties) {
+    NSCParameterAssert(properties);
+    CGImageAlphaInfo alphaInfo = properties.alphaInfo;
     MTIAlphaType alphaType = MTIAlphaTypeAlphaIsOne;
     switch (alphaInfo) {
         case kCGImageAlphaNone:
@@ -130,6 +105,11 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
             break;
     }
     return alphaType;
+}
+
+static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
+    NSCParameterAssert(cgImage);
+    return MTIPreferredAlphaTypeForImageWithProperties([[MTIImageProperties alloc] initWithCGImage:cgImage]);
 }
 
 #import "MTIImagePromise.h"
@@ -163,10 +143,13 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options {
-    return [self initWithCGImage:cgImage options:options alphaType:MTIPreferredAlphaTypeForCGImage(cgImage)];
+    NSParameterAssert(cgImage);
+    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForCGImage(cgImage);
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
+    NSParameterAssert(cgImage);
     MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForCGImage(cgImage);
     if (preferredAlphaType == MTIAlphaTypePremultiplied) {
         NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info in CGImage indicates the alpha type is `.premultiplied`.");
@@ -191,11 +174,27 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 }
 
 - (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<MTKTextureLoaderOption, id> *)options {
-    return [self initWithContentsOfURL:URL options:options alphaType:MTIPreferredAlphaTypeForImageWithURL(URL)];
+    MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageAtURL:URL];
+    if (!properties) {
+        return nil;
+    }
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL properties:properties options:options alphaType:MTIPreferredAlphaTypeForImageWithProperties(properties)];
+    if (!urlPromise) {
+        return nil;
+    }
+    return [self initWithPromise:urlPromise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType {
-    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL options:options alphaType:alphaType];
+    MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageAtURL:URL];
+    if (!properties) {
+        return nil;
+    }
+    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForImageWithProperties(properties);
+    if (preferredAlphaType == MTIAlphaTypePremultiplied) {
+        NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info indicates the alpha type is `.premultiplied`.");
+    }
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL properties:properties options:options alphaType:alphaType];
     if (!urlPromise) {
         return nil;
     }

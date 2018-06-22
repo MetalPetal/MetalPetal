@@ -42,6 +42,7 @@
 #import <MetalPetal/MTIImageOrientation.h>
 #import <MetalPetal/MTIWeakToStrongObjectsMapTable.h>
 #import <MetalPetal/MTIRenderGraphOptimization.h>
+#import <MetalPetal/MTIImageProperties.h>
 #import <MetalPetal/MTIContext+Rendering.h>
 #import <MetalPetal/MTIMask.h>
 #import <MetalPetal/MTIBlendModes.h>

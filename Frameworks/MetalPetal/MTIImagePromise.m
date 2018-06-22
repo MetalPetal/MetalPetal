@@ -17,6 +17,7 @@
 #import "MTKTextureLoaderExtensions.h"
 #import "MTIContext+Internal.h"
 #import "MTICoreImageRendering.h"
+#import "MTIImageProperties.h"
 
 static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
     if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
@@ -47,7 +48,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 
 @property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption, id> *options;
 
-@property (nonatomic, copy, readonly) CIImage *ciImage;
+@property (nonatomic, copy, readonly) MTIImageProperties *properties;
 
 @end
 
@@ -55,16 +56,16 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL options:(NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithContentsOfURL:(NSURL *)URL
+                           properties:(MTIImageProperties *)properties
+                              options:(NSDictionary<MTKTextureLoaderOption, id> *)options
+                            alphaType:(MTIAlphaType)alphaType {
     if (self = [super init]) {
         _URL = [URL copy];
         _options = [options copy];
         _alphaType = alphaType;
-        _ciImage = [CIImage imageWithContentsOfURL:URL];
-        if (!_ciImage) {
-            return nil;
-        }
-        _dimensions = MTITextureDimensionsMake2DFromCGSize(_ciImage.extent.size);
+        _properties = properties;
+        _dimensions = (MTITextureDimensions){.width = properties.displayWidth, .height = properties.displayHeight, .depth = 1};
         if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
             return nil;
         }
