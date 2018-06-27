@@ -28,6 +28,8 @@ FOUNDATION_EXPORT BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) NS_SWI
 
 + (instancetype)squareVerticesForRect:(CGRect)rect;
 
+@property (nonatomic, class, readonly, strong) MTIVertices *fullViewportSquareVertices;
+
 @end
 
 

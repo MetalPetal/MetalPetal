@@ -135,5 +135,14 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
++ (instancetype)fullViewportSquareVertices {
+    static MTIVertices *vertices;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        vertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
+    });
+    return vertices;
+}
+
 @end
 

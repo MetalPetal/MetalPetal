@@ -442,17 +442,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
-+ (MTIVertices *)defaultRenderingVertices {
-    static MTIVertices *defaultVertices;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        defaultVertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
-    });
-    return defaultVertices;
-}
-
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
-    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:[MTIRenderPipelineKernel defaultRenderingVertices] images:images parameters:parameters];
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:MTIVertices.fullViewportSquareVertices images:images parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
                                             outputDescriptors:outputDescriptors];
 }
@@ -526,7 +517,7 @@ void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node) {
             MTIImageRenderingPromise *lastPromise = lastImage.promise;
             MTIColorMatrix colorMatrix = recipe.colorMatrix;
             MTIRenderCommand *lastCommand = lastPromise.recipe.renderCommands.firstObject;
-            if (lastPromise.recipe.renderCommands.count == 1 && lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastCommand.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors] && lastCommand.kernel == MTIColorMatrixFilter.kernel) {
+            if (lastPromise.recipe.renderCommands.count == 1 && lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastCommand.geometry isEqual:MTIVertices.fullViewportSquareVertices] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors] && lastCommand.kernel == MTIColorMatrixFilter.kernel) {
                 colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
                 MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithRenderCommands:@[[[MTIRenderCommand alloc] initWithKernel:command.kernel geometry:command.geometry images:lastPromise.dependencies parameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}]] outputDescriptors:recipe.outputDescriptors];
                 MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:r outputIndex:0];
