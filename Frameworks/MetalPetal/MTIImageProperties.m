@@ -38,6 +38,8 @@
         CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, index, (__bridge CFDictionaryRef)options);
         
         if (properties && image) {
+            _properties = properties;
+            
             CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(image);
             
             _alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
@@ -90,6 +92,8 @@
     NSParameterAssert(image);
     if (self = [super init]) {
         CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(image);
+        
+        _properties = @{};
         
         _alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
         _byteOrderInfo = bitmapInfo & kCGImageByteOrderMask;

@@ -37,6 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSUInteger displayWidth;
 @property (nonatomic, readonly) NSUInteger displayHeight;
 
+@property (nonatomic, copy, readonly) NSDictionary *properties;
+
 @end
 
 NS_ASSUME_NONNULL_END
