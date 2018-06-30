@@ -11,7 +11,6 @@
 #import "MTIImage.h"
 #import "MTIKernel.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MTIVector.h"
 
 NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
 

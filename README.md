@@ -367,7 +367,7 @@ To build more complex filters, all you need to do is create a kernel (`MTIRender
         return nil;
     }
     return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputBackgroundImage]
-                                      parameters:@{@"color": [[MTIVector alloc] initWithFloat4:(simd_float4){self.color.red, self.color.green, self.color.blue,self.color.alpha}],
+                                      parameters:@{@"color": [MTIVector vectorWithFloat4:(simd_float4){self.color.red, self.color.green, self.color.blue,self.color.alpha}],
                                     @"thresholdSensitivity": @(self.thresholdSensitivity),
                                                @"smoothing": @(self.smoothing)}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)

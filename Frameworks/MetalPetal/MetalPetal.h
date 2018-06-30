@@ -56,6 +56,7 @@
 #import <MetalPetal/MTIAlphaType.h>
 #import <MetalPetal/MTITransform.h>
 #import <MetalPetal/MTICVPixelBufferPromise.h>
+#import <MetalPetal/MTIVector+SIMD.h>
 #import <MetalPetal/MTITexturePool.h>
 #import <MetalPetal/MTIImagePromiseDebug.h>
 #import <MetalPetal/MTIImagePromise.h>

@@ -9,7 +9,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 #import "MTIRenderPassOutputDescriptor.h"
 
 @implementation MTILensBlurFilter

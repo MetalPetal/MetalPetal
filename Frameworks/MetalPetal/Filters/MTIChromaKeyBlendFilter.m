@@ -7,7 +7,7 @@
 
 #import "MTIChromaKeyBlendFilter.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 
@@ -38,10 +38,9 @@
         return nil;
     }
     return [self.class.kernel applyToInputImages:@[self.inputImage, self.inputBackgroundImage]
-                                      parameters:@{@"color": [MTIVector vectorWithFloat4:(simd_float4){self.color.red, self.color.green, self.color.blue,self.color.alpha}],
+                                      parameters:@{@"color": [MTIVector vectorWithFloat4:MTIColorToFloat4(self.color)],
                                                    @"thresholdSensitivity": @(self.thresholdSensitivity),
-                                                   @"smoothing": @(self.smoothing)
-                                                   }
+                                                   @"smoothing": @(self.smoothing)}
                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                outputPixelFormat:self.outputPixelFormat];
 }

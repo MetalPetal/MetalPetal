@@ -6,7 +6,7 @@
 //
 
 #import "MTIVibranceFilter.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIColor.h"
 

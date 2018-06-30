@@ -68,7 +68,7 @@
                 encodeBytes(data.bytes, data.length, argument.index);
             }else if ([value isKindOfClass:[MTIVector class]]) {
                 MTIVector *vector = (MTIVector *)value;
-                encodeBytes(vector.data.bytes, vector.data.length, argument.index);
+                encodeBytes(vector.bytes, vector.byteLength, argument.index);
             }else {
                 if (inOutError != nil) {
                     *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));

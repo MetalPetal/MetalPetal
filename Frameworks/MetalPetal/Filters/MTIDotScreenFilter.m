@@ -7,7 +7,7 @@
 
 #import "MTIDotScreenFilter.h"
 #import "MTIFunctionDescriptor.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 #import "MTIColor.h"
 
 @implementation MTIDotScreenFilter

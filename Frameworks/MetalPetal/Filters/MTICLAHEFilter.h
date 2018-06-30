@@ -6,7 +6,6 @@
 //
 
 #import "MTIFilter.h"
-#import "MTIVector.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

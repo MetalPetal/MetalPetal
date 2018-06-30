@@ -16,7 +16,6 @@
 #import "MTIRenderPipeline.h"
 #import "MTIImage+Promise.h"
 #import "MTIFilter.h"
-#import "MTIVector.h"
 #import "MTIDefer.h"
 #import "MTITransform.h"
 #import "MTILayer.h"

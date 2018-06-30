@@ -15,7 +15,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIComputePipeline.h"
-#import "MTIVector.h"
 #import "MTIDefer.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
