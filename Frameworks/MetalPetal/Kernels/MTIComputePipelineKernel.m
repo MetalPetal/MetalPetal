@@ -72,7 +72,17 @@
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
     
-    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
+    MTLTextureDescriptor *textureDescriptor;
+    if (_dimensions.depth > 1) {
+        textureDescriptor = [[MTLTextureDescriptor alloc] init];
+        textureDescriptor.textureType = MTLTextureType3D;
+        textureDescriptor.width = _dimensions.width;
+        textureDescriptor.height = _dimensions.height;
+        textureDescriptor.depth = _dimensions.depth;
+        textureDescriptor.pixelFormat = pixelFormat;
+    } else {
+        textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
+    }
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
 
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
