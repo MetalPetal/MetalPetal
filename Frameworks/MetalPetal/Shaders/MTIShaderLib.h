@@ -399,15 +399,14 @@ namespace metalpetal {
                                              float intensity,
                                              texture2d<float, access::sample> lutTexture,
                                              sampler lutSamper) {
-        int row = round(sqrt((float)dimension));
+        float row = round(sqrt((float)dimension));
         float blueColor = color.b * (dimension - 1);
         
-        int2 quad1;
+        float2 quad1;
         quad1.y = floor(floor(blueColor) / row);
         quad1.x = floor(blueColor) - (quad1.y * row);
         
-        int2 quad2;
-        
+        float2 quad2;
         quad2.y = floor(ceil(blueColor) / row);
         quad2.x = ceil(blueColor) - (quad2.y * row);;
         
