@@ -30,9 +30,10 @@
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor cachePolicy:(MTIImageCachePolicy)cachePolicy {
     if (self = [super init]) {
         _promise = [promise copyWithZone:nil];
-        _extent = CGRectMake(0, 0, _promise.dimensions.width, _promise.dimensions.height);
+        _dimensions = promise.dimensions;
         _samplerDescriptor = [samplerDescriptor copy];
         _cachePolicy = cachePolicy;
+        _alphaType = promise.alphaType;
     }
     return self;
 }
@@ -49,20 +50,24 @@
     return [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor cachePolicy:cachePolicy];
 }
 
-- (CGSize)size {
-    return _extent.size;
-}
-
-- (MTIAlphaType)alphaType {
-    return _promise.alphaType;
-}
-
 - (id)copyWithZone:(NSZone *)zone {
     return self;
 }
 
 - (id)debugQuickLookObject {
     return [MTIImagePromiseDebugInfo layerRepresentationOfRenderGraphForPromise:self.promise];
+}
+
+@end
+
+@implementation MTIImage (Dimensions2D)
+
+- (CGRect)extent {
+    return CGRectMake(0, 0, _dimensions.width, _dimensions.height);
+}
+
+- (CGSize)size {
+    return CGSizeMake(_dimensions.width, _dimensions.height);
 }
 
 @end

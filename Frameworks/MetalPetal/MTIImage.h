@@ -13,6 +13,7 @@
 #import "MTICVPixelBufferRendering.h"
 #import "MTIColor.h"
 #import "MTIAlphaType.h"
+#import "MTITextureDimensions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,15 +26,13 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @interface MTIImage : NSObject <NSCopying>
 
-@property (nonatomic,readonly) MTIImageCachePolicy cachePolicy;
+@property (nonatomic, readonly) MTIImageCachePolicy cachePolicy;
 
-@property (nonatomic,readonly) CGRect extent;
+@property (nonatomic, copy, readonly) MTISamplerDescriptor *samplerDescriptor;
 
-@property (nonatomic,readonly) CGSize size;
+@property (nonatomic, readonly) MTIAlphaType alphaType;
 
-@property (nonatomic,copy, readonly) MTISamplerDescriptor *samplerDescriptor;
-
-@property (nonatomic, readonly) MTIAlphaType alphaType; //relay to underlying promise
+@property (nonatomic, readonly) MTITextureDimensions dimensions;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -42,6 +41,14 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor;
 
 - (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy;
+
+@end
+
+@interface MTIImage (Dimensions2D)
+
+@property (nonatomic,readonly) CGRect extent;
+
+@property (nonatomic,readonly) CGSize size;
 
 @end
 
