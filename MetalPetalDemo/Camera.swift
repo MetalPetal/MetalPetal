@@ -59,9 +59,9 @@ import AVFoundation
     private func configureVideoConnection() {
         if let videoConnection = self.videoDataOuput?.connection(with: .video) {
             videoConnection.videoOrientation = .portrait
-            if videoConnection.isVideoStabilizationSupported {
-                videoConnection.preferredVideoStabilizationMode = .standard
-            }
+//            if videoConnection.isVideoStabilizationSupported {
+//                videoConnection.preferredVideoStabilizationMode = .standard
+//            }
             if self.videoCaptureDevice?.position == .front {
                 videoConnection.isVideoMirrored = true
             }
