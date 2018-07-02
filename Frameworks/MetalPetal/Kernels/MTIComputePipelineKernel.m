@@ -113,9 +113,9 @@
 
     NSUInteger w = computePipeline.state.threadExecutionWidth;
     NSUInteger h = computePipeline.state.maxTotalThreadsPerThreadgroup / w;
-    MTLSize threadsPerGrid = MTLSizeMake(_dimensions.width,_dimensions.height,1);
+    MTLSize threadsPerGrid = MTLSizeMake(_dimensions.width,_dimensions.height,_dimensions.depth);
     MTLSize threadsPerThreadgroup = MTLSizeMake(w, h, 1);
-    MTLSize threadgroupsPerGrid = MTLSizeMake((_dimensions.width + w - 1) / w, (_dimensions.height + h - 1) / h, 1);
+    MTLSize threadgroupsPerGrid = MTLSizeMake((_dimensions.width + w - 1) / w, (_dimensions.height + h - 1) / h, _dimensions.depth);
     
     if (@available(iOS 11.0, *)) {
         if ([renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily4_v1]) {
