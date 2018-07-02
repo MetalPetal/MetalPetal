@@ -215,7 +215,7 @@ struct MTIVectorSIMDTypeSupportGenerator {
         private var lines: [String] = []
 
         mutating func append(type: SIMDType) {
-            lines.append("+ (instancetype)\(type.initializerForMTIVector)(\(type.description))value;")
+            lines.append("+ (instancetype)\(type.initializerForMTIVector)(\(type.description))value NS_SWIFT_NAME(init(value:));")
             lines.append("@property (nonatomic, readonly) \(type.description) \(type.getterForMTIVector);");
         }
 
@@ -252,35 +252,35 @@ struct MTIVectorSIMDTypeSupportGenerator {
         mutating func append(type: SIMDType) {
             let getterIMP =
             """
-                \(type.description) value = {0};
-                if (self.scalarType == MTIVectorScalarType\(type.scalarType.capitalizedDescription) && self.byteLength == sizeof(\(type.description))) {
-                    memcpy(&value, self.bytes, sizeof(\(type.description)));
-                }
-                return value;
+            \(type.description) value = {0};
+            if (self.scalarType == MTIVectorScalarType\(type.scalarType.capitalizedDescription) && self.byteLength == sizeof(\(type.description))) {
+            memcpy(&value, self.bytes, sizeof(\(type.description)));
+            }
+            return value;
             """
 
             let initializerIMP: String =
             """
-                NSParameterAssert(sizeof(value) == sizeof(\(type.description)));
-                const \(type.scalarType.description) * valuePtr = (void *)&value;
-                return [self vectorWith\(type.scalarType.capitalizedDescription)Values:valuePtr count:sizeof(value)/sizeof(\(type.scalarType.description))];
+            NSParameterAssert(sizeof(value) == sizeof(\(type.description)));
+            const \(type.scalarType.description) * valuePtr = (void *)&value;
+            return [self vectorWith\(type.scalarType.capitalizedDescription)Values:valuePtr count:sizeof(value)/sizeof(\(type.scalarType.description))];
             """
 
             lines.append(
-            """
-            + (instancetype)\(type.initializerForMTIVector)(\(type.description))value {
-            \(initializerIMP)
-            }
+                """
+                + (instancetype)\(type.initializerForMTIVector)(\(type.description))value {
+                \(initializerIMP)
+                }
 
-            """)
+                """)
 
             lines.append(
-            """
-            - (\(type.description))\(type.getterForMTIVector) {
-            \(getterIMP)
-            }
+                """
+                - (\(type.description))\(type.getterForMTIVector) {
+                \(getterIMP)
+                }
 
-            """);
+                """);
 
         }
 
