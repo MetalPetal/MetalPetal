@@ -341,6 +341,62 @@ namespace metalpetal {
         return float4(float3(fill), 1.0);
     }
     
+    kernel void colorLookupTable2DSquareTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint rows = uint(round(sqrt((float)dimension)));
+            uint index = gid.z;
+            uint tx = gid.x + (index % rows) * dimension;
+            uint ty = gid.y + (index / rows) * dimension;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    kernel void colorLookupTable2DStripVerticalTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint index = gid.z;
+            uint tx = gid.x;
+            uint ty = gid.y + index * dimension;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    kernel void colorLookupTable2DStripHorizontalTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint index = gid.z;
+            uint tx = gid.x + index * dimension;
+            uint ty = gid.y;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    fragment float4 colorLookup3D(VertexOut vertexIn [[stage_in]],
+                                  texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                  texture3d<float, access::sample> lutTexture [[texture(1)]],
+                                  sampler colorSampler [[sampler(0)]],
+                                  sampler lutSamper [[sampler(1)]],
+                                  constant float & intensity [[ buffer(1) ]]) {
+        float2 sourceCoord = vertexIn.textureCoordinate;
+        float4 color = sourceTexture.sample(colorSampler,sourceCoord);
+        uint dimension = lutTexture.get_width();
+        float4 destColor = lutTexture.sample(lutSamper, ((color.rgb * (dimension - 1)) + 0.5)/dimension);
+        return float4(mix(color.rgb, destColor.rgb, intensity), color.a);
+    }
+    
     /*
     fragment float4 histogramDisplay(VertexOut vertexIn [[stage_in]],
                                      texture2d<uint, access::sample> sourceTexture [[texture(0)]],
