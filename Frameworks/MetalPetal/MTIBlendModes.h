@@ -26,6 +26,8 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeExclusion;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeAdd;
 
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearLight;
+
 // non-separable
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHue;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSaturation;

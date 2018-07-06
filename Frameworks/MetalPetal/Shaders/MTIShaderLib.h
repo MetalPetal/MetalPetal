@@ -251,6 +251,12 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
+    //Linear Light
+    METAL_FUNC float4 linearLightBlend(float4 Cb, float4 Cs) {
+        float4 B  = Cb + 2.0 * Cs - 1.0;
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
     //---
     // non-separable blend
     METAL_FUNC float lum(float4 C) {

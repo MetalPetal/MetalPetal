@@ -246,3 +246,17 @@ fragment float4 addBlend(VertexOut vertexIn [[ stage_in ]],
     return mix(uCb,blendedColor,intensity);
 }
 
+
+fragment float4 linearLightBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]],
+                                    constant float &intensity [[buffer(0)]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    float4 blendedColor = linearLightBlend(uCb, uCf);
+    return mix(uCb,blendedColor,intensity);
+}
+

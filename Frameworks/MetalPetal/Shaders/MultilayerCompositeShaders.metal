@@ -361,3 +361,23 @@ fragment float4 multilayerCompositeAddBlend(
     return addBlend(currentColor,textureColor);
 }
 
+fragment float4 multilayerCompositeLinearLightBlend(
+                                                    VertexOut vertexIn [[ stage_in ]],
+                                                    float4 currentColor [[color(0)]],
+                                                    float4 maskColor [[color(1)]],
+                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                    sampler colorSampler [[ sampler(0) ]]
+                                                ) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    if (parameters.contentHasPremultipliedAlpha) {
+        textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.hasCompositingMask) {
+        float maskValue = maskColor[parameters.compositingMaskComponent];
+        textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
+    }
+    textureColor.a *= parameters.opacity;
+    return linearLightBlend(currentColor,textureColor);
+}
+
