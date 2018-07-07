@@ -196,13 +196,13 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 ### Create a `MTIImage`
 
 ```Swift
-let imageFromCGImage = MTIImage(cgImage: cgImage)
+let imageFromCGImage = MTIImage(cgImage: cgImage, options: [.SRGB: false])
 
 let imageFromCIImage = MTIImage(ciImage: ciImage)
 
-let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer)
+let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
 
-let imageFromContentsOfURL = MTIImage(contentsOf: url)
+let imageFromContentsOfURL = MTIImage(contentsOf: url, options: [.SRGB: false])
 ```
 
 ### Create a filtered image
@@ -220,7 +220,11 @@ let outputImage = filter.outputImage
 ### Render a `MTIImage`
 
 ```Swift
-let context = MTIContext()
+let options = MTIContextOptions()
+
+guard let device = MTLCreateSystemDefaultDevice(), let context = try? MTIContext(device: device, options: options) else {
+    return
+}
 
 let image: MTIImage = ...
 
