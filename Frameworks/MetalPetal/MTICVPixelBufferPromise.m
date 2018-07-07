@@ -96,7 +96,11 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             return MTLPixelFormatR32Float;
             
         case kCVPixelFormatType_OneComponent8:
+            #if TARGET_OS_IPHONE
             return sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
+            #else
+            return MTLPixelFormatR8Unorm;
+            #endif
             
         default:
             return MTLPixelFormatInvalid;

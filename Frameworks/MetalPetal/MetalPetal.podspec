@@ -9,6 +9,7 @@ s.source       = { :git => 'https://github.com/YuAo/MetalPetal.git', :tag => s.v
 s.requires_arc = true
 
 s.ios.deployment_target = '9.0'
+s.macos.deployment_target = '10.13'
 
 s.module_map = 'MetalPetal.modulemap'
 s.prefix_header_file = false

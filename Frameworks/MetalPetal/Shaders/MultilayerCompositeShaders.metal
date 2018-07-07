@@ -3,6 +3,9 @@
 //
 
 #include <metal_stdlib>
+
+#if __HAVE_COLOR_ARGUMENTS__
+
 #include "MTIShaderLib.h"
 
 using namespace metal;
@@ -381,3 +384,4 @@ fragment float4 multilayerCompositeLinearLightBlend(
     return linearLightBlend(currentColor,textureColor);
 }
 
+#endif

@@ -258,7 +258,11 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             targetPixelFormat = MTLPixelFormatRGBA32Float;
         } break;
         case kCVPixelFormatType_OneComponent8: {
+            #if TARGET_OS_IPHONE
             targetPixelFormat = sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
+            #else
+            targetPixelFormat = MTLPixelFormatR8Unorm;
+            #endif
         } break;
         case kCVPixelFormatType_OneComponent16Half: {
             targetPixelFormat = MTLPixelFormatR16Float;

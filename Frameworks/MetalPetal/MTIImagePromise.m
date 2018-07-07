@@ -20,6 +20,7 @@
 #import "MTIImageProperties.h"
 
 static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
+    #if TARGET_OS_IPHONE
     if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
         NSMutableDictionary *opt = [NSMutableDictionary dictionaryWithDictionary:options];
         if (opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] == nil) {
@@ -27,6 +28,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
         }
         return opt;
     }
+    #endif
     return options;
 }
 
@@ -492,7 +494,12 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[NSString stringWithFormat:@"Name: %@\nBundle: %@\nScale:%@\nSize:%@",self.name,self.bundle,@(self.scaleFactor),NSStringFromCGSize(CGSizeMake(self.dimensions.width, self.dimensions.height))]];
+#if TARGET_OS_IPHONE
+    #define MTIStringFromSize NSStringFromCGSize
+#else
+    #define MTIStringFromSize NSStringFromSize
+#endif
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[NSString stringWithFormat:@"Name: %@\nBundle: %@\nScale:%@\nSize:%@",self.name,self.bundle,@(self.scaleFactor),MTIStringFromSize(CGSizeMake(self.dimensions.width, self.dimensions.height))]];
 }
 
 @end

@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+API_UNAVAILABLE(macos)
 @interface MTIMultilayerCompositingFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;

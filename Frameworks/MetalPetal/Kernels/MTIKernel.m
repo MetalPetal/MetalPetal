@@ -31,9 +31,11 @@
                 if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
                     [(id<MTLComputeCommandEncoder>)encoder setBytes:bytes length:length atIndex:index];
                 } else if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
+                    #if TARGET_OS_IPHONE
                     if (@available(iOS 11.0, *)) {
                         [(id<MTLRenderCommandEncoder>)encoder setTileBytes:bytes length:length atIndex:index];
                     }
+                    #endif
                 }
                 break;
             default:

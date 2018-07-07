@@ -109,6 +109,8 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(color,64,intensity,overlayTexture,overlaySampler);
     }
 
+    #if __HAVE_COLOR_ARGUMENTS__
+    
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                        VertexOut vertexIn [[ stage_in ]],
                                                        float4 currentColor [[color(0)]],
@@ -124,7 +126,9 @@ namespace metalpetal {
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
     }
-
+    
+    #endif
+    
     fragment float4 colorLookup2DHorizontalStrip(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> sourceTexture [[texture(0)]],

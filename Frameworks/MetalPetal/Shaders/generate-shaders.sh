@@ -19,6 +19,8 @@ struct ShaderTemplate {
     
     let content: String
 
+    let footer: String
+
     func content(with arguments: [String: String]) -> String {
         var content = self.content
         for (argument, value) in arguments {
@@ -33,6 +35,7 @@ struct ShaderTemplate {
         for arg in arguments {
             contents += self.content(with: arg)
         }
+        contents += self.footer
         return contents
     }
 }
@@ -49,6 +52,9 @@ struct MetalPetalShaderGenerator {
             //
 
             #include <metal_stdlib>
+
+            #if __HAVE_COLOR_ARGUMENTS__
+
             #include "MTIShaderLib.h"
 
             using namespace metal;
@@ -91,6 +97,9 @@ struct MetalPetalShaderGenerator {
             }
 
 
+            """,
+            footer: """
+            #endif
             """)
         
         var arguments = [[String:String]]()
@@ -135,7 +144,8 @@ struct MetalPetalShaderGenerator {
             }
 
 
-            """)
+            """,
+            footer: "")
         
         var arguments = [[String:String]]()
         for mode in MetalPetalShaderGenerator.blendModes {
