@@ -1,6 +1,3 @@
-#!/usr/bin/env xcrun swift
-
-import Foundation
 
 extension String {
     var lowerCamelCased: String {
@@ -12,24 +9,24 @@ extension String {
 }
 
 struct ShaderTemplate {
-
+    
     let fileName: String
     
     let header: String
     
     let content: String
-
+    
     let footer: String
-
+    
     func content(with arguments: [String: String]) -> String {
         var content = self.content
         for (argument, value) in arguments {
             let placeholder = "%\(argument)%"
-            content = (content as NSString).replacingOccurrences(of: placeholder, with: value) as String
+            content = content.replacingOccurrences(of: placeholder, with: value)
         }
         return content
     }
-
+    
     func fileContents(with arguments: [[String: String]]) -> String {
         var contents = self.header
         for arg in arguments {
@@ -40,15 +37,14 @@ struct ShaderTemplate {
     }
 }
 
-struct MetalPetalShaderGenerator {
-    static let blendModes: [String] = ["Normal","Multiply","HardLight", "SoftLight", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity", "Add", "LinearLight"]
-
-    static func generateMultilayerCompositeShaders(writeTo shaderDirectoryURL: URL) {
+public struct MetalPetalBlendingShadersCodeGenerator {
+    
+    static func generateMultilayerCompositeShaders(blendModes: [String]) -> [String: String] {
         let multilayerCompositeShaderTemplate = ShaderTemplate(
             fileName: "MultilayerCompositeShaders.metal",
             header: """
             //
-            // This is an auto-generated source file. See `generate-shaders.sh` for detail.
+            // This is an auto-generated source file.
             //
 
             #include <metal_stdlib>
@@ -103,21 +99,21 @@ struct MetalPetalShaderGenerator {
             """)
         
         var arguments = [[String:String]]()
-        for mode in MetalPetalShaderGenerator.blendModes {
+        for mode in blendModes {
             arguments.append([
                 "blendModeName": mode.lowerCamelCased,
                 "BlendModeName": mode
-            ])
+                ])
         }
-        try! multilayerCompositeShaderTemplate.fileContents(with: arguments).write(to: shaderDirectoryURL.appendingPathComponent(multilayerCompositeShaderTemplate.fileName), atomically: true, encoding: String.Encoding.utf8)
+        return [multilayerCompositeShaderTemplate.fileName: multilayerCompositeShaderTemplate.fileContents(with: arguments)]
     }
-
-    static func generateBlendingShaders(writeTo shaderDirectoryURL: URL) { 
+    
+    static func generateBlendingShaders(blendModes: [String]) -> [String: String] {
         let blendingShaderTemplate = ShaderTemplate(
             fileName: "BlendingShaders.metal",
             header: """
             //
-            // This is an auto-generated source file. See `generate-shaders.sh` for detail.
+            // This is an auto-generated source file.
             //
             
             #include <metal_stdlib>
@@ -148,29 +144,18 @@ struct MetalPetalShaderGenerator {
             footer: "")
         
         var arguments = [[String:String]]()
-        for mode in MetalPetalShaderGenerator.blendModes {
+        for mode in blendModes {
             arguments.append([
                 "blendModeName": mode.lowerCamelCased,
                 "BlendModeName": mode
-            ])
+                ])
         }
-        try! blendingShaderTemplate.fileContents(with: arguments).write(to: shaderDirectoryURL.appendingPathComponent(blendingShaderTemplate.fileName), atomically: true, encoding: String.Encoding.utf8)
+        return [blendingShaderTemplate.fileName: blendingShaderTemplate.fileContents(with: arguments)]
     }
-
-    static func run() {
-        let currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-        let scriptURL: URL
-        if CommandLine.arguments[0].hasPrefix("/") {
-            scriptURL = URL(fileURLWithPath: CommandLine.arguments[0])
-        } else {
-            scriptURL = currentDirectoryURL.appendingPathComponent(CommandLine.arguments[0])
-        }
-        let shaderDirectoryURL = scriptURL.deletingLastPathComponent()
-        
-        MetalPetalShaderGenerator.generateMultilayerCompositeShaders(writeTo: shaderDirectoryURL)
-        MetalPetalShaderGenerator.generateBlendingShaders(writeTo: shaderDirectoryURL)
-        print("Done!")
+    
+    public static func generate(blendModes: [String]) -> [String: String] {
+        let blendingShaders = self.generateBlendingShaders(blendModes: blendModes)
+        let multilayerCompositeShaders = self.generateMultilayerCompositeShaders(blendModes: blendModes)
+        return blendingShaders.merging(multilayerCompositeShaders, uniquingKeysWith: { (first, _) in first })
     }
 }
-
-MetalPetalShaderGenerator.run()

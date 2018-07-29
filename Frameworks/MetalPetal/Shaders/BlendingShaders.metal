@@ -1,5 +1,5 @@
 //
-// This is an auto-generated source file. See `generate-shaders.sh` for detail.
+// This is an auto-generated source file.
 //
 
 #include <metal_stdlib>
