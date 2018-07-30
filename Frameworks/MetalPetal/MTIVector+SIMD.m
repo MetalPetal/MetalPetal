@@ -20,6 +20,8 @@
     simd_float2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float2)) {
         memcpy(&value, self.bytes, sizeof(simd_float2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float2 value from %@", self);
     }
     return value;
 }
@@ -34,6 +36,8 @@
     simd_float3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float3)) {
         memcpy(&value, self.bytes, sizeof(simd_float3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float3 value from %@", self);
     }
     return value;
 }
@@ -48,6 +52,8 @@
     simd_float4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float4)) {
         memcpy(&value, self.bytes, sizeof(simd_float4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float4 value from %@", self);
     }
     return value;
 }
@@ -62,6 +68,8 @@
     simd_float8 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float8)) {
         memcpy(&value, self.bytes, sizeof(simd_float8));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float8 value from %@", self);
     }
     return value;
 }
@@ -76,6 +84,8 @@
     simd_float16 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float16)) {
         memcpy(&value, self.bytes, sizeof(simd_float16));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float16 value from %@", self);
     }
     return value;
 }
@@ -90,6 +100,8 @@
     simd_float2x2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float2x2)) {
         memcpy(&value, self.bytes, sizeof(simd_float2x2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float2x2 value from %@", self);
     }
     return value;
 }
@@ -104,6 +116,8 @@
     simd_float2x3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float2x3)) {
         memcpy(&value, self.bytes, sizeof(simd_float2x3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float2x3 value from %@", self);
     }
     return value;
 }
@@ -118,6 +132,8 @@
     simd_float2x4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float2x4)) {
         memcpy(&value, self.bytes, sizeof(simd_float2x4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float2x4 value from %@", self);
     }
     return value;
 }
@@ -132,6 +148,8 @@
     simd_float3x2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float3x2)) {
         memcpy(&value, self.bytes, sizeof(simd_float3x2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float3x2 value from %@", self);
     }
     return value;
 }
@@ -146,6 +164,8 @@
     simd_float3x3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float3x3)) {
         memcpy(&value, self.bytes, sizeof(simd_float3x3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float3x3 value from %@", self);
     }
     return value;
 }
@@ -160,6 +180,8 @@
     simd_float3x4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float3x4)) {
         memcpy(&value, self.bytes, sizeof(simd_float3x4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float3x4 value from %@", self);
     }
     return value;
 }
@@ -174,6 +196,8 @@
     simd_float4x2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float4x2)) {
         memcpy(&value, self.bytes, sizeof(simd_float4x2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float4x2 value from %@", self);
     }
     return value;
 }
@@ -188,6 +212,8 @@
     simd_float4x3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float4x3)) {
         memcpy(&value, self.bytes, sizeof(simd_float4x3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float4x3 value from %@", self);
     }
     return value;
 }
@@ -202,6 +228,8 @@
     simd_float4x4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float4x4)) {
         memcpy(&value, self.bytes, sizeof(simd_float4x4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_float4x4 value from %@", self);
     }
     return value;
 }
@@ -216,6 +244,8 @@
     simd_int2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int2)) {
         memcpy(&value, self.bytes, sizeof(simd_int2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_int2 value from %@", self);
     }
     return value;
 }
@@ -230,6 +260,8 @@
     simd_int3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int3)) {
         memcpy(&value, self.bytes, sizeof(simd_int3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_int3 value from %@", self);
     }
     return value;
 }
@@ -244,6 +276,8 @@
     simd_int4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int4)) {
         memcpy(&value, self.bytes, sizeof(simd_int4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_int4 value from %@", self);
     }
     return value;
 }
@@ -258,6 +292,8 @@
     simd_int8 value = {0};
     if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int8)) {
         memcpy(&value, self.bytes, sizeof(simd_int8));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_int8 value from %@", self);
     }
     return value;
 }
@@ -272,6 +308,8 @@
     simd_int16 value = {0};
     if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int16)) {
         memcpy(&value, self.bytes, sizeof(simd_int16));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_int16 value from %@", self);
     }
     return value;
 }
@@ -286,6 +324,8 @@
     simd_uint2 value = {0};
     if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint2)) {
         memcpy(&value, self.bytes, sizeof(simd_uint2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uint2 value from %@", self);
     }
     return value;
 }
@@ -300,6 +340,8 @@
     simd_uint3 value = {0};
     if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint3)) {
         memcpy(&value, self.bytes, sizeof(simd_uint3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uint3 value from %@", self);
     }
     return value;
 }
@@ -314,6 +356,8 @@
     simd_uint4 value = {0};
     if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint4)) {
         memcpy(&value, self.bytes, sizeof(simd_uint4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uint4 value from %@", self);
     }
     return value;
 }
@@ -328,6 +372,8 @@
     simd_uint8 value = {0};
     if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint8)) {
         memcpy(&value, self.bytes, sizeof(simd_uint8));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uint8 value from %@", self);
     }
     return value;
 }
@@ -342,6 +388,8 @@
     simd_uint16 value = {0};
     if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint16)) {
         memcpy(&value, self.bytes, sizeof(simd_uint16));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uint16 value from %@", self);
     }
     return value;
 }

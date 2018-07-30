@@ -96,6 +96,8 @@ public struct MTIVectorSIMDTypeSupportCodeGenerator {
                 \(type.description()) value = {0};
                 if (self.scalarType == MTIVectorScalarType\(type.scalarType.description(capitalized: true)) && self.byteLength == sizeof(\(type.description()))) {
                     memcpy(&value, self.bytes, sizeof(\(type.description())));
+                } else {
+                    NSAssert(NO, @"Cannot get a \(type.description()) value from %@", self);
                 }
                 return value;
             """
