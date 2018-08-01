@@ -146,7 +146,7 @@
             }
             return nil;
         }
-        MTIPrint(@"%@: New texture created.", self);
+        MTIPrint(@"%@: new texture - %@x%@x%@/%@", self, @(textureDescriptor.width), @(textureDescriptor.height), @(textureDescriptor.depth),@(textureDescriptor.pixelFormat));
     }
     
     MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
@@ -170,6 +170,7 @@
     [_lock lock];
     [_textureCache removeAllObjects];
     [_lock unlock];
+    MTIPrint(@"%@: flush", self);
 }
 
 - (NSUInteger)idleResourceSize {

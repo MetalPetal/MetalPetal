@@ -8,20 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import "MTIImagePromise.h"
+#import "MTICVPixelBufferRendering.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef NS_ENUM(NSInteger, MTICVPixelBufferRenderingAPI) {
-    MTICVPixelBufferRenderingAPIDefault = 1,
-    MTICVPixelBufferRenderingAPIMetalPetal = 1,
-    MTICVPixelBufferRenderingAPICoreImage = 2
-};
 
 @interface MTICVPixelBufferPromise : NSObject <MTIImagePromise>
 
 @property (nonatomic, readonly) MTICVPixelBufferRenderingAPI renderingAPI;
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType;
+@property (nonatomic, readonly) BOOL sRGB;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(MTICVPixelBufferRenderingOptions *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 

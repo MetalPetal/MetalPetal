@@ -151,7 +151,7 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
         
         CMSampleBufferRef outputSampleBuffer = sampleBuffer;
 
-        MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:pixelBuffer];
+        MTIImage *inputImage = [[MTIImage alloc] initWithCVPixelBuffer:pixelBuffer alphaType:MTIAlphaTypeAlphaIsOne];
         MTIImage *outputImage = inputImage;
         if (self.isFilterEnabled) {
             self.colorLookupFilter.inputImage = inputImage;

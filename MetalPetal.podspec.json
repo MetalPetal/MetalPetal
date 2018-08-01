@@ -1,19 +1,24 @@
 {
   "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
   "requires_arc" : true,
-  "summary" : "A image processing framework based on Metal.",
+  "prefix_header_file" : false,
   "source" : {
     "git" : "https:\/\/github.com\/YuAo\/MetalPetal.git",
-    "tag" : "0.3.6"
+    "tag" : "0.7.1"
   },
   "name" : "MetalPetal",
   "authors" : {
     "YuAo" : "me@imyuao.com"
   },
-  "version" : "0.3.6",
   "license" : {
     "type" : "MIT"
   },
+  "platforms" : {
+    "ios" : "9.0",
+    "osx" : "10.13"
+  },
+  "summary" : "A image processing framework based on Metal.",
+  "version" : "0.7.1",
   "default_subspecs" : "Core",
   "homepage" : "https:\/\/github.com\/YuAo\/MetalPetal",
   "subspecs" : [
@@ -35,7 +40,5 @@
       "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}"
     }
   ],
-  "platforms" : {
-    "ios" : "9.0"
-  }
+  "swift_version" : "4.1"
 }

@@ -10,7 +10,6 @@
 #import "MTIContext.h"
 #import "MTIImage.h"
 #import "MTIImage+Promise.h"
-#import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIMultilayerCompositeKernel.h"

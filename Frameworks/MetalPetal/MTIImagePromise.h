@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo;
+@class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions, MTIImageProperties;
 
 @protocol MTIImagePromise <NSObject, NSCopying>
 
@@ -39,7 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
+                                    properties:(MTIImageProperties *)properties
+                                       options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                                     alphaType:(MTIAlphaType)alphaType;
 
 @end
 
@@ -57,13 +60,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
 
-@property (nonatomic,readonly) MTIColor color;
+@property (nonatomic, readonly) MTIColor color;
 
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 

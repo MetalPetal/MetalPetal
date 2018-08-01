@@ -73,4 +73,11 @@
     _items.count = 0;
 }
 
+- (void)compact {
+    // http://www.openradar.me/15396578
+    // https://stackoverflow.com/questions/31322290/nspointerarray-weird-compaction
+    [_items addPointer:nil];
+    [_items compact];
+}
+
 @end

@@ -7,7 +7,7 @@
 
 #import "MTIColorHalftoneFilter.h"
 #import "MTIFunctionDescriptor.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 
 @implementation MTIColorHalftoneFilter
 
@@ -29,7 +29,7 @@
         allAnglesAreEqual = YES;
     }
     return @{@"scale": @(self.scale),
-             @"angles": [[MTIVector alloc] initWithFloat4:self.angles],
+             @"angles": [MTIVector vectorWithFloat4:self.angles],
              @"singleAngleMode": @(allAnglesAreEqual)};
 }
 

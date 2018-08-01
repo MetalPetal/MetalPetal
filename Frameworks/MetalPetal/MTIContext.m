@@ -22,6 +22,8 @@
 #import "MTILock.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+NSString * const MTIContextDefaultLabel = @"MetalPetal";
+
 @implementation MTIContextOptions
 
 - (instancetype)init {
@@ -29,6 +31,7 @@
         _coreImageContextOptions = @{};
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
         _enablesRenderGraphOptimization = YES;
+        _label = MTIContextDefaultLabel;
     }
     return self;
 }
@@ -38,6 +41,7 @@
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
     options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
+    options.label = _label;
     return options;
 }
 
@@ -93,12 +97,14 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
             return nil;
         }
         
+        _label = options.label;
         _workingPixelFormat = options.workingPixelFormat;
         _isRenderGraphOptimizationEnabled = options.enablesRenderGraphOptimization;
         _device = device;
         _defaultLibrary = defaultLibrary;
         _coreImageContext = [CIContext contextWithMTLDevice:device options:options.coreImageContextOptions];
         _commandQueue = [device newCommandQueue];
+        _commandQueue.label = options.label;
         
         _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
         
@@ -144,7 +150,19 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 - (void)reclaimResources {
-    [self.texturePool flush];
+    [_texturePool flush];
+    
+    [_imageKeyValueTablesLock lock];
+    for (NSString *key in _imageKeyValueTables) {
+        [_imageKeyValueTables[key] compact];
+    }
+    [_imageKeyValueTablesLock unlock];
+    
+    [_promiseKeyValueTablesLock lock];
+    for (NSString *key in _promiseKeyValueTables) {
+        [_promiseKeyValueTables[key] compact];
+    }
+    [_promiseKeyValueTablesLock unlock];
 }
 
 - (NSUInteger)idleResourceSize {

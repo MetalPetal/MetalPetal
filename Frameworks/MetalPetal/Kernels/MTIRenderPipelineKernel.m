@@ -154,6 +154,10 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p; vertexFunctionDescriptor = %@; fragmentFunctionDescriptor = %@>",self.class, self, self.vertexFunctionDescriptor, self.fragmentFunctionDescriptor];
+}
+
 @end
 
 @interface MTIImageRenderingRecipe : NSObject
@@ -249,12 +253,14 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
-        if (command.geometry.bufferLength < 4096) {
-            //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
-            [commandEncoder setVertexBytes:command.geometry.bufferBytes length:command.geometry.bufferLength atIndex:0];
-        } else {
-            id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:command.geometry.bufferBytes length:command.geometry.bufferLength options:0];
-            [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
+        if (command.geometry.bufferLength > 0) {
+            if (command.geometry.bufferLength < 4096) {
+                //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
+                [commandEncoder setVertexBytes:command.geometry.bufferBytes length:command.geometry.bufferLength atIndex:0];
+            } else {
+                id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:command.geometry.bufferBytes length:command.geometry.bufferLength options:0];
+                [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
+            }
         }
         
         id<MTLSamplerState> samplerStates[command.images.count];
@@ -272,10 +278,18 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         
         for (NSUInteger index = 0; index < command.images.count; index += 1) {
             [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
-            MTIImage *image = command.images[index];
-            NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
+            NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:command.images[index].alphaType]);
             [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
         }
+        
+        for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
+            if (argument.type == MTLArgumentTypeTexture) {
+                NSUInteger index = argument.index;
+                [commandEncoder setVertexTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
+                [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+            }
+        }
+        
         resolutionIndex += command.images.count;
         
         //encode parameters
@@ -428,17 +442,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return [self applyToInputImages:images parameters:parameters outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
-+ (MTIVertices *)defaultRenderingVertices {
-    static MTIVertices *defaultVertices;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        defaultVertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
-    });
-    return defaultVertices;
-}
-
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
-    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:[MTIRenderPipelineKernel defaultRenderingVertices] images:images parameters:parameters];
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:MTIVertices.fullViewportSquareVertices images:images parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
                                             outputDescriptors:outputDescriptors];
 }
@@ -453,7 +458,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName]];
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughFragmentFunctionName] vertexDescriptor:nil colorAttachmentCount:1 alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.passthroughAlphaTypeHandlingRule];
     });
     return kernel;
 }
@@ -512,7 +517,7 @@ void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node) {
             MTIImageRenderingPromise *lastPromise = lastImage.promise;
             MTIColorMatrix colorMatrix = recipe.colorMatrix;
             MTIRenderCommand *lastCommand = lastPromise.recipe.renderCommands.firstObject;
-            if (lastPromise.recipe.renderCommands.count == 1 && lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastCommand.geometry isEqual:[MTIRenderPipelineKernel defaultRenderingVertices]] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors] && lastCommand.kernel == MTIColorMatrixFilter.kernel) {
+            if (lastPromise.recipe.renderCommands.count == 1 && lastImage.cachePolicy == MTIImageCachePolicyTransient && [lastCommand.geometry isEqual:MTIVertices.fullViewportSquareVertices] && [lastPromise.recipe.outputDescriptors isEqualToArray:recipe.outputDescriptors] && lastCommand.kernel == MTIColorMatrixFilter.kernel) {
                 colorMatrix = MTIColorMatrixConcat(lastPromise.recipe.colorMatrix, colorMatrix);
                 MTIImageRenderingRecipe *r = [[MTIImageRenderingRecipe alloc] initWithRenderCommands:@[[[MTIRenderCommand alloc] initWithKernel:command.kernel geometry:command.geometry images:lastPromise.dependencies parameters:@{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&colorMatrix length:sizeof(MTIColorMatrix)]}]] outputDescriptors:recipe.outputDescriptors];
                 MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:r outputIndex:0];

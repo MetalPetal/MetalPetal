@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <simd/simd.h>
+#import <QuartzCore/QuartzCore.h>
 
 FOUNDATION_EXPORT simd_float4x4 MTIMakeOrthographicMatrix(float left, float right, float top, float bottom, float near, float far);
 

@@ -51,16 +51,17 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
     CGRect cropRect = CGRectZero;
     switch (self.cropRegion.unit) {
         case MTICropRegionUnitPixel: {
-            cropRect = CGRectMake(self.cropRegion.bounds.origin.x / self.inputImage.size.width,
-                                  self.cropRegion.bounds.origin.y / self.inputImage.size.height,
-                                  self.cropRegion.bounds.size.width / self.inputImage.size.width,
-                                  self.cropRegion.bounds.size.height / self.inputImage.size.height);
+            cropRect = self.cropRegion.bounds;
         } break;
         case MTICropRegionUnitPercentage: {
-            cropRect = self.cropRegion.bounds;
+            cropRect = CGRectMake(self.cropRegion.bounds.origin.x * self.inputImage.size.width,
+                                  self.cropRegion.bounds.origin.y * self.inputImage.size.height,
+                                  self.cropRegion.bounds.size.width * self.inputImage.size.width,
+                                  self.cropRegion.bounds.size.height * self.inputImage.size.height);
         } break;
         default: {
             NSAssert(NO, @"Unsupported MTICropRegionUnit");
+            return nil;
         } break;
     }
     
@@ -70,10 +71,10 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
     CGFloat t = CGRectGetMinY(rect);
     CGFloat b = CGRectGetMaxY(rect);
     
-    CGFloat minX = cropRect.origin.x;
-    CGFloat minY = cropRect.origin.y;
-    CGFloat maxX = CGRectGetMaxX(cropRect);
-    CGFloat maxY = CGRectGetMaxY(cropRect);
+    CGFloat minX = cropRect.origin.x/self.inputImage.size.width;
+    CGFloat minY = cropRect.origin.y/self.inputImage.size.height;
+    CGFloat maxX = CGRectGetMaxX(cropRect)/self.inputImage.size.width;
+    CGFloat maxY = CGRectGetMaxY(cropRect)/self.inputImage.size.height;
     
     MTIVertices *geometry = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
         { .position = {l, t, 0, 1} , .textureCoordinate = { minX, maxY } },
@@ -82,7 +83,30 @@ MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) {
         { .position = {r, b, 0, 1} , .textureCoordinate = { maxX, minY } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = self.inputImage.size.width * cropRect.size.width * self.scale, .height = self.inputImage.size.height * cropRect.size.height * self.scale, .depth = 1} pixelFormat:self.outputPixelFormat];
+    double (*roundingFunction)(double);
+    switch (self.roundingMode) {
+        case MTICropFilterRoundingModePlain:
+        roundingFunction = round;
+        break;
+        case MTICropFilterRoundingModeFloor:
+        roundingFunction = floor;
+        break;
+        case MTICropFilterRoundingModeCeiling:
+        roundingFunction = ceil;
+        break;
+        default:
+        roundingFunction = round;
+        break;
+    }
+    
+    NSUInteger outputWidth = roundingFunction(cropRect.size.width * self.scale);
+    NSUInteger outputHeight = roundingFunction(cropRect.size.height * self.scale);
+    
+    if (outputWidth == self.inputImage.size.width && outputHeight == self.inputImage.size.height && cropRect.origin.x == 0 && cropRect.origin.y == 0) {
+        return self.inputImage;
+    }
+    
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:(MTITextureDimensions){.width = outputWidth, .height = outputHeight, .depth = 1} pixelFormat:self.outputPixelFormat];
     
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTICropFilter.kernel geometry:geometry images:@[self.inputImage] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]

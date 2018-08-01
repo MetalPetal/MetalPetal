@@ -82,7 +82,7 @@
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
     
-    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
+    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
     self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
     self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
     

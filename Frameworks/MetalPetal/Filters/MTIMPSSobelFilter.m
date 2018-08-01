@@ -30,7 +30,9 @@
         _grayColorTransform = grayColorTransform;
         _kernel = [[MTIMPSKernel alloc] initWithMPSKernelBuilder:^MPSKernel * _Nonnull(id<MTLDevice>  _Nonnull device) {
             const float values[3] = {grayColorTransform.r, grayColorTransform.g, grayColorTransform.b};
-            return [[MPSImageSobel alloc] initWithDevice:device linearGrayColorTransform:values];
+            MPSImageSobel *k = [[MPSImageSobel alloc] initWithDevice:device linearGrayColorTransform:values];
+            k.edgeMode = MPSImageEdgeModeClamp;
+            return k;
         }];
     }
     return self;

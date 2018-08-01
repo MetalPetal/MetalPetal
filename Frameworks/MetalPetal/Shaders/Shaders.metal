@@ -109,6 +109,8 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(color,64,intensity,overlayTexture,overlaySampler);
     }
 
+    #if __HAVE_COLOR_ARGUMENTS__
+    
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                        VertexOut vertexIn [[ stage_in ]],
                                                        float4 currentColor [[color(0)]],
@@ -124,7 +126,9 @@ namespace metalpetal {
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
     }
-
+    
+    #endif
+    
     fragment float4 colorLookup2DHorizontalStrip(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> sourceTexture [[texture(0)]],
@@ -137,38 +141,22 @@ namespace metalpetal {
     {
         float2 sourceCoord = vertexIn.textureCoordinate;
         float4 textureColor = sourceTexture.sample(colorSampler,sourceCoord);
-        
-        float blueColor = textureColor.b * (dimension - 1);
-        
-        float2 quad1;
-        quad1.x = floor(blueColor);
-        quad1.y = 0.0;
-        
-        float2 quad2;
-        quad2.x = ceil(blueColor);
-        quad2.y = 0.0;
-        
-        float widthForQuard  = 1.0/dimension;
-        float heightForQuard = 1.0;
-        float pixelWidthOnX  = 1.0/lutTexture.get_width();
-        float pixelWidthOnY  = 1.0/lutTexture.get_height();
-        
-        float2 texPos1;
-        texPos1.x = (quad1.x*widthForQuard)  + (0.5*pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
-        texPos1.y = (quad1.y*heightForQuard) + (0.5*pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
-        
-        float2 texPos2;
-        texPos2.x = (quad2.x*widthForQuard)  + (0.5*pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
-        texPos2.y = (quad2.y*heightForQuard) + (0.5*pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
-        
-        float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
-        float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
-        
-        float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
-        
-        float4 finalColor = mix(textureColor, float4(newColor.rgb, textureColor.a), intensity);
-        
-        return finalColor;
+        return colorLookup2DStripLUT(textureColor, dimension, true, intensity, lutTexture, lutSamper);
+    }
+    
+    fragment float4 colorLookup2DVerticalStrip(
+                                                 VertexOut vertexIn [[stage_in]],
+                                                 texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                                 texture2d<float, access::sample> lutTexture [[texture(1)]],
+                                                 sampler colorSampler [[sampler(0)]],
+                                                 sampler lutSamper [[sampler(1)]],
+                                                 constant int & dimension [[buffer(0)]],
+                                                 constant float & intensity [[ buffer(1) ]]
+                                                 )
+    {
+        float2 sourceCoord = vertexIn.textureCoordinate;
+        float4 textureColor = sourceTexture.sample(colorSampler,sourceCoord);
+        return colorLookup2DStripLUT(textureColor, dimension, false, intensity, lutTexture, lutSamper);
     }
 
     vertex VertexOut imageTransformVertexShader(
@@ -313,4 +301,119 @@ namespace metalpetal {
             return float4(temp, textureColor.a);
         }
     }
+    
+    kernel void histogramDisplayFindMax(
+                                        texture2d<uint, access::read> sourceTexture [[texture(0)]],
+                                        texture2d<uint, access::write> outTexture [[texture(1)]],
+                                        uint2 gid [[ thread_position_in_grid ]]) {
+        if (gid.x > 0 || gid.y > 0) {
+            return;
+        }
+        uint4 maximum = 0;
+        for (ushort x = 0; x < sourceTexture.get_width(); x += 1) {
+            for (ushort channel = 0; channel < 4; channel += 1) {
+                uint v = sourceTexture.read(uint2(x, channel)).r;
+                maximum[channel] = v > maximum[channel] ? v : maximum[channel];
+            }
+        }
+        outTexture.write(maximum, uint2(0, 0));
+    }
+    
+    fragment float4 histogramDisplay(VertexOut vertexIn [[stage_in]],
+                                     texture2d<uint, access::read> sourceTexture [[texture(0)]],
+                                     texture2d<uint, access::read> maxValueTexture [[texture(1)]]) {
+        float x = vertexIn.textureCoordinate.x * sourceTexture.get_width();
+        ushort indexP = floor(x);
+        ushort indexN = ceil(x);
+        float factor = fract(x);
+        
+        uint rP = sourceTexture.read(uint2(indexP, 0)).r;
+        uint rN = sourceTexture.read(uint2(indexN, 0)).r;
+        float rValue = mix(float(rP), float(rN), factor);
+        
+        uint gP = sourceTexture.read(uint2(indexP, 1)).r;
+        uint gN = sourceTexture.read(uint2(indexN, 1)).r;
+        float gValue = mix(float(gP), float(gN), factor);
+        
+        uint bP = sourceTexture.read(uint2(indexP, 2)).r;
+        uint bN = sourceTexture.read(uint2(indexN, 2)).r;
+        float bValue = mix(float(bP), float(bN), factor);
+        
+        uint4 maxValue = maxValueTexture.read(uint2(0,0));
+        float3 height = float3(rValue, gValue, bValue)/float3(max(max(maxValue.r, maxValue.g),maxValue.b));
+        bool3 fill = vertexIn.textureCoordinate.y > 1.0 - height;
+        return float4(float3(fill), 1.0);
+    }
+    
+    kernel void colorLookupTable2DSquareTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint rows = uint(round(sqrt((float)dimension)));
+            uint index = gid.z;
+            uint tx = gid.x + (index % rows) * dimension;
+            uint ty = gid.y + (index / rows) * dimension;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    kernel void colorLookupTable2DStripVerticalTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint index = gid.z;
+            uint tx = gid.x;
+            uint ty = gid.y + index * dimension;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    kernel void colorLookupTable2DStripHorizontalTo3D(texture2d<float, access::read> sourceTexture [[texture(0)]],
+                                             texture3d<float, access::write> outTexture [[texture(1)]],
+                                             constant int & dimension [[buffer(0)]],
+                                             uint3 gid [[ thread_position_in_grid ]]) {
+        if (gid.x < outTexture.get_width() &&
+            gid.y < outTexture.get_height() &&
+            gid.z < outTexture.get_depth()) {
+            uint index = gid.z;
+            uint tx = gid.x + index * dimension;
+            uint ty = gid.y;
+            outTexture.write(sourceTexture.read(uint2(tx, ty)), gid);
+        }
+    }
+    
+    fragment float4 colorLookup3D(VertexOut vertexIn [[stage_in]],
+                                  texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                  texture3d<float, access::sample> lutTexture [[texture(1)]],
+                                  sampler colorSampler [[sampler(0)]],
+                                  sampler lutSamper [[sampler(1)]],
+                                  constant float & intensity [[ buffer(1) ]]) {
+        float2 sourceCoord = vertexIn.textureCoordinate;
+        float4 color = sourceTexture.sample(colorSampler,sourceCoord);
+        uint dimension = lutTexture.get_width();
+        float4 destColor = lutTexture.sample(lutSamper, ((color.rgb * (dimension - 1)) + 0.5)/dimension);
+        return float4(mix(color.rgb, destColor.rgb, intensity), color.a);
+    }
+    
+    /*
+    fragment float4 histogramDisplay(VertexOut vertexIn [[stage_in]],
+                                     texture2d<uint, access::sample> sourceTexture [[texture(0)]],
+                                     sampler sourceSampler [[sampler(0)]],
+                                     texture2d<uint, access::read> maxValueTexture [[texture(1)]]) {
+        uint rValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 0.5/4.0)).r;
+        uint gValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 1.5/4.0)).r;
+        uint bValue = sourceTexture.sample(sourceSampler, float2(vertexIn.textureCoordinate.x, 2.5/4.0)).r;
+        uint4 maxValue = maxValueTexture.read(uint2(0,0));
+        float3 height = float3(rValue, gValue, bValue)/float3(max(max(maxValue.r, maxValue.g),maxValue.b));
+        bool3 fill = vertexIn.textureCoordinate.y > 1.0 - height;
+        return float4(float3(fill), 1.0);
+        //return float4(float3(value.rgb)/float3(maxValue.rgb), 1.0);
+    }
+    */
 }

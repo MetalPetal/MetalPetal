@@ -93,7 +93,7 @@ namespace metalpetal {
     }
     
     METAL_FUNC float3 rgb2hsl(float3 inputColor) {
-        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
+        float3 color = saturate(inputColor);
         
         //Compute min and max component values
         float MAX = max(color.r, max(color.g, color.b));
@@ -117,7 +117,7 @@ namespace metalpetal {
     }
     
     METAL_FUNC float3 hsl2rgb(float3 inputColor) {
-        float3 color = clamp(inputColor,float3(0.0),float3(1.0));
+        float3 color = saturate(inputColor);
         
         float h = color.r;
         float s = color.g;
@@ -144,14 +144,14 @@ namespace metalpetal {
     }
 
     METAL_FUNC float4 blendBaseAlpha(float4 Cb, float4 Cs, float4 B) {
-        float4 Cr = float4((1 - Cb.a) * Cs.rgb + Cb.a * clamp(B.rgb, float3(0), float3(1)), Cs.a);
+        float4 Cr = float4((1 - Cb.a) * Cs.rgb + Cb.a * saturate(B.rgb), Cs.a);
         return normalBlend(Cb, Cr);
     }
     
     
     // multiply
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
-        float4 B = clamp(float4(Cb.rgb * Cs.rgb, Cs.a), float4(0), float4(1));
+        float4 B = saturate(float4(Cb.rgb * Cs.rgb, Cs.a));
         return blendBaseAlpha(Cb, Cs, B);
     }
     
@@ -242,6 +242,18 @@ namespace metalpetal {
     // exclusion
     METAL_FUNC float4 exclusionBlend(float4 Cb, float4 Cs) {
         float4 B = float4(Cb.rgb + Cs.rgb - 2 * Cb.rgb * Cs.rgb, Cs.a);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    // add
+    METAL_FUNC float4 addBlend(float4 Cb, float4 Cs) {
+        float4 B = min(Cb + Cs, 1.0);
+        return blendBaseAlpha(Cb, Cs, B);
+    }
+    
+    //Linear Light
+    METAL_FUNC float4 linearLightBlend(float4 Cb, float4 Cs) {
+        float4 B  = Cb + 2.0 * Cs - 1.0;
         return blendBaseAlpha(Cb, Cs, B);
     }
     
@@ -393,15 +405,14 @@ namespace metalpetal {
                                              float intensity,
                                              texture2d<float, access::sample> lutTexture,
                                              sampler lutSamper) {
-        int row = round(sqrt((float)dimension));
+        float row = round(sqrt((float)dimension));
         float blueColor = color.b * (dimension - 1);
         
-        int2 quad1;
+        float2 quad1;
         quad1.y = floor(floor(blueColor) / row);
         quad1.x = floor(blueColor) - (quad1.y * row);
         
-        int2 quad2;
-        
+        float2 quad2;
         quad2.y = floor(ceil(blueColor) / row);
         quad2.x = ceil(blueColor) - (quad2.y * row);;
         
@@ -419,6 +430,47 @@ namespace metalpetal {
         float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
         
         float4 finalColor = mix(color, float4(newColor.rgb, color.a), intensity);
+        
+        return finalColor;
+    }
+    
+    
+    METAL_FUNC float4 colorLookup2DStripLUT(float4 color,
+                                            int dimension,
+                                            bool isHorizontal,
+                                            float intensity,
+                                            texture2d<float, access::sample> lutTexture,
+                                            sampler lutSamper) {
+        float4 textureColor = color;
+        float blueColor = textureColor.b * (dimension - 1);
+        
+        float2 quad1;
+        quad1.x = isHorizontal ? floor(blueColor) : 0.0;
+        quad1.y = isHorizontal ? 0.0 : floor(blueColor);
+        
+        float2 quad2;
+        quad2.x = isHorizontal ? ceil(blueColor) : 0.0;
+        quad2.y = isHorizontal ? 0.0 : ceil(blueColor);
+        
+        float widthForQuard  = isHorizontal ? 1.0/dimension : 1.0;
+        float heightForQuard = isHorizontal ? 1.0 : 1.0/dimension;
+        float pixelWidthOnX  = 1.0/lutTexture.get_width();
+        float pixelWidthOnY  = 1.0/lutTexture.get_height();
+        
+        float2 texPos1;
+        texPos1.x = (quad1.x * widthForQuard)  + (0.5 * pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
+        texPos1.y = (quad1.y * heightForQuard) + (0.5 * pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
+        
+        float2 texPos2;
+        texPos2.x = (quad2.x * widthForQuard)  + (0.5 * pixelWidthOnX) + ((widthForQuard - pixelWidthOnX)  * textureColor.r);
+        texPos2.y = (quad2.y * heightForQuard) + (0.5 * pixelWidthOnY) + ((heightForQuard - pixelWidthOnY) * textureColor.g);
+        
+        float4 newColor1 = lutTexture.sample(lutSamper, texPos1);
+        float4 newColor2 = lutTexture.sample(lutSamper, texPos2);
+        
+        float4 newColor = mix(newColor1, newColor2, float(fract(blueColor)));
+        
+        float4 finalColor = mix(textureColor, float4(newColor.rgb, textureColor.a), intensity);
         
         return finalColor;
     }

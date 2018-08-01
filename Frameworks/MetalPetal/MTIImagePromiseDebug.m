@@ -8,6 +8,13 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage+Promise.h"
+#import <QuartzCore/QuartzCore.h>
+
+#if TARGET_OS_IPHONE
+#define MTIFont UIFont
+#else
+#define MTIFont NSFont
+#endif
 
 NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     return [[NSString stringWithFormat:@"%p",object] stringByReplacingCharactersInRange:NSMakeRange(0, 2) withString:@""];
@@ -97,7 +104,7 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     contentTextLayer.foregroundColor = foregroundColor;
     [baseLayer addSublayer:contentTextLayer];
     CGSize contentTextLayerPreferredSize;// = [contentTextLayer preferredFrameSize];
-    contentTextLayerPreferredSize = [content boundingRectWithSize:CGSizeMake(baseLayer.frame.size.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:10]} context:nil].size;
+    contentTextLayerPreferredSize = [content boundingRectWithSize:CGSizeMake(baseLayer.frame.size.width, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [MTIFont systemFontOfSize:10]} context:nil].size;
     contentTextLayer.wrapped = YES;
     contentTextLayer.frame = CGRectMake(contentPadding, CGRectGetMaxY(titleBackgroundLayer.frame) + contentPadding, contentTextLayerPreferredSize.width, contentTextLayerPreferredSize.height);
     

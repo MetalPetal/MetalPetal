@@ -1,5 +1,5 @@
 //
-// This is an auto-generated source file. See `generate-shaders.sh` for detail.
+// This is an auto-generated source file.
 //
 
 #include <metal_stdlib>
@@ -229,6 +229,34 @@ fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
     float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
     float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     float4 blendedColor = luminosityBlend(uCb, uCf);
+    return mix(uCb,blendedColor,intensity);
+}
+
+
+fragment float4 addBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]],
+                                    constant float &intensity [[buffer(0)]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    float4 blendedColor = addBlend(uCb, uCf);
+    return mix(uCb,blendedColor,intensity);
+}
+
+
+fragment float4 linearLightBlend(VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    texture2d<float, access::sample> overlayTexture [[ texture(1) ]],
+                                    sampler overlaySampler [[ sampler(1) ]],
+                                    constant float &intensity [[buffer(0)]]
+                                    ) {
+    float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
+    float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    float4 blendedColor = linearLightBlend(uCb, uCf);
     return mix(uCb,blendedColor,intensity);
 }
 

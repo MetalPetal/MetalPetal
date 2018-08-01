@@ -9,11 +9,15 @@
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <CoreImage/CoreImage.h>
-#import "MTICVPixelBufferPromise.h"
+#import <MetalKit/MetalKit.h>
+#import "MTICVPixelBufferRendering.h"
+#import "MTIColor.h"
+#import "MTIAlphaType.h"
+#import "MTITextureDimensions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTISamplerDescriptor;
+@class MTISamplerDescriptor, MTICIImageRenderingOptions, MTICVPixelBufferRenderingOptions;
 
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
@@ -22,17 +26,13 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @interface MTIImage : NSObject <NSCopying>
 
-@property (nonatomic,readonly,class) MTISamplerDescriptor *defaultSamplerDescriptor;
+@property (nonatomic, readonly) MTIImageCachePolicy cachePolicy;
 
-@property (nonatomic,readonly) MTIImageCachePolicy cachePolicy;
+@property (nonatomic, copy, readonly) MTISamplerDescriptor *samplerDescriptor;
 
-@property (nonatomic,readonly) CGRect extent;
+@property (nonatomic, readonly) MTIAlphaType alphaType;
 
-@property (nonatomic,readonly) CGSize size;
-
-@property (nonatomic,copy, readonly) MTISamplerDescriptor *samplerDescriptor;
-
-@property (nonatomic, readonly) MTIAlphaType alphaType; //relay to underlying promise
+@property (nonatomic, readonly) MTITextureDimensions dimensions;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -44,13 +44,23 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 @end
 
+@interface MTIImage (Dimensions2D)
+
+@property (nonatomic,readonly) CGRect extent;
+
+@property (nonatomic,readonly) CGSize size;
+
+@end
+
 @interface MTIImage (Creation)
 
-- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer __attribute__((deprecated("Replaced by MTIImage(cvPixelBuffer:alphaType:)")));
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer alphaType:(MTIAlphaType)alphaType;
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer renderingAPI:(MTICVPixelBufferRenderingAPI)renderingAPI alphaType:(MTIAlphaType)alphaType;
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(MTICVPixelBufferRenderingOptions *)options alphaType:(MTIAlphaType)alphaType;
 
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;
@@ -65,6 +75,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
 
+- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
+
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;
 
@@ -73,15 +85,6 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 
-/// Return a 1x1 white image
-+ (instancetype)whiteImage;
-
-/// Return a 1x1 black image
-+ (instancetype)blackImage;
-
-/// Return a 1x1 transparent image
-+ (instancetype)transparentImage;
-
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
 - (instancetype)initWithName:(NSString *)name
@@ -89,7 +92,16 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
                         size:(CGSize)size
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
-                   alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
+                   alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0) NS_SWIFT_NAME(init(named:in:size:scaleFactor:options:alphaType:));
+
+/// A 1x1 white image
+@property (class, readonly) MTIImage *whiteImage;
+
+/// A 1x1 black image
+@property (class, readonly) MTIImage *blackImage;
+
+/// A 1x1 transparent image
+@property (class, readonly) MTIImage *transparentImage;
 
 @end
 

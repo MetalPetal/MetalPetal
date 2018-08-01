@@ -21,6 +21,10 @@ MTIBlendMode const MTIBlendModeColorBurn = @"ColorBurn";
 MTIBlendMode const MTIBlendModeDifference = @"Difference";
 MTIBlendMode const MTIBlendModeExclusion = @"Exclusion";
 
+MTIBlendMode const MTIBlendModeAdd = @"Add";
+
+MTIBlendMode const MTIBlendModeLinearLight = @"LinearLight";
+
 MTIBlendMode const MTIBlendModeHue = @"Hue";
 MTIBlendMode const MTIBlendModeSaturation = @"Saturation";
 MTIBlendMode const MTIBlendModeColor = @"Color";
@@ -71,7 +75,9 @@ static id<NSLocking> _registeredBlendModesLock;
                                                 MTIBlendModeHue,
                                                 MTIBlendModeColor,
                                                 MTIBlendModeSaturation,
-                                                MTIBlendModeLuminosity];
+                                                MTIBlendModeLuminosity,
+                                                MTIBlendModeAdd,
+                                                MTIBlendModeLinearLight];
         NSMutableDictionary *modes = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in builtinModes) {
             NSString *fragmentFunctionNameForBlendFilter = [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];

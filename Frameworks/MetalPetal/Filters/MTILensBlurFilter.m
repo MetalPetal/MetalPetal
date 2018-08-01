@@ -9,7 +9,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
-#import "MTIVector.h"
+#import "MTIVector+SIMD.h"
 #import "MTIRenderPassOutputDescriptor.h"
 
 @implementation MTILensBlurFilter
@@ -56,30 +56,33 @@
         return self.inputImage;
     }
     
-    MTIImage *maskImage = self.inputMaskImage;
-    if (!maskImage) {
-        maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(1, 1, 1, 1) sRGB:NO size:CGSizeMake(1, 1)];
+    MTIMask *mask = self.inputMask;
+    if (!mask) {
+        MTIImage *maskImage = [[MTIImage alloc] initWithColor:MTIColorMake(1, 1, 1, 1) sRGB:NO size:CGSizeMake(1, 1)];
+        mask = [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal];
     }
     
     MTIVector * deltas[3];
     for (NSInteger i = 0; i < 3; ++i) {
         float a = self.angle + i * M_PI * 2.0 / 3.0;
-        MTIVector *delta = [[MTIVector alloc] initWithFloat2:(simd_float2){self.radius * sin(a)/self.inputImage.size.width, self.radius * cos(a)/self.inputImage.size.height}];
+        MTIVector *delta = [MTIVector vectorWithFloat2:(simd_float2){self.radius * sin(a)/self.inputImage.size.width, self.radius * cos(a)/self.inputImage.size.height}];
         deltas[i] = delta;
     }
     
     float power = pow(10, MIN(MAX(self.brightness, -1), 1));
-    
-    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage]
-                                                                              parameters:@{@"power": @(power)}
+    BOOL usesOneMinusMaskValue = mask.mode == MTIMaskModeOneMinusMaskValue;
+    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, mask.content]
+                                                                              parameters:@{@"power": @(power),
+                                                                                           @"maskComponent": @((int)mask.component),
+                                                                                           @"usesOneMinusMaskValue": @(usesOneMinusMaskValue)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
-    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage, maskImage]
+    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage]
                                                                                      parameters:@{@"delta0": deltas[0],
                                                                                                   @"delta1": deltas[1],
                                                                                                   }
                                                                               outputDescriptors:@[[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
-    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1],maskImage,self.inputImage]
+    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1]]
                                                                                 parameters:@{@"delta0": deltas[1],
                                                                                              @"delta1": deltas[2],
                                                                                              @"power": @((float)1.0/power)
@@ -90,3 +93,4 @@
 }
 
 @end
+

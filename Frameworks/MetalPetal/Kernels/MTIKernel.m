@@ -31,9 +31,11 @@
                 if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
                     [(id<MTLComputeCommandEncoder>)encoder setBytes:bytes length:length atIndex:index];
                 } else if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
+                    #if TARGET_OS_IPHONE
                     if (@available(iOS 11.0, *)) {
                         [(id<MTLRenderCommandEncoder>)encoder setTileBytes:bytes length:length atIndex:index];
                     }
+                    #endif
                 }
                 break;
             default:
@@ -41,8 +43,10 @@
         }
     };
     
-    for (NSUInteger index = 0; index < arguments.count; index += 1) {
-        MTLArgument *argument = arguments[index];
+    for (MTLArgument *argument in arguments) {
+        if (argument.type != MTLArgumentTypeBuffer) {
+            continue;
+        }
         id value = parameters[argument.name];
         if (value) {
             if ([value isKindOfClass:[NSValue class]]) {
@@ -66,7 +70,7 @@
                 encodeBytes(data.bytes, data.length, argument.index);
             }else if ([value isKindOfClass:[MTIVector class]]) {
                 MTIVector *vector = (MTIVector *)value;
-                encodeBytes(vector.data.bytes, vector.data.length, argument.index);
+                encodeBytes(vector.bytes, vector.byteLength, argument.index);
             }else {
                 if (inOutError != nil) {
                     *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));

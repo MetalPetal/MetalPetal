@@ -8,48 +8,48 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
-#import <simd/simd.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIVector : NSObject <NSCopying, NSSecureCoding>
+typedef NS_ENUM(NSInteger, MTIVectorScalarType) {
+    MTIVectorScalarTypeFloat,
+    MTIVectorScalarTypeInt,
+    MTIVectorScalarTypeUInt NS_SWIFT_NAME(uint)
+} NS_SWIFT_NAME(MTIVector.ScalarType);
 
-/* Create a new vector object. */
-+ (instancetype)vectorWithValues:(const float *)values count:(NSUInteger)count;
-+ (instancetype)vectorWithDoubleValues:(const double *)values count:(NSUInteger)count;
+@interface MTIVector : NSObject <NSCopying, NSSecureCoding>
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithValues:(const float *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFloatValues:(const float *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithIntValues:(const int *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUIntValues:(const uint *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(uintValues:count:));
 
-- (instancetype)initWithCGPoint:(CGPoint)p;
-- (instancetype)initWithCGSize:(CGSize)s;
-- (instancetype)initWithCGRect:(CGRect)r;
-- (instancetype)initWithFloat4x4:(simd_float4x4)m;
-- (instancetype)initWithFloat2:(simd_float2)v;
-- (instancetype)initWithFloat4:(simd_float4)v;
-- (instancetype)initWithFloat3:(simd_float3)v;
++ (instancetype)vectorWithFloatValues:(const float *)values count:(NSUInteger)count;
++ (instancetype)vectorWithIntValues:(const int *)values count:(NSUInteger)count;
++ (instancetype)vectorWithUIntValues:(const uint *)values count:(NSUInteger)count NS_SWIFT_NAME(init(uintValues:count:));
 
-+ (instancetype)vectorWithX:(float)X Y:(float)Y;
+@property (readonly) MTIVectorScalarType scalarType;
 
 @property (readonly) NSUInteger count;
 
-@property (nonatomic,copy,readonly) NSData *data;
++ (instancetype)vectorWithX:(float)X Y:(float)Y;
++ (instancetype)vectorWithCGPoint:(CGPoint)point NS_SWIFT_NAME(init(value:));
++ (instancetype)vectorWithCGSize:(CGSize)size NS_SWIFT_NAME(init(value:));
++ (instancetype)vectorWithCGRect:(CGRect)rect NS_SWIFT_NAME(init(value:));
 
 @property (readonly) CGPoint CGPointValue;
-
 @property (readonly) CGSize CGSizeValue;
-
 @property (readonly) CGRect CGRectValue;
 
-@property (readonly) simd_float4x4 float4x4Value;
+@end
 
-@property (readonly) simd_float2 float2Value;
+@interface MTIVector (Contents)
 
-@property (readonly) simd_float4 float4Value;
+@property (readonly) NSUInteger byteLength;
 
-@property (readonly) simd_float3 float3Value;
+- (const void *)bytes NS_RETURNS_INNER_POINTER;
 
 @end
 

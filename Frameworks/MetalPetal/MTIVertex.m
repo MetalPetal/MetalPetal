@@ -64,6 +64,7 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType {
     if (self = [super init]) {
+        NSParameterAssert(count > 0);
         _vertexCount = count;
         _primitiveType = primitiveType;
         NSUInteger bufferLength = count * sizeof(MTIVertex);
@@ -132,6 +133,15 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
         { .position = {l, b, 0, 1} , .textureCoordinate = { 0, 1 } },
         { .position = {r, b, 0, 1} , .textureCoordinate = { 1, 1 } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
+}
+
++ (instancetype)fullViewportSquareVertices {
+    static MTIVertices *vertices;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        vertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
+    });
+    return vertices;
 }
 
 @end

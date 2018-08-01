@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ImageIO/ImageIO.h>
 
 // https://developer.apple.com/documentation/uikit/uiimageorientation?language=objc
 
@@ -20,3 +21,5 @@ typedef NS_ENUM(NSInteger, MTIImageOrientation) {
     MTIImageOrientationRightMirrored = 7,
     MTIImageOrientationLeft = 8
 };
+
+FOUNDATION_EXPORT MTIImageOrientation MTIImageOrientationFromCGImagePropertyOrientation(CGImagePropertyOrientation orientation) NS_SWIFT_NAME(MTIImageOrientation.init(cgImagePropertyOrientation:));

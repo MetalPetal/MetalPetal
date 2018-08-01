@@ -23,7 +23,7 @@
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
-    return @{@"scale": [[MTIVector alloc] initWithCGSize:self.scale]};
+    return @{@"scale": [MTIVector vectorWithCGSize:self.scale]};
 }
 
 @end

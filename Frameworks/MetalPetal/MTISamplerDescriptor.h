@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTLSamplerDescriptor *)newMTLSamplerDescriptor NS_SWIFT_NAME(makeMTLSamplerDescriptor());
 
+@property (nonatomic, readonly, class) MTISamplerDescriptor *defaultSamplerDescriptor;
+
++ (instancetype)defaultSamplerDescriptorWithAddressMode:(MTLSamplerAddressMode)addressMode;
+
 @end
 
 @interface MTLSamplerDescriptor (MTISamplerDescriptor)

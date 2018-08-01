@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import <MetalKit/MetalKit.h>
 
+#if TARGET_OS_IPHONE
+
 MTK_EXTERN MTKTextureLoaderOption __nonnull const MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9;
 
 @interface MTIMTKTextureLoaderExtensions: NSObject
@@ -16,3 +18,5 @@ MTK_EXTERN MTKTextureLoaderOption __nonnull const MTIMTKTextureLoaderOptionOverr
 @property (nonatomic,class) BOOL automaticallyFlipsTextureOniOS9;
 
 @end
+
+#endif

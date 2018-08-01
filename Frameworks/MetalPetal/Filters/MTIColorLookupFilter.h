@@ -5,6 +5,7 @@
 //  Created by 杨乃川 on 2017/10/12.
 //
 
+#import <CoreGraphics/CoreGraphics.h>
 #import "MTIFilter.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,7 +17,11 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
     MTIColorLookupTableType2DSquare,
     
     /// The look up table contents must a 2D image representing `n` slices of a unit color cube texture, arranged in an horizontal row of `n` images. For instance, a color cube of dimension 16x16x16 should be provided as an image of size 256x16.
-    MTIColorLookupTableType2DHorizontalStrip
+    MTIColorLookupTableType2DHorizontalStrip,
+    
+    MTIColorLookupTableType2DVerticalStrip,
+    
+    MTIColorLookupTableType3D
 };
 
 @interface MTIColorLookupTableInfo: NSObject <NSCopying>
@@ -31,8 +36,6 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
 
 - (instancetype)initWithType:(MTIColorLookupTableType)type dimension:(NSInteger)dimension NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithColorLookupTableImageSize:(CGSize)colorLookupTableImageSize;
-
 @end
 
 @interface MTIColorLookupFilter : NSObject <MTIFilter>
@@ -44,6 +47,8 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
 @property (nonatomic, strong, nullable, readonly) MTIColorLookupTableInfo *inputColorLookupTableInfo;
 
 @property (nonatomic) float intensity;
+
++ (nullable MTIImage *)create3DColorLookupTableFrom2DColorLookupTable:(MTIImage *)image pixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(make3DColorLookupTable(from:pixelFormat:));
 
 @end
 

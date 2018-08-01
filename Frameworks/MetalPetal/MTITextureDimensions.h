@@ -6,6 +6,7 @@
 //
 
 #import <Metal/Metal.h>
+#import <CoreGraphics/CoreGraphics.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

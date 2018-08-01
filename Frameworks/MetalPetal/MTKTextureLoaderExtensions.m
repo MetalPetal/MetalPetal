@@ -8,6 +8,8 @@
 #import "MTKTextureLoaderExtensions.h"
 #import <objc/runtime.h>
 
+#if TARGET_OS_IPHONE
+
 MTKTextureLoaderOption const MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9 = @"MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9";
 
 static void class_swizzleSelector(Class class, SEL originalSelector, SEL newSelector)
@@ -67,3 +69,5 @@ static BOOL _automaticallyFlipsTextureOniOS9 = NO;
 }
 
 @end
+
+#endif
