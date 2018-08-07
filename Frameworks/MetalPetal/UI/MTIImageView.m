@@ -39,8 +39,9 @@
     if (@available(iOS 11.0, *)) {
         self.accessibilityIgnoresInvertColors = YES;
     }
-    self.opaque = YES;
+    
     _resizingMode = MTIDrawableRenderingResizingModeAspect;
+    
     NSError *error;
     _context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
     if (error) {
@@ -55,6 +56,8 @@
     _renderView.paused = YES;
     _renderView.enableSetNeedsDisplay = YES;
     _drawsImmediately = NO;
+    
+    self.opaque = YES;
 }
 
 - (void)setDrawsImmediately:(BOOL)drawsImmediately {
