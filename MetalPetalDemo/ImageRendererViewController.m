@@ -122,11 +122,6 @@
 }
 
 - (MTIImage *)saturationAndInvertTestOutputImage {
-    MTIMPSDefinitionFilter *filter = [[MTIMPSDefinitionFilter alloc] init];
-    filter.inputImage = self.inputImage;
-    filter.intensity = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-    return filter.outputImage;
-    
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
     self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
