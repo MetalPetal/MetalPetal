@@ -4,6 +4,7 @@
 #import <MetalPetal/MTIComputePipeline.h>
 #import <MetalPetal/MTIMPSBoxBlurFilter.h>
 #import <MetalPetal/MTIMPSConvolutionFilter.h>
+#import <MetalPetal/MTIMPSDefinitionFilter.h>
 #import <MetalPetal/MTIColorMatrixFilter.h>
 #import <MetalPetal/MTIColorLookupFilter.h>
 #import <MetalPetal/MTIFilter.h>
