@@ -11,7 +11,6 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 
-
 @interface MTIMPSDefinitionFilter ()
 
 @property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
@@ -37,6 +36,10 @@
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
+    }
+    
+    if (self.intensity <= 0) {
+        return self.inputImage;
     }
     
     self.blurFilter.radius = self.inputImage.size.width / 1024.0 * 32.0;
