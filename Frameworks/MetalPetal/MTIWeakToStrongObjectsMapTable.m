@@ -9,9 +9,13 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import <objc/runtime.h>
 
+NSUInteger const MTIWeakToStrongObjectsMapTableCompactThreshold = 1024 * 64; //1024 x 64 x 8 (byte size of a pointer) = 512K
+
 @interface MTIWeakToStrongObjectsMapTable ()
 
 @property (nonatomic,strong,readonly) NSPointerArray *items;
+    
+@property (nonatomic) NSUInteger compactableItemCount;
 
 @end
 
@@ -39,9 +43,12 @@
     objc_setAssociatedObject(aKey, (__bridge const void *)(self), anObject, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     if (anObject) {
         [_items addPointer:(__bridge void *)(aKey)];
+        _compactableItemCount += 1;
+        if (_compactableItemCount >= MTIWeakToStrongObjectsMapTableCompactThreshold) {
+            [self compact];
+        }
     } else {
-        [_items addPointer:nil];
-        [_items compact];
+        [self compact];
         NSUInteger index = NSNotFound;
         NSUInteger i = 0;
         for (id object in _items) {
@@ -63,10 +70,7 @@
 }
 
 - (void)removeAllObjects {
-    // http://www.openradar.me/15396578
-    // https://stackoverflow.com/questions/31322290/nspointerarray-weird-compaction
-    [_items addPointer:nil];
-    [_items compact];
+    [self compact];
     for (id key in _items) {
         objc_setAssociatedObject(key, (__bridge const void *)(self), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
@@ -78,6 +82,7 @@
     // https://stackoverflow.com/questions/31322290/nspointerarray-weird-compaction
     [_items addPointer:nil];
     [_items compact];
+    _compactableItemCount = 0;
 }
 
 @end
