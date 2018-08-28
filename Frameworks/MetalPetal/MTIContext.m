@@ -31,6 +31,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _coreImageContextOptions = @{};
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
         _enablesRenderGraphOptimization = YES;
+        _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
     }
     return self;
@@ -41,6 +42,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
     options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
+    options.automaticallyReclaimResources = _automaticallyReclaimResources;
     options.label = _label;
     return options;
 }
@@ -76,6 +78,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 @end
 
 @implementation MTIContext
+
+- (void)dealloc {
+    [MTIMemoryWarningObserver removeMemoryWarningHandler:self];
+}
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (self = [super init]) {
@@ -131,6 +137,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _renderingLock = MTILockCreate();
         _promiseKeyValueTablesLock = MTILockCreate();
         _imageKeyValueTablesLock = MTILockCreate();
+        
+        if (options.automaticallyReclaimResources) {
+            [MTIMemoryWarningObserver addMemoryWarningHandler:self];
+        }
     }
     return self;
 }
@@ -421,6 +431,14 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     }
     [table setObject:value forKey:image];
     [_imageKeyValueTablesLock unlock];
+}
+
+@end
+
+@implementation MTIContext (MemoryWarningHandling)
+
+- (void)handleMemoryWarning {
+    [self reclaimResources];
 }
 
 @end

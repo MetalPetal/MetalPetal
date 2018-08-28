@@ -12,6 +12,7 @@
 #import <CoreVideo/CoreVideo.h>
 #import "MTIKernel.h"
 #import "MTIImagePromise.h"
+#import "MTIMemoryWarningObserver.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,6 +27,9 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
 @property (nonatomic) BOOL enablesRenderGraphOptimization;
+
+/*! @brief Automatically reclaim resources on memory warning. */
+@property (nonatomic) BOOL automaticallyReclaimResources;
 
 /*! @brief A string to help identify this object */
 @property (nonatomic, copy) NSString *label;
@@ -74,5 +78,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @end
 
+@interface MTIContext (MemoryWarningHandling) <MTIMemoryWarningHandling>
+
+@end
 
 NS_ASSUME_NONNULL_END
