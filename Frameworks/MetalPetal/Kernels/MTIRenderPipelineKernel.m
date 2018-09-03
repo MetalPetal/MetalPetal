@@ -276,17 +276,31 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             samplerStates[index] = samplerState;
         }
         
-        for (NSUInteger index = 0; index < command.images.count; index += 1) {
-            [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
-            NSParameterAssert([command.kernel.alphaTypeHandlingRule canAcceptAlphaType:command.images[index].alphaType]);
-            [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
-        }
+        NSParameterAssert({
+            /* Alpha Type Assert */
+            BOOL canAcceptAlphaType = YES;
+            for (MTIImage *image in command.images) {
+                if (![command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
+                    canAcceptAlphaType = NO;
+                    break;
+                }
+            }
+            canAcceptAlphaType;
+        });
         
         for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
             if (argument.type == MTLArgumentTypeTexture) {
                 NSUInteger index = argument.index;
                 [commandEncoder setVertexTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
                 [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+            }
+        }
+        
+        for (MTLArgument *argument in renderPipeline.reflection.fragmentArguments) {
+            if (argument.type == MTLArgumentTypeTexture) {
+                NSUInteger index = argument.index;
+                [commandEncoder setFragmentTexture:inputResolutions[index + resolutionIndex].texture atIndex:index];
+                [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
             }
         }
         
