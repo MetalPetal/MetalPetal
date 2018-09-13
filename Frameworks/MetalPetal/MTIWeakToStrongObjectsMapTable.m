@@ -33,6 +33,7 @@ NSUInteger const MTIWeakToStrongObjectsMapTableCompactThreshold = 1024 * 64; //1
 }
 
 - (id)objectForKey:(id)aKey {
+    NSParameterAssert(aKey);
     return objc_getAssociatedObject(aKey, (__bridge const void *)(self));
 }
 

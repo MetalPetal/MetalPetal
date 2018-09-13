@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTIWeakToStrongObjectsMapTable <KeyType, ObjectType> : NSObject
 
-- (nullable ObjectType)objectForKey:(nullable KeyType)aKey;
+- (nullable ObjectType)objectForKey:(KeyType)aKey;
 
-- (void)removeObjectForKey:(nullable KeyType)aKey;
+- (void)removeObjectForKey:(KeyType)aKey;
 
-- (void)setObject:(nullable ObjectType)anObject forKey:(nullable KeyType)aKey;
+- (void)setObject:(nullable ObjectType)anObject forKey:(KeyType)aKey;
 
 - (void)removeAllObjects;
 

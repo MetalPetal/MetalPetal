@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
     MTIImageCachePolicyPersistent
-};
+} NS_SWIFT_NAME(MTIImage.CachePolicy);
 
 @interface MTIImage : NSObject <NSCopying>
 
