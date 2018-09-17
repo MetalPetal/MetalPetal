@@ -159,19 +159,6 @@ namespace metalpetal {
         return colorLookup2DStripLUT(textureColor, dimension, false, intensity, lutTexture, lutSamper);
     }
 
-    vertex VertexOut imageTransformVertexShader(
-                                           const device VertexIn * vertices [[ buffer(0) ]],
-                                           constant float4x4 & transformMatrix [[ buffer(1) ]],
-                                           uint vid [[ vertex_id ]]
-                                           ) {
-        VertexOut outVertex;
-        VertexIn inVertex = vertices[vid];
-        outVertex.position = inVertex.position * transformMatrix;
-        outVertex.position.z = 0.0;
-        outVertex.textureCoordinate = inVertex.textureCoordinate;
-        return outVertex;
-    }
-
     fragment float4 blendWithMask(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> overlayTexture [[texture(0)]],
