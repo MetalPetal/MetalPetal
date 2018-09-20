@@ -8,22 +8,33 @@
 #import "MTIBlendModes.h"
 
 MTIBlendMode const MTIBlendModeNormal = @"Normal";
+// MTIBlendMode const MTIBlendModeDissolve = @"Dissolve"; // not implement
+
+MTIBlendMode const MTIBlendModeDarken = @"Darken";
 MTIBlendMode const MTIBlendModeMultiply = @"Multiply";
-MTIBlendMode const MTIBlendModeOverlay = @"Overlay";
+MTIBlendMode const MTIBlendModeColorBurn = @"ColorBurn";
+MTIBlendMode const MTIBlendModeLinearBurn = @"LinearBurn";
+MTIBlendMode const MTIBlendModeDarkerColor = @"DarkerColor";
+
+MTIBlendMode const MTIBlendModeLighten = @"Lighten";
 MTIBlendMode const MTIBlendModeScreen = @"Screen";
-MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
+MTIBlendMode const MTIBlendModeColorDodge = @"ColorDodge";
+MTIBlendMode const MTIBlendModeAdd = @"Add"; // LinearDodge
+MTIBlendMode const MTIBlendModeLighterColor = @"LighterColor";
+
+MTIBlendMode const MTIBlendModeOverlay = @"Overlay";
+MTIBlendMode const MTIBlendModeHardMix = @"HardMix";
 
 MTIBlendMode const MTIBlendModeSoftLight = @"SoftLight";
-MTIBlendMode const MTIBlendModeDarken = @"Darken";
-MTIBlendMode const MTIBlendModeLighten = @"Lighten";
-MTIBlendMode const MTIBlendModeColorDodge = @"ColorDodge";
-MTIBlendMode const MTIBlendModeColorBurn = @"ColorBurn";
+MTIBlendMode const MTIBlendModeHardLight = @"HardLight";
+MTIBlendMode const MTIBlendModeVividLight = @"VividLight";
+MTIBlendMode const MTIBlendModeLinearLight = @"LinearLight";
+MTIBlendMode const MTIBlendModePinLight = @"PinLight";
+
 MTIBlendMode const MTIBlendModeDifference = @"Difference";
 MTIBlendMode const MTIBlendModeExclusion = @"Exclusion";
-
-MTIBlendMode const MTIBlendModeAdd = @"Add";
-
-MTIBlendMode const MTIBlendModeLinearLight = @"LinearLight";
+MTIBlendMode const MTIBlendModeSubtract = @"Subtract";
+MTIBlendMode const MTIBlendModeDivide = @"Divide";
 
 MTIBlendMode const MTIBlendModeHue = @"Hue";
 MTIBlendMode const MTIBlendModeSaturation = @"Saturation";
@@ -61,23 +72,32 @@ static id<NSLocking> _registeredBlendModesLock;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSArray<MTIBlendMode> *builtinModes = @[MTIBlendModeNormal,
-                                                MTIBlendModeMultiply,
-                                                MTIBlendModeHardLight,
-                                                MTIBlendModeScreen,
-                                                MTIBlendModeOverlay,
-                                                MTIBlendModeSoftLight,
                                                 MTIBlendModeDarken,
-                                                MTIBlendModeLighten,
-                                                MTIBlendModeColorDodge,
+                                                MTIBlendModeMultiply,
                                                 MTIBlendModeColorBurn,
+                                                MTIBlendModeLinearBurn,
+                                                MTIBlendModeDarkerColor,
+                                                MTIBlendModeLighten,
+                                                MTIBlendModeScreen,
+                                                MTIBlendModeColorDodge,
+                                                MTIBlendModeAdd,
+                                                MTIBlendModeLighterColor,
+                                                MTIBlendModeOverlay,
+                                                MTIBlendModeHardMix,
+                                                MTIBlendModeSoftLight,
+                                                MTIBlendModeHardLight,
+                                                MTIBlendModeLinearLight,
+                                                MTIBlendModeVividLight,
+                                                MTIBlendModePinLight,
                                                 MTIBlendModeDifference,
                                                 MTIBlendModeExclusion,
+                                                MTIBlendModeSubtract,
+                                                MTIBlendModeDivide,
                                                 MTIBlendModeHue,
                                                 MTIBlendModeColor,
                                                 MTIBlendModeSaturation,
-                                                MTIBlendModeLuminosity,
-                                                MTIBlendModeAdd,
-                                                MTIBlendModeLinearLight];
+                                                MTIBlendModeLuminosity
+                                                ];
         NSMutableDictionary *modes = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in builtinModes) {
             NSString *fragmentFunctionNameForBlendFilter = [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
