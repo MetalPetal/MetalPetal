@@ -19,6 +19,9 @@
 
 @property (nonatomic, strong) MTIImage *sourceImage;
 @property (nonatomic, strong) MTIImage *backgroundImage;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *backgroundAlphaSegment;
+
+@property (nonatomic, strong) MTIImage *backgroundImageAlpha50;
 @end
 
 @implementation BlendModeViewController
@@ -31,9 +34,10 @@
     self.blendModePickerView.delegate = self;
     self.blendModePickerView.dataSource = self;
 
-//    self.sourceImage = [MTIImage transparentImage];
-    self.sourceImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.backgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.sourceImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    self.backgroundImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    self.backgroundImageAlpha50 = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background_a50"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    
     self.pickedBlendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeNormal];
     
     NSMutableArray *supportModes = [[MTIBlendModes allModes] mutableCopy];
@@ -100,8 +104,15 @@
 
 - (void)render {
     self.pickedBlendFilter.inputImage = self.sourceImage;
-    self.pickedBlendFilter.inputBackgroundImage = self.backgroundImage;
+    if (self.backgroundAlphaSegment.selectedSegmentIndex) {
+                self.pickedBlendFilter.inputBackgroundImage = self.backgroundImageAlpha50;
+    } else {
+        self.pickedBlendFilter.inputBackgroundImage = self.backgroundImage;
+    }
     self.renderView.image = self.pickedBlendFilter.outputImage;
+}
+- (IBAction)backgroundImageChanged:(UISegmentedControl *)sender {
+    [self render];
 }
 
 #pragma mark - BlendMode PickerView Delegate & DataSource

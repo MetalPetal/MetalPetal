@@ -16,15 +16,15 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeNormal;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDarken;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeMultiply;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorBurn; // OK
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearBurn; // OK
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDarkerColor; // OK
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorBurn;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearBurn;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDarkerColor;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLighten;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorDodge;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeAdd; // also LinearDodge
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLighterColor; // OK
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLighterColor;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeOverlay;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSoftLight;

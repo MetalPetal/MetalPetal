@@ -209,16 +209,14 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-    //    METAL_FUNC float s_lum(float4 C) {
-    //        return C.r * 0.2126 + C.g * 0.7152 + C.b * 0.0722;
-    //    }
+//        METAL_FUNC float s_lum(float4 C) {
+//            return C.r * 0.2126 + C.g * 0.7152 + C.b * 0.0722;
+//        }
     
      // darkerColor
     METAL_FUNC float4 darkerColorBlend(float4 Cb, float4 Cs) {
         float4 B;
-        float4 Csp = unpremultiply(Cs);
-        float4 Cbp = unpremultiply(Cb);
-        if (lum(Csp) < lum(Cbp)) {
+        if (lum(Cs) < lum(Cb)) {
             B = Cs;
         } else {
             B = Cb;
@@ -232,13 +230,10 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-    
     // lighterColor
     METAL_FUNC float4 lighterColorBlend(float4 Cb, float4 Cs) {
         float4 B;
-        float4 Csp = unpremultiply(Cs);
-        float4 Cbp = unpremultiply(Cb);
-        if (lum(Csp) > lum(Cbp)) {
+        if (lum(Cs) > lum(Cb)) {
             B = Cs;
         } else {
             B = Cb;
@@ -324,10 +319,8 @@ namespace metalpetal {
     }
     
     METAL_FUNC float4 hardMixBlend(float4 Cb, float4 Cs) {
-        Cb = unpremultiply(Cb);
-        Cs = unpremultiply(Cs);
+
         float4 B = float4(hardMixBlendSingleChannel(Cb.r, Cs.r), hardMixBlendSingleChannel(Cb.g, Cs.g), hardMixBlendSingleChannel(Cb.b, Cs.b), Cs.a);
-        B = premultiply(B);
         return blendBaseAlpha(Cb, Cs, B);
     }
     

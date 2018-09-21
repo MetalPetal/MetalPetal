@@ -138,15 +138,31 @@
                                     <constraint firstAttribute="height" constant="150" id="ijp-LY-MTU"/>
                                 </constraints>
                             </pickerView>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="eLo-T8-OpC">
+                                <rect key="frame" x="0.0" y="64" width="80" height="29"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="YcB-zS-Iwr"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="b_100"/>
+                                    <segment title="b_50"/>
+                                </segments>
+                                <connections>
+                                    <action selector="backgroundImageChanged:" destination="5d2-cu-yH0" eventType="valueChanged" id="JLs-cd-fhb"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="sDo-3s-uT9" firstAttribute="leading" secondItem="vok-Y6-Jeq" secondAttribute="leading" id="Eoe-VK-WUc"/>
+                            <constraint firstItem="eLo-T8-OpC" firstAttribute="top" secondItem="idX-3s-maI" secondAttribute="bottom" id="EzU-hd-h5z"/>
                             <constraint firstItem="hRT-V7-v8a" firstAttribute="top" secondItem="sDo-3s-uT9" secondAttribute="bottom" id="dbY-7M-dKh"/>
                             <constraint firstAttribute="trailing" secondItem="sDo-3s-uT9" secondAttribute="trailing" id="ipo-ov-k8L"/>
+                            <constraint firstItem="eLo-T8-OpC" firstAttribute="leading" secondItem="vok-Y6-Jeq" secondAttribute="leading" id="vuu-7d-r6k"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="backgroundAlphaSegment" destination="eLo-T8-OpC" id="QXN-Vy-Uzh"/>
                         <outlet property="blendModePickerView" destination="sDo-3s-uT9" id="Oue-9q-CuR"/>
                     </connections>
                 </viewController>
