@@ -58,6 +58,10 @@
     return [MTIImagePromiseDebugInfo layerRepresentationOfRenderGraphForPromise:self.promise];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p; width = %@; height = %@; depth = %@; cachePolicy = %@; promise = %@>",self.class, self, @(self.dimensions.width), @(self.dimensions.height), @(self.dimensions.depth), @(self.cachePolicy), self.promise];
+}
+
 @end
 
 @implementation MTIImage (Dimensions2D)

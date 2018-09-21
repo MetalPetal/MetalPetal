@@ -122,6 +122,10 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     return [self layerRepresentation];
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p; %@>",self.class, self, self.content];
+}
+
 @end
 
 @implementation MTIImagePromiseDebugInfo (RenderGraph)
