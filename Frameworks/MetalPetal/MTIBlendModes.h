@@ -12,21 +12,32 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NSString * MTIBlendMode NS_EXTENSIBLE_STRING_ENUM;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeNormal;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeMultiply;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeOverlay;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHardLight;
+// FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDissolve;
 
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSoftLight;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDarken;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeMultiply;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorBurn;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearBurn;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDarkerColor;
+
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLighten;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeScreen;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorDodge;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeAdd; // also LinearDodge
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLighterColor;
+
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeOverlay;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSoftLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHardLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeVividLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModePinLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHardMix;
+
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDifference;
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeExclusion;
-
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeAdd;
-
-FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeLinearLight;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeSubtract;
+FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeDivide;
 
 // non-separable
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeHue;

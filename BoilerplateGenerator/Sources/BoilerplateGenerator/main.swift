@@ -1,6 +1,6 @@
 import Foundation
 
-let blendModes = ["Normal","Multiply","HardLight", "SoftLight", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity", "Add", "LinearLight"]
+let blendModes = ["Normal","Darken","Multiply","ColorBurn","LinearBurn","DarkerColor","Lighten","Screen","ColorDodge","Add","LighterColor","Overlay","SoftLight","HardLight","VividLight","LinearLight","PinLight","HardMix", "Difference", "Exclusion", "Subtract", "Divide","Hue","Saturation","Color", "Luminosity"]
 
 if CommandLine.arguments.count > 1 {
     //running in command line mode
