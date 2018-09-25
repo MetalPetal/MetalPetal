@@ -117,12 +117,12 @@
 
 #pragma mark - BlendMode PickerView Delegate & DataSource
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    return self.imageBlendModes.count;
+    return (NSInteger)self.imageBlendModes.count;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
-    if (row < self.imageBlendModes.count) {
-        return  [self.imageBlendModes objectAtIndex:row];
+    if (row < (NSInteger)self.imageBlendModes.count) {
+        return self.imageBlendModes[(NSUInteger)row];
     }
     return @"";
 }
@@ -132,8 +132,8 @@
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    if (row < self.imageBlendModes.count) {
-        MTIBlendFilter *pickedBlendFilter = [[MTIBlendFilter alloc] initWithBlendMode:self.imageBlendModes[row]];
+    if (row < (NSInteger)self.imageBlendModes.count) {
+        MTIBlendFilter *pickedBlendFilter = [[MTIBlendFilter alloc] initWithBlendMode:self.imageBlendModes[(NSUInteger)row]];
         if (pickedBlendFilter) {
             self.pickedBlendFilter = pickedBlendFilter;
             [self render];

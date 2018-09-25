@@ -91,14 +91,6 @@ namespace metalpetal {
         }
         return p;
     }
-
-//    // Generate a random float in the range [0.0f, 1.0f] using x, y, and z (based on the xor128 algorithm)
-//     METAL_FUNC  float random(int x, int y, int z)
-//    {
-//        int seed = x + y * 57 + z * 241;
-//        seed= (seed<< 13) ^ seed;
-//        return (( 1.0 - ( (seed * (seed * seed * 15731 + 789221) + 1376312589) & 2147483647) / 1073741824.0f) + 1.0f) / 2.0f;
-//    }
     
     METAL_FUNC float3 rgb2hsl(float3 inputColor) {
         float3 color = saturate(inputColor);
@@ -160,7 +152,6 @@ namespace metalpetal {
         return normalBlend(Cb, Cr);
     }
     
-    
     // multiply
     METAL_FUNC float4 multiplyBlend(float4 Cb, float4 Cs) {
         float4 B = saturate(float4(Cb.rgb * Cs.rgb, Cs.a));
@@ -209,11 +200,7 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-//        METAL_FUNC float s_lum(float4 C) {
-//            return C.r * 0.2126 + C.g * 0.7152 + C.b * 0.0722;
-//        }
-    
-     // darkerColor
+    // darkerColor
     METAL_FUNC float4 darkerColorBlend(float4 Cb, float4 Cs) {
         float4 B;
         if (lum(Cs) < lum(Cb)) {
@@ -349,18 +336,17 @@ namespace metalpetal {
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-    // add  also linearDodge
-    METAL_FUNC float4 linearDodgeBlend(float4 Cb, float4 Cs) {
+    // add also linearDodge
+    METAL_FUNC float4 addBlend(float4 Cb, float4 Cs) {
         float4 B = min(Cb + Cs, 1.0);
         return blendBaseAlpha(Cb, Cs, B);
     }
     
-//    =======
-    METAL_FUNC float4 addBlend(float4 Cb, float4 Cs) {
-        return linearDodgeBlend(Cb, Cs);
+    METAL_FUNC float4 linearDodgeBlend(float4 Cb, float4 Cs) {
+        return addBlend(Cb,Cs);
     }
-//
-    //  subtract
+    
+    // subtract
     METAL_FUNC float4 subtractBlend(float4 Cb, float4 Cs) {
         float4 B = Cb - Cs;
         return blendBaseAlpha(Cb, Cs, B);
