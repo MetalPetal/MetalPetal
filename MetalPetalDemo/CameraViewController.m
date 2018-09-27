@@ -81,7 +81,7 @@ NSString * const CameraViewControllerCapturedVideosFolderName = @"videos";
     _pixellateFilter = [[MTIPixellateFilter alloc] init];
     
     _colorLookupFilter = [[MTIColorLookupFilter alloc] init];
-    _colorLookupFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ColorLookup512"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    _colorLookupFilter.inputColorLookupTable = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"ColorLookup512"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
     
     _halftoneFilter = [[MTIColorHalftoneFilter alloc] init];
     

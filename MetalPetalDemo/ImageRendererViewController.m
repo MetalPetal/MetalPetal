@@ -33,8 +33,6 @@
 
 @property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
 
-@property (nonatomic, strong) MTIMPSConvolutionFilter *convolutionFilter;
-
 @property (nonatomic, strong) MTIMultilayerCompositingFilter *compositingFilter;
 
 @property (nonatomic, strong) MTILensBlurFilter *lensBlurFilter;
@@ -82,25 +80,19 @@
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
     
-    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
-    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage options:@{MTKTextureLoaderOptionSRGB: @NO}] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
+    
+    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
+    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
     
     self.vibranceFilter = [[MTIVibranceFilter alloc] init];
-    self.vibranceFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"P1040808.jpg"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.vibranceFilter.avoidsSaturatingSkinTones = NO;
-    float matrix[9] = {
-        -1, 0, 1,
-        -1, 0, 1,
-        -1, 0, 1
-    };
-    self.convolutionFilter = [[MTIMPSConvolutionFilter alloc] initWithKernelWidth:3 kernelHeight:3 weights:matrix];
-
-    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.vibranceFilter.avoidsSaturatingSkinTones = YES;
+    
+    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
     self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeLighterColor];
         
-    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:NO];
+    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -116,6 +108,7 @@
 
 - (MTIImage *)vibranceTestOutputImage {
     float amount =  sin(CFAbsoluteTimeGetCurrent() * 2.0) ;
+    self.vibranceFilter.inputImage = self.inputImage;
     self.vibranceFilter.amount = amount;
     MTIImage *outputImage = self.vibranceFilter.outputImage;
     return outputImage;
@@ -190,9 +183,9 @@
     static MTIImage *maskImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied];
+        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
     });
-  
+    
     self.compositingFilter.layers = @[
                                        [[MTILayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:
                                         [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal] layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(200, 200) size:CGSizeMake(1920, 1080) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],

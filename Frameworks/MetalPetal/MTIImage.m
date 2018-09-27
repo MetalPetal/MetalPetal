@@ -14,6 +14,7 @@
 #import "MTICoreImageRendering.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIImageProperties.h"
+#import "MTIDefer.h"
 
 @interface MTIImage ()
 
@@ -121,6 +122,102 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     return MTIPreferredAlphaTypeForImageWithProperties([[MTIImageProperties alloc] initWithCGImage:cgImage]);
 }
 
+#import "MTIRenderPipelineKernel.h"
+#import "MTIFunctionDescriptor.h"
+#import "MTIFilter.h"
+#import "MTIRenderPassOutputDescriptor.h"
+
+@implementation MTIImage (Convert)
+
++ (MTIImage *)imageFromRGChannelMonochromeImage:(MTIImage *)image alphaInfo:(CGImageAlphaInfo)alphaInfo byteOrderInfo:(CGImageByteOrderInfo)byteOrderInfo sRGBToLinear:(BOOL)sRGBToLinear flip:(BOOL)flip {
+    BOOL byteOrderLittle = NO;
+    switch (byteOrderInfo) {
+        case kCGImageByteOrder16Little:
+            byteOrderLittle = YES;
+            break;
+        case kCGImageByteOrder16Big:
+            byteOrderLittle = NO;
+            break;
+        case kCGImageByteOrderDefault:
+            byteOrderLittle = NO;
+            break;
+        default:
+            NSAssert(NO, @"");
+            break;
+    }
+    BOOL alphaPremultiplied = YES;
+    BOOL alphaFirst = NO;
+    switch (alphaInfo) {
+        case kCGImageAlphaLast:
+            alphaPremultiplied = NO;
+            alphaFirst = NO;
+            break;
+        case kCGImageAlphaFirst:
+            alphaPremultiplied = NO;
+            alphaFirst = YES;
+            break;
+        case kCGImageAlphaPremultipliedLast:
+            alphaPremultiplied = YES;
+            alphaFirst = NO;
+            break;
+        case kCGImageAlphaPremultipliedFirst:
+            alphaPremultiplied = YES;
+            alphaFirst = YES;
+            break;
+        default:
+            NSAssert(NO, @"");
+            break;
+    }
+    
+    int alphaIndex = byteOrderLittle ? (alphaFirst ? 1 : 0) : (alphaFirst ? 0 : 1);
+    
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        MTIAlphaTypeHandlingRule *rule = [[MTIAlphaTypeHandlingRule alloc] initWithAcceptableAlphaTypes:@[@(MTIAlphaTypePremultiplied),@(MTIAlphaTypeNonPremultiplied),@(MTIAlphaTypeAlphaIsOne)] outputAlphaType:MTIAlphaTypeNonPremultiplied];
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"rgToMonochrome"]
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:1
+                                                             alphaTypeHandlingRule:rule];
+    });
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:image.dimensions pixelFormat:MTLPixelFormatBGRA8Unorm];
+    MTIRenderCommand *renderCommand = [[MTIRenderCommand alloc] initWithKernel:kernel
+                                                                      geometry:flip ?
+                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)] :
+                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
+                                                                        images:@[image]
+                                                                    parameters:@{@"alphaChannelIndex": @(alphaIndex),
+                                                                                 @"unpremultiplyAlpha": @((bool)alphaPremultiplied),
+                                                                                 @"convertSRGBToLinear": @((bool)sRGBToLinear)}];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[renderCommand]
+                                            outputDescriptors:@[outputDescriptor]].firstObject;
+}
+
++ (MTIImage *)imageFromRChannelMonochromeImage:(MTIImage *)image sRGBToLinear:(BOOL)sRGBToLinear flip:(BOOL)flip {
+    static MTIRenderPipelineKernel *kernel;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"rToMonochrome"]
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:1
+                                                             alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
+    });
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:image.dimensions pixelFormat:MTLPixelFormatBGRA8Unorm];
+    MTIRenderCommand *renderCommand = [[MTIRenderCommand alloc] initWithKernel:kernel
+                                                                      geometry:flip ?
+                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)] :
+                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
+                                                                        images:@[image]
+                                                                    parameters:@{@"invert": @((bool)false),
+                                                                                 @"convertSRGBToLinear": @((bool)sRGBToLinear)}];
+    return [MTIRenderCommand imagesByPerformingRenderCommands:@[renderCommand]
+                                            outputDescriptors:@[outputDescriptor]].firstObject;
+}
+
+@end
+
 #import "MTIImagePromise.h"
 
 @implementation MTIImage (Creation)
@@ -151,19 +248,90 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer options:options alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
+- (instancetype)initWithMTKTextureLoaderIncompatibleCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
+    if (@available(iOS 10.0, macOS 10.12, *)) {
+        //Handle monochrome image.
+        CGColorSpaceRef sourceColorspace = CGImageGetColorSpace(cgImage);
+        size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
+        size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage);
+        size_t componentsPerPixel = bitsPerPixel/bitsPerComponent;
+        if (CGColorSpaceGetModel(sourceColorspace) == kCGColorSpaceModelMonochrome &&
+            bitsPerComponent == 8 &&
+            (componentsPerPixel == 1 || componentsPerPixel == 2)) {
+            
+            static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
+            static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
+                                        (id)kCGColorSpaceExtendedGray: @YES,
+                                        (id)kCGColorSpaceLinearGray: @NO,
+                                        (id)kCGColorSpaceExtendedLinearGray: @NO};
+                flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
+                              MTKTextureLoaderOriginBottomLeft: @YES,
+                              MTKTextureLoaderOriginFlippedVertically: @YES};
+            });
+            NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
+            NSAssert(sRGBValue != nil, @"Unsupported gray color space.");
+            BOOL sRGB = [sRGBValue boolValue];
+            
+            id sRGBOption = options[MTKTextureLoaderOptionSRGB];
+            if (sRGBOption) {
+                sRGB = [sRGBOption boolValue];
+            }
+            
+            MTKTextureLoaderOrigin originOption = options[MTKTextureLoaderOptionOrigin];
+            BOOL flip = NO;
+            if (originOption) {
+                flip = [flipTable[originOption] boolValue];
+            }
+            
+            CGImageAlphaInfo alphaInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapAlphaInfoMask;
+            CGImageByteOrderInfo byteOrderInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderMask;
+            size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
+            CGDataProviderRef dataProvider = CGImageGetDataProvider(cgImage);
+            CFDataRef dataRef = CGDataProviderCopyData(dataProvider);
+            NSData *bitmapData = (__bridge_transfer NSData *)dataRef;
+            if (componentsPerPixel == 1) {
+                MTIImage *rImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatR8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
+                return [[MTIImage imageFromRChannelMonochromeImage:rImage sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+            } else {
+                MTIImage *rgImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatRG8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
+                return [[MTIImage imageFromRGChannelMonochromeImage:rgImage alphaInfo:alphaInfo byteOrderInfo:byteOrderInfo sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+            }
+        }
+    }
+    
+    //Fallback
+    //Redraw `cgImage`.
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(nil, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 8, CGImageGetWidth(cgImage) * 4, colorspace, kCGImageAlphaPremultipliedLast);
+    CGColorSpaceRelease(colorspace);
+    CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
+    CGImageRef redrawedImage = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
+    @MTI_DEFER {
+        CGImageRelease(redrawedImage);
+    };
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:redrawedImage options:options alphaType:isOpaque ? MTIAlphaTypeAlphaIsOne : MTIAlphaTypePremultiplied] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options {
-    NSParameterAssert(cgImage);
-    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForCGImage(cgImage);
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithCGImage:cgImage options:options isOpaque:NO];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
+    return [self initWithCGImage:cgImage options:options isOpaque:alphaType == MTIAlphaTypeAlphaIsOne];
+}
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
     NSParameterAssert(cgImage);
-    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForCGImage(cgImage);
-    if (preferredAlphaType == MTIAlphaTypePremultiplied) {
-        NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info in CGImage indicates the alpha type is `.premultiplied`.");
+    MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
+    if (MTIMTKTextureLoaderCanDecodeImage(cgImage)) {
+        return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    } else {
+        return [self initWithMTKTextureLoaderIncompatibleCGImage:cgImage options:options isOpaque:isOpaque];
     }
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:alphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {

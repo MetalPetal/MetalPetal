@@ -65,7 +65,9 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType __attribute__((deprecated("Replaced by MTIImage(cgImage:options:isOpaque:)")));
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque;
 
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;

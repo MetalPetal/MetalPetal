@@ -34,9 +34,9 @@
     self.blendModePickerView.delegate = self;
     self.blendModePickerView.dataSource = self;
 
-    self.sourceImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.backgroundImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.backgroundImageAlpha50 = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background_a50"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
+    self.sourceImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
+    self.backgroundImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
+    self.backgroundImageAlpha50 = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background_a50"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
     
     self.pickedBlendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeNormal];
     
