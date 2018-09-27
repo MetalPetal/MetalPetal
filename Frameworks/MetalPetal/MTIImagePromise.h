@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
+
 @class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions, MTIImageProperties;
 
 @protocol MTIImagePromise <NSObject, NSCopying>

@@ -34,7 +34,7 @@ static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOpti
 
 static NSString * const MTIMTKTextureLoaderCannotDecodeImageMessage = @"MetalPetal uses `MTKTextureLoader` to load `CGImage`s. However this image may not be able to load using MTKTextureLoader, see http://www.openradar.me/31722523. You can use `MTIImage(ciImage:isOpaque:)` to load the image using CoreImage. Or use a texture asset with `MTIImage(named:in:...)`";
 
-__unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
+BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     NSCParameterAssert(image);
     CGColorSpaceRef colorspace = CGImageGetColorSpace(image);
     CGColorSpaceModel model = CGColorSpaceGetModel(colorspace);
