@@ -185,7 +185,7 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     MTIRenderCommand *renderCommand = [[MTIRenderCommand alloc] initWithKernel:kernel
                                                                       geometry:flip ?
                                        [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)] :
-                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
+                                       [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
                                                                         images:@[image]
                                                                     parameters:@{@"alphaChannelIndex": @(alphaIndex),
                                                                                  @"unpremultiplyAlpha": @((bool)alphaPremultiplied),
@@ -208,7 +208,7 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     MTIRenderCommand *renderCommand = [[MTIRenderCommand alloc] initWithKernel:kernel
                                                                       geometry:flip ?
                                        [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)] :
-                                       [MTIVertices verticallyFlippedSquareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
+                                       [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)]
                                                                         images:@[image]
                                                                     parameters:@{@"invert": @((bool)false),
                                                                                  @"convertSRGBToLinear": @((bool)sRGBToLinear)}];
