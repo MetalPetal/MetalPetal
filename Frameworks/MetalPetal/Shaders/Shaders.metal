@@ -191,14 +191,35 @@ namespace metalpetal {
         : adjustSaturation(textureColor, amount, grayColorTransform);
     }
 
-    fragment float4 rToGray(
+    fragment float4 rToMonochrome(
                             VertexOut vertexIn [[stage_in]],
                             texture2d<float, access::sample> sourceTexture [[texture(0)]],
                             sampler sourceSampler [[sampler(0)]],
-                            constant bool & invert [[buffer(0)]]
+                            constant bool & invert [[buffer(0)]],
+                            constant bool & convertSRGBToLinear [[buffer(1)]]
                            ) {
         float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+        if (convertSRGBToLinear) {
+            textureColor.r = sRGBToLinear(textureColor.r);
+        }
         return float4(float3(invert ? 1.0 - textureColor.r : textureColor.r),1.0);
+    }
+    
+    fragment float4 rgToMonochrome(
+                            VertexOut vertexIn [[stage_in]],
+                            texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                            sampler sourceSampler [[sampler(0)]],
+                            constant int & alphaChannelIndex [[buffer(0)]],
+                            constant bool & unpremultiplyAlpha [[buffer(1)]],
+                            constant bool & convertSRGBToLinear [[buffer(2)]]
+                            ) {
+        float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+        float alpha = textureColor[alphaChannelIndex];
+        float color = textureColor[1 - alphaChannelIndex] / (unpremultiplyAlpha ? max(alpha,0.00001) : 1.0);
+        if (convertSRGBToLinear) {
+            color = sRGBToLinear(color);
+        }
+        return float4(float3(color),alpha);
     }
 
     fragment float4 chromaKeyBlend(

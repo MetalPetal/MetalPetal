@@ -38,12 +38,12 @@
     return self;
 }
 
-+ (MTIRenderPipelineKernel *)rToGrayKernel {
++ (MTIRenderPipelineKernel *)rToMonochromeKernel {
     static MTIRenderPipelineKernel *kernel;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"rToGray"]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"rToMonochrome"]
                                                                   vertexDescriptor:nil
                                                               colorAttachmentCount:1
                                                              alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
@@ -60,11 +60,15 @@
             return [self.kernel applyToInputImages:@[_inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:_outputPixelFormat];
         case MTIMPSSobelColorModeGrayscale: {
             MTIImage *sobelImage = [self.kernel applyToInputImages:@[_inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:MTLPixelFormatR8Unorm];
-            return [[self.class rToGrayKernel] applyToInputImages:@[sobelImage] parameters:@{@"invert": @NO} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:_outputPixelFormat];
+            return [[self.class rToMonochromeKernel] applyToInputImages:@[sobelImage] parameters:@{@"invert": @NO,
+                                                                                                   @"convertSRGBToLinear": @((bool)false)
+                                                                                                   } outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:_outputPixelFormat];
         }
         case MTIMPSSobelColorModeGrayscaleInverted: {
             MTIImage *sobelImage = [self.kernel applyToInputImages:@[_inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:MTLPixelFormatR8Unorm];
-            return [[self.class rToGrayKernel] applyToInputImages:@[sobelImage] parameters:@{@"invert": @YES} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:_outputPixelFormat];
+            return [[self.class rToMonochromeKernel] applyToInputImages:@[sobelImage] parameters:@{@"invert": @YES,
+                                                                                                   @"convertSRGBToLinear": @((bool)false)
+                                                                                                   } outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputImage.size) outputPixelFormat:_outputPixelFormat];
         }
         default:
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unknown MTIMPSSobelOutputMode" userInfo:@{}];

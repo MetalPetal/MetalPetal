@@ -65,6 +65,11 @@ namespace metalpetal {
         return x - y * floor(x/y);
     }
     
+    template <typename T, typename _E = typename enable_if<is_same<float, typename make_scalar<T>::type>::value>::type>
+    METAL_FUNC T sRGBToLinear(T x) {
+        return sign(x)*mix(abs(x)*0.077399380804954, pow(abs(x)*0.947867298578199 + 0.052132701421801, 2.4), step(0.04045, abs(x)));
+    }
+    
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
     }
