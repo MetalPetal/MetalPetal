@@ -211,9 +211,16 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         return nil;
     }
     CIImage *image = [CIImage imageWithCVPixelBuffer:self.pixelBuffer];
+    CGColorSpaceRef colorspace = nil;
+    if (_sRGB) {
+        //with sRGB texture CI should write linearRGB values
+        colorspace = nil;
+    } else {
+        colorspace = CGColorSpaceCreateDeviceRGB();
+    }
     if (@available(iOS 11.0, *)) {
         CIRenderDestination *destination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
-        destination.colorSpace = (CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB());
+        destination.colorSpace = colorspace;
         destination.flipped = YES;
         [renderingContext.context.coreImageContext startTaskToRender:image toDestination:destination error:&error];
         if (error) {
@@ -224,8 +231,9 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         }
     } else {
         image = [image imageByApplyingOrientation:4];
-        [renderingContext.context.coreImageContext render:image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:(CGColorSpaceRef)CFAutorelease(CGColorSpaceCreateDeviceRGB())];
+        [renderingContext.context.coreImageContext render:image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:colorspace];
     }
+    CGColorSpaceRelease(colorspace);
     return renderTarget;
 }
 
