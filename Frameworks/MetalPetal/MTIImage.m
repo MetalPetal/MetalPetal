@@ -164,6 +164,14 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
             alphaPremultiplied = YES;
             alphaFirst = YES;
             break;
+        case kCGImageAlphaNoneSkipLast:
+            alphaPremultiplied = NO;
+            alphaFirst = NO;
+            break;
+        case kCGImageAlphaNoneSkipFirst:
+            alphaPremultiplied = NO;
+            alphaFirst = YES;
+            break;
         default:
             NSAssert(NO, @"");
             break;
@@ -302,8 +310,25 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
         }
     }
     
-    //Fallback
-    //Redraw `cgImage`.
+    //Fallback using CoreImage.
+    /*
+    BOOL sRGB = [options[MTKTextureLoaderOptionSRGB] boolValue];
+    BOOL flip = NO;
+    if (@available(iOS 10.0, *)) {
+        MTKTextureLoaderOrigin originOption = options[MTKTextureLoaderOptionOrigin];
+        if ([originOption isEqualToString:MTKTextureLoaderOriginBottomLeft] || [originOption isEqualToString:MTKTextureLoaderCubeLayoutVertical]) {
+            flip = YES;
+        }
+    }
+    BOOL ciFlip = !flip;
+    CIImage *ciImage = [CIImage imageWithCGImage:cgImage];
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    MTICIImagePromise *promise = [[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:[[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm colorSpace:sRGB ? colorspace : nil  flipped:ciFlip]];
+    CGColorSpaceRelease(colorspace);
+    return [self initWithPromise:promise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    */
+    
+    //Fallback: Redraw `cgImage`.
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
     CGContextRef context = CGBitmapContextCreate(nil, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 8, CGImageGetWidth(cgImage) * 4, colorspace, kCGImageAlphaPremultipliedLast);
     CGColorSpaceRelease(colorspace);

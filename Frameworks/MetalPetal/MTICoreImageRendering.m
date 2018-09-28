@@ -42,7 +42,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-        defaultOptions = [[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm_sRGB colorSpace:colorspace flipped:YES];
+        defaultOptions = [[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm colorSpace:colorspace flipped:YES];
         CGColorSpaceRelease(colorspace);
     });
     return defaultOptions;
