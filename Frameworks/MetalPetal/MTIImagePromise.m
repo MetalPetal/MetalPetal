@@ -416,7 +416,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         }];
         texture = [buffer newTextureWithDescriptor:textureDescriptor offset:0 bytesPerRow:_bytesPerRow];
     } else {
-        id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
+        texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
         [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
     }
     if (!texture) {
