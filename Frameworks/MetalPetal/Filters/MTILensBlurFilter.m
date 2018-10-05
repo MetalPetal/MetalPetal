@@ -77,12 +77,13 @@
                                                                                            @"usesOneMinusMaskValue": @(usesOneMinusMaskValue)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
-    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage]
+    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[[prepassOutputImage imageWithSamplerDescriptor:_inputImage.samplerDescriptor]]
                                                                                      parameters:@{@"delta0": deltas[0],
                                                                                                   @"delta1": deltas[1],
                                                                                                   }
                                                                               outputDescriptors:@[[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
-    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1]]
+    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[[alphaOutputs[0] imageWithSamplerDescriptor:_inputImage.samplerDescriptor],
+                                                                                             [alphaOutputs[1] imageWithSamplerDescriptor:_inputImage.samplerDescriptor]]
                                                                                 parameters:@{@"delta0": deltas[1],
                                                                                              @"delta1": deltas[2],
                                                                                              @"power": @((float)1.0/power)
@@ -93,4 +94,3 @@
 }
 
 @end
-
