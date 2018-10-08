@@ -61,7 +61,7 @@ namespace metalpetal {
             float4 color2 = sampleWithDelta(colorTexture, colorSampler, vertexIn.textureCoordinate, delta1 * coc);
             LensBlurAlphaPassOutput output;
             output.vertical = float4(color1.rgb, coc);
-            output.diagonal = float4((color2 + color1).rgb * 0.5, coc);
+            output.diagonal = float4((color2 + color1).rgb, coc);
             return output;
         }
         
