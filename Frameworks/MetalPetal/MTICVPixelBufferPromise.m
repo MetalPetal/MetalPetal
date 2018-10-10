@@ -375,8 +375,25 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+    
+#if COREVIDEO_SUPPORTS_IOSURFACE
+    BOOL fallbackToCoreImageRenderer;
+    if (CVPixelBufferGetIOSurface(_pixelBuffer)) {
+        //CVPixelBuffer is ioSurface backed.
+        fallbackToCoreImageRenderer = NO;
+    } else {
+        //fallback to CoreImage renderer.
+        fallbackToCoreImageRenderer = YES;
+    }
+#else
+    BOOL fallbackToCoreImageRenderer = YES;
+#endif
+    
     switch (self.renderingAPI) {
         case MTICVPixelBufferRenderingAPIMetalPetal:
+            if (fallbackToCoreImageRenderer) {
+                return [self resolveWithContext_CI:renderingContext error:inOutError];
+            }
             return [self resolveWithContext_MTI:renderingContext error:inOutError];
         case MTICVPixelBufferRenderingAPICoreImage:
             return [self resolveWithContext_CI:renderingContext error:inOutError];
