@@ -282,7 +282,9 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     size_t frameWidth = CVPixelBufferGetWidth(pixelBuffer);
     size_t frameHeight = CVPixelBufferGetHeight(pixelBuffer);
     
-    MTICVMetalTexture *renderTexture = [self.coreVideoTextureCache newTextureWithCVImageBuffer:pixelBuffer attributes:NULL pixelFormat:targetPixelFormat width:frameWidth height:frameHeight planeIndex:0 error:&error];
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:targetPixelFormat width:frameWidth height:frameHeight mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
+    id<MTICVMetalTexture> renderTexture = [self.coreVideoTextureBridge newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (!renderTexture || error) {
         if (inOutError) {
             *inOutError = error;

@@ -11,7 +11,7 @@
 
 NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErrorDomain";
 
-@interface MTICVMetalTexture ()
+@interface MTICVMetalTextureCacheTexture: NSObject <MTICVMetalTexture>
 
 #if COREVIDEO_SUPPORTS_METAL
 
@@ -21,7 +21,8 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 
 @end
 
-@implementation MTICVMetalTexture
+@implementation MTICVMetalTextureCacheTexture
+@synthesize texture = _texture;
 
 #if COREVIDEO_SUPPORTS_METAL
 
@@ -94,20 +95,24 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 #endif
 }
 
-- (nullable MTICVMetalTexture *)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer attributes:(NSDictionary *)textureAttributes pixelFormat:(MTLPixelFormat)pixelFormat width:(size_t)width height:(size_t)height planeIndex:(size_t)planeIndex error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer textureDescriptor:(MTLTextureDescriptor *)textureDescriptor planeIndex:(size_t)planeIndex error:(NSError * _Nullable __autoreleasing *)error {
 #if COREVIDEO_SUPPORTS_METAL
     [_lock lock];
     CVMetalTextureRef textureRef = NULL;
-    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _cache, imageBuffer, (__bridge CFDictionaryRef)textureAttributes, pixelFormat, width, height, planeIndex, &textureRef);
+    NSDictionary *textureAttributes = nil;
+    if (@available(iOS 11.0, *)) {
+        textureAttributes = @{(id)kCVMetalTextureUsage: @(textureDescriptor.usage)};
+    }
+    CVReturn status = CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _cache, imageBuffer, (__bridge CFDictionaryRef)textureAttributes, textureDescriptor.pixelFormat, textureDescriptor.width, textureDescriptor.height, planeIndex, &textureRef);
     [_lock unlock];
     if (status != kCVReturnSuccess || textureRef == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:MTICVMetalTextureCacheErrorDomain code:MTICVMetalTextureCacheErrorFailedToCreateTexture userInfo:@{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:@{}]}];
         }
-        [self flush];
+        [self flushCache];
         return nil;
     }
-    MTICVMetalTexture *texture = [[MTICVMetalTexture alloc] initWithCVMetalTexture:textureRef];
+    MTICVMetalTextureCacheTexture *texture = [[MTICVMetalTextureCacheTexture alloc] initWithCVMetalTexture:textureRef];
     CFRelease(textureRef);
     return texture;
 #else
@@ -118,7 +123,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 #endif
 }
 
-- (void)flush {
+- (void)flushCache {
 #if COREVIDEO_SUPPORTS_METAL
     [_lock lock];
     CVMetalTextureCacheFlush(_cache, 0);

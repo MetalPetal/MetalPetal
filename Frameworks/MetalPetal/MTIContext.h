@@ -13,6 +13,7 @@
 #import "MTIKernel.h"
 #import "MTIImagePromise.h"
 #import "MTIMemoryWarningObserver.h"
+#import "MTICVMetalTextureBridging.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -66,7 +67,7 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 
-@property (nonatomic, strong, readonly) MTICVMetalTextureCache *coreVideoTextureCache;
+@property (nonatomic, strong, readonly) id<MTICVMetalTextureBridging> coreVideoTextureBridge;
 
 @property (nonatomic, class, readonly) BOOL defaultMetalDeviceSupportsMPS;
 

@@ -6,8 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <Metal/Metal.h>
-#import <CoreVideo/CoreVideo.h>
+#import "MTICVMetalTextureBridging.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,31 +18,14 @@ typedef NS_ERROR_ENUM(MTICVMetalTextureCacheErrorDomain, MTICVMetalTextureCacheE
     MTICVMetalTextureCacheErrorFailedToCreateTexture = 10003
 };
 
-@interface MTICVMetalTexture: NSObject
-
-@property (nonatomic, readonly) id<MTLTexture> texture;
-
-@end
-
 /// Thread-safe object-orientated CVMetalTextureCache.
 
-@interface MTICVMetalTextureCache : NSObject
+@interface MTICVMetalTextureCache : NSObject <MTICVMetalTextureBridging>
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device
                         cacheAttributes:(nullable NSDictionary *)cacheAttributes
                       textureAttributes:(nullable NSDictionary *)textureAttributes
                                   error:(NSError **)error;
-
-- (nullable MTICVMetalTexture *)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer
-                                                 attributes:(nullable NSDictionary *)textureAttributes
-                                                pixelFormat:(MTLPixelFormat)pixelFormat
-                                                      width:(size_t)width
-                                                     height:(size_t)height
-                                                 planeIndex:(size_t)planeIndex
-                                                      error:(NSError **)error
-NS_SWIFT_NAME(makeTexture(with:attributes:pixelFormat:width:height:planeIndex:));
-
-- (void)flush;
 
 @end
 

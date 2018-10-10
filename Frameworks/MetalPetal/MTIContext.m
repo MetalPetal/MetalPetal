@@ -19,6 +19,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTICVMetalTextureCache.h"
+#import "MTICVMetalTextureBridge.h"
 #import "MTILock.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
@@ -125,13 +126,17 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _promiseKeyValueTables = [NSMutableDictionary dictionary];
         _imageKeyValueTables = [NSMutableDictionary dictionary];
         
-        NSError *coreVideoTextureCacheError = nil;
-        _coreVideoTextureCache = [[MTICVMetalTextureCache alloc] initWithDevice:device cacheAttributes:nil textureAttributes:nil error:&coreVideoTextureCacheError];
-        if (coreVideoTextureCacheError || _coreVideoTextureCache == nil) {
-            if (inOutError) {
-                *inOutError = coreVideoTextureCacheError;
+        if (@available(iOS 11_0, *)) {
+            _coreVideoTextureBridge = [[MTICVMetalTextureBridge alloc] initWithDevice:device];
+        } else {
+            NSError *coreVideoTextureCacheError = nil;
+            _coreVideoTextureBridge = [[MTICVMetalTextureCache alloc] initWithDevice:device cacheAttributes:nil textureAttributes:nil error:&coreVideoTextureCacheError];
+            if (coreVideoTextureCacheError) {
+                if (inOutError) {
+                    *inOutError = coreVideoTextureCacheError;
+                }
+                return nil;
             }
-            return nil;
         }
         
         _renderingLock = MTILockCreate();
@@ -161,6 +166,8 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 - (void)reclaimResources {
     [_texturePool flush];
+    
+    [_coreVideoTextureBridge flushCache];
     
     [_imageKeyValueTablesLock lock];
     for (NSString *key in _imageKeyValueTables) {
