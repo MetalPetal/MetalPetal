@@ -76,7 +76,7 @@ namespace metalpetal {
             float coc = verticalTexture.sample(verticalSampler, vertexIn.textureCoordinate).a;
             float coc2 = diagonalTexture.sample(diagonalSampler, vertexIn.textureCoordinate).a;
             float4 color = (sampleWithDelta(verticalTexture, verticalSampler, vertexIn.textureCoordinate, delta0 * coc) +
-                            sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.textureCoordinate, delta1 * coc2)) * 0.5;
+                            sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.textureCoordinate, delta1 * coc2)) * (1.0/3.0);
             color.rgb = pow(color.rgb, float3(power));
             return float4(color.rgb, 1.0);
         }
