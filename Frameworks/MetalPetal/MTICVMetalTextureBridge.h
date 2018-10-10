@@ -17,7 +17,7 @@ typedef NS_ERROR_ENUM(MTICVMetalTextureBridgeErrorDomain, MTICVMetalTextureBridg
     MTICVMetalTextureBridgeErrorFailedToCreateTexture = 10002
 };
 
-NS_AVAILABLE(10_11, 11_0)
+NS_CLASS_AVAILABLE(10_11, 11_0)
 @interface MTICVMetalTextureBridge : NSObject <MTICVMetalTextureBridging>
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device;

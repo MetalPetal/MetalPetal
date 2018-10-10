@@ -126,7 +126,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         _promiseKeyValueTables = [NSMutableDictionary dictionary];
         _imageKeyValueTables = [NSMutableDictionary dictionary];
         
-        if (@available(iOS 11_0, *)) {
+        if (@available(iOS 11_0, macOS 10_11, *)) {
             _coreVideoTextureBridge = [[MTICVMetalTextureBridge alloc] initWithDevice:device];
         } else {
             NSError *coreVideoTextureCacheError = nil;
