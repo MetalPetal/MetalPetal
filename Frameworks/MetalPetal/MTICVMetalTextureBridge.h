@@ -14,7 +14,8 @@ FOUNDATION_EXPORT NSString * const MTICVMetalTextureBridgeErrorDomain;
 
 typedef NS_ERROR_ENUM(MTICVMetalTextureBridgeErrorDomain, MTICVMetalTextureBridgeError) {
     MTICVMetalTextureBridgeErrorImageBufferIsNotBackedByIOSurface = 10001,
-    MTICVMetalTextureBridgeErrorFailedToCreateTexture = 10002
+    MTICVMetalTextureBridgeErrorFailedToCreateTexture = 10002,
+    MTICVMetalTextureBridgeErrorCoreVideoDoesNotSupportIOSurface = 10003
 };
 
 NS_CLASS_AVAILABLE(10_11, 11_0)
