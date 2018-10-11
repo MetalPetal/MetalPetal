@@ -35,7 +35,7 @@
 
 @property (nonatomic, strong) MTIMultilayerCompositingFilter *compositingFilter;
 
-@property (nonatomic, strong) MTILensBlurFilter *lensBlurFilter;
+@property (nonatomic, strong) MTIHexagonalBokehBlurFilter *lensBlurFilter;
 
 @property (nonatomic, strong) MTICLAHEFilter *claheFilter;
 
@@ -75,7 +75,7 @@
     self.exposureFilter = [[MTIExposureFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
-    self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
+    self.lensBlurFilter = [[MTIHexagonalBokehBlurFilter alloc] init];
     self.claheFilter = [[MTICLAHEFilter alloc] init];
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];

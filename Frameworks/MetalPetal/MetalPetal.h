@@ -12,9 +12,9 @@
 #import <MetalPetal/MTIRGBToneCurveFilter.h>
 #import <MetalPetal/MTIUnaryImageRenderingFilter.h>
 #import <MetalPetal/MTIMultilayerCompositingFilter.h>
-#import <MetalPetal/MTILensBlurFilter.h>
 #import <MetalPetal/MTIVibranceFilter.h>
 #import <MetalPetal/MTIBlendFilter.h>
+#import <MetalPetal/MTIHexagonalBokehBlurFilter.h>
 #import <MetalPetal/MTIPixellateFilter.h>
 #import <MetalPetal/MTIMPSGaussianBlurFilter.h>
 #import <MetalPetal/MTIColorHalftoneFilter.h>
