@@ -400,3 +400,68 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
 }
 
 @end
+
+
+@interface MTICVPixelBufferDirectBridgePromise ()
+
+@property (nonatomic, readonly) CVPixelBufferRef pixelBuffer;
+@property (nonatomic, copy, readonly) MTLTextureDescriptor *textureDescriptor;
+@property (nonatomic, readonly) NSUInteger planeIndex;
+
+@end
+
+@implementation MTICVPixelBufferDirectBridgePromise
+@synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
+
+- (void)dealloc {
+    CVPixelBufferRelease(_pixelBuffer);
+}
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer planeIndex:(NSUInteger)planeIndex textureDescriptor:(MTLTextureDescriptor *)textureDescriptor alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _dimensions = (MTITextureDimensions){
+            .width = textureDescriptor.width,
+            .height = textureDescriptor.height,
+            .depth = textureDescriptor.depth
+        };
+        _alphaType = alphaType;
+        _textureDescriptor = [textureDescriptor copy];
+        _planeIndex = planeIndex;
+        _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
+    }
+    return self;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+    NSError *error;
+    id<MTICVMetalTexture> cvMetalTexture = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:_pixelBuffer textureDescriptor:self.textureDescriptor planeIndex:self.planeIndex error:&error];
+    if (cvMetalTexture) {
+        [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
+    } else {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    return [renderingContext.context newRenderTargetWithTexture:cvMetalTexture.texture];
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[CIImage imageWithCVPixelBuffer:self.pixelBuffer]];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+@end

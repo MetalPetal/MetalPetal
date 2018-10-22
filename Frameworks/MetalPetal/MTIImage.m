@@ -256,6 +256,10 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     return [[self initWithPromise:[[MTICVPixelBufferPromise alloc] initWithCVPixelBuffer:pixelBuffer options:options alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer planeIndex:(NSUInteger)planeIndex textureDescriptor:(MTLTextureDescriptor *)textureDescriptor alphaType:(MTIAlphaType)alphaType {
+    return [[[MTIImage alloc] initWithPromise:[[MTICVPixelBufferDirectBridgePromise alloc] initWithCVPixelBuffer:pixelBuffer planeIndex:planeIndex textureDescriptor:textureDescriptor alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+}
+
 - (instancetype)initWithMTKTextureLoaderIncompatibleCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
     if (@available(iOS 10.0, macOS 10.12, *)) {
         //Handle monochrome image.

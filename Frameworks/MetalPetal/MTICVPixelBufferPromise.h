@@ -26,4 +26,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface MTICVPixelBufferDirectBridgePromise : NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer planeIndex:(NSUInteger)planeIndex textureDescriptor:(MTLTextureDescriptor *)textureDescriptor alphaType:(MTIAlphaType)alphaType NS_DESIGNATED_INITIALIZER;
+
+@end
+
 NS_ASSUME_NONNULL_END
