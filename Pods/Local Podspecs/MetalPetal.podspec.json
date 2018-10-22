@@ -29,6 +29,10 @@
       "private_header_files": [
         "MTIPrint.h",
         "MTIDefer.h"
+      ],
+      "weak_frameworks": [
+        "MetalPerformanceShaders",
+        "MetalKit"
       ]
     },
     {
@@ -38,7 +42,11 @@
 
         ]
       },
-      "source_files": "**/*.{swift}"
+      "source_files": "**/*.{swift}",
+      "weak_frameworks": [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ]
     }
   ]
 }

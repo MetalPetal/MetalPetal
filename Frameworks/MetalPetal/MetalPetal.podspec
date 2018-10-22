@@ -22,11 +22,13 @@ s.subspec 'Core' do |ss|
     'MTIPrint.h',
     'MTIDefer.h'
     ]
+    ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
 
 s.subspec 'Swift' do |ss|
     ss.dependency 'MetalPetal/Core'
     ss.source_files = '**/*.{swift}'
+    ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
 
 s.default_subspec = 'Core'
