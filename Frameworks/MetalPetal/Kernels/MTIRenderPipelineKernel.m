@@ -276,18 +276,6 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             samplerStates[index] = samplerState;
         }
         
-        NSParameterAssert({
-            /* Alpha Type Assert */
-            BOOL canAcceptAlphaType = YES;
-            for (MTIImage *image in command.images) {
-                if (![command.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
-                    canAcceptAlphaType = NO;
-                    break;
-                }
-            }
-            canAcceptAlphaType;
-        });
-        
         for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
             if (argument.type == MTLArgumentTypeTexture) {
                 NSUInteger index = argument.index;
