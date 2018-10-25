@@ -233,7 +233,7 @@
         [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
        
         if (@available(iOS 10.0, *)) {
-            kdebug_signpost_start(1, 0, 0, 0, 1);
+            kdebug_signpost_end(1, 0, 0, 0, 1);
         }
     }
 }
