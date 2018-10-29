@@ -8,9 +8,9 @@
 import Foundation
 
 extension MTIComputeFunctionDispatchOptions {
-    public convenience init(_ handler: @escaping (_ pipelineState: MTLComputePipelineState) -> (threads: MTLSize, threadgroups: MTLSize, threadsPerThreadgroup: MTLSize)) {
-        self.init(__handler: { pipelineState, threadsPtr, threadgroupsPtr, threadsPerThreadgroupPtr in
-            let results = handler(pipelineState)
+    public convenience init(_ generator: @escaping (_ pipelineState: MTLComputePipelineState) -> (threads: MTLSize, threadgroups: MTLSize, threadsPerThreadgroup: MTLSize)) {
+        self.init(__generator: { pipelineState, threadsPtr, threadgroupsPtr, threadsPerThreadgroupPtr in
+            let results = generator(pipelineState)
             threadsPtr.pointee = results.threads
             threadgroupsPtr.pointee = results.threadgroups
             threadsPerThreadgroupPtr.pointee = results.threadsPerThreadgroup

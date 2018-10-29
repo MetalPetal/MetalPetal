@@ -25,7 +25,7 @@
 @property (nonatomic, readonly) MTLSize threadgroups;
 @property (nonatomic, readonly) MTLSize threadsPerThreadgroup;
 
-@property (nonatomic, copy, readonly) void (^handler)(id<MTLComputePipelineState> pipelineState, MTLSize *threads, MTLSize *threadgroups, MTLSize *threadsPerThreadgroup);
+@property (nonatomic, copy, readonly) void (^generator)(id<MTLComputePipelineState> pipelineState, MTLSize *threads, MTLSize *threadgroups, MTLSize *threadsPerThreadgroup);
 
 @end
 
@@ -40,9 +40,9 @@
     return self;
 }
 
-- (instancetype)initWithHandler:(void (^)(id<MTLComputePipelineState> _Nonnull, MTLSize * _Nonnull, MTLSize * _Nonnull, MTLSize * _Nonnull))block {
+- (instancetype)initWithGenerator:(void (^)(id<MTLComputePipelineState> _Nonnull, MTLSize * _Nonnull, MTLSize * _Nonnull, MTLSize * _Nonnull))block {
     if (self = [super init]) {
-        _handler = [block copy];
+        _generator = [block copy];
     }
     return self;
 }
@@ -153,8 +153,8 @@
     MTLSize threadsPerGrid = MTLSizeMake(_dimensions.width,_dimensions.height,_dimensions.depth);
     
     if (_dispatchOptions) {
-        if (_dispatchOptions.handler) {
-            _dispatchOptions.handler(computePipeline.state, &threadsPerGrid, &threadgroupsPerGrid, &threadsPerThreadgroup);
+        if (_dispatchOptions.generator) {
+            _dispatchOptions.generator(computePipeline.state, &threadsPerGrid, &threadgroupsPerGrid, &threadsPerThreadgroup);
         } else {
             threadsPerGrid = _dispatchOptions.threads;
             threadgroupsPerGrid = _dispatchOptions.threadgroups;
