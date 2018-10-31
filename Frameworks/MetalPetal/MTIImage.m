@@ -267,24 +267,24 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
         size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
         size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage);
         size_t componentsPerPixel = bitsPerPixel/bitsPerComponent;
+        
+        static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
+        static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
+                                    (id)kCGColorSpaceExtendedGray: @YES,
+                                    (id)kCGColorSpaceLinearGray: @NO,
+                                    (id)kCGColorSpaceExtendedLinearGray: @NO};
+            flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
+                          MTKTextureLoaderOriginBottomLeft: @YES,
+                          MTKTextureLoaderOriginFlippedVertically: @YES};
+        });
+        NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
         if (CGColorSpaceGetModel(sourceColorspace) == kCGColorSpaceModelMonochrome &&
             bitsPerComponent == 8 &&
-            (componentsPerPixel == 1 || componentsPerPixel == 2)) {
-            
-            static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
-            static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
-                                        (id)kCGColorSpaceExtendedGray: @YES,
-                                        (id)kCGColorSpaceLinearGray: @NO,
-                                        (id)kCGColorSpaceExtendedLinearGray: @NO};
-                flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
-                              MTKTextureLoaderOriginBottomLeft: @YES,
-                              MTKTextureLoaderOriginFlippedVertically: @YES};
-            });
-            NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
-            NSAssert(sRGBValue != nil, @"Unsupported gray color space.");
+            (componentsPerPixel == 1 || componentsPerPixel == 2) &&
+            sRGBValue) {
             BOOL sRGB = [sRGBValue boolValue];
             
             id sRGBOption = options[MTKTextureLoaderOptionSRGB];
