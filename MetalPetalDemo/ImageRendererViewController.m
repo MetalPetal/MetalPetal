@@ -183,12 +183,12 @@
     static MTIImage *maskImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
+        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
     });
     
     self.compositingFilter.layers = @[
-                                       [[MTILayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:
-                                        [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal] layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(200, 200) size:CGSizeMake(1920, 1080) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTILayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) contentFlipOptions:MTILayerFlipOptionsFlipVertically compositingMask:
+                                        [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal] layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(200, 200) size:CGSizeMake(1920, 1080) rotation:0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(900, 900) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],

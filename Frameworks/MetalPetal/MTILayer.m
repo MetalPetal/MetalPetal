@@ -11,14 +11,49 @@
 @implementation MTILayer
 
 - (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
-    return [self initWithContent:content contentIsFlipped:NO contentRegion:contentRegion compositingMask:compositingMask layoutUnit:layoutUnit position:position size:size rotation:rotation opacity:opacity blendMode:blendMode];
+    return [self initWithContent:content
+                   contentRegion:contentRegion
+              contentFlipOptions:MTILayerFlipOptionsDonotFlip
+                 compositingMask:compositingMask
+                      layoutUnit:layoutUnit
+                        position:position
+                            size:size
+                        rotation:rotation
+                         opacity:opacity
+                       blendMode:blendMode];
 }
 
 - (instancetype)initWithContent:(MTIImage *)content contentIsFlipped:(BOOL)contentIsFlipped contentRegion:(CGRect)contentRegion compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content
+                   contentRegion:contentRegion
+              contentFlipOptions:contentIsFlipped ? MTILayerFlipOptionsFlipVertically : MTILayerFlipOptionsDonotFlip
+                 compositingMask:compositingMask
+                      layoutUnit:layoutUnit
+                        position:position
+                            size:size
+                        rotation:rotation
+                         opacity:opacity
+                       blendMode:blendMode];
+}
+
+- (instancetype)initWithContent:(MTIImage *)content layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content
+                   contentRegion:content.extent
+              contentFlipOptions:MTILayerFlipOptionsDonotFlip
+                 compositingMask:nil
+                      layoutUnit:layoutUnit
+                        position:position
+                            size:size
+                        rotation:rotation
+                         opacity:opacity
+                       blendMode:blendMode];
+}
+
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
         _contentRegion = contentRegion;
-        _contentIsFlipped = contentIsFlipped;
+        _contentFlipOptions = contentFlipOptions;
         _compositingMask = compositingMask;
         _layoutUnit = layoutUnit;
         _position = position;
@@ -28,10 +63,6 @@
         _blendMode = blendMode;
     }
     return self;
-}
-
-- (instancetype)initWithContent:(MTIImage *)content layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
-    return [self initWithContent:content contentIsFlipped:NO contentRegion:content.extent compositingMask:nil layoutUnit:layoutUnit position:position size:size rotation:rotation opacity:opacity blendMode:blendMode];
 }
 
 - (id)copyWithZone:(NSZone *)zone {

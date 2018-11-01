@@ -198,7 +198,7 @@
 @synthesize dimensions = _dimensions;
 @synthesize dependencies = _dependencies;
 
-- (MTIVertices *)verticesForRect:(CGRect)rect contentIsFlipped:(BOOL)contentIsFlipped contentRegion:(CGRect)contentRegion {
+- (MTIVertices *)verticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion flipOptions:(MTILayerFlipOptions)flipOptions {
     CGFloat l = CGRectGetMinX(rect);
     CGFloat r = CGRectGetMaxX(rect);
     CGFloat t = CGRectGetMinY(rect);
@@ -209,11 +209,16 @@
     CGFloat contentT = CGRectGetMaxY(contentRegion);
     CGFloat contentB = CGRectGetMinY(contentRegion);
     
-    if (contentIsFlipped) {
-        contentT = 1.0 - contentT;
-        contentB = 1.0 - contentB;
+    if (flipOptions & MTILayerFlipOptionsFlipVertically) {
+        CGFloat temp = contentT;
+        contentT = contentB;
+        contentB = temp;
     }
-    
+    if (flipOptions & MTILayerFlipOptionsFlipHorizontally) {
+        CGFloat temp = contentL;
+        contentL = contentR;
+        contentR = temp;
+    }
     return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
         { .position = {l, t, 0, 1} , .textureCoordinate = { contentL, contentT } },
         { .position = {r, t, 0, 1} , .textureCoordinate = { contentR, contentT } },
@@ -375,7 +380,7 @@
     }
     
     //render background
-    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentIsFlipped:NO contentRegion:CGRectMake(0, 0, 1, 1)];
+    MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
@@ -416,8 +421,8 @@
         CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
         
         MTIVertices *vertices = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
-                                     contentIsFlipped:layer.contentIsFlipped
-                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)];
+                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
+                                          flipOptions:layer.contentFlipOptions];
         
         [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
         [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
@@ -502,7 +507,7 @@
             pointer += 1;
             newCompositingMask = [[MTIMask alloc] initWithContent:newCompositingMaskContent component:compositingMask.component mode:compositingMask.mode];
         }
-        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentIsFlipped:layer.contentIsFlipped contentRegion:layer.contentRegion compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
+        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
         [newLayers addObject:newLayer];
     }
     return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self.kernel backgroundImage:backgroundImage layers:newLayers outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
