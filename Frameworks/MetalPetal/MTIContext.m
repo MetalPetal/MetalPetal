@@ -169,6 +169,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     
     [_coreVideoTextureBridge flushCache];
     
+    if (@available(iOS 10.0, *)) {
+        [_coreImageContext clearCaches];
+    }
+    
     [_imageKeyValueTablesLock lock];
     for (NSString *key in _imageKeyValueTables) {
         [_imageKeyValueTables[key] compact];
