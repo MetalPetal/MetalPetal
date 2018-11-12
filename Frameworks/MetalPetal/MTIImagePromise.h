@@ -62,7 +62,7 @@ FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
 
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 

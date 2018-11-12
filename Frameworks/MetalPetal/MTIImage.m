@@ -368,12 +368,17 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque {
-    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:MTICIImageRenderingOptions.defaultOptions] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage bounds:ciImage.extent isOpaque:isOpaque options:MTICIImageRenderingOptions.defaultOptions] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
-    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:options] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage bounds:ciImage.extent isOpaque:isOpaque options:options] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
+    return [self initWithPromise:[[MTICIImagePromise alloc] initWithCIImage:ciImage bounds:bounds isOpaque:isOpaque options:options] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType {
     return [self initWithPromise:[[MTITexturePromise alloc] initWithTexture:texture alphaType:alphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];

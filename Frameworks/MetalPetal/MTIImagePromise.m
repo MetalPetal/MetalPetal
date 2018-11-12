@@ -202,6 +202,8 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 
 @property (nonatomic, copy, readonly) CIImage *image;
 
+@property (nonatomic, readonly) CGRect bounds;
+
 @property (nonatomic, copy, readonly) MTITextureDescriptor *textureDescriptor;
 
 @property (nonatomic, readonly) BOOL isOpaque;
@@ -214,9 +216,10 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
     if (self = [super init]) {
         _image = ciImage;
+        _bounds = bounds;
         _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
@@ -266,7 +269,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         renderDestination.flipped = self.options.isFlipped;
         renderDestination.colorSpace = self.options.colorSpace;
         renderDestination.alphaMode = self.options.alphaMode;
-        [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
+        [renderingContext.context.coreImageContext startTaskToRender:self.image fromRect:self.bounds toDestination:renderDestination atPoint:CGPointZero error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -274,7 +277,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
             return nil;
         }
     } else {
-        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:self.options.colorSpace];
+        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.bounds colorSpace:self.options.colorSpace];
     }
     return renderTarget;
 }
