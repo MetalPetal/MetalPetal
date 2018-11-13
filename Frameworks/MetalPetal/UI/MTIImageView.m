@@ -11,9 +11,8 @@
 #import "MTIContext+Rendering.h"
 #import "MTIImage.h"
 #import "MTIPrint.h"
-#import <MetalKit/MetalKit.h>
 
-@interface MTIImageView () <MTKViewDelegate>
+@interface MTIImageView ()
 
 @property (nonatomic,weak) MTKView *renderView;
 
@@ -84,13 +83,37 @@
 }
 
 - (void)setOpaque:(BOOL)opaque {
+    BOOL oldOpaque = [super isOpaque];
     [super setOpaque:opaque];
     _renderView.opaque = opaque;
     _renderView.layer.opaque = opaque;
+    if (oldOpaque != opaque) {
+        [self setNeedsRedraw];
+    }
+}
+
+- (void)setHidden:(BOOL)hidden {
+    BOOL oldHidden = [super isHidden];
+    [super setHidden:hidden];
+    if (oldHidden) {
+        [self setNeedsRedraw];
+    }
+}
+
+- (void)setAlpha:(CGFloat)alpha {
+    CGFloat oldAlpha = [super alpha];
+    [super setAlpha:alpha];
+    if (oldAlpha <= 0) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (void)setColorPixelFormat:(MTLPixelFormat)colorPixelFormat {
+    MTLPixelFormat oldColorPixelFormat = _renderView.colorPixelFormat;
     _renderView.colorPixelFormat = colorPixelFormat;
+    if (oldColorPixelFormat != colorPixelFormat) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (MTLPixelFormat)colorPixelFormat {
@@ -98,7 +121,14 @@
 }
 
 - (void)setClearColor:(MTLClearColor)clearColor {
+    MTLClearColor oldClearColor = _renderView.clearColor;
     _renderView.clearColor = clearColor;
+    if (oldClearColor.red != clearColor.red ||
+        oldClearColor.green != clearColor.green ||
+        oldClearColor.blue != clearColor.blue ||
+        oldClearColor.alpha != clearColor.alpha) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (MTLClearColor)clearColor {
@@ -120,8 +150,20 @@
 
 - (void)setImage:(MTIImage *)image {
     NSAssert(NSThread.isMainThread, @"-[MTIImageView setImage:] can only be called on main thread.");
-    _image = image;
+    if (_image != image) {
+        _image = image;
+        [self updateContentScaleFactor];
+        [self setNeedsRedraw];
+    }
+}
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
     [self updateContentScaleFactor];
+    [self setNeedsRedraw];
+}
+
+- (void)setNeedsRedraw {
     if (_drawsImmediately) {
         [_renderView draw];
     } else {
@@ -129,15 +171,7 @@
     }
 }
 
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    [self updateContentScaleFactor];
-    if (_drawsImmediately) {
-        [_renderView draw];
-    } else {
-        [_renderView setNeedsDisplay];
-    }
-}
+#pragma mark - MTKViewDelegate
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
@@ -145,15 +179,19 @@
 
 - (void)drawInMTKView:(MTKView *)view {
     @autoreleasepool {
-        if (_image && !self.isHidden && self.alpha > 0) {
+        if (!self.isHidden && self.alpha > 0) {
+            MTIImage *imageToRender = _image;
+            if (!imageToRender) {
+                imageToRender = [MTIImage transparentImage];
+            }
             NSAssert(_context != nil, @"Context is nil.");
             MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
             request.drawableProvider = _renderView;
             request.resizingMode = _resizingMode;
             NSError *error;
-            [_context renderImage:_image toDrawableWithRequest:request error:&error];
+            [_context renderImage:imageToRender toDrawableWithRequest:request error:&error];
             if (error) {
-                MTIPrint(@"%@: Failed to render image %@ - %@",self,_image,error);
+                MTIPrint(@"%@: Failed to render image %@ - %@",self,imageToRender,error);
             }
         }
     }
