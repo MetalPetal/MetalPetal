@@ -33,7 +33,7 @@
         _handlers = [NSHashTable weakObjectsHashTable];
 #if __has_include(<UIKit/UIKit.h>)
         [NSNotificationCenter.defaultCenter addObserverForName:UIApplicationDidReceiveMemoryWarningNotification
-                                                        object:UIApplication.sharedApplication
+                                                        object:nil
                                                          queue:nil
                                                     usingBlock:^(NSNotification * _Nonnull note) {
                                                         [self handleMemoryWarning];
