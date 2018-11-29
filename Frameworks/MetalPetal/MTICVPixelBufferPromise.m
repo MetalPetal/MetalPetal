@@ -24,7 +24,7 @@ static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversi
 static NSString * const MTIColorConversionFragmentFunctionName = @"colorConversionFragment";
 static NSString * const MTIColorConversionKernelFunctionName   = @"colorConversion";
 
-static const float colorConversionVertexData[16] =
+static const float MTIYUVColorConversionVertexData[16] =
 {
     -1.0, -1.0,  0.0, 1.0,
     1.0, -1.0,  1.0, 1.0,
@@ -33,14 +33,14 @@ static const float colorConversionVertexData[16] =
 };
 
 //Always use "struct X {}; typedef struct X X;" to define a struct, so that the struct can be encoded/archived with NSValue. ref: https://stackoverflow.com/a/12292033/1061004
-struct ColorConversion {
+struct MTIYUVColorConversion {
     matrix_float3x3 matrix;
     vector_float3 offset;
 };
-typedef struct ColorConversion ColorConversion;
+typedef struct MTIYUVColorConversion MTIYUVColorConversion;
 
 // BT.601
-static const ColorConversion kColorConversion601 = {
+static const MTIYUVColorConversion MTIYUVColorConversion601 = {
     .matrix = {
         .columns[0] = { 1.164,  1.164, 1.164, },
         .columns[1] = { 0.000, -0.392, 2.017, },
@@ -50,7 +50,7 @@ static const ColorConversion kColorConversion601 = {
 };
 
 // BT.601 Full Range
-static const ColorConversion kColorConversion601FullRange = {
+static const MTIYUVColorConversion MTIYUVColorConversion601FullRange = {
     .matrix = {
         .columns[0] = { 1.000,  1.000, 1.000, },
         .columns[1] = { 0.000, -0.343, 1.765, },
@@ -60,7 +60,7 @@ static const ColorConversion kColorConversion601FullRange = {
 };
 
 // BT.709
-static const ColorConversion kColorConversion709 = {
+static const MTIYUVColorConversion MTIYUVColorConversion709 = {
     .matrix = {
         .columns[0] = { 1.164,  1.164, 1.164, },
         .columns[1] = { 0.000, -0.213, 2.112, },
@@ -260,23 +260,23 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             } else {
                 BOOL isFullYUVRange = (pixelFormatType == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange ? YES : NO);
                 
-                ColorConversion const *preferredConversion = nil;
+                MTIYUVColorConversion const *preferredConversion = nil;
                 CFTypeRef colorAttachments = CVBufferGetAttachment(self.pixelBuffer, kCVImageBufferYCbCrMatrixKey, NULL);
                 if (colorAttachments != NULL) {
                     if (CFStringCompare(colorAttachments, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
                         if (isFullYUVRange) {
-                            preferredConversion = &kColorConversion601FullRange;
+                            preferredConversion = &MTIYUVColorConversion601FullRange;
                         } else {
-                            preferredConversion = &kColorConversion601;
+                            preferredConversion = &MTIYUVColorConversion601;
                         }
                     } else {
-                        preferredConversion = &kColorConversion709;
+                        preferredConversion = &MTIYUVColorConversion709;
                     }
                 } else {
                     if (isFullYUVRange) {
-                        preferredConversion = &kColorConversion601FullRange;
+                        preferredConversion = &MTIYUVColorConversion601FullRange;
                     } else {
-                        preferredConversion = &kColorConversion601;
+                        preferredConversion = &MTIYUVColorConversion601;
                     }
                 }
                 
@@ -338,10 +338,10 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 
                 __auto_type renderCommandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
                 [renderCommandEncoder setRenderPipelineState:renderPipeline.state];
-                [renderCommandEncoder setVertexBytes:colorConversionVertexData length:16*sizeof(float) atIndex:0];
+                [renderCommandEncoder setVertexBytes:MTIYUVColorConversionVertexData length:16*sizeof(float) atIndex:0];
                 [renderCommandEncoder setFragmentTexture:cvMetalTextureY.texture atIndex:0];
                 [renderCommandEncoder setFragmentTexture:cvMetalTextureCbCr.texture atIndex:1];
-                [renderCommandEncoder setFragmentBytes:preferredConversion length:sizeof(ColorConversion) atIndex:0];
+                [renderCommandEncoder setFragmentBytes:preferredConversion length:sizeof(MTIYUVColorConversion) atIndex:0];
                 [renderCommandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
                 [renderCommandEncoder endEncoding];
                 
