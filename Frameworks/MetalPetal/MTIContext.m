@@ -34,6 +34,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _enablesRenderGraphOptimization = YES;
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
+        _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
     }
     return self;
 }
@@ -45,6 +46,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
     options.automaticallyReclaimResources = _automaticallyReclaimResources;
     options.label = _label;
+    options.defaultLibraryURL = _defaultLibraryURL;
     return options;
 }
 
@@ -86,7 +88,8 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
     if (self = [super init]) {
-        NSParameterAssert(device != nil);
+        NSParameterAssert(device);
+        NSParameterAssert(options);
         if (!device) {
             if (inOutError) {
                 *inOutError = MTIErrorCreate(MTIErrorDeviceNotFound, nil);
@@ -95,8 +98,7 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         }
         
         NSError *libraryError = nil;
-        NSURL *url = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
-        id<MTLLibrary> defaultLibrary = [device newLibraryWithFile:url.path error:&libraryError];
+        id<MTLLibrary> defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
         if (!defaultLibrary || libraryError) {
             if (inOutError) {
                 *inOutError = libraryError;

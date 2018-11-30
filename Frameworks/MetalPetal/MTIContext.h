@@ -23,7 +23,7 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 
 @interface MTIContextOptions : NSObject <NSCopying>
 
-@property (nonatomic,copy,nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
+@property (nonatomic, copy, nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
 
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
@@ -34,6 +34,8 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 
 /*! @brief A string to help identify this object */
 @property (nonatomic, copy) NSString *label;
+
+@property (nonatomic, copy) NSURL *defaultLibraryURL;
 
 @end
 
