@@ -64,7 +64,9 @@ static NSString * MTICVPixelBufferPoolFourCharCodeToString(FourCharCode code) {
         }
         return nil;
     }
-    return [self initWithCVPixelBufferPool:pool];
+    id instance = [self initWithCVPixelBufferPool:pool];
+    CVPixelBufferPoolRelease(pool);
+    return instance;
 }
 
 - (instancetype)initWithPixelBufferWidth:(size_t)width pixelBufferHeight:(size_t)height pixelFormatType:(OSType)pixelFormatType minimumBufferCount:(NSUInteger)minimumBufferCount error:(NSError * _Nullable __autoreleasing * _Nullable)error {

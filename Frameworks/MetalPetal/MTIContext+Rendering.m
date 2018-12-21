@@ -42,6 +42,8 @@
         [self unlockForRendering];
     };
     
+    id<MTIDrawableProvider> drawableProvider = request.drawableProvider;
+    
     MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
     
     NSError *error = nil;
@@ -56,7 +58,7 @@
         return NO;
     }
     
-    MTLRenderPassDescriptor *renderPassDescriptor = [request.drawableProvider renderPassDescriptorForRequest:request];
+    MTLRenderPassDescriptor *renderPassDescriptor = [drawableProvider renderPassDescriptorForRequest:request];
     if (renderPassDescriptor == nil) {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorEmptyDrawable, nil);
@@ -129,7 +131,7 @@
     [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
     [commandEncoder endEncoding];
     
-    id<MTLDrawable> drawable = [request.drawableProvider drawableForRequest:request];
+    id<MTLDrawable> drawable = [drawableProvider drawableForRequest:request];
     [renderingContext.commandBuffer presentDrawable:drawable];
     
     [renderingContext.commandBuffer commit];
@@ -368,9 +370,9 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
-    CVPixelBufferRef pixelBuffer;
+    CVPixelBufferRef pixelBuffer = NULL;
     CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
-    if (pixelBuffer) {
+    if (errorCode == kCVReturnSuccess && pixelBuffer) {
         NSError *error;
         MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error];
         if (error) {

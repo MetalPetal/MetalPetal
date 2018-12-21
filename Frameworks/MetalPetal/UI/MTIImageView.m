@@ -14,7 +14,7 @@
 
 @interface MTIImageView ()
 
-@property (nonatomic,weak) MTKView *renderView;
+@property (nonatomic, weak, readonly) MTKView *renderView;
 
 @end
 
@@ -49,11 +49,10 @@
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.bounds device:_context.device];
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     renderView.delegate = self;
+    renderView.paused = YES;
+    renderView.enableSetNeedsDisplay = YES;
     [self addSubview:renderView];
     _renderView = renderView;
-    
-    _renderView.paused = YES;
-    _renderView.enableSetNeedsDisplay = YES;
     _drawsImmediately = NO;
     
     self.opaque = YES;
@@ -61,12 +60,13 @@
 
 - (void)setDrawsImmediately:(BOOL)drawsImmediately {
     _drawsImmediately = drawsImmediately;
+    MTKView *renderView = _renderView;
     if (drawsImmediately) {
-        _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = NO;
+        renderView.paused = YES;
+        renderView.enableSetNeedsDisplay = NO;
     } else {
-        _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = YES;
+        renderView.paused = YES;
+        renderView.enableSetNeedsDisplay = YES;
     }
 }
 
@@ -85,8 +85,9 @@
 - (void)setOpaque:(BOOL)opaque {
     BOOL oldOpaque = [super isOpaque];
     [super setOpaque:opaque];
-    _renderView.opaque = opaque;
-    _renderView.layer.opaque = opaque;
+    MTKView *renderView = _renderView;
+    renderView.opaque = opaque;
+    renderView.layer.opaque = opaque;
     if (oldOpaque != opaque) {
         [self setNeedsRedraw];
     }
@@ -109,8 +110,9 @@
 }
 
 - (void)setColorPixelFormat:(MTLPixelFormat)colorPixelFormat {
-    MTLPixelFormat oldColorPixelFormat = _renderView.colorPixelFormat;
-    _renderView.colorPixelFormat = colorPixelFormat;
+    MTKView *renderView = _renderView;
+    MTLPixelFormat oldColorPixelFormat = renderView.colorPixelFormat;
+    renderView.colorPixelFormat = colorPixelFormat;
     if (oldColorPixelFormat != colorPixelFormat) {
         [self setNeedsRedraw];
     }
@@ -121,8 +123,9 @@
 }
 
 - (void)setClearColor:(MTLClearColor)clearColor {
-    MTLClearColor oldClearColor = _renderView.clearColor;
-    _renderView.clearColor = clearColor;
+    MTKView *renderView = _renderView;
+    MTLClearColor oldClearColor = renderView.clearColor;
+    renderView.clearColor = clearColor;
     if (oldClearColor.red != clearColor.red ||
         oldClearColor.green != clearColor.green ||
         oldClearColor.blue != clearColor.blue ||
@@ -136,14 +139,15 @@
 }
 
 - (void)updateContentScaleFactor {
-    if (_renderView.frame.size.width > 0 && _renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0 && self.window.screen != nil) {
+    MTKView *renderView = _renderView;
+    if (renderView.frame.size.width > 0 && renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0 && self.window.screen != nil) {
         CGSize imageSize = _image.size;
-        CGFloat widthScale = imageSize.width/_renderView.bounds.size.width;
-        CGFloat heightScale = imageSize.height/_renderView.bounds.size.height;
+        CGFloat widthScale = imageSize.width/renderView.bounds.size.width;
+        CGFloat heightScale = imageSize.height/renderView.bounds.size.height;
         CGFloat nativeScale = self.window.screen.nativeScale;
         CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
-        if (ABS(_renderView.contentScaleFactor - scale) > 0.00001) {
-            _renderView.contentScaleFactor = scale;
+        if (ABS(renderView.contentScaleFactor - scale) > 0.00001) {
+            renderView.contentScaleFactor = scale;
         }
     }
 }
@@ -164,10 +168,11 @@
 }
 
 - (void)setNeedsRedraw {
+    MTKView *renderView = _renderView;
     if (_drawsImmediately) {
-        [_renderView draw];
+        [renderView draw];
     } else {
-        [_renderView setNeedsDisplay];
+        [renderView setNeedsDisplay];
     }
 }
 
