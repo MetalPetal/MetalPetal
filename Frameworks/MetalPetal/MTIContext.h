@@ -79,6 +79,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, readonly) NSUInteger idleResourceCount;
 
++ (void)enumerateAllInstances:(void (^)(MTIContext *context))enumerator;
+
 @end
 
 @interface MTIContext (MemoryWarningHandling) <MTIMemoryWarningHandling>

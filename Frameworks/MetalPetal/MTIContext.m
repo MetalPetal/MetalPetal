@@ -52,8 +52,41 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @end
 
+
 NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return [bundle URLForResource:@"default" withExtension:@"metallib"];
+}
+
+
+static void _MTIContextInstancesTracking(void (^action)(NSPointerArray *instances)) {
+    static NSPointerArray * _MTIContextAllInstances;
+    static id<MTILocking> _MTIContextAllInstancesAccessLock;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _MTIContextAllInstances = [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsWeakMemory|NSPointerFunctionsObjectPointerPersonality];
+        _MTIContextAllInstancesAccessLock = MTILockCreate();
+    });
+    [_MTIContextAllInstancesAccessLock lock];
+    action(_MTIContextAllInstances);
+    [_MTIContextAllInstancesAccessLock unlock];
+}
+
+static void MTIContextMarkInstanceCreation(MTIContext *context) {
+    _MTIContextInstancesTracking(^(NSPointerArray *instances){
+        [instances addPointer:(__bridge void *)(context)];
+        [instances addPointer:nil];
+        [instances compact];
+    });
+}
+
+static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *context)) {
+    _MTIContextInstancesTracking(^(NSPointerArray *instances){
+        for (MTIContext *context in instances) {
+            if (context) {
+                enumerator(context);
+            }
+        }
+    });
 }
 
 @interface MTIContext()
@@ -148,6 +181,8 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
         if (options.automaticallyReclaimResources) {
             [MTIMemoryWarningObserver addMemoryWarningHandler:self];
         }
+        
+        MTIContextMarkInstanceCreation(self);
     }
     return self;
 }
@@ -194,6 +229,10 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 - (NSUInteger)idleResourceCount {
     return self.texturePool.idleResourceCount;
+}
+
++ (void)enumerateAllInstances:(void (^)(MTIContext * _Nonnull))enumerator {
+    MTIContextEnumerateAllInstances(enumerator);
 }
 
 @end
