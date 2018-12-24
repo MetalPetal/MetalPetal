@@ -8,7 +8,6 @@
 #import "MTIBlendModes.h"
 
 MTIBlendMode const MTIBlendModeNormal = @"Normal";
-// MTIBlendMode const MTIBlendModeDissolve = @"Dissolve"; // not implement
 
 MTIBlendMode const MTIBlendModeDarken = @"Darken";
 MTIBlendMode const MTIBlendModeMultiply = @"Multiply";
