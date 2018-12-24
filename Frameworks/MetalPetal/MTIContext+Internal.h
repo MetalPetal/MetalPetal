@@ -58,11 +58,11 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
+- (void)setValue:(nullable id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
 - (nullable id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
+- (void)setValue:(nullable id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
 
 @end
 
