@@ -72,16 +72,20 @@
     self.toneCurveFilter.RGBCompositeControlPoints = _toneCurveControlPoints;
 }
 
+- (void)setRadius:(float)radius {
+    _radius = radius;
+    _blurFilter.radius = radius;
+}
+
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
     }
     MTIImage *bgChannelOverlayImage = [MTIHighPassSkinSmoothingFilter.GBChannelOverlayBlendKernel applyToInputImages:@[self.inputImage] parameters:@{} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
     
-    self.blurFilter.outputPixelFormat = self.outputPixelFormat;
-    self.blurFilter.radius = self.radius;
     self.blurFilter.inputImage = bgChannelOverlayImage;
     MTIImage *blurredBGChannelOverlayImage = self.blurFilter.outputImage;
+    self.blurFilter.inputImage = nil;
     
     return [MTIHighPassSkinSmoothingFilter.maskProcessAndCompositeKernel applyToInputImages:@[self.inputImage, bgChannelOverlayImage, blurredBGChannelOverlayImage, self.toneCurveFilter.toneCurveColorLookupImage] parameters:@{@"amount": @(self.amount)} outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) outputPixelFormat:_outputPixelFormat];
 }

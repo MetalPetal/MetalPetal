@@ -33,6 +33,11 @@
     return self;
 }
 
+- (void)setInputImage:(MTIImage *)inputImage {
+    _inputImage = inputImage;
+    _blurFilter.inputImage = inputImage;
+}
+
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
@@ -43,7 +48,6 @@
     }
     
     self.blurFilter.radius = self.inputImage.size.width / 1024.0 * 32.0;
-    self.blurFilter.inputImage = self.inputImage;
     MTIImage *blurredImage = self.blurFilter.outputImage;
     
     return [MTIMPSDefinitionFilter.kernel applyToInputImages:@[self.inputImage, blurredImage]
