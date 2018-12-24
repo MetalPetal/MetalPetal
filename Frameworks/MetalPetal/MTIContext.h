@@ -21,26 +21,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 
+/// Options for creating a MTIContext.
 @interface MTIContextOptions : NSObject <NSCopying>
 
 @property (nonatomic, copy, nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
 
+/// Default pixel format for intermediate textures.
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
+/// Whether the render graph optimization is enabled. The default value for this property is YES.
 @property (nonatomic) BOOL enablesRenderGraphOptimization;
 
-/*! @brief Automatically reclaim resources on memory warning. */
+/// Automatically reclaim resources on memory warning.
 @property (nonatomic) BOOL automaticallyReclaimResources;
 
-/*! @brief A string to help identify this object */
+/// A string to help identify this object.
 @property (nonatomic, copy) NSString *label;
 
+/// The built-in metal library URL.
 @property (nonatomic, copy) NSURL *defaultLibraryURL;
 
 @end
 
 FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bundle);
 
+/// An evaluation context for rendering image processing results.
 @interface MTIContext : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

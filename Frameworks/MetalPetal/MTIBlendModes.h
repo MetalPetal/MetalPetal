@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-/*! @brief Modes that describe how source colors blend with destination colors. See also https://www.w3.org/TR/compositing-1/ */
+
+/// Modes that describe how source colors blend with destination colors. See also: https://www.w3.org/TR/compositing-1/
 typedef NSString * MTIBlendMode NS_EXTENSIBLE_STRING_ENUM;
 
 FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeNormal;

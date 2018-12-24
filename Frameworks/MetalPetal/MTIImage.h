@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyPersistent
 } NS_SWIFT_NAME(MTIImage.CachePolicy);
 
+/// A representation of an image to be processed or produced.
 @interface MTIImage : NSObject <NSCopying>
 
 @property (nonatomic, readonly) MTIImageCachePolicy cachePolicy;
