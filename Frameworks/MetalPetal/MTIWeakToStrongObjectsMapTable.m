@@ -59,7 +59,6 @@ NSUInteger const MTIWeakToStrongObjectsMapTableCompactThreshold = 1024 * 64; //1
             }
             i += 1;
         }
-        NSAssert(index != NSNotFound, @"");
         if (index != NSNotFound) {
             [_items removePointerAtIndex:index];
         }
