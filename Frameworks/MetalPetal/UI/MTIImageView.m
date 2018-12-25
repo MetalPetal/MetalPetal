@@ -16,6 +16,8 @@
 
 @property (nonatomic, weak, readonly) MTKView *renderView;
 
+@property (nonatomic) CGFloat screenScale;
+
 @end
 
 @implementation MTIImageView
@@ -72,8 +74,10 @@
 
 - (void)didMoveToWindow {
     [super didMoveToWindow];
-    if (self.window) {
-        _renderView.contentScaleFactor = self.window.screen.nativeScale;
+    if (self.window.screen) {
+        _screenScale = MIN(self.window.screen.nativeScale, self.window.screen.scale);
+    } else {
+        _screenScale = 1.0;
     }
 }
 
@@ -144,7 +148,7 @@
         CGSize imageSize = _image.size;
         CGFloat widthScale = imageSize.width/renderView.bounds.size.width;
         CGFloat heightScale = imageSize.height/renderView.bounds.size.height;
-        CGFloat nativeScale = self.window.screen.nativeScale;
+        CGFloat nativeScale = _screenScale;
         CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
         if (ABS(renderView.contentScaleFactor - scale) > 0.00001) {
             renderView.contentScaleFactor = scale;
