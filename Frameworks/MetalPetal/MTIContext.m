@@ -119,7 +119,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     [MTIMemoryWarningObserver removeMemoryWarningHandler:self];
 }
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (instancetype)initWithDevice:(id<MTLDevice>)device options:(MTIContextOptions *)options error:(NSError * __autoreleasing *)inOutError {
     if (self = [super init]) {
         NSParameterAssert(device);
         NSParameterAssert(options);
@@ -187,7 +187,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     return self;
 }
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (instancetype)initWithDevice:(id<MTLDevice>)device error:(NSError * __autoreleasing *)error {
     return [self initWithDevice:device options:[[MTIContextOptions alloc] init] error:error];
 }
 
@@ -295,7 +295,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
 }
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
     MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor error:error];
     if (!texture) {
         return nil;
@@ -317,7 +317,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Context is peformaning a render-releated operation without aquiring the renderingLock.";
 
-- (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * __autoreleasing *)error {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLLibrary> library = self.libraryCache[URL];
     if (!library) {
@@ -394,7 +394,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     return renderPipeline;
 }
 
-- (MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)computePipelineDescriptor error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIComputePipeline *)computePipelineWithDescriptor:(MTLComputePipelineDescriptor *)computePipelineDescriptor error:(NSError * __autoreleasing *)inOutError {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     MTIComputePipeline *computePipeline = self.computePipelineCache[computePipelineDescriptor];
     if (!computePipeline) {
@@ -415,7 +415,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     return computePipeline;
 }
 
-- (id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
+- (id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * __autoreleasing *)error {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     NSMutableDictionary *states = [self.kernelStateMap objectForKey:kernel];
     id<NSCopying> cacheKey = configuration.identifier ?: [NSNull null];
@@ -433,7 +433,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     return cachedState;
 }
 
-- (nullable id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor error:(NSError **)error {
+- (nullable id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor error:(NSError * __autoreleasing *)error {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLSamplerState> state = self.samplerStateCache[descriptor];
     if (!state) {

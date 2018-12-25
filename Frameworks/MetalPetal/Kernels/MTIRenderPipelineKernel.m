@@ -116,7 +116,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return self;
 }
 
-- (id)newKernelStateWithContext:(MTIContext *)context configuration:(MTIRenderPipelineKernelConfiguration *)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(MTIRenderPipelineKernelConfiguration *)configuration error:(NSError * __autoreleasing *)inOutError {
     NSParameterAssert(configuration.colorAttachmentCount == self.colorAttachmentCount);
     
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
@@ -177,7 +177,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 @implementation MTIImageRenderingRecipe
 
-- (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * __autoreleasing *)inOutError {
     NSError *error = nil;
     
     NSUInteger inputResolutionsCount = self.dependencies.count;
@@ -378,7 +378,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     return self.recipe.outputDescriptors[self.outputIndex].dimensions;
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
     if (self.recipe.outputDescriptors.count == 1) {
         return [self.recipe resolveWithContext:renderingContext resolver:self error:error].firstObject;
     } else {

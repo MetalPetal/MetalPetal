@@ -55,7 +55,7 @@ static NSString * MTICVPixelBufferPoolFourCharCodeToString(FourCharCode code) {
     return self;
 }
 
-- (instancetype)initWithPoolAttributes:(NSDictionary *)poolAttributes pixelBufferAttributes:(NSDictionary *)pixelBufferAttributes error:(NSError * _Nullable __autoreleasing *)error {
+- (instancetype)initWithPoolAttributes:(NSDictionary *)poolAttributes pixelBufferAttributes:(NSDictionary *)pixelBufferAttributes error:(NSError * __autoreleasing *)error {
     CVPixelBufferPoolRef pool = NULL;
     CVReturn result = CVPixelBufferPoolCreate(kCFAllocatorDefault, (__bridge CFDictionaryRef _Nullable)(poolAttributes), (__bridge CFDictionaryRef _Nullable)(pixelBufferAttributes), &pool);
     if (result != kCVReturnSuccess || !pool) {
@@ -69,7 +69,7 @@ static NSString * MTICVPixelBufferPoolFourCharCodeToString(FourCharCode code) {
     return instance;
 }
 
-- (instancetype)initWithPixelBufferWidth:(size_t)width pixelBufferHeight:(size_t)height pixelFormatType:(OSType)pixelFormatType minimumBufferCount:(NSUInteger)minimumBufferCount error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (instancetype)initWithPixelBufferWidth:(size_t)width pixelBufferHeight:(size_t)height pixelFormatType:(OSType)pixelFormatType minimumBufferCount:(NSUInteger)minimumBufferCount error:(NSError * __autoreleasing *)error {
     return [self initWithPoolAttributes:@{(id)kCVPixelBufferPoolMinimumBufferCountKey: @(minimumBufferCount)}
                   pixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey : @(pixelFormatType),
                                           (id)kCVPixelBufferWidthKey : @(width),
@@ -78,7 +78,7 @@ static NSString * MTICVPixelBufferPoolFourCharCodeToString(FourCharCode code) {
                                   error:error];
 }
 
-- (CVPixelBufferRef)newPixelBufferWithAllocationThreshold:(NSUInteger)allocationThreshold error:(NSError * _Nullable __autoreleasing *)error {
+- (CVPixelBufferRef)newPixelBufferWithAllocationThreshold:(NSUInteger)allocationThreshold error:(NSError * __autoreleasing *)error {
     if (allocationThreshold == 0) {
         allocationThreshold = _minimumBufferCount;
     }

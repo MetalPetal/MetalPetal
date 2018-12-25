@@ -146,7 +146,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return self;
 }
 
-- (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError {
     if (image == nil) {
         [NSException raise:NSInvalidArgumentException format:@"%@: Application is requesting a resolution of a nil image.", self];
     }
@@ -283,7 +283,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     return self;
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
     NSParameterAssert(renderingContext.context == self.context);
     [_resolution.renderTarget retainTexture];
     return _resolution.renderTarget;

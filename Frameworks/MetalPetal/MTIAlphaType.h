@@ -30,8 +30,10 @@ FOUNDATION_EXPORT NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType);
 
 typedef MTIAlphaType (^MTIAlphaTypeHandlingOutputAlphaTypeRule)(NSArray<NSNumber *> *inputAlphaTypes);
 
+/// Describes how a image processing unit handles alpha type.
 @interface MTIAlphaTypeHandlingRule: NSObject <NSCopying>
 
+/// Acceptable alpha types.
 @property (nonatomic, copy, readonly) NSArray<NSNumber *> *acceptableAlphaTypes NS_REFINED_FOR_SWIFT;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -48,10 +50,10 @@ typedef MTIAlphaType (^MTIAlphaTypeHandlingOutputAlphaTypeRule)(NSArray<NSNumber
 
 - (instancetype)initWithAcceptableAlphaTypes:(NSArray<NSNumber *> *)acceptableAlphaTypes outputAlphaType:(MTIAlphaType)outputAlphaType NS_DESIGNATED_INITIALIZER NS_REFINED_FOR_SWIFT;
 
-/*! @brief Accepts MTIAlphaTypeNonPremultiplied, MTIAlphaTypeAlphaIsOne. Outputs MTIAlphaTypeNonPremultiplied. */
+/// Accepts MTIAlphaTypeNonPremultiplied, MTIAlphaTypeAlphaIsOne. Outputs MTIAlphaTypeNonPremultiplied.
 @property (nonatomic, copy, class, readonly) MTIAlphaTypeHandlingRule *generalAlphaTypeHandlingRule;
 
-/*! @brief Accepts all alpha types. The output alpha type is the same as input alpha type. */
+/// Accepts all alpha types. The output alpha type is the same as input alpha type.
 @property (nonatomic, copy, class, readonly) MTIAlphaTypeHandlingRule *passthroughAlphaTypeHandlingRule;
 
 

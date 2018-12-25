@@ -124,7 +124,7 @@
     return self;
 }
 
-- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
     [_lock lock];
 
     __auto_type avaliableTextures = _textureCache[textureDescriptor];

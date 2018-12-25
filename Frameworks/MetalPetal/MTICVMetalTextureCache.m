@@ -73,7 +73,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
     return error;
 }
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device cacheAttributes:(NSDictionary *)cacheAttributes textureAttributes:(NSDictionary *)textureAttributes error:(NSError * _Nullable __autoreleasing *)error {
+- (instancetype)initWithDevice:(id<MTLDevice>)device cacheAttributes:(NSDictionary *)cacheAttributes textureAttributes:(NSDictionary *)textureAttributes error:(NSError * __autoreleasing *)error {
 #if COREVIDEO_SUPPORTS_METAL
     if (self = [super init]) {
         _cache = NULL;
@@ -95,7 +95,7 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
 #endif
 }
 
-- (id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer textureDescriptor:(MTLTextureDescriptor *)textureDescriptor planeIndex:(size_t)planeIndex error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer textureDescriptor:(MTLTextureDescriptor *)textureDescriptor planeIndex:(size_t)planeIndex error:(NSError * __autoreleasing *)error {
 #if COREVIDEO_SUPPORTS_METAL
     [_lock lock];
     CVMetalTextureRef textureRef = NULL;

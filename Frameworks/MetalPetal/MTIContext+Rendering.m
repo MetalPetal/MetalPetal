@@ -36,7 +36,7 @@
     return MTIRenderPipelineKernel.passthroughRenderPipelineKernel;
 }
 
-- (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -142,7 +142,7 @@
 
 static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImageAssociationKey;
 
-- (CIImage *)createCIImageFromImage:(MTIImage *)image options:(MTICIImageCreationOptions *)options error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CIImage *)createCIImageFromImage:(MTIImage *)image options:(MTICIImageCreationOptions *)options error:(NSError * __autoreleasing *)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -189,11 +189,11 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     return ciImage;
 }
 
-- (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CIImage *)createCIImageFromImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError {
     return [self createCIImageFromImage:image options:MTICIImageCreationOptions.defaultOptions error:inOutError];
 }
 
-- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
     MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:inOutError];
     if (renderTask) {
         return YES;
@@ -201,21 +201,21 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     return NO;
 }
 
-- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * _Nullable __autoreleasing * _Nullable)inOutError {
+- (BOOL)renderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer error:(NSError * __autoreleasing *)inOutError {
     return [self renderImage:image toCVPixelBuffer:pixelBuffer sRGB:NO error:inOutError];
 }
 
-- (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError {
     return [self createCGImageFromImage:image sRGB:NO error:inOutError];
 }
 
-- (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
     CGImageRef outImage = NULL;
     __unused MTIRenderTask *renderTask = [self startTaskToCreateCGImage:&outImage fromImage:image sRGB:sRGB error:inOutError];
     return outImage;
 }
 
-- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -369,7 +369,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
 }
 
-- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
     CVPixelBufferRef pixelBuffer = NULL;
     CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
     if (errorCode == kCVReturnSuccess && pixelBuffer) {

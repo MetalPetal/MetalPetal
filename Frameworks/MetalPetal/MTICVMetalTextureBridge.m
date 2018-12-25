@@ -41,7 +41,7 @@ NSString * const MTICVMetalTextureBridgeErrorDomain = @"MTICVMetalTextureBridgeE
     return self;
 }
 
-- (id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer textureDescriptor:(MTLTextureDescriptor *)textureDescriptor planeIndex:(size_t)planeIndex error:(NSError * _Nullable __autoreleasing *)error {
+- (id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer textureDescriptor:(MTLTextureDescriptor *)textureDescriptor planeIndex:(size_t)planeIndex error:(NSError * __autoreleasing *)error {
     NSParameterAssert(imageBuffer);
 #if COREVIDEO_SUPPORTS_IOSURFACE
     IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(imageBuffer);

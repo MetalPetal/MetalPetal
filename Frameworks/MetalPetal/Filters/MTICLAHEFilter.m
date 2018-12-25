@@ -92,7 +92,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return (MTITextureDimensions){.width = MTICLAHEHistogramBinCount, .height = self.numberOfLUTs, .depth = 1};
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSParameterAssert(self.inputLightnessImage.alphaType == MTIAlphaTypeAlphaIsOne);
     
     NSError *error = nil;
@@ -190,7 +190,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @implementation MTICLAHELUTKernel
 
-- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * __autoreleasing *)inOutError {
     MPSImageHistogramInfo info;
     info.numberOfHistogramEntries = MTICLAHEHistogramBinCount;
     info.minPixelValue = (vector_float4){0,0,0,0};
