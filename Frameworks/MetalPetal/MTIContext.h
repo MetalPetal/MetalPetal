@@ -24,7 +24,7 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 /// Options for creating a MTIContext.
 @interface MTIContextOptions : NSObject <NSCopying>
 
-@property (nonatomic, copy, nullable) NSDictionary<NSString *,id> *coreImageContextOptions;
+@property (nonatomic, copy, nullable) NSDictionary<CIContextOption,id> *coreImageContextOptions;
 
 /// Default pixel format for intermediate textures.
 @property (nonatomic) MTLPixelFormat workingPixelFormat;

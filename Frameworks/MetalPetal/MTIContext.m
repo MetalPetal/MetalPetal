@@ -29,7 +29,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 - (instancetype)init {
     if (self = [super init]) {
-        _coreImageContextOptions = @{};
+        _coreImageContextOptions = nil;
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
         _enablesRenderGraphOptimization = YES;
         _automaticallyReclaimResources = YES;
