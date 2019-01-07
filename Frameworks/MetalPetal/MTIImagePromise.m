@@ -342,7 +342,8 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         }
         return nil;
     }
-    uint8_t colors[4] = {round(_color.blue * 255), round(_color.green * 255), round(_color.red * 255), round(_color.alpha * 255)};
+    simd_float4 floatColor = simd_clamp(MTIColorToFloat4(_color), simd_make_float4(0,0,0,0), simd_make_float4(1,1,1,1)) * 255.0;
+    uint8_t colors[4] = {round(floatColor.b), round(floatColor.g), round(floatColor.r), round(floatColor.a)};
     [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
