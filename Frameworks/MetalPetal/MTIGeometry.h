@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic,readonly) MTLPrimitiveType primitiveType;
 
-@property (nonatomic,readonly) const void *bufferBytes NS_RETURNS_INNER_POINTER;
+@property (nonatomic,readonly,nullable) const void *bufferBytes NS_RETURNS_INNER_POINTER;
+
 @property (nonatomic,readonly) NSUInteger bufferLength;
 
 @end
