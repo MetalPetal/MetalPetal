@@ -22,7 +22,9 @@ static inline MTIHasher MTIHasherMake(NSUInteger seed) {
 }
 
 static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher *hasher, uint64_t value) {
-    hasher -> _seed ^= value + 0x9e3779b9 + (hasher -> _seed << 6) + (hasher -> _seed >> 2);
+    //Ref boost::hash_combine
+    //Ref https://stackoverflow.com/questions/4948780/magic-number-in-boosthash-combine
+    hasher -> _seed ^= value + 0x9e3779b97f4a7c15 + (hasher -> _seed << 6) + (hasher -> _seed >> 2);
 }
 
 static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher *hasher, NSUInteger intValue) {
