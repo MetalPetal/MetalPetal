@@ -12,6 +12,8 @@
 
 @property (nonatomic,copy) MTLTextureDescriptor *metalTextureDescriptor;
 
+@property (nonatomic,readonly) NSUInteger hashValue;
+
 @end
 
 @implementation MTITextureDescriptor
@@ -19,6 +21,7 @@
 - (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
     if (self = [super init]) {
         _metalTextureDescriptor = [textureDescriptor copy];
+        _hashValue = [textureDescriptor hash];
     }
     return self;
 }
@@ -36,13 +39,13 @@
         return YES;
     }
     if ([object isKindOfClass:[MTITextureDescriptor class]]) {
-        return [_metalTextureDescriptor isEqual:((MTITextureDescriptor *)object).metalTextureDescriptor];
+        return [_metalTextureDescriptor isEqual:((MTITextureDescriptor *)object) -> _metalTextureDescriptor];
     }
     return NO;
 }
 
 - (NSUInteger)hash {
-    return [_metalTextureDescriptor hash];
+    return _hashValue;
 }
 
 - (MTLTextureType)textureType {

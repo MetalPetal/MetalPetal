@@ -22,6 +22,7 @@
 #import "MTIRenderPassOutputDescriptor.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
+#import "MTIHasher.h"
 
 NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
@@ -57,11 +58,11 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 }
 
 - (NSUInteger)hash {
-    NSUInteger hash = 0;
+    MTIHasher hasher = MTIHasherMake(0);
     for (NSUInteger index = 0; index < _colorAttachmentCount; index += 1) {
-        hash ^= _pixelFormats[index];
+        MTIHasherCombine(&hasher, _pixelFormats[index]);
     }
-    return hash;
+    return MTIHasherFinalize(&hasher);
 }
 
 - (BOOL)isEqual:(id)object {
@@ -69,9 +70,9 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         return YES;
     }
     MTIRenderPipelineKernelConfiguration *obj = object;
-    if ([obj isKindOfClass:MTIRenderPipelineKernelConfiguration.class] && obj.colorAttachmentCount == _colorAttachmentCount) {
+    if ([obj isKindOfClass:MTIRenderPipelineKernelConfiguration.class] && obj -> _colorAttachmentCount == _colorAttachmentCount) {
         for (NSUInteger index = 0; index < _colorAttachmentCount; index += 1) {
-            if (obj.colorAttachmentPixelFormats[index] != _pixelFormats[index]) {
+            if ((obj -> _pixelFormats)[index] != _pixelFormats[index]) {
                 return NO;
             }
         }
@@ -228,7 +229,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         }
         
         renderPassDescriptor.colorAttachments[index].texture = renderTarget.texture;
-        renderPassDescriptor.colorAttachments[index].clearColor = MTLClearColorMake(0, 0, 0, 0);
+        renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
         renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
         renderPassDescriptor.colorAttachments[index].storeAction = outputDescriptor.storeAction;
         

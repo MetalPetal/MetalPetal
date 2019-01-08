@@ -20,7 +20,8 @@ s.subspec 'Core' do |ss|
     ss.source_files = '**/*.{h,m,c,mm,metal}'
     ss.private_header_files = [
     'MTIPrint.h',
-    'MTIDefer.h'
+    'MTIDefer.h',
+    'MTIHasher.h'
     ]
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
