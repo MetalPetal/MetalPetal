@@ -114,17 +114,10 @@
     return outputImage;
 }
 
-- (MTIImage *)saturationAndInvertTestOutputImage {
+- (MTIImage *)saturationTestOutputImage {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    MTIImage *outputImage = self.colorInvertFilter.outputImage;
+    MTIImage *outputImage = self.saturationFilter.outputImage;
     return outputImage;
 }
 
@@ -225,13 +218,12 @@
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [self saturationTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         NSError *error;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
-       
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_end(1, 0, 0, 0, 1);
         }

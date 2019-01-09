@@ -29,7 +29,7 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 /// Default pixel format for intermediate textures.
 @property (nonatomic) MTLPixelFormat workingPixelFormat;
 
-/// Whether the render graph optimization is enabled. The default value for this property is YES.
+/// Whether the render graph optimization is enabled. The default value for this property is NO.
 @property (nonatomic) BOOL enablesRenderGraphOptimization;
 
 /// Automatically reclaim resources on memory warning.
