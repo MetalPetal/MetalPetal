@@ -44,7 +44,7 @@
 }
 
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
-    if ([_samplerDescriptor isEqual:samplerDescriptor]) {
+    if ([samplerDescriptor isEqual:_samplerDescriptor]) {
         return self;
     }
     return [[MTIImage alloc] initWithPromise:_promise samplerDescriptor:samplerDescriptor cachePolicy:_cachePolicy];

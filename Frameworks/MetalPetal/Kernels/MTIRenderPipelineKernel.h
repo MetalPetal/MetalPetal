@@ -85,7 +85,7 @@ FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
 @end
 
-@class MTIImageRenderingDependencyGraph, MTIRenderGraphNode;
+@class MTIRenderGraphNode;
 
 FOUNDATION_EXPORT void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node);
 

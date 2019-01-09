@@ -18,49 +18,52 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 
-@interface MTIImageRenderingDependencyGraph ()
+#include <map>
+#include <vector>
 
-@property (nonatomic,strong) NSMapTable<id<MTIImagePromise>,NSMutableArray<id<MTIImagePromise>> *> *promiseDenpendentsTable;
+class MTIImageRenderingDependencyGraph {
 
-@end
-
-@implementation MTIImageRenderingDependencyGraph
-
-- (instancetype)init {
-    if (self = [super init]) {
-        _promiseDenpendentsTable = [NSMapTable mapTableWithKeyOptions:NSMapTableStrongMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory];
-    }
-    return self;
-}
-
-- (void)addDependenciesForImage:(MTIImage *)image {
-    __auto_type dependencies = image.promise.dependencies;
-    for (MTIImage *dependency in dependencies) {
-        __auto_type dependents = [self.promiseDenpendentsTable objectForKey:dependency.promise];
-        if (!dependents) {
-            dependents = [NSMutableArray arrayWithObject:image.promise];
-            [self.promiseDenpendentsTable setObject:dependents forKey:dependency.promise];
-            
-            [self addDependenciesForImage:dependency];
-        } else {
-            [dependents addObject:image.promise];
+private:
+    std::map<__unsafe_unretained id<MTIImagePromise>, std::vector<__unsafe_unretained id<MTIImagePromise>>> _promiseDenpendentsCountTable;
+    
+public:
+    
+    void addDependenciesForImage(MTIImage *image) {
+        auto dependencies = image.promise.dependencies;
+        for (MTIImage *dependency in dependencies) {
+            auto promise = dependency.promise;
+            auto dependents = _promiseDenpendentsCountTable[promise];
+            if (dependents.size() == 0) {
+                //Using array here, because a promise may have two or more identical dependents.
+                _promiseDenpendentsCountTable[promise].push_back(image.promise);
+                this -> addDependenciesForImage(dependency);
+            } else {
+                _promiseDenpendentsCountTable[promise].push_back(image.promise);
+            }
         }
     }
-}
-
-- (NSInteger)dependentCountForPromise:(id<MTIImagePromise>)promise {
-    return [self.promiseDenpendentsTable objectForKey:promise].count;
-}
-
-- (void)removeDependent:(id<MTIImagePromise>)dependent forPromise:(id<MTIImagePromise>)promise {
-    __auto_type dependents = [self.promiseDenpendentsTable objectForKey:promise];
-    NSAssert(dependents, @"");
-    NSAssert([dependents containsObject:dependent], @"");
-    NSUInteger index = [dependents indexOfObject:dependent];
-    [dependents removeObjectAtIndex:index];
-}
-
-@end
+    
+    NSInteger dependentCountForPromise(id<MTIImagePromise> promise) const {
+        NSCAssert(_promiseDenpendentsCountTable.count(promise) > 0, @"Promise: %@ is not in this dependency graph.", promise);
+        return _promiseDenpendentsCountTable.at(promise).size();
+    }
+    
+    void removeDependentForPromise(id<MTIImagePromise> dependent, id<MTIImagePromise> promise) {
+        auto dependents = _promiseDenpendentsCountTable[promise];
+        NSUInteger position = NSNotFound;
+        for (NSUInteger index = 0; index < dependents.size(); index += 1) {
+            if (dependents[index] == dependent) {
+                position = index;
+                break;
+            }
+        }
+        NSCAssert(position != NSNotFound, @"");
+        if (position != NSNotFound) {
+            dependents.erase(dependents.begin() + position);
+            _promiseDenpendentsCountTable[promise] = dependents;
+        }
+    }
+};
 
 @interface MTITransientImagePromiseResolution: NSObject <MTIImagePromiseResolution>
 
@@ -121,17 +124,18 @@ MTIContextPromiseAssociatedValueTableName const MTIContextPromiseRenderTargetTab
 
 MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutionHolderTable = MTIContextImagePersistentResolutionHolderTableName;
 
-@interface MTIImageRenderingContext ()
-
-@property (nonatomic,strong) MTIImageRenderingDependencyGraph *dependencyGraph;
-
-@property (nonatomic,strong) NSHashTable<id<MTIImagePromise>> *resolvedPromises;
+@interface MTIImageRenderingContext () {
+    std::map<__unsafe_unretained id<MTIImagePromise>, MTIImagePromiseRenderTarget __strong *> _resolvedPromises;
+    MTIImageRenderingDependencyGraph *_dependencyGraph;
+}
 
 @end
 
 @implementation MTIImageRenderingContext
 
 - (void)dealloc {
+    delete _dependencyGraph;
+    
     if (self.commandBuffer.status == MTLCommandBufferStatusNotEnqueued || self.commandBuffer.status == MTLCommandBufferStatusEnqueued) {
         [self.commandBuffer commit];
     }
@@ -141,7 +145,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     if (self = [super init]) {
         _context = context;
         _commandBuffer = [context.commandQueue commandBuffer];
-        _resolvedPromises = [NSHashTable hashTableWithOptions:NSHashTableWeakMemory|NSHashTableObjectPointerPersonality];
+        _dependencyGraph = NULL;
     }
     return self;
 }
@@ -154,89 +158,95 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     BOOL isRootImage = NO;
     id<MTIImagePromise> promise = image.promise;
 
-    if (!self.dependencyGraph) {
+    if (!_dependencyGraph) {
         //If we don't have the dependency graph, we're processing the root image.
         isRootImage = YES;
         
+        _dependencyGraph = new MTIImageRenderingDependencyGraph();
         if (self.context.isRenderGraphOptimizationEnabled) {
             id<MTIImagePromise> optimizedPromise = [MTIRenderGraphOptimizer promiseByOptimizingRenderGraphOfPromise:promise];
             promise = optimizedPromise;
             
-            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
             MTIImage *optimizedImage = [[MTIImage alloc] initWithPromise:optimizedPromise samplerDescriptor:image.samplerDescriptor cachePolicy:image.cachePolicy];
-            [dependencyGraph addDependenciesForImage:optimizedImage];
-            self.dependencyGraph = dependencyGraph;
+            _dependencyGraph -> addDependenciesForImage(optimizedImage);
         } else {
-            MTIImageRenderingDependencyGraph *dependencyGraph = [[MTIImageRenderingDependencyGraph alloc] init];
-            [dependencyGraph addDependenciesForImage:image];
-            self.dependencyGraph = dependencyGraph;
+            _dependencyGraph -> addDependenciesForImage(image);
         }
     }
-    
-    MTIImageRenderingDependencyGraph *dependencyGraph = self.dependencyGraph;
 
-    MTIImagePromiseRenderTarget *renderTarget = nil;
-    if ([self.resolvedPromises containsObject:promise]) {
-        //resolved
-        renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+    MTIImagePromiseRenderTarget *renderTarget = _resolvedPromises[promise];
+    if (renderTarget) {
+        //Do not need to retain the render target, because it is created or retained during in this rendering context from location [A] or [B].
+        //Promise resolved.
         NSAssert(renderTarget != nil, @"");
         NSAssert(renderTarget.texture != nil, @"");
     } else {
+        //Maybe the context has a resolved promise. (The image has a persistent cache policy)
         renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
-        BOOL renderTargetIsValid = NO;
         if ([renderTarget retainTexture]) {
+            //Got the render target from the context, we need to retain the texture here, texture ref-count +1. [A]
+            //If we don't retain the texture, there will be an over-release error at location [C].
+            //The cached render target is valid.
             NSAssert(renderTarget != nil, @"");
             NSAssert(renderTarget.texture != nil, @"");
-            renderTargetIsValid = YES;
-        }
-        if (!renderTargetIsValid) {
-            //Resolve promise
+        } else {
+            //All caches miss. Resolve promise.
             NSError *error;
             renderTarget = [promise resolveWithContext:self error:&error];
+            //New render target got from promise resolving, texture ref-count is 1. [B]
             if (error) {
                 if (inOutError) {
                     *inOutError = error;
                 }
+                
+                //Failed. Release texture if we got the render target.
                 [renderTarget releaseTexture];
                 
                 if (isRootImage) {
                     MTIPrint(@"An error occurred while resolving promise: %@ for image: %@.\n%@",promise,image,error);
                     //Clean up
-                    for (id<MTIImagePromise> promise in self.resolvedPromises) {
-                        if ([self.dependencyGraph dependentCountForPromise:promise] != 0) {
-                            MTIImagePromiseRenderTarget *target = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
-                            [target releaseTexture];
+                    for (auto entry : _resolvedPromises) {
+                        if (_dependencyGraph -> dependentCountForPromise(entry.first) != 0) {
+                            [entry.second releaseTexture];
                         }
                     }
                 }
                 
                 return nil;
             }
+            
+            //Make sure the render target is valid.
             NSAssert(renderTarget != nil, @"");
             NSAssert(renderTarget.texture != nil, @"");
-            [self.context setValue:renderTarget forPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+           
+            if (image.cachePolicy == MTIImageCachePolicyPersistent) {
+                //Share the render result with the context.
+                [self.context setValue:renderTarget forPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+            }
         }
-        [self.resolvedPromises addObject:promise];
+        _resolvedPromises[promise] = renderTarget;
     }
     
     if (image.cachePolicy == MTIImageCachePolicyPersistent) {
         MTIPersistImageResolutionHolder *persistResolution = [self.context valueForImage:image inTable:MTIContextImagePersistentResolutionHolderTable];
         if (!persistResolution) {
+            //Create a holder for the render taget. Retain the texture. Preventing the texture from being reused at location [C]
+            //When the MTIPersistImageResolutionHolder deallocates, it releases the texture.
             persistResolution = [[MTIPersistImageResolutionHolder alloc] initWithRenderTarget:renderTarget];
             [self.context setValue:persistResolution forImage:image inTable:MTIContextImagePersistentResolutionHolderTable];
-        } else {
-            [persistResolution.renderTarget retainTexture];
         }
     }
     
     if (isRootImage) {
         return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer) {
+            //Root render result is consumed, releasing the texture.
             [renderTarget releaseTexture];
         }];
     } else {
         return [[MTITransientImagePromiseResolution alloc] initWithTexture:renderTarget.texture invalidationHandler:^(id consumer){
-            [dependencyGraph removeDependent:consumer forPromise:promise];
-            if ([dependencyGraph dependentCountForPromise:promise] == 0) {
+            self -> _dependencyGraph -> removeDependentForPromise(consumer, promise);
+            if (self -> _dependencyGraph -> dependentCountForPromise(promise) == 0) {
+                //Nothing depends on this render result, releasing the texture. [C]
                 [renderTarget releaseTexture];
             }
         }];

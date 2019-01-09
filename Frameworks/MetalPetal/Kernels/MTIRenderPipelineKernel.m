@@ -336,11 +336,17 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         NSParameterAssert(renderCommands.count > 0);
         _renderCommands = [renderCommands copy];
         _outputDescriptors = [outputDescriptors copy];
-        NSMutableArray<MTIImage *> *dependencies = [NSMutableArray array];
-        for (MTIRenderCommand *command in renderCommands) {
-            [dependencies addObjectsFromArray:command.images];
+        if (renderCommands.count == 0) {
+            _dependencies = @[];
+        } else if (renderCommands.count == 1) {
+            _dependencies = renderCommands.firstObject.images;
+        } else {
+            NSMutableArray<MTIImage *> *dependencies = [NSMutableArray array];
+            for (MTIRenderCommand *command in renderCommands) {
+                [dependencies addObjectsFromArray:command.images];
+            }
+            _dependencies = [dependencies copy];
         }
-        _dependencies = [dependencies copy];
         _alphaType = [renderCommands.lastObject.kernel.alphaTypeHandlingRule outputAlphaTypeForInputImages:renderCommands.lastObject.images];
         if (outputDescriptors.count > 1) {
             _resolutionCache = [[MTIWeakToStrongObjectsMapTable alloc] init];
@@ -473,12 +479,19 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 + (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
     MTIImageRenderingRecipe *recipe = [[MTIImageRenderingRecipe alloc] initWithRenderCommands:renderCommands
                                                                             outputDescriptors:outputDescriptors];
-    NSMutableArray *outputs = [NSMutableArray array];
-    for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
-        MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:recipe outputIndex:index];
-        [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
+    if (outputDescriptors.count == 0) {
+        return @[];
+    } else if (outputDescriptors.count == 1) {
+        MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:recipe outputIndex:0];
+        return @[[[MTIImage alloc] initWithPromise:promise]];
+    } else {
+        NSMutableArray *outputs = [NSMutableArray array];
+        for (NSUInteger index = 0; index < outputDescriptors.count; index += 1) {
+            MTIImageRenderingPromise *promise = [[MTIImageRenderingPromise alloc] initWithImageRenderingRecipe:recipe outputIndex:index];
+            [outputs addObject:[[MTIImage alloc] initWithPromise:promise]];
+        }
+        return outputs;
     }
-    return outputs;
 }
 
 @end

@@ -20,12 +20,6 @@ FOUNDATION_EXPORT NSString * const MTIContextPromiseRenderTargetTableName;
 /*! @brief Rendering context related constant for MTIContextImageAssociatedValueTableName. */
 FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTableName;
 
-@interface MTIImageRenderingDependencyGraph : NSObject
-
-- (NSInteger)dependentCountForPromise:(id<MTIImagePromise>)promise;
-
-@end
-
 @protocol MTIImagePromiseResolution <NSObject>
 
 @property (nonatomic,readonly) id<MTLTexture> texture;
