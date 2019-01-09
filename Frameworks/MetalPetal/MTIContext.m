@@ -243,7 +243,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 @property (nonatomic,strong) id<MTLTexture> nonreusableTexture;
 
-@property (nonatomic,strong) MTIReusableTexture *resuableTexture;
+@property (nonatomic,strong) MTIReusableTexture *reusableTexture;
 
 @end
 
@@ -252,7 +252,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 - (instancetype)initWithTexture:(id<MTLTexture>)texture {
     if (self = [super init]) {
         _nonreusableTexture = texture;
-        _resuableTexture = nil;
+        _reusableTexture = nil;
     }
     return self;
 }
@@ -260,7 +260,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 - (instancetype)initWithResuableTexture:(MTIReusableTexture *)texture {
     if (self = [super init]) {
         _nonreusableTexture = nil;
-        _resuableTexture = texture;
+        _reusableTexture = texture;
     }
     return self;
 }
@@ -269,18 +269,18 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     if (_nonreusableTexture) {
         return _nonreusableTexture;
     }
-    return _resuableTexture.texture;
+    return _reusableTexture.texture;
 }
 
 - (BOOL)retainTexture {
     if (_nonreusableTexture) {
         return YES;
     }
-    return [_resuableTexture retainTexture];
+    return [_reusableTexture retainTexture];
 }
 
 - (void)releaseTexture {
-    [_resuableTexture releaseTexture];
+    [_reusableTexture releaseTexture];
 }
 
 @end
