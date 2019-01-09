@@ -44,11 +44,17 @@
 }
 
 - (instancetype)imageWithSamplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
-    return [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:samplerDescriptor cachePolicy:self.cachePolicy];
+    if ([_samplerDescriptor isEqual:samplerDescriptor]) {
+        return self;
+    }
+    return [[MTIImage alloc] initWithPromise:_promise samplerDescriptor:samplerDescriptor cachePolicy:_cachePolicy];
 }
 
 - (instancetype)imageWithCachePolicy:(MTIImageCachePolicy)cachePolicy {
-    return [[MTIImage alloc] initWithPromise:self.promise samplerDescriptor:self.samplerDescriptor cachePolicy:cachePolicy];
+    if (cachePolicy == _cachePolicy) {
+        return self;
+    }
+    return [[MTIImage alloc] initWithPromise:_promise samplerDescriptor:_samplerDescriptor cachePolicy:cachePolicy];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
