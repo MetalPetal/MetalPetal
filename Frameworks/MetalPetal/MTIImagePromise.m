@@ -222,9 +222,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         _bounds = bounds;
         _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
-        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
-        textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-        _textureDescriptor = [textureDescriptor newMTITextureDescriptor];
+        _textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead];
         _options = [options copy];
     }
     return self;

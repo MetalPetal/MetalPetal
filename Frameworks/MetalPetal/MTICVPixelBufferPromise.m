@@ -127,13 +127,11 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         _pixelBuffer = CVPixelBufferRetain(pixelBuffer);
         _dimensions = (MTITextureDimensions){CVPixelBufferGetWidth(pixelBuffer), CVPixelBufferGetHeight(pixelBuffer), 1};
         _sRGB = options.sRGB;
-        MTLTextureDescriptor *descriptor = [MTLTextureDescriptor
-                                            texture2DDescriptorWithPixelFormat:MTIMTLPixelFormatForCVPixelFormatType(CVPixelBufferGetPixelFormatType(pixelBuffer), _sRGB)
-                                            width:CVPixelBufferGetWidth(_pixelBuffer)
-                                            height:CVPixelBufferGetHeight(_pixelBuffer)
-                                            mipmapped:NO];
-        descriptor.usage =  MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite;
-        _coreImageRendererDefaultTextureDescriptor = [descriptor newMTITextureDescriptor];
+        _coreImageRendererDefaultTextureDescriptor = [MTITextureDescriptor
+                                                      texture2DDescriptorWithPixelFormat:MTIMTLPixelFormatForCVPixelFormatType(CVPixelBufferGetPixelFormatType(pixelBuffer), _sRGB)
+                                                      width:CVPixelBufferGetWidth(_pixelBuffer)
+                                                      height:CVPixelBufferGetHeight(_pixelBuffer)
+                                                      usage:MTLTextureUsageShaderRead | MTLTextureUsageShaderWrite];
     }
     return self;
 }
@@ -308,13 +306,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 
                 // Render Pipeline
                 MTLPixelFormat pixelFormat = self.sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
-                MTLTextureDescriptor *descriptor = [MTLTextureDescriptor
-                                                    texture2DDescriptorWithPixelFormat:pixelFormat
-                                                    width:CVPixelBufferGetWidth(_pixelBuffer)
-                                                    height:CVPixelBufferGetHeight(_pixelBuffer)
-                                                    mipmapped:NO];
-                descriptor.usage = MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget;
-                MTITextureDescriptor *textureDescriptor = [descriptor newMTITextureDescriptor];
+                MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) usage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
                 MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
                 if (error) {
                     if (inOutError) {

@@ -217,10 +217,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         MTLPixelFormat pixelFormat = pixelFormats[index];
         
         MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
-        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO];
-        textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-        
-        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+        MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead];
+        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;

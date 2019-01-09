@@ -294,10 +294,8 @@
         }
     }
     
-    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
-    textureDescriptor.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-    
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -317,7 +315,7 @@
         [compositingMaskRenderTarget releaseTexture];
     };
     if (@available(iOS 10.0, *)) {
-        MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor copy];
+        MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
         #if TARGET_OS_IPHONE
         tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
         #endif
@@ -329,7 +327,7 @@
             return nil;
         }
     } else {
-        compositingMaskRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+        compositingMaskRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
