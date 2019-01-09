@@ -206,11 +206,15 @@
                 }
             } else {
                 //Clear current drawable.
-                id<MTLCommandBuffer> commandBuffer = [context.commandQueue commandBuffer];
-                id<MTLRenderCommandEncoder> commandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:view.currentRenderPassDescriptor];
-                [commandEncoder endEncoding];
-                [commandBuffer presentDrawable:view.currentDrawable];
-                [commandBuffer commit];
+                MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
+                id<MTLDrawable> drawable = view.currentDrawable;
+                if (renderPassDescriptor && drawable) {
+                    id<MTLCommandBuffer> commandBuffer = [context.commandQueue commandBuffer];
+                    id<MTLRenderCommandEncoder> commandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+                    [commandEncoder endEncoding];
+                    [commandBuffer presentDrawable:drawable];
+                    [commandBuffer commit];
+                }
             }
         }
     }
