@@ -14,23 +14,9 @@
 #import "MTITextureDescriptor.h"
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
-#import "MTKTextureLoaderExtensions.h"
 #import "MTIContext+Internal.h"
 #import "MTICoreImageRendering.h"
 #import "MTIImageProperties.h"
-
-static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
-    #if TARGET_OS_IPHONE
-    if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
-        NSMutableDictionary *opt = [NSMutableDictionary dictionaryWithDictionary:options];
-        if (opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] == nil) {
-            opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] = @(4);
-        }
-        return opt;
-    }
-    #endif
-    return options;
-}
 
 static NSString * const MTIMTKTextureLoaderCannotDecodeImageMessage = @"MetalPetal uses `MTKTextureLoader` to load `CGImage`s. However this image may not be able to load using MTKTextureLoader, see http://www.openradar.me/31722523. You can use `MTIImage(ciImage:isOpaque:)` to load the image using CoreImage. Or use a texture asset with `MTIImage(named:in:...)`";
 
@@ -84,7 +70,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];
     if (!texture) {
         return nil;
     }
@@ -138,7 +124,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:self.options error:error];
     if (!texture) {
         return nil;
     }
@@ -463,7 +449,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithName:self.name scaleFactor:self.scaleFactor bundle:self.bundle options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithName:self.name scaleFactor:self.scaleFactor bundle:self.bundle options:self.options error:error];
     if (!texture) {
         return nil;
     }

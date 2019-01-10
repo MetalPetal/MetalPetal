@@ -14,6 +14,7 @@
 #import "MTIImagePromise.h"
 #import "MTIMemoryWarningObserver.h"
 #import "MTICVMetalTextureBridging.h"
+#import "MTITextureLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,6 +41,12 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 
 /// The built-in metal library URL.
 @property (nonatomic, copy) NSURL *defaultLibraryURL;
+
+/// The texture loader to use. Possible values are MTKTextureLoader.class, MTITextureLoaderForiOS9WithImageOrientationFix.class
+@property (nonatomic) Class<MTITextureLoader> textureLoaderClass;
+
+/// The default value for this property is MTKTextureLoader.class
+@property (nonatomic, class) Class<MTITextureLoader> defaultTextureLoaderClass;
 
 @end
 
@@ -70,7 +77,7 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @property (nonatomic, strong, readonly) id<MTLCommandQueue> commandQueue;
 
-@property (nonatomic, strong, readonly) MTKTextureLoader *textureLoader;
+@property (nonatomic, strong, readonly) id<MTITextureLoader> textureLoader;
 
 @property (nonatomic, strong, readonly) CIContext *coreImageContext;
 

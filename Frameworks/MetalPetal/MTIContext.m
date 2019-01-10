@@ -35,6 +35,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+        _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
     }
     return self;
 }
@@ -47,7 +48,18 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.automaticallyReclaimResources = _automaticallyReclaimResources;
     options.label = _label;
     options.defaultLibraryURL = _defaultLibraryURL;
+    options.textureLoaderClass = _textureLoaderClass;
     return options;
+}
+
+static Class _defaultTextureLoaderClass = nil;
+
++ (void)setDefaultTextureLoaderClass:(Class<MTITextureLoader>)defaultTextureLoaderClass {
+    _defaultTextureLoaderClass = defaultTextureLoaderClass;
+}
+
++ (Class<MTITextureLoader>)defaultTextureLoaderClass {
+    return _defaultTextureLoaderClass ?: MTKTextureLoader.class;
 }
 
 @end
@@ -150,7 +162,9 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
         
-        _textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];
+        _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
+        NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
+        
         _texturePool = [[MTITexturePool alloc] initWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];
         _functionCache = [NSMutableDictionary dictionary];
