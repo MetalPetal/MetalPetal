@@ -32,8 +32,7 @@ public:
         auto dependencies = image.promise.dependencies;
         for (MTIImage *dependency in dependencies) {
             auto promise = dependency.promise;
-            auto dependents = _promiseDenpendentsCountTable[promise];
-            if (dependents.size() == 0) {
+            if (_promiseDenpendentsCountTable.count(promise) == 0) {
                 //Using array here, because a promise may have two or more identical dependents.
                 _promiseDenpendentsCountTable[promise].push_back(image.promise);
                 this -> addDependenciesForImage(dependency);
@@ -174,8 +173,9 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         }
     }
 
-    MTIImagePromiseRenderTarget *renderTarget = _resolvedPromises.count(promise) > 0 ? _resolvedPromises.at(promise) : nil;
-    if (renderTarget) {
+    MTIImagePromiseRenderTarget *renderTarget = nil;
+    if (_resolvedPromises.count(promise) > 0) {
+        renderTarget = _resolvedPromises.at(promise);
         //Do not need to retain the render target, because it is created or retained during in this rendering context from location [A] or [B].
         //Promise resolved.
         NSAssert(renderTarget != nil, @"");
