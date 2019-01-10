@@ -6,10 +6,10 @@
 //
 
 #import "MTITextureLoaderForiOS9.h"
+#import "MTIDefer.h"
+#import "MTICVMetalTextureCache.h"
 
 #if TARGET_OS_IPHONE
-
-#import "MTICVMetalTextureCache.h"
 
 NSString * const MTITextureLoaderForiOS9ErrorDomain = @"MTITextureLoaderForiOS9ErrorDomain";
 
@@ -18,6 +18,7 @@ typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS
     MTITextureLoaderForiOS9ErrorInvaildTextureCache = 1002,
     MTITextureLoaderForiOS9ErrorFailedToAllocateMemory = 1003,
     MTITextureLoaderForiOS9ErrorFeatureNotSupported = 1004,
+    MTITextureLoaderForiOS9ErrorCannotRenderImage = 1005
 };
 
 @interface MTITextureLoaderForiOS9WithImageOrientationFix ()
@@ -62,13 +63,30 @@ typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS
         return nil;
     }
     
+    @MTI_DEFER {
+        CVPixelBufferRelease(pixelBuffer);
+    };
+    
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    if (!colorspace) {
+        if (error) {
+            *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorCannotRenderImage userInfo:nil];
+        }
+        return nil;
+    }
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
     CGContextRef context = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer), CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 8, CVPixelBufferGetBytesPerRow(pixelBuffer), colorspace, kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
-    CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
-    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-    CGContextRelease(context);
     CGColorSpaceRelease(colorspace);
+    if (!context) {
+        if (error) {
+            *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorCannotRenderImage userInfo:nil];
+        }
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+        return nil;
+    }
+    CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
+    CGContextRelease(context);
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     
     // Handle sRGB
     MTLPixelFormat pixelFormat;
