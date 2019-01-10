@@ -109,6 +109,12 @@ typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS
         if (CGImageSourceGetCount(imageSource) > 0) {
             CGImageRef image = CGImageSourceCreateImageAtIndex(imageSource, 0, (CFDictionaryRef)imageSourceOptions);
             CFRelease(imageSource);
+            if (!image) {
+                if (error) {
+                    *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorCannotDecodeImage userInfo:nil];
+                }
+                return nil;
+            }
             id<MTLTexture> texture = [self newTextureWithCGImage:image options:options error:error];
             CGImageRelease(image);
             return texture;
