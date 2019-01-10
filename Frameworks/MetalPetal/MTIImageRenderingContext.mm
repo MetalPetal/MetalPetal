@@ -174,7 +174,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         }
     }
 
-    MTIImagePromiseRenderTarget *renderTarget = _resolvedPromises[promise];
+    MTIImagePromiseRenderTarget *renderTarget = _resolvedPromises.count(promise) > 0 ? _resolvedPromises.at(promise) : nil;
     if (renderTarget) {
         //Do not need to retain the render target, because it is created or retained during in this rendering context from location [A] or [B].
         //Promise resolved.

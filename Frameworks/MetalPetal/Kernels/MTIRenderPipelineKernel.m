@@ -99,6 +99,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 @implementation MTIRenderPipelineKernel
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    NSParameterAssert(vertexFunctionDescriptor);
+    NSParameterAssert(fragmentFunctionDescriptor);
     return [self initWithVertexFunctionDescriptor:vertexFunctionDescriptor
                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
                                  vertexDescriptor:nil
@@ -108,6 +110,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 - (instancetype)initWithVertexFunctionDescriptor:(MTIFunctionDescriptor *)vertexFunctionDescriptor fragmentFunctionDescriptor:(MTIFunctionDescriptor *)fragmentFunctionDescriptor vertexDescriptor:(MTLVertexDescriptor *)vertexDescriptor colorAttachmentCount:(NSUInteger)colorAttachmentCount alphaTypeHandlingRule:(nonnull MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
     if (self = [super init]) {
+        NSParameterAssert(vertexFunctionDescriptor);
+        NSParameterAssert(fragmentFunctionDescriptor);
         _vertexFunctionDescriptor = [vertexFunctionDescriptor copy];
         _fragmentFunctionDescriptor = [fragmentFunctionDescriptor copy];
         _vertexDescriptor = [vertexDescriptor copy];
