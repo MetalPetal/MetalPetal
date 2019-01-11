@@ -115,11 +115,7 @@ public:
 
 @end
 
-NSString * const MTIContextPromiseRenderTargetTableName = @"MTIContextPromiseRenderTargetTable";
-
 NSString * const MTIContextImagePersistentResolutionHolderTableName = @"MTIContextImagePersistentResolutionHolderTable";
-
-MTIContextPromiseAssociatedValueTableName const MTIContextPromiseRenderTargetTable = MTIContextPromiseRenderTargetTableName;
 
 MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutionHolderTable = MTIContextImagePersistentResolutionHolderTableName;
 
@@ -182,7 +178,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
         NSAssert(renderTarget.texture != nil, @"");
     } else {
         //Maybe the context has a resolved promise. (The image has a persistent cache policy)
-        renderTarget = [self.context valueForPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+        renderTarget = [self.context renderTargetForPromise:promise];
         if ([renderTarget retainTexture]) {
             //Got the render target from the context, we need to retain the texture here, texture ref-count +1. [A]
             //If we don't retain the texture, there will be an over-release error at location [C].
@@ -221,7 +217,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
            
             if (image.cachePolicy == MTIImageCachePolicyPersistent) {
                 //Share the render result with the context.
-                [self.context setValue:renderTarget forPromise:promise inTable:MTIContextPromiseRenderTargetTable];
+                [self.context setRenderTarget:renderTarget forPromise:promise];
             }
         }
         _resolvedPromises[promise] = renderTarget;

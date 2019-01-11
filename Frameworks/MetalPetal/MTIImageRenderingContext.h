@@ -14,9 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-/*! @brief Rendering context related constant for MTIContextPromiseAssociatedValueTableName. */
-FOUNDATION_EXPORT NSString * const MTIContextPromiseRenderTargetTableName;
-
 /*! @brief Rendering context related constant for MTIContextImageAssociatedValueTableName. */
 FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTableName;
 

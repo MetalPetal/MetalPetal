@@ -117,11 +117,15 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 @property (nonatomic, strong, readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
 
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *promiseKeyValueTables;
+@property (nonatomic, strong, readonly) id<MTILocking> promiseKeyValueTablesLock;
+
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, MTIWeakToStrongObjectsMapTable *> *imageKeyValueTables;
+@property (nonatomic, strong, readonly) id<MTILocking> imageKeyValueTablesLock;
+
+@property (nonatomic, strong, readonly) NSMapTable<id<MTIImagePromise>, MTIImagePromiseRenderTarget *> *promiseRenderTargetTable;
+@property (nonatomic, strong, readonly) id<MTILocking> promiseRenderTargetTableLock;
 
 @property (nonatomic, strong, readonly) id<MTILocking> renderingLock;
-@property (nonatomic, strong, readonly) id<MTILocking> imageKeyValueTablesLock;
-@property (nonatomic, strong, readonly) id<MTILocking> promiseKeyValueTablesLock;
 
 @end
 
@@ -172,8 +176,17 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _computePipelineCache = [NSMutableDictionary dictionary];
         _samplerStateCache = [NSMutableDictionary dictionary];
         _kernelStateMap = [[NSMapTable alloc] initWithKeyOptions:NSMapTableWeakMemory|NSMapTableObjectPointerPersonality valueOptions:NSMapTableStrongMemory capacity:0];
+
         _promiseKeyValueTables = [NSMutableDictionary dictionary];
+        _promiseKeyValueTablesLock = MTILockCreate();
+
         _imageKeyValueTables = [NSMutableDictionary dictionary];
+        _imageKeyValueTablesLock = MTILockCreate();
+        
+        _promiseRenderTargetTable = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsWeakMemory|NSPointerFunctionsObjectPointerPersonality valueOptions:NSPointerFunctionsWeakMemory capacity:0];
+        _promiseRenderTargetTableLock = MTILockCreate();
+        
+        _renderingLock = MTILockCreate();
         
         if (@available(iOS 11_0, macOS 10_11, *)) {
             _coreVideoTextureBridge = [[MTICVMetalTextureBridge alloc] initWithDevice:device];
@@ -187,10 +200,6 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
                 return nil;
             }
         }
-        
-        _renderingLock = MTILockCreate();
-        _promiseKeyValueTablesLock = MTILockCreate();
-        _imageKeyValueTablesLock = MTILockCreate();
         
         if (options.automaticallyReclaimResources) {
             [MTIMemoryWarningObserver addMemoryWarningHandler:self];
@@ -497,6 +506,22 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     }
     [table setObject:value forKey:image];
     [_imageKeyValueTablesLock unlock];
+}
+
+- (void)setRenderTarget:(MTIImagePromiseRenderTarget *)renderTarget forPromise:(id<MTIImagePromise>)promise {
+    NSParameterAssert(promise);
+    NSParameterAssert(renderTarget);
+    [_promiseRenderTargetTableLock lock];
+    [_promiseRenderTargetTable setObject:renderTarget forKey:promise];
+    [_promiseRenderTargetTableLock unlock];
+}
+
+- (MTIImagePromiseRenderTarget *)renderTargetForPromise:(id<MTIImagePromise>)promise {
+    NSParameterAssert(promise);
+    [_promiseRenderTargetTableLock lock];
+    MTIImagePromiseRenderTarget *renderTarget = [_promiseRenderTargetTable objectForKey:promise];
+    [_promiseRenderTargetTableLock unlock];
+    return renderTarget;
 }
 
 @end
