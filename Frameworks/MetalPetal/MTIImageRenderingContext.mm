@@ -20,11 +20,13 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 class MTIImageRenderingDependencyGraph {
-
+    
 private:
-    std::map<__unsafe_unretained id<MTIImagePromise>, std::vector<__unsafe_unretained id<MTIImagePromise>>> _promiseDenpendentsCountTable;
+    typedef std::vector<__unsafe_unretained id<MTIImagePromise>> UnsafeUnretainedImagePromises;
+    std::map<__unsafe_unretained id<MTIImagePromise>, std::shared_ptr<UnsafeUnretainedImagePromises>> _promiseDenpendentsCountTable;
     
 public:
     
@@ -34,32 +36,31 @@ public:
             auto promise = dependency.promise;
             if (_promiseDenpendentsCountTable.count(promise) == 0) {
                 //Using array here, because a promise may have two or more identical dependents.
-                _promiseDenpendentsCountTable[promise].push_back(image.promise);
+                _promiseDenpendentsCountTable.insert(std::make_pair(promise, std::make_shared<UnsafeUnretainedImagePromises>(1, image.promise)));
                 this -> addDependenciesForImage(dependency);
             } else {
-                _promiseDenpendentsCountTable[promise].push_back(image.promise);
+                _promiseDenpendentsCountTable[promise] -> push_back(image.promise);
             }
         }
     }
     
     NSInteger dependentCountForPromise(id<MTIImagePromise> promise) const {
         NSCAssert(_promiseDenpendentsCountTable.count(promise) > 0, @"Promise: %@ is not in this dependency graph.", promise);
-        return _promiseDenpendentsCountTable.at(promise).size();
+        return _promiseDenpendentsCountTable.at(promise) -> size();
     }
     
     void removeDependentForPromise(id<MTIImagePromise> dependent, id<MTIImagePromise> promise) {
         auto dependents = _promiseDenpendentsCountTable[promise];
-        NSUInteger position = NSNotFound;
-        for (NSUInteger index = 0; index < dependents.size(); index += 1) {
-            if (dependents[index] == dependent) {
-                position = index;
+        auto index = dependents -> end();
+        for (auto i = dependents -> begin(); i != dependents -> end(); ++i) {
+            if (*i == dependent) {
+                index = i;
                 break;
             }
         }
-        NSCAssert(position != NSNotFound, @"");
-        if (position != NSNotFound) {
-            dependents.erase(dependents.begin() + position);
-            _promiseDenpendentsCountTable[promise] = dependents;
+        NSCAssert(index != dependents -> end(), @"Dependent not found in promise's dependents array.");
+        if (index != dependents -> end()) {
+            dependents -> erase(index);
         }
     }
 };
