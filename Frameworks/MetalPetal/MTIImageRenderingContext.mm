@@ -18,15 +18,28 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <memory>
+
+namespace MTIImageRendering {
+    struct ObjcPointerIdentityEqual {
+        bool operator()(const id s1, const id s2) const {
+            return (s1 == s2);
+        }
+    };
+    struct ObjcPointerHash {
+        size_t operator()(const id s1) const {
+            return (size_t)s1;
+        }
+    };
+};
 
 class MTIImageRenderingDependencyGraph {
     
 private:
     typedef std::vector<__unsafe_unretained id<MTIImagePromise>> UnsafeUnretainedImagePromises;
-    std::map<__unsafe_unretained id<MTIImagePromise>, std::shared_ptr<UnsafeUnretainedImagePromises>> _promiseDenpendentsCountTable;
+    std::unordered_map<__unsafe_unretained id<MTIImagePromise>, std::shared_ptr<UnsafeUnretainedImagePromises>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> _promiseDenpendentsCountTable;
     
 public:
     
@@ -121,7 +134,7 @@ NSString * const MTIContextImagePersistentResolutionHolderTableName = @"MTIConte
 MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutionHolderTable = MTIContextImagePersistentResolutionHolderTableName;
 
 @interface MTIImageRenderingContext () {
-    std::map<__unsafe_unretained id<MTIImagePromise>, MTIImagePromiseRenderTarget __strong *> _resolvedPromises;
+    std::unordered_map<__unsafe_unretained id<MTIImagePromise>, MTIImagePromiseRenderTarget __strong *, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> _resolvedPromises;
     MTIImageRenderingDependencyGraph *_dependencyGraph;
 }
 
@@ -150,10 +163,10 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     if (image == nil) {
         [NSException raise:NSInvalidArgumentException format:@"%@: Application is requesting a resolution of a nil image.", self];
     }
- 
+    
     BOOL isRootImage = NO;
     id<MTIImagePromise> promise = image.promise;
-
+    
     if (!_dependencyGraph) {
         //If we don't have the dependency graph, we're processing the root image.
         isRootImage = YES;
@@ -169,7 +182,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             _dependencyGraph -> addDependenciesForImage(image);
         }
     }
-
+    
     MTIImagePromiseRenderTarget *renderTarget = nil;
     if (_resolvedPromises.count(promise) > 0) {
         renderTarget = _resolvedPromises.at(promise);
@@ -215,7 +228,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             //Make sure the render target is valid.
             NSAssert(renderTarget != nil, @"");
             NSAssert(renderTarget.texture != nil, @"");
-           
+            
             if (image.cachePolicy == MTIImageCachePolicyPersistent) {
                 //Share the render result with the context.
                 [self.context setRenderTarget:renderTarget forPromise:promise];

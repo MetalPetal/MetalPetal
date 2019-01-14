@@ -12,13 +12,69 @@
 #import "MTILock.h"
 #import "MTIError.h"
 
+#include <vector>
+
+@interface MTIStack<__covariant ObjectType> : NSObject <NSFastEnumeration> {
+    std::vector<__strong id> *_items;
+}
+
+@property (readonly) NSUInteger count;
+
+- (ObjectType)popObject;
+
+- (void)pushObject:(ObjectType)anObject;
+
+@end
+
+@implementation MTIStack
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _items = new std::vector<__strong id>();
+    }
+    return self;
+}
+
+- (void)dealloc {
+    delete _items;
+}
+
+- (NSUInteger)count {
+    return _items -> size();
+}
+
+- (id)popObject {
+    id item = _items -> back();
+    _items -> pop_back();
+    return item;
+}
+
+- (void)pushObject:(id)anObject {
+    _items -> push_back(anObject);
+}
+
+- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id  _Nullable __unsafe_unretained [])buffer count:(NSUInteger)len {
+    if(state -> state == 0) {
+        state -> mutationsPtr = (unsigned long *)_items;
+        void *items = (void *)_items -> data();
+        state -> itemsPtr = (id __unsafe_unretained *)items;
+        state -> state = 1;
+        return _items -> size();
+    } else {
+        return 0;
+    }
+}
+
+@end
+
+
 @interface MTITexturePool ()
 
 @property (nonatomic, strong) id<NSLocking> lock;
 
 @property (nonatomic, strong) id<MTLDevice> device;
 
-@property (nonatomic, strong) NSMutableDictionary<MTITextureDescriptor *, NSMutableArray<id<MTLTexture>> *> *textureCache;
+@property (nonatomic, strong) NSMutableDictionary<MTITextureDescriptor *, MTIStack<id<MTLTexture>> *> *textureCache;
 
 - (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor;
 
@@ -132,8 +188,7 @@
     id<MTLTexture> texture = nil;
     
     if (avaliableTextures.count > 0) {
-        texture = [avaliableTextures lastObject];
-        [avaliableTextures removeLastObject];
+        texture = [avaliableTextures popObject];
     }
     
     [_lock unlock];
@@ -158,10 +213,10 @@
     
     __auto_type avaliableTextures = _textureCache[textureDescriptor];
     if (!avaliableTextures) {
-        avaliableTextures = [NSMutableArray array];
+        avaliableTextures = [[MTIStack alloc] init];
         _textureCache[textureDescriptor] = avaliableTextures;
     }
-    [avaliableTextures addObject:texture];
+    [avaliableTextures pushObject:texture];
     
     [_lock unlock];
 }
@@ -176,7 +231,7 @@
 - (NSUInteger)idleResourceSize {
     [_lock lock];
     NSUInteger __block size = 0;
-    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, NSMutableArray<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, MTIStack<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
         for (id<MTLTexture> texture in obj) {
             size += texture.allocatedSize;
         }
@@ -188,7 +243,7 @@
 - (NSUInteger)idleResourceCount {
     [_lock lock];
     NSUInteger __block count = 0;
-    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, NSMutableArray<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
+    [_textureCache enumerateKeysAndObjectsUsingBlock:^(MTITextureDescriptor * _Nonnull key, MTIStack<id<MTLTexture>> * _Nonnull obj, BOOL * _Nonnull stop) {
         count += obj.count;
     }];
     [_lock unlock];
