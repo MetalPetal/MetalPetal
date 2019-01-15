@@ -43,20 +43,24 @@ namespace metalpetal {
             }
             
             const uint redistBatch = clipped / histSize;
-            const uint residual = clipped - redistBatch * histSize;
+            uint residual = clipped - redistBatch * histSize;
             
             for (uint i = 0; i < histSize; ++i) {
                 l[i] += redistBatch;
             }
             
-            for (uint i = 0; i < residual; ++i) {
-                l[i]++;
+            if (residual != 0) {
+                const uint residualStep = max(histSize / residual, (uint)1);
+                for (uint i = 0; i < histSize && residual > 0; i += residualStep, residual--) {
+                    l[i]++;
+                }
             }
             
             uint sum = 0;
+            const float lutScale = (histSize - 1) / float(parameters.totalPixelCountPerTile);
             for (uint index = 0; index < histSize; ++index) {
                 sum += l[index];
-                outTexture.write(round(sum * (histSize - 1) / float(parameters.totalPixelCountPerTile))/255.0, uint2(index, gid));
+                outTexture.write(round(sum * lutScale)/255.0, uint2(index, gid));
             }
         }
 
