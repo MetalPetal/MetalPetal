@@ -97,6 +97,25 @@ namespace metalpetal {
         return p;
     }
     
+    METAL_FUNC half hue2rgb(half p, half q, half t){
+        if(t < 0.0) {
+            t += 1.0;
+        }
+        if(t > 1.0) {
+            t -= 1.0;
+        }
+        if(t < 1.0/6.0) {
+            return p + (q - p) * 6.0 * t;
+        }
+        if(t < 1.0/2.0) {
+            return q;
+        }
+        if(t < 2.0/3.0) {
+            return p + (q - p) * (2.0/3.0 - t) * 6.0;
+        }
+        return p;
+    }
+    
     METAL_FUNC float3 rgb2hsl(float3 inputColor) {
         float3 color = saturate(inputColor);
         
@@ -121,6 +140,30 @@ namespace metalpetal {
         return float3(h, s, l);
     }
     
+    METAL_FUNC half3 rgb2hsl(half3 inputColor) {
+        half3 color = saturate(inputColor);
+        
+        //Compute min and max component values
+        half MAX = max(color.r, max(color.g, color.b));
+        half MIN = min(color.r, min(color.g, color.b));
+        
+        //Make sure MAX > MIN to avoid division by zero later
+        MAX = max(MIN + 1e-6h, MAX);
+        
+        //Compute luminosity
+        half l = (MIN + MAX) / 2.0h;
+        
+        //Compute saturation
+        half s = (l < 0.5h ? (MAX - MIN) / (MIN + MAX) : (MAX - MIN) / (2.0h - MAX - MIN));
+        
+        //Compute hue
+        half h = (MAX == color.r ? (color.g - color.b) / (MAX - MIN) : (MAX == color.g ? 2.0h + (color.b - color.r) / (MAX - MIN) : 4.0h + (color.r - color.g) / (MAX - MIN)));
+        h /= 6.0h;
+        h = (h < 0.0h ? 1.0h + h : h);
+        
+        return half3(h, s, l);
+    }
+    
     METAL_FUNC float3 hsl2rgb(float3 inputColor) {
         float3 color = saturate(inputColor);
         
@@ -139,6 +182,26 @@ namespace metalpetal {
             b = hue2rgb(p, q, h - 1.0/3.0);
         }
         return float3(r,g,b);
+    }
+    
+    METAL_FUNC half3 hsl2rgb(half3 inputColor) {
+        half3 color = saturate(inputColor);
+        
+        half h = color.r;
+        half s = color.g;
+        half l = color.b;
+        
+        half r,g,b;
+        if(s <= 0.0h){
+            r = g = b = l;
+        }else{
+            half q = l < 0.5h ? (l * (1.0h + s)) : (l + s - l * s);
+            half p = 2.0h * l - q;
+            r = hue2rgb(p, q, h + 1.0h/3.0h);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1.0h/3.0h);
+        }
+        return half3(r,g,b);
     }
     
     METAL_FUNC float lum(float4 C) {
