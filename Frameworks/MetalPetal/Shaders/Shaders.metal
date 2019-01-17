@@ -121,10 +121,34 @@ namespace metalpetal {
                                                        ) {
         float intensity = 1.0;
         if (parameters.hasCompositingMask) {
-            intensity *= maskColor.r;
+            intensity *= maskColor[parameters.compositingMaskComponent];
         }
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
+    }
+    
+    #else
+    
+    fragment float4 multilayerCompositeColorLookup512x512Blend(
+                                                               VertexOut vertexIn [[ stage_in ]],
+                                                               texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                                               texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                                               constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                                               texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                               sampler colorSampler [[ sampler(0) ]],
+                                                               constant float2 & viewportSize [[buffer(1)]]
+                                                               ) {
+        constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
+        float2 location = vertexIn.position.xy / viewportSize;
+        float4 backgroundColor = backgroundTexture.sample(s, location);
+        float intensity = 1.0;
+        if (parameters.hasCompositingMask) {
+            float4 maskColor = maskTexture.sample(s, location);
+            float maskValue = maskColor[parameters.compositingMaskComponent];
+            intensity *= maskValue;
+        }
+        intensity *= parameters.opacity;
+        return colorLookup2DSquareLUT(backgroundColor,64,intensity,colorTexture,colorSampler);
     }
     
     #endif
