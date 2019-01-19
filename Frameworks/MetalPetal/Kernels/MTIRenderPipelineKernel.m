@@ -23,6 +23,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIHasher.h"
+#import "MTIError.h"
 
 NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
@@ -239,6 +240,13 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     }
     
     id<MTLRenderCommandEncoder> commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
     
     NSUInteger resolutionIndex = 0;
     

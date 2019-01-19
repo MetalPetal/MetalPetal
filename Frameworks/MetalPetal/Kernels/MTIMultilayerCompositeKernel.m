@@ -390,6 +390,13 @@
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
+    
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
     
     if (self.backgroundImage.alphaType == MTIAlphaTypePremultiplied) {
@@ -590,6 +597,13 @@
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
     

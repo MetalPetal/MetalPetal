@@ -18,6 +18,7 @@
 #import "MTIDefer.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
+#import "MTIError.h"
 
 @interface MTIComputeFunctionDispatchOptions ()
 
@@ -131,6 +132,14 @@
     }
     
     __auto_type commandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
+    
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
+    
     [commandEncoder setComputePipelineState:computePipeline.state];
 
     for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {

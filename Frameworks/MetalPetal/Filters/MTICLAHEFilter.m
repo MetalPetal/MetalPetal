@@ -21,6 +21,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIVector+SIMD.h"
+#import "MTIError.h"
 
 @import MetalPerformanceShaders;
 
@@ -148,6 +149,14 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     parameters.numberOfLUTs = (uint)self.numberOfLUTs;
     
     __auto_type commandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
+    
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
+    
     [commandEncoder setComputePipelineState:kernelState.LUTGeneratingPipeline.state];
     [commandEncoder setBuffer:histogramBuffer offset:0 atIndex:0];
     [commandEncoder setBytes:&parameters length:sizeof(parameters) atIndex:1];
