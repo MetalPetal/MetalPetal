@@ -64,6 +64,7 @@ public:
     
     void removeDependentForPromise(id<MTIImagePromise> dependent, id<MTIImagePromise> promise) {
         auto dependents = _promiseDenpendentsCountTable[promise];
+        NSCAssert(dependents != nullptr, @"Dependents not found.");
         auto index = dependents -> end();
         for (auto i = dependents -> begin(); i != dependents -> end(); ++i) {
             if (*i == dependent) {
