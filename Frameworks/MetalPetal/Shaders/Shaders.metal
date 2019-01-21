@@ -197,7 +197,8 @@ namespace metalpetal {
         float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
         float maskValue = maskColor[maskComponent];
         float4 baseColor = baseTexture.sample(baseSampler, vertexIn.textureCoordinate);
-        return mix(baseColor, overlayColor, usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue);
+        overlayColor.a = overlayColor.a * (usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue);
+        return normalBlend(baseColor, overlayColor);
     }
 
     fragment float4 vibranceAdjust(
