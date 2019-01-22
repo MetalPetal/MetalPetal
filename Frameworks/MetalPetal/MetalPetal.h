@@ -50,6 +50,7 @@
 #import <MetalPetal/MTIMask.h>
 #import <MetalPetal/MTIBlendModes.h>
 #import <MetalPetal/MTIGeometry.h>
+#import <MetalPetal/MTIBuffer.h>
 #import <MetalPetal/MTITextureDescriptor.h>
 #import <MetalPetal/MTIImage.h>
 #import <MetalPetal/MTIDrawableRendering.h>
