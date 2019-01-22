@@ -7,6 +7,8 @@
 
 #import "MTIBuffer.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
+#import "MTILock.h"
+#import "MTIDefer.h"
 #import <mach/mach.h>
 
 @interface MTIPageAlignedBuffer : NSObject
@@ -55,6 +57,8 @@
 
 @property (nonatomic, strong) NSMapTable<id<MTLDevice>, id<MTLBuffer>> *bufferCache;
 
+@property (nonatomic, strong) id<MTILocking> bufferCacheLock;
+
 @end
 
 @implementation MTIDataBuffer
@@ -75,6 +79,7 @@
         _length = length;
         _options = options;
         _bufferCache = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsWeakMemory valueOptions:NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory];
+        _bufferCacheLock = MTILockCreate();
     }
     return self;
 }
@@ -84,7 +89,11 @@
 }
 
 - (id<MTLBuffer>)bufferForDevice:(id<MTLDevice>)device {
-    //per device to buffer cache
+    [_bufferCacheLock lock];
+    @MTI_DEFER {
+        [self -> _bufferCacheLock unlock];
+    };
+    
     id<MTLBuffer> buffer = [_bufferCache objectForKey:device];
     if (buffer) {
         return buffer;
