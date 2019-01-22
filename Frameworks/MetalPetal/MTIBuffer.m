@@ -83,10 +83,6 @@
     return [self initWithBytes:data.bytes length:data.length options:options];
 }
 
-- (id)copyWithZone:(NSZone *)zone {
-    return self;
-}
-
 - (id<MTLBuffer>)bufferForDevice:(id<MTLDevice>)device {
     //per device to buffer cache
     id<MTLBuffer> buffer = [_bufferCache objectForKey:device];
