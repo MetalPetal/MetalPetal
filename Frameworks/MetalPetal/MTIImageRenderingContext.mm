@@ -266,7 +266,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @end
 
-@interface MTIImageBuffer () <MTIImagePromise>
+
+@interface MTIImageBufferPromise: NSObject <MTIImagePromise>
 
 @property (nonatomic, strong, readonly) MTIPersistImageResolutionHolder *resolution;
 
@@ -274,17 +275,10 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @end
 
-@implementation MTIImageBuffer
+@implementation MTIImageBufferPromise
+
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
-
-+ (MTIImage *)renderedBufferForImage:(MTIImage *)targetImage inContext:(MTIContext *)context {
-    MTIPersistImageResolutionHolder *persistResolution = [context valueForImage:targetImage inTable:MTIContextImagePersistentResolutionHolderTable];
-    if (!persistResolution) {
-        return nil;
-    }
-    return [[MTIImage alloc] initWithPromise:[[MTIImageBuffer alloc] initWithPersistImageResolutionHolder:persistResolution alphaType:targetImage.alphaType context:context] samplerDescriptor:targetImage.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
-}
 
 - (id)copyWithZone:(NSZone *)zone {
     return self;
@@ -322,3 +316,15 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 
 @end
 
+
+@implementation MTIContext (RenderedImageBuffer)
+
+- (MTIImage *)renderedBufferForImage:(MTIImage *)targetImage {
+    MTIPersistImageResolutionHolder *persistResolution = [self valueForImage:targetImage inTable:MTIContextImagePersistentResolutionHolderTable];
+    if (!persistResolution) {
+        return nil;
+    }
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBufferPromise alloc] initWithPersistImageResolutionHolder:persistResolution alphaType:targetImage.alphaType context:self] samplerDescriptor:targetImage.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+@end

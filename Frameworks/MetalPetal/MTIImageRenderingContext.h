@@ -41,13 +41,16 @@ FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTabl
 
 @end
 
-@interface MTIImageBuffer : NSObject
+NS_ASSUME_NONNULL_END
 
-- (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)new NS_UNAVAILABLE;
+#import "MTIContext.h"
 
-+ (nullable MTIImage *)renderedBufferForImage:(MTIImage *)targetImage inContext:(MTIContext *)context;
+NS_ASSUME_NONNULL_BEGIN
+
+@interface MTIContext (RenderedImageBuffer)
+
+- (nullable MTIImage *)renderedBufferForImage:(MTIImage *)targetImage;
 
 @end
 
