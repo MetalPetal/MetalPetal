@@ -264,16 +264,6 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
-        if (command.geometry.bufferLength > 0) {
-            if (command.geometry.bufferLength < 4096) {
-                //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
-                [commandEncoder setVertexBytes:command.geometry.bufferBytes length:command.geometry.bufferLength atIndex:0];
-            } else {
-                id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytes:command.geometry.bufferBytes length:command.geometry.bufferLength options:0];
-                [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
-            }
-        }
-        
         id<MTLSamplerState> samplerStates[command.images.count];
         for (NSUInteger index = 0; index < command.images.count; index += 1) {
             MTIImage *image = command.images[index];
@@ -328,7 +318,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             }
         }
         
-        [commandEncoder drawPrimitives:command.geometry.primitiveType vertexStart:0 vertexCount:command.geometry.vertexCount];
+        [command.geometry encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     }
     
     [commandEncoder endEncoding];

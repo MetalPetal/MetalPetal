@@ -123,12 +123,12 @@
     
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
     
     [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     
-    [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
     [commandEncoder endEncoding];
     
     id<MTLDrawable> drawable = [drawableProvider drawableForRequest:request];
@@ -355,12 +355,12 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         
         __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         [commandEncoder setRenderPipelineState:renderPipeline.state];
-        [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
         
         [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
-        [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+
         [commandEncoder endEncoding];
         
         [renderingContext.commandBuffer commit];

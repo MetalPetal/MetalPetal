@@ -20,37 +20,15 @@ BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
     return simd_equal(v1.position, v2.position) && simd_equal(v1.textureCoordinate, v2.textureCoordinate);
 }
 
-/*
-MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
-    static MTLVertexDescriptor *vertexDescriptor;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        vertexDescriptor = [[MTLVertexDescriptor alloc] init];
-        vertexDescriptor.attributes[0].offset = 0;
-        vertexDescriptor.attributes[0].format = MTLVertexFormatFloat4;
-        vertexDescriptor.attributes[0].bufferIndex = 0;
-        
-        vertexDescriptor.attributes[1].offset = 0;
-        vertexDescriptor.attributes[1].format = MTLVertexFormatFloat2;
-        vertexDescriptor.attributes[1].bufferIndex = 0;
-        
-        vertexDescriptor.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
-        vertexDescriptor.layouts[0].stride = sizeof(MTIVertex);
-    });
-    return [vertexDescriptor copy];
-}
-*/
-
 @interface MTIVertices () {
     void *_memory;
 }
 
+@property (nonatomic,readonly) NSUInteger bufferLength;
+
 @end
 
 @implementation MTIVertices
-@synthesize primitiveType = _primitiveType;
-@synthesize vertexCount = _vertexCount;
-@synthesize bufferLength = _bufferLength;
 
 - (instancetype)initWithVertices:(const MTIVertex *)vertices count:(NSInteger)count primitiveType:(MTLPrimitiveType)primitiveType {
     if (self = [super init]) {
@@ -68,10 +46,6 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
 
 - (void)dealloc {
     free(_memory);
-}
-
-- (const void *)bufferBytes {
-    return _memory;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -149,6 +123,20 @@ MTLVertexDescriptor * MTIVertexCreateMTLVertexDescriptor(void) {
         vertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
     });
     return vertices;
+}
+
+- (void)encodeDrawCallWithCommandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder renderPipeline:(MTIRenderPipeline *)pipeline {
+    //assuming buffer bounded to index 0.
+    if (self.bufferLength > 0) {
+        if (self.bufferLength < 4096) {
+            //The setVertexBytes:length:atIndex: method is the best option for binding a very small amount (less than 4 KB) of dynamic buffer data to a vertex function. This method avoids the overhead of creating an intermediary MTLBuffer object. Instead, Metal manages a transient buffer for you.
+            [commandEncoder setVertexBytes:_memory length:_bufferLength atIndex:0];
+        } else {
+            id<MTLBuffer> buffer = [commandEncoder.device newBufferWithBytes:_memory length:_bufferLength options:0];
+            [commandEncoder setVertexBuffer:buffer offset:0 atIndex:0];
+        }
+    }
+    [commandEncoder drawPrimitives:_primitiveType vertexStart:0 vertexCount:_vertexCount];
 }
 
 @end

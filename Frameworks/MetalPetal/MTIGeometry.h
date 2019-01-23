@@ -9,15 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MTIRenderPipeline;
+
 @protocol MTIGeometry <NSObject, NSCopying>
 
-@property (nonatomic,readonly) NSUInteger vertexCount;
-
-@property (nonatomic,readonly) MTLPrimitiveType primitiveType;
-
-@property (nonatomic,readonly,nullable) const void *bufferBytes NS_RETURNS_INNER_POINTER;
-
-@property (nonatomic,readonly) NSUInteger bufferLength;
+- (void)encodeDrawCallWithCommandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder
+                          renderPipeline:(MTIRenderPipeline *)pipeline;
 
 @end
 

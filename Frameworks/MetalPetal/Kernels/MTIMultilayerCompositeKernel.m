@@ -399,15 +399,19 @@
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
     
+    MTIRenderPipeline *renderPipeline;
     if (self.backgroundImage.alphaType == MTIAlphaTypePremultiplied) {
-        [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaRenderPipeline].state];
+        renderPipeline = [kernelState unpremultiplyAlphaRenderPipeline];
     } else {
-        [commandEncoder setRenderPipelineState:[kernelState passthroughRenderPipeline].state];
+        renderPipeline = [kernelState passthroughRenderPipeline];
     }
-    [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+    
+    [commandEncoder setRenderPipelineState:renderPipeline.state];
+
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
-    [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+    
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
@@ -417,15 +421,19 @@
         if (layer.compositingMask) {
             NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
             compositingMaskResolution = layerCompositingMaskResolutions[index];
+            
+            MTIRenderPipeline *renderPipeline;
             if (layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied) {
-                [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaToColorAttachmentOneRenderPipeline].state];
+                renderPipeline = [kernelState unpremultiplyAlphaToColorAttachmentOneRenderPipeline];
             } else {
-                [commandEncoder setRenderPipelineState:[kernelState passthroughToColorAttachmentOneRenderPipeline].state];
+                renderPipeline = [kernelState passthroughToColorAttachmentOneRenderPipeline];
             }
-            [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+            [commandEncoder setRenderPipelineState:renderPipeline.state];
+            
             [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:0];
             [commandEncoder setFragmentSamplerState:compositingMaskSamplerStates[index] atIndex:0];
-            [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+            
+            [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
         }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
@@ -438,8 +446,8 @@
                                         contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
                                           flipOptions:layer.contentFlipOptions];
         
-        [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
-        [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+        MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
+        [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
@@ -464,7 +472,7 @@
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     }
     
     //end encoding
