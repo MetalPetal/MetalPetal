@@ -37,107 +37,11 @@
 }
 
 - (BOOL)renderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)inOutError {
-    [self lockForRendering];
-    @MTI_DEFER {
-        [self unlockForRendering];
-    };
-    
-    id<MTIDrawableProvider> drawableProvider = request.drawableProvider;
-    
-    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
-    
-    NSError *error = nil;
-    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
-    @MTI_DEFER {
-        [resolution markAsConsumedBy:self];
-    };
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return NO;
+    MTIRenderTask *renderTask = [self startTaskToRenderImage:image toDrawableWithRequest:request error:inOutError];
+    if (renderTask) {
+        return YES;
     }
-    
-    MTLRenderPassDescriptor *renderPassDescriptor = [drawableProvider renderPassDescriptorForRequest:request];
-    if (renderPassDescriptor == nil) {
-        if (inOutError) {
-            *inOutError = MTIErrorCreate(MTIErrorEmptyDrawable, nil);
-        }
-        return NO;
-    }
-    
-    float heightScaling = 1.0;
-    float widthScaling = 1.0;
-    CGSize drawableSize = CGSizeMake(renderPassDescriptor.colorAttachments[0].texture.width, renderPassDescriptor.colorAttachments[0].texture.height);
-    CGRect bounds = CGRectMake(0, 0, drawableSize.width, drawableSize.height);
-    CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(image.size, bounds);
-    switch (request.resizingMode) {
-        case MTIDrawableRenderingResizingModeScale: {
-            widthScaling = 1.0;
-            heightScaling = 1.0;
-        }; break;
-        case MTIDrawableRenderingResizingModeAspect:
-        {
-            widthScaling = insetRect.size.width / drawableSize.width;
-            heightScaling = insetRect.size.height / drawableSize.height;
-        }; break;
-        case MTIDrawableRenderingResizingModeAspectFill:
-        {
-            widthScaling = drawableSize.height / insetRect.size.height;
-            heightScaling = drawableSize.width / insetRect.size.width;
-        }; break;
-    }
-    MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
-        { .position = {-widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 0, 1 } },
-        { .position = {widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 1, 1 } },
-        { .position = {-widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 0, 0 } },
-        { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
-    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
-    
-    NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
-    
-    //iOS drawables always require premultiplied alpha.
-    MTIRenderPipelineKernel *kernel;
-    if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
-        kernel = MTIContext.premultiplyAlphaKernel;
-    } else {
-        kernel = MTIContext.passthroughKernel;
-    }
-    
-    MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat];
-    MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return NO;
-    }
-    
-    id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return NO;
-    }
-    
-    __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-    [commandEncoder setRenderPipelineState:renderPipeline.state];
-    
-    [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
-    [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
-
-    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
-    
-    [commandEncoder endEncoding];
-    
-    id<MTLDrawable> drawable = [drawableProvider drawableForRequest:request];
-    [renderingContext.commandBuffer presentDrawable:drawable];
-    
-    [renderingContext.commandBuffer commit];
-    [renderingContext.commandBuffer waitUntilScheduled];
-    
-    return YES;
+    return NO;
 }
 
 static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImageAssociationKey;
@@ -396,6 +300,110 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         }
         return nil;
     }
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)inOutError {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
+    id<MTIDrawableProvider> drawableProvider = request.drawableProvider;
+    
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    
+    NSError *error = nil;
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    MTLRenderPassDescriptor *renderPassDescriptor = [drawableProvider renderPassDescriptorForRequest:request];
+    if (renderPassDescriptor == nil) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorEmptyDrawable, nil);
+        }
+        return nil;
+    }
+    
+    float heightScaling = 1.0;
+    float widthScaling = 1.0;
+    CGSize drawableSize = CGSizeMake(renderPassDescriptor.colorAttachments[0].texture.width, renderPassDescriptor.colorAttachments[0].texture.height);
+    CGRect bounds = CGRectMake(0, 0, drawableSize.width, drawableSize.height);
+    CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(image.size, bounds);
+    switch (request.resizingMode) {
+        case MTIDrawableRenderingResizingModeScale: {
+            widthScaling = 1.0;
+            heightScaling = 1.0;
+        }; break;
+        case MTIDrawableRenderingResizingModeAspect:
+        {
+            widthScaling = insetRect.size.width / drawableSize.width;
+            heightScaling = insetRect.size.height / drawableSize.height;
+        }; break;
+        case MTIDrawableRenderingResizingModeAspectFill:
+        {
+            widthScaling = drawableSize.height / insetRect.size.height;
+            heightScaling = drawableSize.width / insetRect.size.width;
+        }; break;
+    }
+    MTIVertices *vertices = [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {-widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 0, 1 } },
+        { .position = {widthScaling, -heightScaling, 0, 1} , .textureCoordinate = { 1, 1 } },
+        { .position = {-widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 0, 0 } },
+        { .position = {widthScaling, heightScaling, 0, 1} , .textureCoordinate = { 1, 0 } }
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
+    
+    NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
+    
+    //iOS drawables always require premultiplied alpha.
+    MTIRenderPipelineKernel *kernel;
+    if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
+        kernel = MTIContext.premultiplyAlphaKernel;
+    } else {
+        kernel = MTIContext.passthroughKernel;
+    }
+    
+    MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormat:renderPassDescriptor.colorAttachments[0].texture.pixelFormat];
+    MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+    [commandEncoder setRenderPipelineState:renderPipeline.state];
+    
+    [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
+    [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+    
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+    
+    [commandEncoder endEncoding];
+    
+    id<MTLDrawable> drawable = [drawableProvider drawableForRequest:request];
+    [renderingContext.commandBuffer presentDrawable:drawable];
+    
+    [renderingContext.commandBuffer commit];
+    [renderingContext.commandBuffer waitUntilScheduled];
+    
+    return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
 }
 
 @end
