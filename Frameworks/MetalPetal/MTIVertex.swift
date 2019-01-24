@@ -24,7 +24,19 @@ extension MTIVertex : Equatable {
 }
 
 extension MTIVertices {
-    public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType = .triangleStrip) {
-        self.init(__vertices: vertices, count: vertices.count, primitiveType: primitiveType)
+    public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType) {
+        self.init(__vertices: vertices, count: UInt(vertices.count), primitiveType: primitiveType)
     }
+}
+
+extension MTIDataBuffer {
+    
+    public convenience init?(mtiVertices: [MTIVertex]) {
+        self.init(__mtiVertices: mtiVertices, count: UInt(mtiVertices.count))
+    }
+    
+    public convenience init?(uint32Indexes: [UInt32]) {
+        self.init(__uInt32Indexes: uint32Indexes, count: UInt(uint32Indexes.count))
+    }
+    
 }
