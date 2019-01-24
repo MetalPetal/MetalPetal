@@ -27,7 +27,12 @@ static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher 
     hasher -> _seed ^= value + 0x9e3779b97f4a7c15 + (hasher -> _seed << 6) + (hasher -> _seed >> 2);
 }
 
-static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher *hasher, NSUInteger intValue) {
+static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher *hasher, unsigned int intValue) {
+    uint64_t value = intValue;
+    MTIHasherCombine(hasher, value);
+}
+
+static inline __attribute__((__overloadable__)) void MTIHasherCombine(MTIHasher *hasher, unsigned long intValue) {
     uint64_t value = intValue;
     MTIHasherCombine(hasher, value);
 }
