@@ -42,6 +42,8 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 - (instancetype)initWithHistogramKernel:(MPSImageHistogram *)histogramKernel LUTGeneratingPipeline:(MTIComputePipeline *)LUTGeneratingPipeline {
     if (self = [super init]) {
+        NSParameterAssert(histogramKernel);
+        NSParameterAssert(LUTGeneratingPipeline);
         _histogramKernel = histogramKernel;
         _LUTGeneratingPipeline = LUTGeneratingPipeline;
     }
@@ -195,6 +197,13 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 @implementation MTICLAHELUTKernel
 
 - (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * __autoreleasing *)inOutError {
+    if (!context.isMetalPerformanceShadersSupported) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorMPSKernelNotSupported, nil);
+        }
+        return nil;
+    }
+    
     MPSImageHistogramInfo info;
     info.numberOfHistogramEntries = MTICLAHEHistogramBinCount;
     info.minPixelValue = (vector_float4){0,0,0,0};
