@@ -119,7 +119,19 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     return outImage;
 }
 
-- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef  _Nullable *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)error {
+    return [self startTaskToCreateCGImage:outImage fromImage:image sRGB:sRGB error:error completion:nil];
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)error {
+    return [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:error completion:nil];
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)error {
+    return [self startTaskToRenderImage:image toDrawableWithRequest:request error:error completion:nil];
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask *))completion {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -217,9 +229,16 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
                            destinationLevel:0
                           destinationOrigin:MTLOriginMake(0, 0, 0)];
         [blitCommandEncoder endEncoding];
+        
+        MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        if (completion) {
+            [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+                completion(task);
+            }];
+        }
         [renderingContext.commandBuffer commit];
         [renderingContext.commandBuffer waitUntilScheduled];
-        return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        return task;
     } else {
         //Render
         MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -267,18 +286,24 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 
         [commandEncoder endEncoding];
         
+        MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        if (completion) {
+            [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+                completion(task);
+            }];
+        }
         [renderingContext.commandBuffer commit];
         [renderingContext.commandBuffer waitUntilScheduled];
-        return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        return task;
     }
 }
 
-- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask *))completion {
     CVPixelBufferRef pixelBuffer = NULL;
     CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
     if (errorCode == kCVReturnSuccess && pixelBuffer) {
         NSError *error;
-        MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error];
+        MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error completion:completion];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -302,7 +327,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
 }
 
-- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)inOutError {
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask *))completion {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -400,10 +425,16 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     id<MTLDrawable> drawable = [drawableProvider drawableForRequest:request];
     [renderingContext.commandBuffer presentDrawable:drawable];
     
+    MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+    if (completion) {
+        [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            completion(task);
+        }];
+    }
     [renderingContext.commandBuffer commit];
     [renderingContext.commandBuffer waitUntilScheduled];
     
-    return [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+    return task;
 }
 
 @end
