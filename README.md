@@ -185,9 +185,9 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - MPS Gaussian Blur
 
-- High Pass Skin Smoothing
+- [High Pass Skin Smoothing](https://github.com/YuAo/YUCIHighPassSkinSmoothing)
 
-- CLAHE (Contrast-Limited Adaptive Histogram Equalization)
+- [CLAHE (Contrast-Limited Adaptive Histogram Equalization)](https://github.com/YuAo/Accelerated-CLAHE)
 
 - Lens Blur (Hexagonal Bokeh Blur)
 
@@ -203,6 +203,9 @@ let imageFromCIImage = MTIImage(ciImage: ciImage)
 let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
 
 let imageFromContentsOfURL = MTIImage(contentsOf: url, options: [.SRGB: false])
+
+// unpremultiply alpha if needed
+let unpremultipliedAlphaImage = image.unpremultiplyingAlpha()
 ```
 
 ### Create a filtered image
