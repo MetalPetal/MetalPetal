@@ -615,15 +615,16 @@
     
     NSParameterAssert(self.backgroundImage.alphaType != MTIAlphaTypeUnknown);
     
+    MTIRenderPipeline *renderPipeline;
     if (self.backgroundImage.alphaType == MTIAlphaTypePremultiplied) {
-        [commandEncoder setRenderPipelineState:[kernelState unpremultiplyAlphaRenderPipeline].state];
+        renderPipeline = [kernelState unpremultiplyAlphaRenderPipeline];
     } else {
-        [commandEncoder setRenderPipelineState:[kernelState passthroughRenderPipeline].state];
+        renderPipeline = [kernelState passthroughRenderPipeline];
     }
-    [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+    [commandEncoder setRenderPipelineState:renderPipeline.state];
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
-    [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
@@ -650,8 +651,8 @@
                                         contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
                                           flipOptions:layer.contentFlipOptions];
         
-        [commandEncoder setRenderPipelineState:[kernelState pipelineWithBlendMode:layer.blendMode].state];
-        [commandEncoder setVertexBytes:vertices.bufferBytes length:vertices.bufferLength atIndex:0];
+        MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
+        [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
@@ -681,7 +682,7 @@
         simd_float2 viewportSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
         [commandEncoder setFragmentBytes:&viewportSize length:sizeof(simd_float2) atIndex:1];
 
-        [commandEncoder drawPrimitives:vertices.primitiveType vertexStart:0 vertexCount:vertices.vertexCount];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
     }
     
     //end encoding
