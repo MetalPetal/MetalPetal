@@ -189,7 +189,7 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - [CLAHE (Contrast-Limited Adaptive Histogram Equalization)](https://github.com/YuAo/Accelerated-CLAHE)
 
-- Lens Blur (Hexagonal Bokeh Blur)
+- [Lens Blur (Hexagonal Bokeh Blur)](https://github.com/YuAo/HexagonalBokehBlur)
 
 ## Example Code
 
