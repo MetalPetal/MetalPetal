@@ -624,7 +624,7 @@
     [commandEncoder setRenderPipelineState:renderPipeline.state];
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
-    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
@@ -682,7 +682,7 @@
         simd_float2 viewportSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
         [commandEncoder setFragmentBytes:&viewportSize length:sizeof(simd_float2) atIndex:1];
 
-        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
     //end encoding
