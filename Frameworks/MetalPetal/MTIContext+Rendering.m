@@ -282,7 +282,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
         [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
         
-        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
 
         [commandEncoder endEncoding];
         
@@ -418,7 +418,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
     
-    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
     [commandEncoder endEncoding];
     

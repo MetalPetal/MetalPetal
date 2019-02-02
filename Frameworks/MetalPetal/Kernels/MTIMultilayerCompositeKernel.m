@@ -411,7 +411,7 @@
     [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
     
-    [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+    [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
@@ -433,7 +433,7 @@
             [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:0];
             [commandEncoder setFragmentSamplerState:compositingMaskSamplerStates[index] atIndex:0];
             
-            [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+            [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
         }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
@@ -472,7 +472,7 @@
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        [vertices encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
     //end encoding

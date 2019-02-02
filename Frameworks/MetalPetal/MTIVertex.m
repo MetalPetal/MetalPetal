@@ -231,7 +231,7 @@ BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
     return vertices;
 }
 
-- (void)encodeDrawCallWithCommandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder renderPipeline:(MTIRenderPipeline *)pipeline {
+- (void)encodeDrawCallWithCommandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder context:(id<MTIGeometryRenderingContext>)context {
     //assuming buffer bounded to index 0.
     [_vertexBuffer encodeToVertexBufferAtIndex:0 withCommandEncoder:commandEncoder];
     if (_indexBuffer) {

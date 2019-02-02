@@ -318,7 +318,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             }
         }
         
-        [command.geometry encodeDrawCallWithCommandEncoder:commandEncoder renderPipeline:renderPipeline];
+        [command.geometry encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
     [commandEncoder endEncoding];

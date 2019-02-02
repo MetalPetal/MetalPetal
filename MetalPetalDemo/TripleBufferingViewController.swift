@@ -66,8 +66,8 @@ class ColoredVertices: NSObject, MTIGeometry {
         })
     }
     
-    func encodeDrawCall(with commandEncoder: MTLRenderCommandEncoder, renderPipeline pipeline: MTIRenderPipeline) {
-        commandEncoder.setVertexBuffer(self.dataBuffers[self.currentFrameIndex].buffer(for: commandEncoder.device)!, offset: 0, index: 0)
+    func encodeDrawCall(with commandEncoder: MTLRenderCommandEncoder, context: MTIGeometryRenderingContext) {
+        commandEncoder.setVertexBuffer(self.dataBuffers[self.currentFrameIndex].buffer(for: context.device)!, offset: 0, index: 0)
         commandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 36)
     }
 }
