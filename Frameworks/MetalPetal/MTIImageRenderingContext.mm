@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 #include <memory>
+#include <cstdint>
 
 namespace MTIImageRendering {
     struct ObjcPointerIdentityEqual {
@@ -29,8 +30,12 @@ namespace MTIImageRendering {
         }
     };
     struct ObjcPointerHash {
-        size_t operator()(const id s1) const {
-            return (size_t)s1;
+        size_t operator()(const id pointer) const {
+            auto addr = reinterpret_cast<uintptr_t>(pointer);
+            #if SIZE_MAX < UINTPTR_MAX
+            addr %= SIZE_MAX; /* truncate the address so it is small enough to fit in a size_t */
+            #endif
+            return addr;
         }
     };
 };
