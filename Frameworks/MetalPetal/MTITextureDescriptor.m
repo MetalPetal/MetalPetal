@@ -12,7 +12,7 @@
 
 @property (nonatomic,copy) MTLTextureDescriptor *metalTextureDescriptor;
 
-@property (nonatomic,readonly) NSUInteger hashValue;
+@property (nonatomic,readonly) NSUInteger cachedHashValue;
 
 @end
 
@@ -23,7 +23,7 @@
         MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:width height:height mipmapped:mipmapped];
         textureDescriptor.usage = usage;
         _metalTextureDescriptor = textureDescriptor;
-        _hashValue = [textureDescriptor hash];
+        _cachedHashValue = [textureDescriptor hash];
     }
     return self;
 }
@@ -34,7 +34,7 @@
         textureDescriptor.usage = usage;
         textureDescriptor.resourceOptions = resourceOptions;
         _metalTextureDescriptor = textureDescriptor;
-        _hashValue = [textureDescriptor hash];
+        _cachedHashValue = [textureDescriptor hash];
     }
     return self;
 }
@@ -42,7 +42,7 @@
 - (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor {
     if (self = [super init]) {
         _metalTextureDescriptor = [textureDescriptor copy];
-        _hashValue = [textureDescriptor hash];
+        _cachedHashValue = [textureDescriptor hash];
     }
     return self;
 }
@@ -74,7 +74,7 @@
 }
 
 - (NSUInteger)hash {
-    return _hashValue;
+    return _cachedHashValue;
 }
 
 - (MTLTextureType)textureType {

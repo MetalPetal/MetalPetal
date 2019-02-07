@@ -11,7 +11,7 @@
 
 @interface MTIFunctionDescriptor ()
 
-@property (nonatomic, readonly) NSUInteger hashValue;
+@property (nonatomic, readonly) NSUInteger cachedHashValue;
 
 @end
 
@@ -30,7 +30,7 @@
         MTIHasher hasher = MTIHasherMake(0);
         MTIHasherCombine(&hasher, _name.hash);
         MTIHasherCombine(&hasher, _libraryURL.hash);
-        _hashValue = MTIHasherFinalize(&hasher);
+        _cachedHashValue = MTIHasherFinalize(&hasher);
     }
     return self;
 }
@@ -45,7 +45,7 @@
         MTIHasherCombine(&hasher, _name.hash);
         MTIHasherCombine(&hasher, _libraryURL.hash);
         MTIHasherCombine(&hasher, _constantValues.hash);
-        _hashValue = MTIHasherFinalize(&hasher);
+        _cachedHashValue = MTIHasherFinalize(&hasher);
     }
     return self;
 }
@@ -77,7 +77,7 @@
 }
 
 - (NSUInteger)hash {
-    return _hashValue;
+    return _cachedHashValue;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
