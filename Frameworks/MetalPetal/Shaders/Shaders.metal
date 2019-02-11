@@ -38,7 +38,17 @@ namespace metalpetal {
         float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
         return unpremultiply(textureColor);
     }
-
+    
+    fragment float4 unpremultiplyAlphaWithSRGBToLinearRGB(
+                                       VertexOut vertexIn [[ stage_in ]],
+                                       texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                       sampler colorSampler [[ sampler(0) ]]
+                                       ) {
+        float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+        textureColor = unpremultiply(textureColor);
+        return float4(sRGBToLinear(textureColor.rgb), textureColor.a);
+    }
+    
     typedef struct {
         float4 color [[color(1)]];
     } ColorAttachmentOneOutput;

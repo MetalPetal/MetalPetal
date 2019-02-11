@@ -22,4 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/// Unpremultiply alpha and convert to linear RGB
+@interface MTIUnpremultiplyAlphaWithSRGBToLinearRGBFilter : MTIUnaryImageRenderingFilter
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image;
+
+@end
+
 NS_ASSUME_NONNULL_END
