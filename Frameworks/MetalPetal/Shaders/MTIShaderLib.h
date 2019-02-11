@@ -60,14 +60,27 @@ namespace metalpetal {
     } VertexOut;
     
     // GLSL mod func for metal
-    template <typename T, typename _E = typename enable_if<is_same<float, typename make_scalar<T>::type>::value>::type>
+    template <typename T, typename _E = typename enable_if<is_floating_point<typename make_scalar<T>::type>::value>::type>
     METAL_FUNC T mod(T x, T y) {
         return x - y * floor(x/y);
     }
     
-    template <typename T, typename _E = typename enable_if<is_same<float, typename make_scalar<T>::type>::value>::type>
-    METAL_FUNC T sRGBToLinear(T x) {
-        return sign(x)*mix(abs(x)*0.077399380804954, pow(abs(x)*0.947867298578199 + 0.052132701421801, 2.4), step(0.04045, abs(x)));
+    template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
+    METAL_FUNC T sRGBToLinear(T c) {
+        return (c <= 0.04045f) ? c / 12.92f : powr((c + 0.055f) / 1.055f, 2.4f);
+    }
+    
+    METAL_FUNC float3 sRGBToLinear(float3 c) {
+        return float3(sRGBToLinear(c.r), sRGBToLinear(c.g), sRGBToLinear(c.b));
+    }
+    
+    template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
+    METAL_FUNC T linearToSRGB(T c) {
+        return (c < 0.0031308f) ? (12.92f * c) : (1.055f * powr(c, 1.f/2.4f) - 0.055f);
+    }
+    
+    METAL_FUNC float3 linearToSRGB(float3 c) {
+        return float3(linearToSRGB(c.r), linearToSRGB(c.g), linearToSRGB(c.b));
     }
     
     METAL_FUNC float4 unpremultiply(float4 s) {
@@ -78,26 +91,8 @@ namespace metalpetal {
         return float4(s.rgb * s.a, s.a);
     }
     
-    METAL_FUNC float hue2rgb(float p, float q, float t){
-        if(t < 0.0) {
-            t += 1.0;
-        }
-        if(t > 1.0) {
-            t -= 1.0;
-        }
-        if(t < 1.0/6.0) {
-            return p + (q - p) * 6.0 * t;
-        }
-        if(t < 1.0/2.0) {
-            return q;
-        }
-        if(t < 2.0/3.0) {
-            return p + (q - p) * (2.0/3.0 - t) * 6.0;
-        }
-        return p;
-    }
-    
-    METAL_FUNC half hue2rgb(half p, half q, half t){
+    template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
+    METAL_FUNC T hue2rgb(T p, T q, T t){
         if(t < 0.0) {
             t += 1.0;
         }

@@ -305,7 +305,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 }
                 
                 // Render Pipeline
-                MTLPixelFormat pixelFormat = self.sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+                MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
                 MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) usage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
                 MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
                 if (error) {
@@ -334,6 +334,8 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 [renderCommandEncoder setFragmentTexture:cvMetalTextureY.texture atIndex:0];
                 [renderCommandEncoder setFragmentTexture:cvMetalTextureCbCr.texture atIndex:1];
                 [renderCommandEncoder setFragmentBytes:preferredConversion length:sizeof(MTIYUVColorConversion) atIndex:0];
+                bool convertToLinearRGB = self.sRGB;
+                [renderCommandEncoder setFragmentBytes:&convertToLinearRGB length:sizeof(convertToLinearRGB) atIndex:1];
                 [renderCommandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4 instanceCount:1];
                 [renderCommandEncoder endEncoding];
                 
