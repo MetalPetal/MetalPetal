@@ -18,6 +18,7 @@
 #import <MetalPetal/MTIPixellateFilter.h>
 #import <MetalPetal/MTIMPSGaussianBlurFilter.h>
 #import <MetalPetal/MTIColorHalftoneFilter.h>
+#import <MetalPetal/MTIRGBColorSpaceConversionFilter.h>
 #import <MetalPetal/MTIAlphaPremultiplicationFilter.h>
 #import <MetalPetal/MTIDotScreenFilter.h>
 #import <MetalPetal/MTIMPSUnsharpMaskFilter.h>
