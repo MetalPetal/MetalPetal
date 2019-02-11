@@ -325,9 +325,7 @@
     };
     if (@available(iOS 10.0, *)) {
         MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-        #if TARGET_OS_IPHONE
         tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-        #endif
         compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
         if (!compositingMaskTexture) {
             if (inOutError) {

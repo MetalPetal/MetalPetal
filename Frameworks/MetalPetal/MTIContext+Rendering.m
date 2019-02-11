@@ -179,7 +179,15 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             #if TARGET_OS_IPHONE
             targetPixelFormat = sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
             #else
-            targetPixelFormat = MTLPixelFormatR8Unorm;
+            NSParameterAssert(!sRGB); //R8Unorm_sRGB texture is not available on macOS.
+            if (sRGB) {
+                NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            targetPixelFormat = sRGB ? MTLPixelFormatInvalid : MTLPixelFormatR8Unorm;
             #endif
         } break;
         case kCVPixelFormatType_OneComponent16Half: {

@@ -99,7 +99,8 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             #if TARGET_OS_IPHONE
             return sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
             #else
-            return MTLPixelFormatR8Unorm;
+            NSCParameterAssert(!sRGB); //R8Unorm_sRGB texture is not available on macOS.
+            return sRGB ? MTLPixelFormatInvalid : MTLPixelFormatR8Unorm;
             #endif
             
         default:
