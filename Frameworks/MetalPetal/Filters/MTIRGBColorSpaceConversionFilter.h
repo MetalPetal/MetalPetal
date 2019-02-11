@@ -11,9 +11,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTILinearToSRGBToneCurveFilter : MTIUnaryImageRenderingFilter
 
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image;
+
 @end
 
 @interface MTISRGBToneCurveToLinearFilter: MTIUnaryImageRenderingFilter
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image;
 
 @end
 
