@@ -36,6 +36,9 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 /// Automatically reclaim resources on memory warning.
 @property (nonatomic) BOOL automaticallyReclaimResources;
 
+/// Whether to enable native support for YCbCr textures. The default value for this property is YES. YCbCr textures can be used when this property is set to YES, and the device supports this feature.
+@property (nonatomic) BOOL enablesYCbCrPixelFormatSupport;
+
 /// A string to help identify this object.
 @property (nonatomic, copy) NSString *label;
 
@@ -70,6 +73,8 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 @property (nonatomic, copy, readonly) NSString *label;
 
 @property (nonatomic, readonly) BOOL isMetalPerformanceShadersSupported;
+
+@property (nonatomic, readonly) BOOL isYCbCrPixelFormatSupported;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 

@@ -240,7 +240,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
     switch (pixelFormatType) {
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
-            if (MTIDeviceSupportsYCBCRPixelFormat(renderingContext.context.device)) {
+            if (renderingContext.context.isYCbCrPixelFormatSupported) {
                 MTLPixelFormat pixelFormat = self.sRGB ? MTIPixelFormatYCBCR8_420_2P_sRGB : MTIPixelFormatYCBCR8_420_2P;
                 NSError *error = nil;
                 MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];

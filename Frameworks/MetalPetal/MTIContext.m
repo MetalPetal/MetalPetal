@@ -21,6 +21,7 @@
 #import "MTICVMetalTextureCache.h"
 #import "MTICVMetalTextureBridge.h"
 #import "MTILock.h"
+#import "MTIPixelFormat.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 NSString * const MTIContextDefaultLabel = @"MetalPetal";
@@ -32,6 +33,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _coreImageContextOptions = nil;
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
         _enablesRenderGraphOptimization = NO;
+        _enablesYCbCrPixelFormatSupport = YES;
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
@@ -165,6 +167,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _commandQueue.label = options.label;
         
         _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
+        _isYCbCrPixelFormatSupported = options.enablesYCbCrPixelFormatSupport && MTIDeviceSupportsYCBCRPixelFormat(device);
         
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
