@@ -476,6 +476,17 @@ namespace metalpetal {
     }
     */
     
+    fragment float4 bulgeDistortion(VertexOut vertexIn [[stage_in]],
+                                    texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                    sampler sourceSampler [[sampler(0)]],
+                                    constant float & scale [[ buffer(0) ]],
+                                    constant float & radius [[ buffer(1) ]],
+                                    constant float2 & center [[ buffer(2) ]]) {
+        float2 textureSize = float2(sourceTexture.get_width(), sourceTexture.get_height());
+        float2 textureCoordinate = vertexIn.textureCoordinate;
+        return sourceTexture.sample(sourceSampler, textureCoordinate);
+    }
+    
     namespace definition {
         
         float4 meaningBlur(float4 im, float4 b) {
