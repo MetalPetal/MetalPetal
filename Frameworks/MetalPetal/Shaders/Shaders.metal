@@ -484,6 +484,21 @@ namespace metalpetal {
                                     constant float2 & center [[ buffer(2) ]]) {
         float2 textureSize = float2(sourceTexture.get_width(), sourceTexture.get_height());
         float2 textureCoordinate = vertexIn.textureCoordinate;
+        
+        float2 texturePixelCoordinate = textureCoordinate * textureSize;
+        float dist = distance(texturePixelCoordinate, center);
+        
+        if (dist < radius) {
+            texturePixelCoordinate -= center;
+            float percent = 1.0 - ((radius - dist) / radius) * scale;
+            percent = percent * percent;
+            
+            texturePixelCoordinate = texturePixelCoordinate * percent;
+            texturePixelCoordinate += center;
+            
+            textureCoordinate = texturePixelCoordinate / textureSize;
+        }
+        
         return sourceTexture.sample(sourceSampler, textureCoordinate);
     }
     
