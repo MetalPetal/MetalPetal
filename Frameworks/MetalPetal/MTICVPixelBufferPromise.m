@@ -364,6 +364,31 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 }
                 return nil;
             }
+            
+            #if TARGET_OS_IPHONE
+            //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
+            if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
+                NSError *error;
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
+                id<MTLBlitCommandEncoder> commandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+                if (!commandEncoder) {
+                    if (inOutError) {
+                        *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+                    }
+                    return nil;
+                }
+                [commandEncoder copyFromTexture:cvMetalTexture.texture sourceSlice:0 sourceLevel:0 sourceOrigin:MTLOriginMake(0, 0, 0) sourceSize:MTLSizeMake(cvMetalTexture.texture.width, cvMetalTexture.texture.height, cvMetalTexture.texture.depth) toTexture:renderTarget.texture destinationSlice:0 destinationLevel:0 destinationOrigin:MTLOriginMake(0, 0, 0)];
+                [commandEncoder endEncoding];
+                return renderTarget;
+            }
+            #endif
+            
             return [renderingContext.context newRenderTargetWithTexture:cvMetalTexture.texture];
         } break;
     }
