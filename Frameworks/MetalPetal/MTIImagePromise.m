@@ -171,6 +171,12 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
     NSParameterAssert(renderingContext.context.device == self.texture.device);
+    if (renderingContext.context.device != self.texture.device) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorCrossDeviceRendering, nil);
+        }
+        return nil;
+    }
     return [renderingContext.context newRenderTargetWithTexture:self.texture];
 }
 

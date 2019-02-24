@@ -304,7 +304,14 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
-    NSParameterAssert(renderingContext.context == self.context);
+    MTIContext *context = self.context;
+    NSParameterAssert(renderingContext.context == context);
+    if (renderingContext.context != context) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorCrossContextRendering, nil);
+        }
+        return nil;
+    }
     [_resolution.renderTarget retainTexture];
     return _resolution.renderTarget;
 }

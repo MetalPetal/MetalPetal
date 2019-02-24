@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
 		062816182005F0BB005D81BC /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816172005F0BB005D81BC /* Recorder.swift */; };
+		06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 06D7F6C922228C0400B02D3D /* art.scnassets */; };
+		06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */; };
 		06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */; };
 		06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CD21FC3A4800AD9955 /* Shaders.metal */; };
 		7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */; };
@@ -29,6 +31,8 @@
 		062816172005F0BB005D81BC /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		06AD314A1F9463B100AAAF35 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		06D668BB1F989C070091A8A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		06D7F6C922228C0400B02D3D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneKitViewController.swift; sourceTree = "<group>"; };
 		06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleBufferingViewController.swift; sourceTree = "<group>"; };
 		06F9F6CD21FC3A4800AD9955 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		0A8FE4D1B0592FC3147A79BB /* Pods-MetalPetalDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -117,9 +121,11 @@
 				81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */,
 				EE4A930221523A5100B3006A /* BlendModeViewController.h */,
 				EE4A930321523A5100B3006A /* BlendModeViewController.m */,
+				06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */,
 				06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */,
 				06F9F6CD21FC3A4800AD9955 /* Shaders.metal */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
+				06D7F6C922228C0400B02D3D /* art.scnassets */,
 				9D3928B81EFF678800BA6B09 /* Assets.xcassets */,
 				9D3928B51EFF678800BA6B09 /* Main.storyboard */,
 				9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */,
@@ -212,6 +218,7 @@
 			files = (
 				9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */,
 				9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */,
+				06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */,
 				9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */,
 				9D3928B71EFF678800BA6B09 /* Main.storyboard in Resources */,
 			);
@@ -279,6 +286,7 @@
 			files = (
 				9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */,
 				9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */,
+				06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */,
 				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
 				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,

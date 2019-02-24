@@ -57,6 +57,7 @@
 #import <MetalPetal/MTIImage.h>
 #import <MetalPetal/MTIDrawableRendering.h>
 #import <MetalPetal/MTIContext.h>
+#import <MetalPetal/MTISCNSceneRenderer.h>
 #import <MetalPetal/MTILock.h>
 #import <MetalPetal/MTICVMetalTextureCache.h>
 #import <MetalPetal/MTITextureLoaderForiOS9.h>
