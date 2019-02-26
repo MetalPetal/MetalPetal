@@ -16,6 +16,8 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIError.h"
 
+NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDomain";
+
 @interface MTISCNSceneImagePromise: NSObject <MTIImagePromise>
 
 @property (nonatomic) MTLPixelFormat pixelFormat;
@@ -58,6 +60,7 @@
 }
 
 - (nullable MTIImagePromiseRenderTarget *)resolveWithContext:(nonnull MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing * _Nullable)error {
+#if SCN_ENABLE_METAL
     NSParameterAssert(renderingContext.context.device == self.renderer.device);
     if (renderingContext.context.device != self.renderer.device) {
         if (error) {
@@ -85,6 +88,12 @@
     [_renderer renderAtTime:_frameTime viewport:_viewport commandBuffer:renderingContext.commandBuffer passDescriptor:renderPassDescriptor];
     
     return renderTarget;
+#else
+    if (error) {
+        *error = [NSError errorWithDomain:MTISCNSceneRendererErrorDomain code:MTISCNSceneRendererErrorSceneKitDoesNotSupportMetal userInfo:nil];
+    }
+    return nil;
+#endif
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
@@ -146,7 +155,8 @@
 
 @implementation MTISCNSceneRenderer (CVPixelBuffer)
 
-- (void)renderAtTime:(CFTimeInterval)time viewport:(CGRect)viewport completion:(void (^)(CVPixelBufferRef, NSError *))completion {
+- (BOOL)renderAtTime:(CFTimeInterval)time viewport:(CGRect)viewport completion:(void (^)(CVPixelBufferRef _Nonnull))completion error:(NSError * _Nullable __autoreleasing *)inOutError {
+#if SCN_ENABLE_METAL
     id<MTLCommandQueue> commandQueue = _commandQueue;
     id<MTLCommandBuffer> commandBuffer = [commandQueue commandBuffer];
     
@@ -154,16 +164,20 @@
         NSError *error;
         _pool = [[MTICVPixelBufferPool alloc] initWithPixelBufferWidth:viewport.size.width pixelBufferHeight:viewport.size.height pixelFormatType:kCVPixelFormatType_32BGRA minimumBufferCount:30 error:&error];
         if (error) {
-            completion(nil, error);
-            return;
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return NO;
         }
     } else {
         if (!((_pool.pixelBufferWidth == viewport.size.width) && (_pool.pixelBufferHeight == viewport.size.height))) {
             NSError *error;
             _pool = [[MTICVPixelBufferPool alloc] initWithPixelBufferWidth:viewport.size.width pixelBufferHeight:viewport.size.height pixelFormatType:kCVPixelFormatType_32BGRA minimumBufferCount:30 error:&error];
             if (error) {
-                completion(nil, error);
-                return;
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return NO;
             }
         }
     }
@@ -172,14 +186,18 @@
     NSError *error = nil;
     pixelBuffer = [_pool newPixelBufferWithAllocationThreshold:30 error:&error];
     if (error) {
-        completion(nil, error);
-        return;
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return NO;
     }
     
     id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO] planeIndex:0 error:&error];
     if (error) {
-        completion(nil,error);
-        return;
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return NO;
     }
     
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -191,13 +209,20 @@
     [_renderer renderAtTime:time viewport:viewport commandBuffer:commandBuffer passDescriptor:renderPassDescriptor];
     
     [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> _Nonnull commandBuffer) {
-        completion(pixelBuffer, nil);
+        completion(pixelBuffer);
         CVPixelBufferRelease(pixelBuffer);
         [self -> _textureCache flushCache];
     }];
     
     [commandBuffer commit];
     [commandBuffer waitUntilScheduled];
+    return YES;
+#else
+    if (inOutError) {
+        *inOutError = [NSError errorWithDomain:MTISCNSceneRendererErrorDomain code:MTISCNSceneRendererErrorSceneKitDoesNotSupportMetal userInfo:nil];
+    }
+    return NO;
+#endif
 }
 
 @end

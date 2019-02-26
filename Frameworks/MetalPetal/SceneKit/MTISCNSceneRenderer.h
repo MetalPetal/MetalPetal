@@ -14,6 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
+FOUNDATION_EXPORT NSString * const MTISCNSceneRendererErrorDomain;
+
+typedef NS_ERROR_ENUM(MTISCNSceneRendererErrorDomain, MTISCNSceneRendererError) {
+    MTISCNSceneRendererErrorSceneKitDoesNotSupportMetal = 1001
+};
+
 @interface MTISCNSceneRenderer : NSObject
 
 @property (nonatomic, strong, nullable) SCNScene *scene;
@@ -43,9 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MTISCNSceneRenderer (CVPixelBuffer)
 
 /// Render the scene at the specified time to a pixel buffer. The completion block will be called on an internal queue.
-- (void)renderAtTime:(CFTimeInterval)time
+- (BOOL)renderAtTime:(CFTimeInterval)time
             viewport:(CGRect)viewport
-          completion:(void(^)(_Nullable CVPixelBufferRef pixelBuffer,  NSError * _Nullable error))completion;
+          completion:(void(^)(CVPixelBufferRef pixelBuffer))completion
+               error:(NSError **)error;
 
 @end
 

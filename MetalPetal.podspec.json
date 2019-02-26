@@ -1,53 +1,53 @@
 {
-  "version" : "1.2.0",
-  "swift_version" : "4.2",
-  "requires_arc" : true,
-  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
-  "summary" : "A image processing framework based on Metal.",
-  "license" : {
-    "type" : "MIT"
-  },
-  "prefix_header_file" : false,
-  "platforms" : {
-    "ios" : "9.0",
-    "osx" : "10.13"
-  },
-  "name" : "MetalPetal",
-  "source" : {
-    "git" : "https:\/\/github.com\/YuAo\/MetalPetal.git",
-    "tag" : "1.2.0"
-  },
-  "default_subspecs" : "Core",
-  "authors" : {
-    "YuAo" : "me@imyuao.com"
-  },
   "homepage" : "https:\/\/github.com\/YuAo\/MetalPetal",
+  "requires_arc" : true,
   "subspecs" : [
     {
+      "name" : "Core",
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "private_header_files" : [
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h",
         "Frameworks\/MetalPetal\/MTIHasher.h"
       ],
-      "name" : "Core",
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "weak_frameworks" : [
         "MetalPerformanceShaders",
         "MetalKit"
       ]
     },
     {
+      "name" : "Swift",
       "dependencies" : {
         "MetalPetal\/Core" : [
 
         ]
       },
-      "name" : "Swift",
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}",
       "weak_frameworks" : [
         "MetalPerformanceShaders",
         "MetalKit"
-      ]
+      ],
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}"
     }
-  ]
+  ],
+  "version" : "1.3.0",
+  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
+  "license" : {
+    "type" : "MIT"
+  },
+  "swift_version" : "4.2",
+  "summary" : "A image processing framework based on Metal.",
+  "authors" : {
+    "YuAo" : "me@imyuao.com"
+  },
+  "name" : "MetalPetal",
+  "prefix_header_file" : false,
+  "default_subspecs" : "Core",
+  "source" : {
+    "git" : "https:\/\/github.com\/YuAo\/MetalPetal.git",
+    "tag" : "1.3.0"
+  },
+  "platforms" : {
+    "ios" : "9.0",
+    "osx" : "10.13"
+  }
 }
