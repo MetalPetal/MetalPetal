@@ -17,14 +17,10 @@
 static inline void MTIArgumentsEncoderEncodeBytes(MTLFunctionType functionType, id<MTLCommandEncoder> encoder, const void * bytes, NSUInteger length, NSUInteger index) {
     switch (functionType) {
         case MTLFunctionTypeFragment:
-            if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                [(id<MTLRenderCommandEncoder>)encoder setFragmentBytes:bytes length:length atIndex:index];
-            }
+            [(id<MTLRenderCommandEncoder>)encoder setFragmentBytes:bytes length:length atIndex:index];
             break;
         case MTLFunctionTypeVertex:
-            if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                [(id<MTLRenderCommandEncoder>)encoder setVertexBytes:bytes length:length atIndex:index];
-            }
+            [(id<MTLRenderCommandEncoder>)encoder setVertexBytes:bytes length:length atIndex:index];
             break;
         case MTLFunctionTypeKernel:
             if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
@@ -35,6 +31,8 @@ static inline void MTIArgumentsEncoderEncodeBytes(MTLFunctionType functionType, 
                     [(id<MTLRenderCommandEncoder>)encoder setTileBytes:bytes length:length atIndex:index];
                 }
                 #endif
+            } else {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unsupported command encoder." userInfo:nil];
             }
             break;
         default:
@@ -45,14 +43,10 @@ static inline void MTIArgumentsEncoderEncodeBytes(MTLFunctionType functionType, 
 static inline void MTIArgumentsEncoderEncodeBuffer(MTLFunctionType functionType, id<MTLCommandEncoder> encoder, id<MTLBuffer> buffer, NSUInteger index) {
     switch (functionType) {
         case MTLFunctionTypeFragment:
-            if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                [(id<MTLRenderCommandEncoder>)encoder setFragmentBuffer:buffer offset:0 atIndex:index];
-            }
+            [(id<MTLRenderCommandEncoder>)encoder setFragmentBuffer:buffer offset:0 atIndex:index];
             break;
         case MTLFunctionTypeVertex:
-            if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                [(id<MTLRenderCommandEncoder>)encoder setVertexBuffer:buffer offset:0 atIndex:index];
-            }
+            [(id<MTLRenderCommandEncoder>)encoder setVertexBuffer:buffer offset:0 atIndex:index];
             break;
         case MTLFunctionTypeKernel:
             if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
@@ -63,6 +57,8 @@ static inline void MTIArgumentsEncoderEncodeBuffer(MTLFunctionType functionType,
                     [(id<MTLRenderCommandEncoder>)encoder setTileBuffer:buffer offset:0 atIndex:index];
                 }
                 #endif
+            } else {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unsupported command encoder." userInfo:nil];
             }
             break;
         default:
