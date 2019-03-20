@@ -191,6 +191,8 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - [Lens Blur (Hexagonal Bokeh Blur)](https://github.com/YuAo/HexagonalBokehBlur)
 
+- [Surface Blur](https://github.com/MetalPetal/SurfaceBlur)
+
 ## Example Code
 
 ### Create a `MTIImage`
