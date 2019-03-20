@@ -296,6 +296,47 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
 
+### Shader Function Arguments Encoding
+
+MetalPetal has a built-in mechanism to encode shader function arguments for you. You can pass the shader function arguments as a `name: value` dictionary to the `MTIRenderPipelineKernel.apply(toInputImages:parameters:outputDescriptors:)`, `MTIRenderCommand(kernel:geometry:images:parameters:)`, etc.
+
+For example, the parameter dictionary for metal function `vibranceAdjust` can be:
+
+```Swift
+// Swift
+let amount: Float = 1.0
+let vibranceVector = float4(1, 1, 1, 1)
+let parameters = ["amount": amount,
+                  "vibranceVector": MTIVector(value: vibranceVector),
+                  "avoidsSaturatingSkinTones": true,
+                  "grayColorTransform": MTIVector(value: float3(0,0,0))]
+```
+
+```Metal
+// Metal Shader
+fragment float4 vibranceAdjust(...,
+                constant float & amount [[ buffer(0) ]],
+                constant float4 & vibranceVector [[ buffer(1) ]],
+                constant bool & avoidsSaturatingSkinTones [[ buffer(2) ]],
+                constant float3 & grayColorTransform [[ buffer(3) ]])
+{
+    ...
+}
+
+```
+
+
+| Shader Function Argument Type | Swift | Objective-C | 
+|-------------------------------|-------|-------------|
+| float | Float | float |
+| int | Int32 | int |
+| uint | UInt32 | uint |
+| bool | Bool | bool |
+| simd (float2,float4,float4x4,int4, etc.) | MTIVector | MTIVector |
+| struct | Data / MTIDataBuffer | NSData / MTIDataBuffer |
+| other (float *, struct *, etc.) immutable | Data / MTIDataBuffer | NSData / MTIDataBuffer |
+| other (float *, struct *, etc.) mutable | MTIDataBuffer | MTIDataBuffer |
+
 ### Simple single input/output filters
 
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
