@@ -2,6 +2,8 @@
 
 An image processing framework based on Metal.
 
+<!-- TOC depthFrom:2 -->
+
 - [Design Overview](#design-overview)
     - [Goals](#goals)
     - [Core Components](#core-components)
@@ -16,17 +18,21 @@ An image processing framework based on Metal.
 - [Builtin Filters](#builtin-filters)
 - [Example Code](#example-code)
     - [Create a `MTIImage`](#create-a-mtiimage)
-    - [Create a filtered image](#create-a-filtered-image)
+    - [Create a Filtered Image](#create-a-filtered-image)
     - [Render a `MTIImage`](#render-a-mtiimage)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
-    - [Simple single input/output filters](#simple-single-inputoutput-filters)
-    - [Fully custom filters](#fully-custom-filters)
-    - [Multiple draw calls in one render pass](#multiple-draw-calls-in-one-render-pass)
+    - [Shader Function Arguments Encoding](#shader-function-arguments-encoding)
+    - [Simple Single Input/Output Filters](#simple-single-inputoutput-filters)
+    - [Fully Custom Filters](#fully-custom-filters)
+    - [Multiple Draw Calls in One Render Pass](#multiple-draw-calls-in-one-render-pass)
+    - [Custom Vertex Data](#custom-vertex-data)
 - [Install](#install)
 - [Contribute](#contribute)
 - [License](#license)
+
+<!-- /TOC -->
 
 ## Design Overview
 
@@ -158,13 +164,24 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
     - Multiply
     - Overlay
     - Screen
-    - HardLight
-    - SoftLight
+    - Hard Light
+    - Soft Light
     - Darken
     - Lighten
-    - ColorDodge
+    - Color Dodge
+    - Add (Linear Dodge)
+    - Color Burn
+    - Linear Burn
+    - Lighter Color
+    - Darker Color
+    - Vivid Light
+    - Linear Light
+    - Pin Light
+    - Hard Mix
     - Difference
     - Exclusion
+    - Subtract
+    - Divide
     - Hue
     - Saturation
     - Color
@@ -185,6 +202,14 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - MPS Gaussian Blur
 
+- MPS Definition
+
+- MPS Sobel
+
+- MPS Unsharp Mask
+
+- MPS Box Blur
+
 - [High Pass Skin Smoothing](https://github.com/YuAo/YUCIHighPassSkinSmoothing)
 
 - [CLAHE (Contrast-Limited Adaptive Histogram Equalization)](https://github.com/YuAo/Accelerated-CLAHE)
@@ -192,6 +217,14 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 - [Lens Blur (Hexagonal Bokeh Blur)](https://github.com/YuAo/HexagonalBokehBlur)
 
 - [Surface Blur](https://github.com/MetalPetal/SurfaceBlur)
+
+- Bulge Distortion
+
+- Chroma Key Blend
+
+- Color Halftone
+
+- Dot Screen
 
 ## Example Code
 
@@ -210,7 +243,7 @@ let imageFromContentsOfURL = MTIImage(contentsOf: url, options: [.SRGB: false])
 let unpremultipliedAlphaImage = image.unpremultiplyingAlpha()
 ```
 
-### Create a filtered image
+### Create a Filtered Image
 
 ```Swift
 let inputImage = ...
@@ -300,9 +333,9 @@ If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to a
 
 ### Shader Function Arguments Encoding
 
-MetalPetal has a built-in mechanism to encode shader function arguments for you. You can pass the shader function arguments as a `name: value` dictionary to the `MTIRenderPipelineKernel.apply(toInputImages:parameters:outputDescriptors:)`, `MTIRenderCommand(kernel:geometry:images:parameters:)`, etc.
+MetalPetal has a built-in mechanism to encode shader function arguments for you. You can pass the shader function arguments as `name: value` dictionaries to the `MTIRenderPipelineKernel.apply(toInputImages:parameters:outputDescriptors:)`, `MTIRenderCommand(kernel:geometry:images:parameters:)`, etc.
 
-For example, the parameter dictionary for metal function `vibranceAdjust` can be:
+For example, the parameter dictionary for the metal function `vibranceAdjust` can be:
 
 ```Swift
 // Swift
@@ -315,7 +348,7 @@ let parameters = ["amount": amount,
 ```
 
 ```Metal
-// Metal Shader
+// vibranceAdjust metal function
 fragment float4 vibranceAdjust(...,
                 constant float & amount [[ buffer(0) ]],
                 constant float4 & vibranceVector [[ buffer(1) ]],
@@ -327,6 +360,7 @@ fragment float4 vibranceAdjust(...,
 
 ```
 
+The shader function argument types and the coorresponding types to use in a parameter dictionary is listed below.
 
 | Shader Function Argument Type | Swift | Objective-C | 
 |-------------------------------|-------|-------------|
@@ -339,11 +373,13 @@ fragment float4 vibranceAdjust(...,
 | other (float *, struct *, etc.) immutable | Data / MTIDataBuffer | NSData / MTIDataBuffer |
 | other (float *, struct *, etc.) mutable | MTIDataBuffer | MTIDataBuffer |
 
-### Simple single input/output filters
+### Simple Single Input/Output Filters
 
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
 
 ```ObjectiveC
+//Objective-C
+
 @interface MTIPixellateFilter : MTIUnaryImageRenderingFilter
 
 @property (nonatomic) float fractionalWidthOfAPixel;
@@ -370,7 +406,24 @@ To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` 
 @end
 ```
 
-### Fully custom filters
+```Swift
+//Swift
+
+class MTIPixellateFilter: MTIUnaryImageRenderingFilter {
+    
+    var fractionalWidthOfAPixel: Float = 0.05
+
+    override var parameters: [String : Any] {
+        return ["fractionalWidthOfAPixel": fractionalWidthOfAPixel]
+    }
+    
+    override class func fragmentFunctionDescriptor() -> MTIFunctionDescriptor {
+        return MTIFunctionDescriptor(name: "pixellateEffect", libraryURL: MTIDefaultLibraryURLForBundle(Bundle.main))
+    }
+}
+```
+
+### Fully Custom Filters
 
 To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
 
@@ -427,9 +480,31 @@ To build more complex filters, all you need to do is create a kernel (`MTIRender
 @end
 ```
 
-### Multiple draw calls in one render pass
+### Multiple Draw Calls in One Render Pass
 
 You can use `MTIRenderCommand` to issue multiple draw calls in one render pass.
+
+```Swift
+// Create a draw call with kernelA, geometryA, and imageA.
+let renderCommandA = MTIRenderCommand(kernel: self.kernelA, geometry: self.geometryA, images: [imageA], parameters: [:])
+
+// Create a draw call with kernelB, geometryB, and imageB.
+let renderCommandB = MTIRenderCommand(kernel: self.kernelB, geometry: self.geometryB, images: [imageB], parameters: [:])
+
+// Create an output descriptor
+let outputDescriptor = MTIRenderPassOutputDescriptor(dimensions: MTITextureDimensions(width: outputWidth, height: outputHeight, depth: 1), pixelFormat: .bgra8Unorm, loadAction: .clear, storeAction: .store)
+
+// Get the output images, the output image count is equal to the output descriptor count.
+let images = MTIRenderCommand.images(byPerforming: [renderCommandA, renderCommandB], outputDescriptors: [outputDescriptor])
+```
+
+You can also create multiple output descriptors to output multiple images in one render pass (MRT, See https://en.wikipedia.org/wiki/Multiple_Render_Targets).
+
+### Custom Vertex Data
+
+When `MTIVertex` cannot fit your needs, you can implement the `MTIGeometry` protocol to provide your custom vertex data to the command encoder.
+
+Use the `MTIRenderCommand` API to issue draw calls and pass your custom `MTIGeometry`.
 
 ## Install
 
