@@ -136,6 +136,32 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - Generally better performance. (Detailed benchmark data needed)
 
+### Extensions
+
+#### Working with SceneKit
+
+You can use `MTISCNSceneRenderer` to generate `MTIImage`s from a `SCNScene`.
+
+#### Working with JavaScript
+
+See [MetalPetalJS](https://github.com/MetalPetal/MetalPetalJS)
+
+With MetalPetalJS you can create render pipelines and filters using JavaScript, making it possible to download your filters/renderers from "the cloud".
+
+#### Texture Loader
+
+MetalPetal, by default, uses `MTKTextureLoader` to load `CGImage`s, images from `URL`, and named images.
+
+You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to the `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
+
+The `MTKTextureLoader` on iOS 9 loads images with the bottom-left origin by default. MetalPetal provides a custom texture loader to resolve this issue. You can add the following code if you'd like MetalPetal to use the `MTITextureLoaderForiOS9WithImageOrientationFix` on iOS 9.
+
+```
+if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    MTIContextOptions.defaultTextureLoaderClass = MTITextureLoaderForiOS9WithImageOrientationFix.class;
+}
+```
+
 ## Builtin Filters
 
 - Color Matrix
@@ -379,7 +405,7 @@ The shader function argument types and the coorresponding types to use in a para
 | other (float *, struct *, etc.) immutable | Data / MTIDataBuffer | NSData / MTIDataBuffer |
 | other (float *, struct *, etc.) mutable | MTIDataBuffer | MTIDataBuffer |
 
-### Simple Single Input/Output Filters
+### Simple Single Input / Output Filters
 
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
 
@@ -511,6 +537,16 @@ You can also create multiple output descriptors to output multiple images in one
 When `MTIVertex` cannot fit your needs, you can implement the `MTIGeometry` protocol to provide your custom vertex data to the command encoder.
 
 Use the `MTIRenderCommand` API to issue draw calls and pass your custom `MTIGeometry`.
+
+### Custom Processing Module
+
+In rare scenarios, you may want to access the underlying texture directly, use multiple MPS kernels in one render pass, do 3D rendering, or encode the render commands yourself.
+
+`MTIImagePromise` protocol provides direct access to the underlying texture and the render context for a step in MetalPetal.
+
+You can create new input sources or fully custom processing unit by implementing `MTIImagePromise` protocol. You will need to import an additional module to do so. For Swift: `import MetalPetal.Extension`, Objective-C: `@import MetalPetal.Extension;`.
+
+See the implementation of `MTIComputePipelineKernel`, `MTICLAHELUTRecipe` or `MTIImage` for example.
 
 ## Install
 
