@@ -11,7 +11,7 @@ struct MetalPetalUmbrellaHeaderGenerator {
                     fileNames.append(url.lastPathComponent)
                 } else {
                     let isDirectory = try? url.resourceValues(forKeys: Set([URLResourceKey.isDirectoryKey])).isDirectory
-                    if (isDirectory ?? false) ?? false {
+                    if isDirectory ?? false {
                         fileNames.append(contentsOf: headerFileNames(in: url))
                     }
                 }

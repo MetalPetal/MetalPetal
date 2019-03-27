@@ -14,7 +14,7 @@ s.macos.deployment_target = '10.13'
 s.module_map = 'MetalPetal.modulemap'
 s.prefix_header_file = false
 
-s.swift_version = '4.2'
+s.swift_version = '5.0'
 
 s.subspec 'Core' do |ss|
     ss.source_files = '**/*.{h,m,c,mm,metal}'

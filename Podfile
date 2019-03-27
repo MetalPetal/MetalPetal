@@ -41,5 +41,6 @@ post_install do |installer|
         config.build_settings['GCC_WARN_STRICT_SELECTOR_MATCH'] = 'YES'
         config.build_settings['CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE'] = 'YES'
         config.build_settings['CLANG_ANALYZER_GCD_PERFORMANCE'] = 'YES'
+        config.build_settings['CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED'] = 'YES'
     end
 end
