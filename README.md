@@ -526,7 +526,7 @@ pod 'MetalPetal/Swift'
 
 ```
 
-We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [/Rome/build_frameworks.sh](Rome/build_frameworks.sh).
+We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
 
 ## Contribute
 
