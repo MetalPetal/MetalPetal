@@ -157,7 +157,7 @@ With MetalPetalJS you can create render pipelines and filters using JavaScript, 
 
 MetalPetal, by default, uses `MTKTextureLoader` to load `CGImage`s, images from `URL`, and named images.
 
-You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to the `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
+You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
 
 The `MTKTextureLoader` on iOS 9 loads images with the bottom-left origin by default. MetalPetal provides a custom texture loader to resolve this issue. You can add the following code if you'd like MetalPetal to use the `MTITextureLoaderForiOS9WithImageOrientationFix` on iOS 9.
 
@@ -400,7 +400,7 @@ fragment float4 vibranceAdjust(...,
 The shader function argument types and the coorresponding types to use in a parameter dictionary is listed below.
 
 | Shader Function Argument Type | Swift | Objective-C | 
-|-------------------------------|-------|-------------|
+| :--- | :--- | :--- |
 | float | Float | float |
 | int | Int32 | int |
 | uint | UInt32 | uint |
