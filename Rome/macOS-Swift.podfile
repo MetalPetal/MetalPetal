@@ -1,0 +1,10 @@
+platform :osx, '10.13'
+
+plugin 'cocoapods-rome', {
+  dsym: true,
+  configuration: 'Release'
+}
+
+target 'caesar' do
+  pod 'MetalPetal/Swift'
+end

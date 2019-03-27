@@ -285,7 +285,7 @@ do {
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
 
-![Quick Look Debug Preview](https://github.com/MetalPetal/MetalPetal/blob/master/Assets/quick_look_debug_preview.jpg)
+![Quick Look Debug Preview](Assets/quick_look_debug_preview.jpg)
 
 ## Best Practices
 
@@ -525,6 +525,8 @@ pod 'MetalPetal'
 pod 'MetalPetal/Swift'
 
 ```
+
+We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [/Rome/build_frameworks.sh](Rome/build_frameworks.sh).
 
 ## Contribute
 
