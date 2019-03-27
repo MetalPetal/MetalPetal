@@ -1,5 +1,9 @@
 # MetalPetal
 
+[![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?style=flat-square)](https://cocoapods.org/pods/YUDisplacementTransition)
+[![Platform](https://img.shields.io/cocoapods/p/MetalPetal.svg?style=flat-square)](https://cocoapods.org/pods/YUDisplacementTransition)
+[![License](https://img.shields.io/cocoapods/l/MetalPetal.svg?style=flat-square)](https://cocoapods.org/pods/YUDisplacementTransition)
+
 An image processing framework based on Metal.
 
 <!-- TOC depthFrom:2 -->
