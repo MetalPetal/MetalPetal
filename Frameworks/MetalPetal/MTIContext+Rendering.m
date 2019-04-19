@@ -132,6 +132,15 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask *))completion {
+   return [self startTaskToRenderImage:image
+                       toCVPixelBuffer:pixelBuffer
+                                  sRGB:sRGB
+                  destinationAlphaType:MTIAlphaTypePremultiplied
+                                 error:inOutError
+                            completion:completion];
+}
+
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB destinationAlphaType:(MTIAlphaType)destinationAlphaType error:(NSError * __autoreleasing *)inOutError completion:(nullable void (^)(MTIRenderTask *task))completion {
     [self lockForRendering];
     @MTI_DEFER {
         [self unlockForRendering];
@@ -221,7 +230,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     id<MTLTexture> metalTexture = renderTexture.texture;
     
     if (resolution.texture.pixelFormat == targetPixelFormat &&
-        (image.alphaType == MTIAlphaTypePremultiplied || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
+        (image.alphaType == destinationAlphaType || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
         (size_t)image.size.width == frameWidth &&
         (size_t)image.size.height == frameHeight)
     {
