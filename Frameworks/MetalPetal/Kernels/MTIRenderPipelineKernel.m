@@ -35,6 +35,10 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 @implementation MTIRenderPipelineKernelConfiguration
 
 - (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat [])colorAttachmentPixelFormats count:(NSUInteger)count {
+    return [self initWithColorAttachmentPixelFormats:colorAttachmentPixelFormats count:count depthAttachmentPixelFormat:MTLPixelFormatInvalid stencilAttachmentPixelFormat:MTLPixelFormatInvalid];
+}
+
+- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat [])colorAttachmentPixelFormats count:(NSUInteger)count depthAttachmentPixelFormat:(MTLPixelFormat)depthAttachmentPixelFormat stencilAttachmentPixelFormat:(MTLPixelFormat)stencilAttachmentPixelFormat {
     if (self = [super init]) {
         NSParameterAssert(count <= MTIRenderPipelineMaximumColorAttachmentCount);
         count = MIN(count, MTIRenderPipelineMaximumColorAttachmentCount);
@@ -42,16 +46,15 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             _pixelFormats[index] = colorAttachmentPixelFormats[index];
         }
         _colorAttachmentCount = count;
+        _depthAttachmentPixelFormat = depthAttachmentPixelFormat;
+        _stencilAttachmentPixelFormat = stencilAttachmentPixelFormat;
     }
     return self;
 }
 
 - (instancetype)initWithColorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat {
-    if (self = [super init]) {
-        _pixelFormats[0] = colorAttachmentPixelFormat;
-        _colorAttachmentCount = 1;
-    }
-    return self;
+    MTLPixelFormat formats[] = {colorAttachmentPixelFormat};
+    return [self initWithColorAttachmentPixelFormats:formats count:1 depthAttachmentPixelFormat:MTLPixelFormatInvalid stencilAttachmentPixelFormat:MTLPixelFormatInvalid];
 }
 
 - (const MTLPixelFormat *)colorAttachmentPixelFormats {
@@ -63,6 +66,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     for (NSUInteger index = 0; index < _colorAttachmentCount; index += 1) {
         MTIHasherCombine(&hasher, _pixelFormats[index]);
     }
+    MTIHasherCombine(&hasher, _depthAttachmentPixelFormat);
+    MTIHasherCombine(&hasher, _stencilAttachmentPixelFormat);
     return MTIHasherFinalize(&hasher);
 }
 
@@ -76,6 +81,10 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
             if ((obj -> _pixelFormats)[index] != _pixelFormats[index]) {
                 return NO;
             }
+        }
+        if (_depthAttachmentPixelFormat != obj -> _depthAttachmentPixelFormat ||
+            _stencilAttachmentPixelFormat != obj -> _stencilAttachmentPixelFormat) {
+            return NO;
         }
         return YES;
     } else {
@@ -154,8 +163,8 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         colorAttachmentDescriptor.blendingEnabled = NO;
         renderPipelineDescriptor.colorAttachments[index] = colorAttachmentDescriptor;
     }
-    renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
-    renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
+    renderPipelineDescriptor.depthAttachmentPixelFormat = configuration.depthAttachmentPixelFormat;
+    renderPipelineDescriptor.stencilAttachmentPixelFormat = configuration.stencilAttachmentPixelFormat;
     
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
