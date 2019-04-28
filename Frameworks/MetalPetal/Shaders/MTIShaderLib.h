@@ -83,6 +83,19 @@ namespace metalpetal {
         return float3(linearToSRGB(c.r), linearToSRGB(c.g), linearToSRGB(c.b));
     }
     
+    template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
+    METAL_FUNC T ITUR709ToLinear(T c) {
+#if __METAL_IOS__
+        return powr(c, 1.961);
+#else
+        return c < 0.081 ? 0.222 * c : powr(0.91 * c + 0.09, 2.222);
+#endif
+    }
+    
+    METAL_FUNC float3 ITUR709ToLinear(float3 c) {
+        return float3(ITUR709ToLinear(c.r), ITUR709ToLinear(c.g), ITUR709ToLinear(c.b));
+    }
+    
     METAL_FUNC float4 unpremultiply(float4 s) {
         return float4(s.rgb/max(s.a,0.00001), s.a);
     }

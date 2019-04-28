@@ -31,3 +31,27 @@
 }
 
 @end
+
+@implementation MTIITUR709RGBToLinearRGBFilter
+
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:@"convertITUR709RGBToLinearRGB"];
+}
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image {
+    return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
+}
+
+@end
+
+@implementation MTIITUR709RGBToSRGBFilter
+
++ (MTIFunctionDescriptor *)fragmentFunctionDescriptor {
+    return [[MTIFunctionDescriptor alloc] initWithName:@"convertITUR709RGBToSRGB"];
+}
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image {
+    return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
+}
+
+@end

@@ -98,6 +98,21 @@ namespace metalpetal {
         textureColor.rgb = linearToSRGB(textureColor.rgb);
         return textureColor;
     }
+    
+    fragment float4 convertITUR709RGBToLinearRGB(VertexOut vertexIn [[ stage_in ]], texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                 sampler colorSampler [[ sampler(0) ]]) {
+        float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+        textureColor.rgb = ITUR709ToLinear(textureColor.rgb);
+        return textureColor;
+    }
+    
+    fragment float4 convertITUR709RGBToSRGB(VertexOut vertexIn [[ stage_in ]], texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                 sampler colorSampler [[ sampler(0) ]]) {
+        float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+        textureColor.rgb = ITUR709ToLinear(textureColor.rgb);
+        textureColor.rgb = linearToSRGB(textureColor.rgb);
+        return textureColor;
+    }
 
     fragment float4 colorMatrixProjection(
                                      VertexOut vertexIn [[ stage_in ]],
