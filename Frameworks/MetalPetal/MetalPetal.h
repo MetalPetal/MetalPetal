@@ -64,6 +64,7 @@
 #import <MetalPetal/MTIAlphaType.h>
 #import <MetalPetal/MTICVPixelBufferPool.h>
 #import <MetalPetal/MTITransform.h>
+#import <MetalPetal/MTILibrarySource.h>
 #import <MetalPetal/MTICVPixelBufferPromise.h>
 #import <MetalPetal/MTIVector+SIMD.h>
 #import <MetalPetal/MTITexturePool.h>

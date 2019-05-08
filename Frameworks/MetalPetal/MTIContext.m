@@ -22,6 +22,7 @@
 #import "MTICVMetalTextureBridge.h"
 #import "MTILock.h"
 #import "MTIPixelFormat.h"
+#import "MTILibrarySource.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 NSString * const MTIContextDefaultLabel = @"MetalPetal";
@@ -347,7 +348,11 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
     id<MTLLibrary> library = self.libraryCache[URL];
     if (!library) {
-        library = [self.device newLibraryWithFile:URL.path error:error];
+        if ([URL.scheme isEqualToString:MTIURLSchemeForLibraryWithSource]) {
+            library = [MTILibrarySourceRegistration.sharedRegistration newLibraryWithURL:URL device:self.device error:error];
+        } else {
+            library = [self.device newLibraryWithFile:URL.path error:error];
+        }
         if (library) {
             self.libraryCache[URL] = library;
         }
