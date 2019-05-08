@@ -231,8 +231,8 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     
     if (resolution.texture.pixelFormat == targetPixelFormat &&
         (image.alphaType == destinationAlphaType || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
-        (size_t)image.size.width == frameWidth &&
-        (size_t)image.size.height == frameHeight)
+        resolution.texture.width == frameWidth &&
+        resolution.texture.height == frameHeight)
     {
         //Blit
         id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
