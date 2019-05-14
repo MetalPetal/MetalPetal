@@ -460,4 +460,122 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     return task;
 }
 
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toTexture:(id<MTLTexture>)texture destinationAlphaType:(MTIAlphaType)destinationAlphaType error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask * _Nonnull))completion {
+    NSParameterAssert(texture);
+    NSParameterAssert(texture.device == self.device);
+    if (texture.device != self.device) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorCrossDeviceRendering, nil);
+        }
+        return nil;
+    }
+    
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    
+    NSError *error = nil;
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    if (resolution.texture.pixelFormat == texture.pixelFormat &&
+        (image.alphaType == destinationAlphaType || image.alphaType == MTIAlphaTypeAlphaIsOne) &&
+        resolution.texture.width == texture.width &&
+        resolution.texture.height == texture.height &&
+        resolution.texture.depth == texture.depth)
+    {
+        //Blit
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder copyFromTexture:resolution.texture
+                                sourceSlice:0
+                                sourceLevel:0
+                               sourceOrigin:MTLOriginMake(0, 0, 0)
+                                 sourceSize:MTLSizeMake(resolution.texture.width, resolution.texture.height, resolution.texture.depth)
+                                  toTexture:texture
+                           destinationSlice:0
+                           destinationLevel:0
+                          destinationOrigin:MTLOriginMake(0, 0, 0)];
+        [blitCommandEncoder endEncoding];
+        
+        MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        if (completion) {
+            [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+                completion(task);
+            }];
+        }
+        [renderingContext.commandBuffer commit];
+        [renderingContext.commandBuffer waitUntilScheduled];
+        return task;
+    } else {
+        //Render
+        MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+        renderPassDescriptor.colorAttachments[0].texture = texture;
+        renderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0, 0, 0, 0);
+        renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+        renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+        
+        MTIVertices *vertices = [MTIVertices squareVerticesForRect:CGRectMake(-1, -1, 2, 2)];
+        
+        NSParameterAssert(image.alphaType != MTIAlphaTypeUnknown);
+        
+        //Prefers premultiplied alpha here.
+        MTIRenderPipelineKernel *kernel;
+        if (image.alphaType == MTIAlphaTypeNonPremultiplied && destinationAlphaType == MTIAlphaTypePremultiplied) {
+            kernel = MTIContext.premultiplyAlphaKernel;
+        } else if (image.alphaType == MTIAlphaTypePremultiplied && destinationAlphaType == MTIAlphaTypeNonPremultiplied) {
+            kernel = MTIContext.unpremultiplyAlphaKernel;
+        } else {
+            kernel = MTIContext.passthroughKernel;
+        }
+        
+        MTIRenderPipelineKernelConfiguration *configuration = [[MTIRenderPipelineKernelConfiguration alloc] initWithColorAttachmentPixelFormat:texture.pixelFormat];
+        MTIRenderPipeline *renderPipeline = [self kernelStateForKernel:kernel configuration:configuration error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        
+        id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        
+        __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+        [commandEncoder setRenderPipelineState:renderPipeline.state];
+        
+        [commandEncoder setFragmentTexture:resolution.texture atIndex:0];
+        [commandEncoder setFragmentSamplerState:samplerState atIndex:0];
+        
+        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
+        
+        [commandEncoder endEncoding];
+        
+        MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+        if (completion) {
+            [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+                completion(task);
+            }];
+        }
+        [renderingContext.commandBuffer commit];
+        [renderingContext.commandBuffer waitUntilScheduled];
+        return task;
+    }
+}
+
 @end

@@ -50,6 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:toDrawableWithRequest:completion:));
 
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image
+                                         toTexture:(id<MTLTexture>)texture
+                              destinationAlphaType:(MTIAlphaType)destinationAlphaType
+                                             error:(NSError **)error
+                                        completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:destinationAlphaType:completion:));
+
 @end
 
 NS_ASSUME_NONNULL_END
