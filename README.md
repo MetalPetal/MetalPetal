@@ -38,6 +38,7 @@ An image processing framework based on Metal.
     - [Custom Vertex Data](#custom-vertex-data)
     - [Custom Processing Module](#custom-processing-module)
 - [Install](#install)
+- [Trivia](#trivia)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -568,6 +569,10 @@ pod 'MetalPetal/Swift'
 ```
 
 We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
+
+## Trivia
+
+[Why Objective-C?](https://github.com/MetalPetal/MetalPetal/issues/52)
 
 ## Contribute
 
