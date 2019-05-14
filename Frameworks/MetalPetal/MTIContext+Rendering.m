@@ -32,6 +32,10 @@
     return MTIPremultiplyAlphaFilter.kernel;
 }
 
++ (MTIRenderPipelineKernel *)unpremultiplyAlphaKernel {
+    return MTIUnpremultiplyAlphaFilter.kernel;
+}
+
 + (MTIRenderPipelineKernel *)passthroughKernel {
     return MTIRenderPipelineKernel.passthroughRenderPipelineKernel;
 }
@@ -270,8 +274,10 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         
         //Prefers premultiplied alpha here.
         MTIRenderPipelineKernel *kernel;
-        if (image.alphaType == MTIAlphaTypeNonPremultiplied) {
+        if (image.alphaType == MTIAlphaTypeNonPremultiplied && destinationAlphaType == MTIAlphaTypePremultiplied) {
             kernel = MTIContext.premultiplyAlphaKernel;
+        } else if (image.alphaType == MTIAlphaTypePremultiplied && destinationAlphaType == MTIAlphaTypeNonPremultiplied) {
+            kernel = MTIContext.unpremultiplyAlphaKernel;
         } else {
             kernel = MTIContext.passthroughKernel;
         }
