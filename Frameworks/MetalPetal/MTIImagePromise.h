@@ -11,6 +11,7 @@
 #import <MetalKit/MetalKit.h>
 #import <simd/simd.h>
 #import <CoreImage/CoreImage.h>
+#import <ModelIO/ModelIO.h>
 #import "MTIColor.h"
 #import "MTITextureDimensions.h"
 #import "MTIAlphaType.h"
@@ -93,6 +94,15 @@ NS_AVAILABLE(10_12, 10_0)
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                    alphaType:(MTIAlphaType)alphaType;
+
+@end
+
+NS_AVAILABLE(10_12, 10_0)
+@interface MTIMDLTexturePromise: NSObject <MTIImagePromise>
+
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                         alphaType:(MTIAlphaType)alphaType;
 
 @end
 

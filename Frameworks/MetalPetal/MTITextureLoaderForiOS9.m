@@ -140,6 +140,13 @@ typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS
     return nil;
 }
 
+- (id<MTLTexture>)newTextureWithMDLTexture:(MDLTexture *)texture options:(NSDictionary<MTKTextureLoaderOption,id> *)options error:(NSError *__autoreleasing  _Nullable *)error {
+    if (error) {
+        *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorFeatureNotSupported userInfo:nil];
+    }
+    return nil;
+}
+
 @end
 
 #endif

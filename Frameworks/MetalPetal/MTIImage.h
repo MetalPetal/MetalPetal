@@ -100,6 +100,10 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                    alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0) NS_SWIFT_NAME(init(named:in:size:scaleFactor:options:alphaType:));
 
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                         alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
+
 /// A 1x1 white image
 @property (class, readonly) MTIImage *whiteImage;
 

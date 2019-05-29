@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
                                        options:(nullable NSDictionary <MTKTextureLoaderOption, id> *)options
                                          error:(NSError *__nullable *__nullable)error;
 
+- (nullable id <MTLTexture>)newTextureWithMDLTexture:(nonnull MDLTexture *)texture
+                                             options:(nullable NSDictionary <MTKTextureLoaderOption, id> *)options
+                                               error:(NSError *__nullable *__nullable)error;
+
 @end
 
 @interface MTKTextureLoader (MTITextureLoader) <MTITextureLoader>

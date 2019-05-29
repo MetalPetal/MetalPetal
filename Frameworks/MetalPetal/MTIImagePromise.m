@@ -485,3 +485,69 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 }
 
 @end
+
+@interface MTIMDLTexturePromise ()
+
+@property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption,id> *options;
+
+@property (nonatomic, strong, readonly) MDLTexture *texture;
+
+@end
+
+@implementation MTIMDLTexturePromise
+@synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
+
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(NSDictionary<MTKTextureLoaderOption,id> *)options
+                         alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _texture = texture;
+        _options = [options copy];
+        _dimensions = (MTITextureDimensions){
+            .width = texture.dimensions.x,
+            .height = texture.isCube ? texture.dimensions.y / 6 : texture.dimensions.y,
+            .depth = 1
+        };
+        _alphaType = alphaType;
+    }
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(nonnull NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(nonnull MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:_texture
+                                                             options:_options
+                                                               error:error];
+    if (!texture) {
+        return nil;
+    }
+    if (texture.width == self.dimensions.width && texture.height == self.dimensions.height && texture.depth == self.dimensions.depth) {
+        return [renderingContext.context newRenderTargetWithTexture:texture];
+    } else {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorTextureDimensionsMismatch, nil);
+        }
+        return nil;
+    }
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self
+                                                        type:MTIImagePromiseTypeSource
+                                                     content:[NSString stringWithFormat:@"Name: %@\nTexture:%@",self.texture.name,self.texture]];
+}
+
+@end
