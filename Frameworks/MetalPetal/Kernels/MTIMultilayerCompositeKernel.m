@@ -466,7 +466,7 @@
         parameters.opacity = layer.opacity;
         parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
         parameters.hasCompositingMask = !(layer.compositingMask == nil);
-        parameters.compositingMaskComponent = layer.compositingMask.component;
+        parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         

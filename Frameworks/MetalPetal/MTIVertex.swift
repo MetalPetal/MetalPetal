@@ -12,8 +12,8 @@ import simd
 extension MTIVertex {
     public init(position: (Float,Float,Float,Float), textureCoordinate: (Float, Float)) {
         self.init()
-        self.position = float4(position.0, position.1, position.2, position.3)
-        self.textureCoordinate = float2(textureCoordinate.0, textureCoordinate.1)
+        self.position = SIMD4<Float>(position.0, position.1, position.2, position.3)
+        self.textureCoordinate = SIMD2<Float>(textureCoordinate.0, textureCoordinate.1)
     }
 }
 

@@ -11,8 +11,8 @@ import MetalPetal
 import simd
 
 struct ColoredVertex {
-    var position: float4
-    var color: float4
+    var position: SIMD4<Float>
+    var color: SIMD4<Float>
 }
 
 class ColoredVertices: NSObject, MTIGeometry {
@@ -46,7 +46,7 @@ class ColoredVertices: NSObject, MTIGeometry {
     private var currentFrameIndex: Int = 0
     
     override init() {
-        let vertex = ColoredVertex(position: float4(0, 0, 0, 1), color: float4(0, 0, 0, 0))
+        let vertex = ColoredVertex(position: .init(0, 0, 0, 1), color: .init(0, 0, 0, 0))
         var dataBuffers: [MTIDataBuffer] = []
         for _ in 0..<ColoredVertices.maximumInflightBuffers {
             dataBuffers.append(MTIDataBuffer(values: [ColoredVertex](repeating: vertex, count: 3))!)
@@ -102,12 +102,12 @@ class TripleBufferingViewController: UIViewController, MTKViewDelegate {
     func draw(in view: MTKView) {
         let bufferState = self.geometry.takeBuffer { buffer in
             let ft = Float(abs(sin(CFAbsoluteTimeGetCurrent())))
-            buffer[0].position = float4(-ft, -ft, 0, 1)
-            buffer[1].position = float4(ft, -ft, 0, 1)
-            buffer[2].position = float4(0, ft, 0, 1)
-            buffer[0].color = float4(0, ft, ft, 1)
-            buffer[1].color = float4(ft, 0, ft, 1)
-            buffer[2].color = float4(ft, ft, 0, 1)
+            buffer[0].position = SIMD4<Float>(-ft, -ft, 0, 1)
+            buffer[1].position = SIMD4<Float>(ft, -ft, 0, 1)
+            buffer[2].position = SIMD4<Float>(0, ft, 0, 1)
+            buffer[0].color = SIMD4<Float>(0, ft, ft, 1)
+            buffer[1].color = SIMD4<Float>(ft, 0, ft, 1)
+            buffer[2].color = SIMD4<Float>(ft, ft, 0, 1)
         }
         let renderCommand = MTIRenderCommand(kernel: self.kernel, geometry: self.geometry, images: [], parameters: [:])
         let outputDescriptor = MTIRenderPassOutputDescriptor(dimensions: MTITextureDimensions(width: 750, height: 750, depth: 1), pixelFormat: .bgra8Unorm, loadAction: .clear, storeAction: .store)
