@@ -32,6 +32,7 @@
 #import <MetalPetal/MTITransformFilter.h>
 #import <MetalPetal/MTIBlendWithMaskFilter.h>
 #import <MetalPetal/MTIImageView.h>
+#import <MetalPetal/MTIThreadSafeImageView.h>
 #import <MetalPetal/MTIRenderTask.h>
 #import <MetalPetal/MTIRenderPipelineKernel.h>
 #import <MetalPetal/MTIKernel.h>
