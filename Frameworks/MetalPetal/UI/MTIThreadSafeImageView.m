@@ -205,7 +205,6 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
     NSAssert([_lock tryLock] == NO, @"");
     
     MTIContext *context = self -> _context;
-    NSAssert(context != nil, @"Context is nil.");
     if (!context) {
         if (completion) {
             completion([NSError errorWithDomain:MTIImageViewErrorDomain code:MTIImageViewErrorContextNotFound userInfo:nil]);
