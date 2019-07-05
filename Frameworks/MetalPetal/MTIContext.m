@@ -19,7 +19,7 @@
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
 #import "MTICVMetalTextureCache.h"
-#import "MTICVMetalTextureBridge.h"
+#import "MTICVMetalIOSurfaceBridge.h"
 #import "MTILock.h"
 #import "MTIPixelFormat.h"
 #import "MTILibrarySource.h"
@@ -39,6 +39,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _label = MTIContextDefaultLabel;
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
+        _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
     }
     return self;
 }
@@ -52,6 +53,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.label = _label;
     options.defaultLibraryURL = _defaultLibraryURL;
     options.textureLoaderClass = _textureLoaderClass;
+    options.coreVideoMetalTextureBridgeClass = _coreVideoMetalTextureBridgeClass;
     return options;
 }
 
@@ -63,6 +65,20 @@ static Class _defaultTextureLoaderClass = nil;
 
 + (Class<MTITextureLoader>)defaultTextureLoaderClass {
     return _defaultTextureLoaderClass ?: MTKTextureLoader.class;
+}
+
+static Class _defaultCoreVideoMetalTextureBridgeClass = nil;
+
++ (void)setDefaultCoreVideoMetalTextureBridgeClass:(Class<MTICVMetalTextureBridging>)defaultCoreVideoMetalTextureBridgeClass {
+    _defaultCoreVideoMetalTextureBridgeClass = defaultCoreVideoMetalTextureBridgeClass;
+}
+
++ (Class<MTICVMetalTextureBridging>)defaultCoreVideoMetalTextureBridgeClass {
+    if (@available(iOS 11_0, macOS 10_11, *)) {
+        return _defaultCoreVideoMetalTextureBridgeClass ?: MTICVMetalIOSurfaceBridge.class;
+    } else {
+        return _defaultCoreVideoMetalTextureBridgeClass ?: MTICVMetalTextureCache.class;
+    }
 }
 
 @end
@@ -192,17 +208,13 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _renderingLock = MTILockCreate();
         
-        if (@available(iOS 11_0, macOS 10_11, *)) {
-            _coreVideoTextureBridge = [[MTICVMetalTextureBridge alloc] initWithDevice:device];
-        } else {
-            NSError *coreVideoTextureCacheError = nil;
-            _coreVideoTextureBridge = [[MTICVMetalTextureCache alloc] initWithDevice:device cacheAttributes:nil textureAttributes:nil error:&coreVideoTextureCacheError];
-            if (coreVideoTextureCacheError) {
-                if (inOutError) {
-                    *inOutError = coreVideoTextureCacheError;
-                }
-                return nil;
+        NSError *coreVideoMetalTextureBridgeError = nil;
+        _coreVideoTextureBridge = [options.coreVideoMetalTextureBridgeClass newCoreVideoMetalTextureBridgeWithDevice:device error:&coreVideoMetalTextureBridgeError];
+        if (coreVideoMetalTextureBridgeError) {
+            if (inOutError) {
+                *inOutError = coreVideoMetalTextureBridgeError;
             }
+            return nil;
         }
         
         if (options.automaticallyReclaimResources) {

@@ -73,6 +73,10 @@ NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErr
     return error;
 }
 
++ (instancetype)newCoreVideoMetalTextureBridgeWithDevice:(id<MTLDevice>)device error:(NSError * __autoreleasing *)error {
+    return [[self alloc] initWithDevice:device cacheAttributes:nil textureAttributes:nil error:error];
+}
+
 - (instancetype)initWithDevice:(id<MTLDevice>)device cacheAttributes:(NSDictionary *)cacheAttributes textureAttributes:(NSDictionary *)textureAttributes error:(NSError * __autoreleasing *)error {
 #if COREVIDEO_SUPPORTS_METAL
     if (self = [super init]) {

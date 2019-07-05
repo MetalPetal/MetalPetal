@@ -18,11 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MTICVMetalTextureBridging <NSObject>
 
++ (nullable instancetype)newCoreVideoMetalTextureBridgeWithDevice:(id<MTLDevice>)device error:(NSError **)error NS_SWIFT_NAME(makeCoreVideoMetalTextureBridge(with:));
+
 - (nullable id<MTICVMetalTexture>)newTextureWithCVImageBuffer:(CVImageBufferRef)imageBuffer
                                             textureDescriptor:(MTLTextureDescriptor *)textureDescriptor
                                                    planeIndex:(size_t)planeIndex
-                                                        error:(NSError **)error
-NS_SWIFT_NAME(makeTexture(with:textureDescriptor:planeIndex:));
+                                                        error:(NSError **)error NS_SWIFT_NAME(makeTexture(with:textureDescriptor:planeIndex:));
 
 - (void)flushCache;
 
