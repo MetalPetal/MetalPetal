@@ -15,6 +15,39 @@
 #import "MTIError.h"
 #import "MTIRenderTask.h"
 
+#if !__has_include(<QuartzCore/CAMetalLayer.h>)
+
+/* CAMetalLayer stub for Xcode 10 simulators. */
+
+@class CAMetalLayer;
+
+@protocol CAMetalDrawable <MTLDrawable>
+
+@property(readonly) id <MTLTexture> texture;
+
+@end
+
+@interface CAMetalLayer : CALayer
+
+@property (nullable, retain, atomic) id <MTLDevice> device;
+
+@property (atomic) MTLPixelFormat pixelFormat;
+
+@property (atomic) CGSize drawableSize;
+
+@end
+
+@implementation CAMetalLayer
+
+- (id<CAMetalDrawable>)nextDrawable {
+    return nil;
+}
+
+@end
+
+#endif
+
+
 NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 
 @interface MTIThreadSafeImageView ()
