@@ -12,10 +12,8 @@
 @synthesize outputPixelFormat = _outputPixelFormat;
 @synthesize inputImage = _inputImage;
 
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
+- (instancetype)init {
+    if (self = [super init]) {
         self.verticeRegion = MTIVerticeRegionMakeFromCGRect(CGRectMake(0, 0, 1, 1));
         self.backgroundSize = CGSizeZero;
         self.outputImageSize = CGSizeMake(1, 1);

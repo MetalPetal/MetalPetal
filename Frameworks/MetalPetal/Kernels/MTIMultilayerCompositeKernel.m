@@ -492,7 +492,7 @@
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
+        [layerVertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
     //end encoding
@@ -700,7 +700,7 @@
         simd_float2 viewportSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
         [commandEncoder setFragmentBytes:&viewportSize length:sizeof(simd_float2) atIndex:1];
 
-        [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
+        [layerVertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
     //end encoding
