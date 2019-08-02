@@ -13,6 +13,7 @@
 #import <MetalPetal/MTIRGBToneCurveFilter.h>
 #import <MetalPetal/MTIUnaryImageRenderingFilter.h>
 #import <MetalPetal/MTIMultilayerCompositingFilter.h>
+#import <MetalPetal/MTIPerspectiveTransformFilter.h>
 #import <MetalPetal/MTIVibranceFilter.h>
 #import <MetalPetal/MTIBlendFilter.h>
 #import <MetalPetal/MTIHexagonalBokehBlurFilter.h>

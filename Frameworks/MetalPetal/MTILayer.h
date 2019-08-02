@@ -15,6 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
+struct MTIVerticeRegion {
+    CGPoint tl;
+    CGPoint tr;
+    CGPoint bl;
+    CGPoint br;
+};
+typedef struct MTIVerticeRegion MTIVerticeRegion;
+
 typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
     MTILayerLayoutUnitPixel,
     MTILayerLayoutUnitFractionOfBackgroundSize
@@ -26,10 +34,16 @@ typedef NS_OPTIONS(NSUInteger, MTILayerFlipOptions) {
     MTILayerFlipOptionsFlipHorizontally = 1 << 1,
 } NS_SWIFT_NAME(MTILayer.FlipOptions);
 
+FOUNDATION_EXPORT MTIVerticeRegion MTIVerticeRegionIdentity(void);
+FOUNDATION_EXPORT MTIVerticeRegion MTIVerticeRegionMakeFromCGRect(CGRect frame);
+FOUNDATION_EXPORT MTIVerticeRegion MTIVerticeRegionMake(CGPoint tl, CGPoint tr, CGPoint bl, CGPoint br);
+
 /// A MTILayer represents a compositing layer for MTIMultilayerCompositingFilter. MTILayers use a UIKit like coordinate system.
 @interface MTILayer: NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIImage *content;
+
+@property (nonatomic, readonly) MTIVerticeRegion verticeRegion; //pixel
 
 @property (nonatomic, readonly) CGRect contentRegion; //pixel
 
@@ -51,6 +65,14 @@ typedef NS_OPTIONS(NSUInteger, MTILayerFlipOptions) {
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithContent:(MTIImage *)content
+                  verticeRegion:(MTIVerticeRegion)verticeRegion
+                  contentRegion:(CGRect)contentRegion
+                compositingMask:(nullable MTIMask *)compositingMask
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
+                        opacity:(float)opacity
+                      blendMode:(MTIBlendMode)blendMode;
 
 - (instancetype)initWithContent:(MTIImage *)content
                      layoutUnit:(MTILayerLayoutUnit)layoutUnit
@@ -79,9 +101,21 @@ typedef NS_OPTIONS(NSUInteger, MTILayerFlipOptions) {
                            size:(CGSize)size
                        rotation:(float)rotation
                         opacity:(float)opacity
-                      blendMode:(MTIBlendMode)blendMode __attribute__((deprecated("Replaced by MTILayer(content:contentRegion:contentFlipOptions:compositingMask:layoutUnit:position:size:rotation:opacity:blendMode:)")));;
+                      blendMode:(MTIBlendMode)blendMode __attribute__((deprecated("Replaced by MTILayer(content:contentRegion:contentFlipOptions:compositingMask:layoutUnit:position:size:rotation:opacity:blendMode:)")));
 
 - (instancetype)initWithContent:(MTIImage *)content
+                  contentRegion:(CGRect)contentRegion
+             contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions
+                compositingMask:(nullable MTIMask *)compositingMask
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
+                       position:(CGPoint)position
+                           size:(CGSize)size
+                       rotation:(float)rotation
+                        opacity:(float)opacity
+                      blendMode:(MTIBlendMode)blendMode;
+
+- (instancetype)initWithContent:(MTIImage *)content
+                  verticeRegion:(MTIVerticeRegion)verticeRegion
                   contentRegion:(CGRect)contentRegion
              contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions
                 compositingMask:(nullable MTIMask *)compositingMask
@@ -95,6 +129,8 @@ typedef NS_OPTIONS(NSUInteger, MTILayerFlipOptions) {
 - (CGSize)sizeInPixelForBackgroundSize:(CGSize)backgroundSize;
 
 - (CGPoint)positionInPixelForBackgroundSize:(CGSize)backgroundSize;
+
+- (MTIVerticeRegion)verticeRegionInPixelForBackgroundSize:(CGSize)backgroundSize;
 
 @end
 

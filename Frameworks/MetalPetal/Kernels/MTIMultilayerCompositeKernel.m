@@ -233,6 +233,30 @@
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
+- (MTIVertices *)verticesForVerticeRegion:(MTIVerticeRegion)verticeRegion contentRegion:(CGRect)contentRegion flipOptions:(MTILayerFlipOptions)flipOptions {
+    CGFloat contentL = CGRectGetMinX(contentRegion);
+    CGFloat contentR = CGRectGetMaxX(contentRegion);
+    CGFloat contentT = CGRectGetMaxY(contentRegion);
+    CGFloat contentB = CGRectGetMinY(contentRegion);
+    
+    if (flipOptions & MTILayerFlipOptionsFlipVertically) {
+        CGFloat temp = contentT;
+        contentT = contentB;
+        contentB = temp;
+    }
+    if (flipOptions & MTILayerFlipOptionsFlipHorizontally) {
+        CGFloat temp = contentL;
+        contentL = contentR;
+        contentR = temp;
+    }
+    return [[MTIVertices alloc] initWithVertices:(MTIVertex []){
+        { .position = {verticeRegion.tl.x, verticeRegion.tl.y, 0, 1} , .textureCoordinate = { contentL, contentT } },
+        { .position = {verticeRegion.tr.x, verticeRegion.tr.y, 0, 1} , .textureCoordinate = { contentR, contentT } },
+        { .position = {verticeRegion.bl.x, verticeRegion.bl.y, 0, 1} , .textureCoordinate = { contentL, contentB } },
+        { .position = {verticeRegion.br.x, verticeRegion.br.y, 0, 1} , .textureCoordinate = { contentR, contentB } }
+    } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
+}
+
 #if TARGET_OS_IPHONE
 
 // iOS
@@ -437,25 +461,23 @@
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
-        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
-        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
-        
-        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
-                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
-                                          flipOptions:layer.contentFlipOptions];
+        MTIVerticeRegion layerVerticeRegion = [layer verticeRegionInPixelForBackgroundSize:self.backgroundImage.size];
+        CGPoint tl = CGPointMake(-1 + layerVerticeRegion.bl.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.bl.y / self.backgroundImage.size.height * 2);
+        CGPoint tr = CGPointMake(-1 + layerVerticeRegion.br.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.br.y / self.backgroundImage.size.height * 2);
+        CGPoint bl = CGPointMake(-1 + layerVerticeRegion.tl.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.tl.y / self.backgroundImage.size.height * 2);
+        CGPoint br = CGPointMake(-1 + layerVerticeRegion.tr.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.tr.y / self.backgroundImage.size.height * 2);
+        MTIVertices *layerVertices = [self verticesForVerticeRegion:MTIVerticeRegionMake(tl, tr, bl, br) contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height) flipOptions:layer.contentFlipOptions];
         
         MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix
-        CATransform3D transform = CATransform3DIdentity;
-        transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, -(layerPixelPosition.y - self.backgroundImage.size.height/2.0), 0);
-        transform = CATransform3DRotate(transform, -layer.rotation, 0, 0, 1);
+        CATransform3D transform = CATransform3DRotate(CATransform3DIdentity, -layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
         //orthographicMatrix
-        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-1, 1, -1, 1, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
@@ -642,25 +664,23 @@
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
-        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
-        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
-        
-        MTIVertices *vertices = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
-                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
-                                          flipOptions:layer.contentFlipOptions];
+        MTIVerticeRegion layerVerticeRegion = [layer verticeRegionInPixelForBackgroundSize:self.backgroundImage.size];
+        CGPoint tl = CGPointMake(-1 + layerVerticeRegion.bl.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.bl.y / self.backgroundImage.size.height * 2);
+        CGPoint tr = CGPointMake(-1 + layerVerticeRegion.br.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.br.y / self.backgroundImage.size.height * 2);
+        CGPoint bl = CGPointMake(-1 + layerVerticeRegion.tl.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.tl.y / self.backgroundImage.size.height * 2);
+        CGPoint br = CGPointMake(-1 + layerVerticeRegion.tr.x / self.backgroundImage.size.width * 2, 1 - layerVerticeRegion.tr.y / self.backgroundImage.size.height * 2);
+        MTIVertices *layerVertices = [self verticesForVerticeRegion:MTIVerticeRegionMake(tl, tr, bl, br) contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height) flipOptions:layer.contentFlipOptions];
         
         MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix
-        CATransform3D transform = CATransform3DIdentity;
-        transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, -(layerPixelPosition.y - self.backgroundImage.size.height/2.0), 0);
-        transform = CATransform3DRotate(transform, -layer.rotation, 0, 0, 1);
+        CATransform3D transform = CATransform3DRotate(CATransform3DIdentity, -layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
         //orthographicMatrix
-        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-1, 1, -1, 1, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
@@ -739,7 +759,7 @@
             pointer += 1;
             newCompositingMask = [[MTIMask alloc] initWithContent:newCompositingMaskContent component:compositingMask.component mode:compositingMask.mode];
         }
-        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
+        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent verticeRegion:layer.verticeRegion contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
         [newLayers addObject:newLayer];
     }
     return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self.kernel backgroundImage:backgroundImage layers:newLayers outputTextureDimensions:self.dimensions outputPixelFormat:self.outputPixelFormat];
