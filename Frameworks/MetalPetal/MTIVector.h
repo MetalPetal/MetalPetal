@@ -30,9 +30,9 @@ typedef NS_ENUM(NSInteger, MTIVectorScalarType) {
 + (instancetype)vectorWithIntValues:(const int *)values count:(NSUInteger)count;
 + (instancetype)vectorWithUIntValues:(const uint *)values count:(NSUInteger)count NS_SWIFT_NAME(init(uintValues:count:));
 
-@property (readonly) MTIVectorScalarType scalarType;
+@property (readonly, nonatomic) MTIVectorScalarType scalarType;
 
-@property (readonly) NSUInteger count;
+@property (readonly, nonatomic) NSUInteger count;
 
 + (instancetype)vectorWithX:(float)X Y:(float)Y;
 + (instancetype)vectorWithCGPoint:(CGPoint)point NS_SWIFT_NAME(init(value:));

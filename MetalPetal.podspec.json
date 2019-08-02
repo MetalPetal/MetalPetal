@@ -1,44 +1,53 @@
 {
-  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
-  "requires_arc" : true,
-  "prefix_header_file" : false,
+  "default_subspecs" : "Core",
   "source" : {
-    "git" : "https:\/\/github.com\/YuAo\/MetalPetal.git",
-    "tag" : "0.7.1"
+    "tag" : "1.4.4",
+    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git"
   },
-  "name" : "MetalPetal",
-  "authors" : {
-    "YuAo" : "me@imyuao.com"
-  },
+  "swift_versions" : "5.0",
   "license" : {
     "type" : "MIT"
   },
-  "platforms" : {
-    "ios" : "9.0",
-    "osx" : "10.13"
-  },
-  "summary" : "A image processing framework based on Metal.",
-  "version" : "0.7.1",
-  "default_subspecs" : "Core",
-  "homepage" : "https:\/\/github.com\/YuAo\/MetalPetal",
+  "name" : "MetalPetal",
+  "summary" : "GPU-accelerated image and video processing framework based on Metal.",
+  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
+  "prefix_header_file" : false,
   "subspecs" : [
     {
-      "name" : "Core",
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "private_header_files" : [
         "Frameworks\/MetalPetal\/MTIPrint.h",
-        "Frameworks\/MetalPetal\/MTIDefer.h"
+        "Frameworks\/MetalPetal\/MTIDefer.h",
+        "Frameworks\/MetalPetal\/MTIHasher.h"
       ],
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}"
+      "name" : "Core",
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ]
     },
     {
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}",
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ],
       "dependencies" : {
         "MetalPetal\/Core" : [
 
         ]
       },
-      "name" : "Swift",
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}"
+      "name" : "Swift"
     }
   ],
-  "swift_version" : "4.1"
+  "version" : "1.4.4",
+  "platforms" : {
+    "ios" : "9.0",
+    "osx" : "10.13"
+  },
+  "authors" : {
+    "YuAo" : "me@imyuao.com"
+  },
+  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
+  "requires_arc" : true
 }

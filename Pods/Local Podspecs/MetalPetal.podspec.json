@@ -4,13 +4,13 @@
   "authors": {
     "YuAo": "me@imyuao.com"
   },
-  "homepage": "https://github.com/YuAo/MetalPetal",
-  "summary": "A image processing framework based on Metal.",
+  "homepage": "https://github.com/MetalPetal/MetalPetal",
+  "summary": "GPU-accelerated image and video processing framework based on Metal.",
   "license": {
     "type": "MIT"
   },
   "source": {
-    "git": "https://github.com/YuAo/MetalPetal.git",
+    "git": "https://github.com/MetalPetal/MetalPetal.git",
     "tag": "1.0"
   },
   "requires_arc": true,
@@ -20,7 +20,7 @@
   },
   "module_map": "MetalPetal.modulemap",
   "prefix_header_file": false,
-  "swift_version": "4.1",
+  "swift_versions": "5.0",
   "default_subspecs": "Core",
   "subspecs": [
     {
@@ -28,7 +28,12 @@
       "source_files": "**/*.{h,m,c,mm,metal}",
       "private_header_files": [
         "MTIPrint.h",
-        "MTIDefer.h"
+        "MTIDefer.h",
+        "MTIHasher.h"
+      ],
+      "weak_frameworks": [
+        "MetalPerformanceShaders",
+        "MetalKit"
       ]
     },
     {
@@ -38,7 +43,12 @@
 
         ]
       },
-      "source_files": "**/*.{swift}"
+      "source_files": "**/*.{swift}",
+      "weak_frameworks": [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ]
     }
-  ]
+  ],
+  "swift_version": "5.0"
 }

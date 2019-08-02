@@ -26,9 +26,19 @@ FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
 @property (nonatomic, readonly) NSUInteger colorAttachmentCount;
 
+@property (nonatomic, readonly) MTLPixelFormat depthAttachmentPixelFormat;
+
+@property (nonatomic, readonly) MTLPixelFormat stencilAttachmentPixelFormat;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat[_Nonnull])colorAttachmentPixelFormats count:(NSUInteger)count;
 
 - (instancetype)initWithColorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat;
+
+- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat[_Nonnull])colorAttachmentPixelFormats count:(NSUInteger)count depthAttachmentPixelFormat:(MTLPixelFormat)depthAttachmentPixelFormat stencilAttachmentPixelFormat:(MTLPixelFormat)stencilAttachmentPixelFormat NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -85,7 +95,7 @@ FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
 @end
 
-@class MTIImageRenderingDependencyGraph, MTIRenderGraphNode;
+@class MTIRenderGraphNode;
 
 FOUNDATION_EXPORT void MTIColorMatrixRenderGraphNodeOptimize(MTIRenderGraphNode *node);
 

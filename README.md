@@ -1,6 +1,12 @@
 # MetalPetal
 
+[![Platform](https://img.shields.io/badge/platform-iOS%209.0%2B%20%7C%20macOS%2010.13%2B-blue.svg?style=flat-square)](#)
+[![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?style=flat-square)](#)
+[![License](https://img.shields.io/cocoapods/l/MetalPetal.svg?style=flat-square)](#)
+
 An image processing framework based on Metal.
+
+<!-- TOC depthFrom:2 -->
 
 - [Design Overview](#design-overview)
     - [Goals](#goals)
@@ -13,20 +19,30 @@ An image processing framework based on Metal.
     - [Optimizations](#optimizations)
     - [Concurrency Considerations](#concurrency-considerations)
     - [Advantages over Core Image](#advantages-over-core-image)
+    - [Extensions](#extensions)
+        - [Working with SceneKit](#working-with-scenekit)
+        - [Working with JavaScript](#working-with-javascript)
+        - [Texture Loader](#texture-loader)
 - [Builtin Filters](#builtin-filters)
 - [Example Code](#example-code)
     - [Create a `MTIImage`](#create-a-mtiimage)
-    - [Create a filtered image](#create-a-filtered-image)
+    - [Create a Filtered Image](#create-a-filtered-image)
     - [Render a `MTIImage`](#render-a-mtiimage)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
-    - [Simple single input/output filters](#simple-single-inputoutput-filters)
-    - [Fully custom filters](#fully-custom-filters)
-    - [Multiple draw calls in one render pass](#multiple-draw-calls-in-one-render-pass)
+    - [Shader Function Arguments Encoding](#shader-function-arguments-encoding)
+    - [Simple Single Input / Output Filters](#simple-single-input--output-filters)
+    - [Fully Custom Filters](#fully-custom-filters)
+    - [Multiple Draw Calls in One Render Pass](#multiple-draw-calls-in-one-render-pass)
+    - [Custom Vertex Data](#custom-vertex-data)
+    - [Custom Processing Module](#custom-processing-module)
 - [Install](#install)
+- [Trivia](#trivia)
 - [Contribute](#contribute)
 - [License](#license)
+
+<!-- /TOC -->
 
 ## Design Overview
 
@@ -68,7 +84,7 @@ Provides an evaluation context for rendering `MTIImage`s. It also stores a lot o
 
 #### MTIFilter
 
-A `MTIFilter` represents an image processing effect and any parameters that control that effect. It produces a `MTIImage` object as output. To use a filter, you create a filter object, set its input images and parameters, and then access its output image. Typically, a filter class owns a static kernel (`MTIKernel`), when you access its `outputImage` property, it asks the kernel with the input images and parameters to produce a output `MTIImage`. 
+A `MTIFilter` represents an image processing effect and any parameters that control that effect. It produces a `MTIImage` object as output. To use a filter, you create a filter object, set its input images and parameters, and then access its output image. Typically, a filter class owns a static kernel (`MTIKernel`), when you access its `outputImage` property, it asks the kernel with the input images and parameters to produce an output `MTIImage`. 
 
 #### MTIKernel
 
@@ -126,6 +142,32 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - Generally better performance. (Detailed benchmark data needed)
 
+### Extensions
+
+#### Working with SceneKit
+
+You can use `MTISCNSceneRenderer` to generate `MTIImage`s from a `SCNScene`. You may want to handle the SceneKit renderer's linear RGB color space, see issue [#76 The image from SceneKit is darker than normal](https://github.com/MetalPetal/MetalPetal/issues/76).
+
+#### Working with JavaScript
+
+See [MetalPetalJS](https://github.com/MetalPetal/MetalPetalJS)
+
+With MetalPetalJS you can create render pipelines and filters using JavaScript, making it possible to download your filters/renderers from "the cloud".
+
+#### Texture Loader
+
+MetalPetal, by default, uses `MTKTextureLoader` to load `CGImage`s, images from `URL`, and named images.
+
+You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
+
+The `MTKTextureLoader` on iOS 9 loads images with the bottom-left origin by default. MetalPetal provides a custom texture loader to resolve this issue. You can add the following code if you'd like MetalPetal to use the `MTITextureLoaderForiOS9WithImageOrientationFix` on iOS 9. Releated issue(s): [#67 MTIColorLookupFilter error result](https://github.com/MetalPetal/MetalPetal/issues/67)
+
+```
+if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
+    MTIContextOptions.defaultTextureLoaderClass = MTITextureLoaderForiOS9WithImageOrientationFix.class;
+}
+```
+
 ## Builtin Filters
 
 - Color Matrix
@@ -158,13 +200,24 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
     - Multiply
     - Overlay
     - Screen
-    - HardLight
-    - SoftLight
+    - Hard Light
+    - Soft Light
     - Darken
     - Lighten
-    - ColorDodge
+    - Color Dodge
+    - Add (Linear Dodge)
+    - Color Burn
+    - Linear Burn
+    - Lighter Color
+    - Darker Color
+    - Vivid Light
+    - Linear Light
+    - Pin Light
+    - Hard Mix
     - Difference
     - Exclusion
+    - Subtract
+    - Divide
     - Hue
     - Saturation
     - Color
@@ -185,11 +238,29 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - MPS Gaussian Blur
 
-- High Pass Skin Smoothing
+- MPS Definition
 
-- CLAHE (Contrast-Limited Adaptive Histogram Equalization)
+- MPS Sobel
 
-- Lens Blur (Hexagonal Bokeh Blur)
+- MPS Unsharp Mask
+
+- MPS Box Blur
+
+- [High Pass Skin Smoothing](https://github.com/YuAo/YUCIHighPassSkinSmoothing)
+
+- [CLAHE (Contrast-Limited Adaptive Histogram Equalization)](https://github.com/YuAo/Accelerated-CLAHE)
+
+- [Lens Blur (Hexagonal Bokeh Blur)](https://github.com/YuAo/HexagonalBokehBlur)
+
+- [Surface Blur](https://github.com/MetalPetal/SurfaceBlur)
+
+- Bulge Distortion
+
+- Chroma Key Blend
+
+- Color Halftone
+
+- Dot Screen
 
 ## Example Code
 
@@ -203,9 +274,12 @@ let imageFromCIImage = MTIImage(ciImage: ciImage)
 let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
 
 let imageFromContentsOfURL = MTIImage(contentsOf: url, options: [.SRGB: false])
+
+// unpremultiply alpha if needed
+let unpremultipliedAlphaImage = image.unpremultiplyingAlpha()
 ```
 
-### Create a filtered image
+### Create a Filtered Image
 
 ```Swift
 let inputImage = ...
@@ -243,7 +317,7 @@ do {
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
 
-![Quick Look Debug Preview](https://github.com/MetalPetal/MetalPetal/blob/master/Assets/quick_look_debug_preview.jpg)
+![Quick Look Debug Preview](Assets/quick_look_debug_preview.jpg)
 
 ## Best Practices
 
@@ -291,13 +365,59 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 ## Build Custom Filter
 
-If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`).
+If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add the path of `MTIShaderLib.h` file to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`) setting.
 
-### Simple single input/output filters
+For example, if you use CocoaPods you can set the `MTL_HEADER_SEARCH_PATHS` to  `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` or `${PODS_ROOT}/MetalPetal/Frameworks/MetalPetal/Shaders`.
+
+### Shader Function Arguments Encoding
+
+MetalPetal has a built-in mechanism to encode shader function arguments for you. You can pass the shader function arguments as `name: value` dictionaries to the `MTIRenderPipelineKernel.apply(toInputImages:parameters:outputDescriptors:)`, `MTIRenderCommand(kernel:geometry:images:parameters:)`, etc.
+
+For example, the parameter dictionary for the metal function `vibranceAdjust` can be:
+
+```Swift
+// Swift
+let amount: Float = 1.0
+let vibranceVector = float4(1, 1, 1, 1)
+let parameters = ["amount": amount,
+                  "vibranceVector": MTIVector(value: vibranceVector),
+                  "avoidsSaturatingSkinTones": true,
+                  "grayColorTransform": MTIVector(value: float3(0,0,0))]
+```
+
+```Metal
+// vibranceAdjust metal function
+fragment float4 vibranceAdjust(...,
+                constant float & amount [[ buffer(0) ]],
+                constant float4 & vibranceVector [[ buffer(1) ]],
+                constant bool & avoidsSaturatingSkinTones [[ buffer(2) ]],
+                constant float3 & grayColorTransform [[ buffer(3) ]])
+{
+    ...
+}
+
+```
+
+The shader function argument types and the coorresponding types to use in a parameter dictionary is listed below.
+
+| Shader Function Argument Type | Swift | Objective-C | 
+| :--- | :--- | :--- |
+| float | Float | float |
+| int | Int32 | int |
+| uint | UInt32 | uint |
+| bool | Bool | bool |
+| simd (float2,float4,float4x4,int4, etc.) | MTIVector | MTIVector |
+| struct | Data / MTIDataBuffer | NSData / MTIDataBuffer |
+| other (float *, struct *, etc.) immutable | Data / MTIDataBuffer | NSData / MTIDataBuffer |
+| other (float *, struct *, etc.) mutable | MTIDataBuffer | MTIDataBuffer |
+
+### Simple Single Input / Output Filters
 
 To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` and override the methods in the `SubclassingHooks` category. Examples: `MTIPixellateFilter`, `MTIVibranceFilter`, `MTIUnpremultiplyAlphaFilter`, `MTIPremultiplyAlphaFilter`, etc.
 
 ```ObjectiveC
+//Objective-C
+
 @interface MTIPixellateFilter : MTIUnaryImageRenderingFilter
 
 @property (nonatomic) float fractionalWidthOfAPixel;
@@ -324,7 +444,24 @@ To build a custom unary filter, you can subclass `MTIUnaryImageRenderingFilter` 
 @end
 ```
 
-### Fully custom filters
+```Swift
+//Swift
+
+class MTIPixellateFilter: MTIUnaryImageRenderingFilter {
+    
+    var fractionalWidthOfAPixel: Float = 0.05
+
+    override var parameters: [String : Any] {
+        return ["fractionalWidthOfAPixel": fractionalWidthOfAPixel]
+    }
+    
+    override class func fragmentFunctionDescriptor() -> MTIFunctionDescriptor {
+        return MTIFunctionDescriptor(name: "pixellateEffect", libraryURL: MTIDefaultLibraryURLForBundle(Bundle.main))
+    }
+}
+```
+
+### Fully Custom Filters
 
 To build more complex filters, all you need to do is create a kernel (`MTIRenderPipelineKernel`/`MTIComputePipelineKernel`/`MTIMPSKernel`), then apply the kernel to the input image(s). Examples: `MTIChromaKeyBlendFilter`, `MTIBlendWithMaskFilter`, `MTIColorLookupFilter`, etc.
 
@@ -381,9 +518,41 @@ To build more complex filters, all you need to do is create a kernel (`MTIRender
 @end
 ```
 
-### Multiple draw calls in one render pass
+### Multiple Draw Calls in One Render Pass
 
 You can use `MTIRenderCommand` to issue multiple draw calls in one render pass.
+
+```Swift
+// Create a draw call with kernelA, geometryA, and imageA.
+let renderCommandA = MTIRenderCommand(kernel: self.kernelA, geometry: self.geometryA, images: [imageA], parameters: [:])
+
+// Create a draw call with kernelB, geometryB, and imageB.
+let renderCommandB = MTIRenderCommand(kernel: self.kernelB, geometry: self.geometryB, images: [imageB], parameters: [:])
+
+// Create an output descriptor
+let outputDescriptor = MTIRenderPassOutputDescriptor(dimensions: MTITextureDimensions(width: outputWidth, height: outputHeight, depth: 1), pixelFormat: .bgra8Unorm, loadAction: .clear, storeAction: .store)
+
+// Get the output images, the output image count is equal to the output descriptor count.
+let images = MTIRenderCommand.images(byPerforming: [renderCommandA, renderCommandB], outputDescriptors: [outputDescriptor])
+```
+
+You can also create multiple output descriptors to output multiple images in one render pass (MRT, See https://en.wikipedia.org/wiki/Multiple_Render_Targets).
+
+### Custom Vertex Data
+
+When `MTIVertex` cannot fit your needs, you can implement the `MTIGeometry` protocol to provide your custom vertex data to the command encoder.
+
+Use the `MTIRenderCommand` API to issue draw calls and pass your custom `MTIGeometry`.
+
+### Custom Processing Module
+
+In rare scenarios, you may want to access the underlying texture directly, use multiple MPS kernels in one render pass, do 3D rendering, or encode the render commands yourself.
+
+`MTIImagePromise` protocol provides direct access to the underlying texture and the render context for a step in MetalPetal.
+
+You can create new input sources or fully custom processing unit by implementing `MTIImagePromise` protocol. You will need to import an additional module to do so. For Swift: `import MetalPetal.Extension`, Objective-C: `@import MetalPetal.Extension;`.
+
+See the implementation of `MTIComputePipelineKernel`, `MTICLAHELUTRecipe` or `MTIImage` for example.
 
 ## Install
 
@@ -398,6 +567,12 @@ pod 'MetalPetal'
 pod 'MetalPetal/Swift'
 
 ```
+
+We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
+
+## Trivia
+
+[Why Objective-C?](https://github.com/MetalPetal/MetalPetal/issues/52)
 
 ## Contribute
 

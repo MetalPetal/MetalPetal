@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, nonatomic, readonly) CGColorSpaceRef colorSpace;
 
-@property (getter=isFlipped, readonly) BOOL flipped;
+@property (getter=isFlipped, readonly, nonatomic) BOOL flipped;
 
 @property (nonatomic, readonly) MTLPixelFormat destinationPixelFormat;
 
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable, readonly) CGColorSpaceRef colorSpace;
 
-@property (getter=isFlipped, readonly) BOOL flipped;
+@property (getter=isFlipped, readonly, nonatomic) BOOL flipped;
 
 - (instancetype)init NS_UNAVAILABLE;
 

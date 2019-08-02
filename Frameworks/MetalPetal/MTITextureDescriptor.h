@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// An immutable wrapper for MTLTextureDescriptor
-
 @interface MTITextureDescriptor : NSObject <NSCopying>
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -19,6 +18,33 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithMTLTextureDescriptor:(MTLTextureDescriptor *)textureDescriptor NS_DESIGNATED_INITIALIZER;
+
+/// Create a texture descriptor for a common 2D texture.
+- (instancetype)initWithPixelFormat:(MTLPixelFormat)pixelFormat
+                              width:(NSUInteger)width
+                             height:(NSUInteger)height
+                          mipmapped:(BOOL)mipmapped
+                              usage:(MTLTextureUsage)usage
+                    resourceOptions:(MTLResourceOptions)resourceOptions NS_DESIGNATED_INITIALIZER;
+
+/// Create a texture descriptor for a common 2D texture.
+- (instancetype)initWithPixelFormat:(MTLPixelFormat)pixelFormat
+                              width:(NSUInteger)width
+                             height:(NSUInteger)height
+                          mipmapped:(BOOL)mipmapped
+                              usage:(MTLTextureUsage)usage NS_DESIGNATED_INITIALIZER;
+
++ (instancetype)texture2DDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat
+                                             width:(NSUInteger)width
+                                            height:(NSUInteger)height
+                                             usage:(MTLTextureUsage)usage;
+
++ (instancetype)texture2DDescriptorWithPixelFormat:(MTLPixelFormat)pixelFormat
+                                             width:(NSUInteger)width
+                                            height:(NSUInteger)height
+                                         mipmapped:(BOOL)mipmapped
+                                             usage:(MTLTextureUsage)usage
+                                   resourceOptions:(MTLResourceOptions)resourceOptions;
 
 - (MTLTextureDescriptor *)newMTLTextureDescriptor NS_SWIFT_NAME(makeMTLTextureDescriptor());
 

@@ -56,13 +56,23 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 - (nullable id)kernelStateForKernel:(id<MTIKernel>)kernel configuration:(nullable id<MTIKernelConfiguration>)configuration error:(NSError **)error;
 
+#pragma mark - Privately Used Caches
+
+/* Weak to strong tables */
+
 - (nullable id)valueForPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
+- (void)setValue:(nullable id)value forPromise:(id<MTIImagePromise>)promise inTable:(MTIContextPromiseAssociatedValueTableName)tableName;
 
 - (nullable id)valueForImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
 
-- (void)setValue:(id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
+- (void)setValue:(nullable id)value forImage:(MTIImage *)image inTable:(MTIContextImageAssociatedValueTableName)tableName;
+
+/* MTIImagePromise (weak) to MTIImagePromiseRenderTarget (weak) table. */
+
+- (void)setRenderTarget:(MTIImagePromiseRenderTarget *)renderTarget forPromise:(id<MTIImagePromise>)promise;
+
+- (nullable MTIImagePromiseRenderTarget *)renderTargetForPromise:(id<MTIImagePromise>)promise;
 
 @end
 

@@ -6,6 +6,8 @@
 //
 
 #import "MTIRenderCommand.h"
+#import "MTIRenderPipelineKernel.h"
+#import "MTIImage.h"
 
 @implementation MTIRenderCommand
 
@@ -15,6 +17,17 @@
         NSParameterAssert(images);
         NSParameterAssert(parameters);
         NSParameterAssert(geometry);
+        NSParameterAssert({
+            /* Alpha Type Assert */
+            BOOL canAcceptAlphaType = YES;
+            for (MTIImage *image in images) {
+                if (![kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
+                    canAcceptAlphaType = NO;
+                    break;
+                }
+            }
+            canAcceptAlphaType;
+        });
         _kernel = kernel;
         _geometry = [geometry copyWithZone:nil];
         _images = [images copy];

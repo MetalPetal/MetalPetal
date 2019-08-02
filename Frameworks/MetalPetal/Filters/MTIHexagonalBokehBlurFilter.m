@@ -1,18 +1,18 @@
 //
-//  MTILensBlurFilter.m
+//  MTIHexagonalBokehBlurFilter.m
 //  MetalPetal
 //
 //  Created by Yu Ao on 13/10/2017.
 //
 
-#import "MTILensBlurFilter.h"
+#import "MTIHexagonalBokehBlurFilter.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIVector+SIMD.h"
 #import "MTIRenderPassOutputDescriptor.h"
 
-@implementation MTILensBlurFilter
+@implementation MTIHexagonalBokehBlurFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
 
 + (MTIRenderPipelineKernel *)prepassKernel {
@@ -20,7 +20,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurPre"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hexagonalBokehBlurPre"]];
     });
     return kernel;
 }
@@ -30,7 +30,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurAlpha"]
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hexagonalBokehBlurAlpha"]
                                                                   vertexDescriptor:nil
                                                               colorAttachmentCount:2
                                                              alphaTypeHandlingRule:MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule];
@@ -43,7 +43,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"lensBlurBravoCharlie"]];
+                                                        fragmentFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:@"hexagonalBokehBlurBravoCharlie"]];
     });
     return kernel;
 }
@@ -71,18 +71,19 @@
     
     float power = pow(10, MIN(MAX(self.brightness, -1), 1));
     BOOL usesOneMinusMaskValue = mask.mode == MTIMaskModeOneMinusMaskValue;
-    MTIImage *prepassOutputImage = [[MTILensBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, mask.content]
+    MTIImage *prepassOutputImage = [[MTIHexagonalBokehBlurFilter prepassKernel] applyToInputImages:@[self.inputImage, mask.content]
                                                                               parameters:@{@"power": @(power),
                                                                                            @"maskComponent": @((int)mask.component),
                                                                                            @"usesOneMinusMaskValue": @(usesOneMinusMaskValue)}
                                                                  outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)
                                                                        outputPixelFormat:MTLPixelFormatRGBA16Float];
-    NSArray<MTIImage *> *alphaOutputs = [[MTILensBlurFilter alphaPassKernel] applyToInputImages:@[prepassOutputImage]
+    NSArray<MTIImage *> *alphaOutputs = [[MTIHexagonalBokehBlurFilter alphaPassKernel] applyToInputImages:@[[prepassOutputImage imageWithSamplerDescriptor:_inputImage.samplerDescriptor]]
                                                                                      parameters:@{@"delta0": deltas[0],
                                                                                                   @"delta1": deltas[1],
                                                                                                   }
                                                                               outputDescriptors:@[[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float],[[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(self.inputImage.size) pixelFormat:MTLPixelFormatRGBA16Float]]];
-    MTIImage *outputImage = [[MTILensBlurFilter bravoCharliePassKernel] applyToInputImages:@[alphaOutputs[0],alphaOutputs[1]]
+    MTIImage *outputImage = [[MTIHexagonalBokehBlurFilter bravoCharliePassKernel] applyToInputImages:@[[alphaOutputs[0] imageWithSamplerDescriptor:_inputImage.samplerDescriptor],
+                                                                                             [alphaOutputs[1] imageWithSamplerDescriptor:_inputImage.samplerDescriptor]]
                                                                                 parameters:@{@"delta0": deltas[1],
                                                                                              @"delta1": deltas[2],
                                                                                              @"power": @((float)1.0/power)

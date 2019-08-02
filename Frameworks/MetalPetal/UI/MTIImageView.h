@@ -8,13 +8,14 @@
 #if __has_include(<UIKit/UIKit.h>)
 
 #import <UIKit/UIKit.h>
+#import <MetalKit/MetalKit.h>
 #import "MTIDrawableRendering.h"
 
 @class MTIImage,MTIContext;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MTIImageView : UIView
+@interface MTIImageView : UIView <MTKViewDelegate>
 
 @property (nonatomic) MTLPixelFormat colorPixelFormat;
 
@@ -26,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, nullable) MTIImage *image;
 
-@property (nonatomic) BOOL drawsImmediately;
+@property (nonatomic) BOOL drawsImmediately __attribute__((deprecated("Set `drawsImmediately` to `YES` is not recommended anymore. Please file an issue describing how you'd like to use this feature. https://github.com/MetalPetal/MetalPetal"))); //Default `NO`.
 
 @end
 

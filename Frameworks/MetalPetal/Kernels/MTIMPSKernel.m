@@ -36,7 +36,7 @@
     return self.inputImages;
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSError *error = nil;
     
     NSUInteger inputResolutionsCount = self.inputImages.count;
@@ -50,7 +50,6 @@
     };
     for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
         MTIImage *image = self.inputImages[index];
-        NSParameterAssert([self.kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]);
         id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
         if (error) {
             if (inOutError) {
@@ -74,11 +73,9 @@
     [kernel setValuesForKeysWithDictionary:self.parameters];
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
-
-    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO];
-    textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    
+    MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -112,6 +109,17 @@
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
              outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
+        NSParameterAssert({
+            /* Alpha Type Assert */
+            BOOL canAcceptAlphaType = YES;
+            for (MTIImage *image in inputImages) {
+                if (![kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
+                    canAcceptAlphaType = NO;
+                    break;
+                }
+            }
+            canAcceptAlphaType;
+        });
         _inputImages = inputImages;
         _kernel = kernel;
         _parameters = parameters;
@@ -153,7 +161,7 @@
     return self;
 }
 
-- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)error {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * __autoreleasing *)error {
     if (!context.isMetalPerformanceShadersSupported) {
         if (error) {
             *error = MTIErrorCreate(MTIErrorMPSKernelNotSupported, nil);

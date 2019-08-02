@@ -15,6 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIComputePipeline, MTIFunctionDescriptor, MTIImage;
 
+@interface MTIComputeFunctionDispatchOptions : NSObject <NSCopying>
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithThreads:(MTLSize)threads threadgroups:(MTLSize)threadgroups threadsPerThreadgroup:(MTLSize)threadsPerThreadgroup;
+
+- (instancetype)initWithGenerator:(void (^)(id<MTLComputePipelineState> pipelineState, MTLSize *threads, MTLSize *threadgroups, MTLSize *threadsPerThreadgroup))block NS_REFINED_FOR_SWIFT;
+
+@end
+
 @interface MTIComputePipelineKernel : NSObject <MTIKernel>
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -31,6 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
+         outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+               outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
+
+- (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
+                      parameters:(NSDictionary<NSString *,id> *)parameters
+                 dispatchOptions:(nullable MTIComputeFunctionDispatchOptions *)dispatchOptions
          outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
                outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 

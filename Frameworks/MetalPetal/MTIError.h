@@ -18,6 +18,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFunctionNotFound = 1002,
     MTIErrorFailedToCreateSamplerState = 1003,
     MTIErrorFailedToCreateTexture = 1004,
+    MTIErrorFailedToCreateCommandEncoder = 1005,
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,
@@ -38,6 +39,10 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
     MTIErrorFailedToGetRenderedBuffer = 5005,
+    
+    //For operations do not support cross device or cross context rendering, we report these errors.
+    MTIErrorCrossDeviceRendering = 5006,
+    MTIErrorCrossContextRendering = 5007
 };
 
 /// Create a NSError with MTIErrorDomain and the specified error code and user info. Creating a symbolic breakpoint for `_MTIErrorCreate` can help you locate the source of the error.

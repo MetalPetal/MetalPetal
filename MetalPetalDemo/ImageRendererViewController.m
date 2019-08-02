@@ -33,11 +33,9 @@
 
 @property (nonatomic, strong) MTIMPSGaussianBlurFilter *blurFilter;
 
-@property (nonatomic, strong) MTIMPSConvolutionFilter *convolutionFilter;
-
 @property (nonatomic, strong) MTIMultilayerCompositingFilter *compositingFilter;
 
-@property (nonatomic, strong) MTILensBlurFilter *lensBlurFilter;
+@property (nonatomic, strong) MTIHexagonalBokehBlurFilter *lensBlurFilter;
 
 @property (nonatomic, strong) MTICLAHEFilter *claheFilter;
 
@@ -77,30 +75,24 @@
     self.exposureFilter = [[MTIExposureFilter alloc] init];
     self.blurFilter = [[MTIMPSGaussianBlurFilter  alloc] init];
     self.compositingFilter = [[MTIMultilayerCompositingFilter alloc] init];
-    self.lensBlurFilter = [[MTILensBlurFilter alloc] init];
+    self.lensBlurFilter = [[MTIHexagonalBokehBlurFilter alloc] init];
     self.claheFilter = [[MTICLAHEFilter alloc] init];
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
     
-    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCIImage:[CIImage imageWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage] isOpaque:NO] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
-    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage options:@{MTKTextureLoaderOptionSRGB: @NO}] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
+    
+    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
+    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
     
     self.vibranceFilter = [[MTIVibranceFilter alloc] init];
-    self.vibranceFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"P1040808.jpg"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied] imageByUnpremultiplyingAlpha];
-    self.vibranceFilter.avoidsSaturatingSkinTones = NO;
-    float matrix[9] = {
-        -1, 0, 1,
-        -1, 0, 1,
-        -1, 0, 1
-    };
-    self.convolutionFilter = [[MTIMPSConvolutionFilter alloc] initWithKernelWidth:3 kernelHeight:3 weights:matrix];
-
-    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeSoftLight];
+    self.vibranceFilter.avoidsSaturatingSkinTones = YES;
+    
+    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
+    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeLighterColor];
         
-    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
-    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_B"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypeAlphaIsOne];
+    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:NO];
+    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -116,22 +108,16 @@
 
 - (MTIImage *)vibranceTestOutputImage {
     float amount =  sin(CFAbsoluteTimeGetCurrent() * 2.0) ;
+    self.vibranceFilter.inputImage = self.inputImage;
     self.vibranceFilter.amount = amount;
     MTIImage *outputImage = self.vibranceFilter.outputImage;
     return outputImage;
 }
 
-- (MTIImage *)saturationAndInvertTestOutputImage {
+- (MTIImage *)saturationTestOutputImage {
     self.saturationFilter.inputImage = self.inputImage;
     self.saturationFilter.saturation = 1.0 + sin(CFAbsoluteTimeGetCurrent() * 2.0);
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    self.saturationFilter.inputImage = self.colorInvertFilter.outputImage;
-    self.colorInvertFilter.inputImage = self.saturationFilter.outputImage;
-    MTIImage *outputImage = self.colorInvertFilter.outputImage;
+    MTIImage *outputImage = self.saturationFilter.outputImage;
     return outputImage;
 }
 
@@ -190,12 +176,12 @@
     static MTIImage *maskImage;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_blend_test_F"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} alphaType:MTIAlphaTypePremultiplied];
+        maskImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}];
     });
-  
+    
     self.compositingFilter.layers = @[
-                                       [[MTILayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) compositingMask:
-                                        [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal] layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(200, 200) size:CGSizeMake(1920, 1080) rotation:3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
+                                      [[MTILayer alloc] initWithContent:self.inputImage contentRegion:CGRectMake(0, 0, 960, 540) contentFlipOptions:MTILayerFlipOptionsFlipVertically compositingMask:
+                                        [[MTIMask alloc] initWithContent:maskImage component:MTIColorComponentRed mode:MTIMaskModeNormal] layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(200, 200) size:CGSizeMake(1920, 1080) rotation:0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(900, 900) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
                                       [[MTILayer alloc] initWithContent:self.inputImage layoutUnit:MTILayerLayoutUnitPixel position:CGPointMake(600, 600) size:CGSizeMake(1920/3.0, 1080/3.0) rotation:-3.14/4.0 opacity:1 blendMode:MTIBlendModeNormal],
@@ -232,15 +218,14 @@
         if (@available(iOS 10.0, *)) {
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
-        MTIImage *outputImage = [self saturationAndInvertTestOutputImage];
+        MTIImage *outputImage = [self saturationTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         request.drawableProvider = self.renderView;
         request.resizingMode = MTIDrawableRenderingResizingModeAspect;
         NSError *error;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
-       
         if (@available(iOS 10.0, *)) {
-            kdebug_signpost_start(1, 0, 0, 0, 1);
+            kdebug_signpost_end(1, 0, 0, 0, 1);
         }
     }
 }

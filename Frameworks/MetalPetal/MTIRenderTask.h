@@ -12,8 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImageRenderingContext;
 
+/// Represents a GPU render task - i.e., commands in a command buffer.
 @interface MTIRenderTask : NSObject
 
+/// Status of the underlaying command buffer.
 @property (readonly) MTLCommandBufferStatus commandBufferStatus;
 
 - (instancetype)initWithCommandBuffer:(id<MTLCommandBuffer>)commandBuffer NS_DESIGNATED_INITIALIZER;
@@ -22,12 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 
+/// Synchronously blocks execution until the task either completes or fails (with error).
 - (void)waitUntilCompleted;
 
-/*!
- @property error
- @abstract If an error occurred during execution, the NSError may contain more details about the problem.
- */
+/// If an error occurred during execution, the NSError may contain more details about the problem.
 @property (nullable, readonly) NSError *error;
 
 @end

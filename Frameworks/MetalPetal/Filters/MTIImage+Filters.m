@@ -12,11 +12,11 @@
 @implementation MTIImage (Filters)
 
 - (MTIImage *)imageByUnpremultiplyingAlpha {
-    return [MTIUnpremultiplyAlphaFilter imageByProcessingImage:self];
+    return [[MTIUnpremultiplyAlphaFilter imageByProcessingImage:self] imageWithCachePolicy:self.cachePolicy];
 }
 
 - (MTIImage *)imageByPremultiplyingAlpha {
-    return [MTIPremultiplyAlphaFilter imageByProcessingImage:self];
+    return [[MTIPremultiplyAlphaFilter imageByProcessingImage:self] imageWithCachePolicy:self.cachePolicy];
 }
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation {
@@ -50,7 +50,7 @@
             imageOrientation = MTIImageOrientationUnknown;
             break;
     }
-    return [MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
+    return [[MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:MTIPixelFormatUnspecified] imageWithCachePolicy:self.cachePolicy];
 }
 
 @end

@@ -22,8 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
     MTIImageCachePolicyPersistent
-};
+} NS_SWIFT_NAME(MTIImage.CachePolicy);
 
+/// A representation of an image to be processed or produced.
 @interface MTIImage : NSObject <NSCopying>
 
 @property (nonatomic, readonly) MTIImageCachePolicy cachePolicy;
@@ -62,10 +63,13 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 
 - (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer options:(MTICVPixelBufferRenderingOptions *)options alphaType:(MTIAlphaType)alphaType;
 
+- (instancetype)initWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer planeIndex:(NSUInteger)planeIndex textureDescriptor:(MTLTextureDescriptor *)textureDescriptor alphaType:(MTIAlphaType)alphaType;
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType __attribute__((deprecated("Replaced by MTIImage(cgImage:options:isOpaque:)")));
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque;
 
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;
@@ -76,6 +80,8 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque;
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
+
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options;
@@ -93,6 +99,10 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                    alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0) NS_SWIFT_NAME(init(named:in:size:scaleFactor:options:alphaType:));
+
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                         alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
 
 /// A 1x1 white image
 @property (class, readonly) MTIImage *whiteImage;

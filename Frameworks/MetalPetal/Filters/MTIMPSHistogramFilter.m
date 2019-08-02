@@ -41,7 +41,7 @@
     return @[self.inputImage];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     if (!renderingContext.context.isMetalPerformanceShadersSupported) {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorMPSKernelNotSupported, nil);

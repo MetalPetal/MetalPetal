@@ -44,17 +44,23 @@
     return kernel;
 }
 
+- (void)setInputImage:(MTIImage *)inputImage {
+    _inputImage = inputImage;
+    _gaussianBlurFilter.inputImage = inputImage;
+}
+
+- (void)setRadius:(float)radius {
+    _radius = radius;
+    _gaussianBlurFilter.radius = radius;
+}
+
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
     }
-    self.gaussianBlurFilter.outputPixelFormat = self.outputPixelFormat;
-    self.gaussianBlurFilter.inputImage = self.inputImage;
-    self.gaussianBlurFilter.radius = self.radius;
+    
     MTIImage *blurImage = self.gaussianBlurFilter.outputImage;
-    if (!blurImage) {
-        return nil;
-    }
+    
     return [[[self class] kernel] applyToInputImages:@[self.inputImage, blurImage]
                                           parameters:@{@"scale": @(self.scale), @"threshold": @(self.threshold)}
                              outputTextureDimensions: MTITextureDimensionsMake2DFromCGSize(self.inputImage.size)

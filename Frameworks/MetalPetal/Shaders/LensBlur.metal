@@ -11,7 +11,7 @@
 using namespace metal;
 
 namespace metalpetal {
-    namespace lensblur {
+    namespace hexagonalbokeh {
         METAL_FUNC float randomize(float3 scale, float seed, float2 position) {
             return fract(sin(dot(float3(position, 0.0) + seed, scale)) * 43758.5453 + seed);
         }
@@ -32,7 +32,7 @@ namespace metalpetal {
             return blurAmount < 0.01 ? texture.sample(textureSampler, position) : float4(color / blurAmount, 1.0);
         }
         
-        fragment float4 lensBlurPre(VertexOut vertexIn [[ stage_in ]],
+        fragment float4 hexagonalBokehBlurPre(VertexOut vertexIn [[ stage_in ]],
                                     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                     sampler colorSampler [[ sampler(0) ]],
                                     texture2d<float, access::sample> maskTexture [[ texture(1) ]],
@@ -49,9 +49,9 @@ namespace metalpetal {
         typedef struct {
             float4 vertical [[color(0)]];
             float4 diagonal [[color(1)]];
-        } LensBlurAlphaPassOutput;
+        } HexagonalBokehBlurAlphaPassOutput;
         
-        fragment LensBlurAlphaPassOutput lensBlurAlpha(VertexOut vertexIn [[ stage_in ]],
+        fragment HexagonalBokehBlurAlphaPassOutput hexagonalBokehBlurAlpha(VertexOut vertexIn [[ stage_in ]],
                                                        texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                                        sampler colorSampler [[ sampler(0) ]],
                                                        constant float2 & delta0 [[ buffer(0) ]],
@@ -59,13 +59,13 @@ namespace metalpetal {
             float coc = colorTexture.sample(colorSampler, vertexIn.textureCoordinate).a;
             float4 color1 = sampleWithDelta(colorTexture, colorSampler, vertexIn.textureCoordinate, delta0 * coc);
             float4 color2 = sampleWithDelta(colorTexture, colorSampler, vertexIn.textureCoordinate, delta1 * coc);
-            LensBlurAlphaPassOutput output;
+            HexagonalBokehBlurAlphaPassOutput output;
             output.vertical = float4(color1.rgb, coc);
-            output.diagonal = float4((color2 + color1).rgb * 0.5, coc);
+            output.diagonal = float4((color2 + color1).rgb, coc);
             return output;
         }
         
-        fragment float4 lensBlurBravoCharlie(VertexOut vertexIn [[ stage_in ]],
+        fragment float4 hexagonalBokehBlurBravoCharlie(VertexOut vertexIn [[ stage_in ]],
                                              texture2d<float, access::sample> verticalTexture [[ texture(0) ]],
                                              sampler verticalSampler [[ sampler(0) ]],
                                              texture2d<float, access::sample> diagonalTexture [[ texture(1) ]],
@@ -76,11 +76,13 @@ namespace metalpetal {
             float coc = verticalTexture.sample(verticalSampler, vertexIn.textureCoordinate).a;
             float coc2 = diagonalTexture.sample(diagonalSampler, vertexIn.textureCoordinate).a;
             float4 color = (sampleWithDelta(verticalTexture, verticalSampler, vertexIn.textureCoordinate, delta0 * coc) +
-                            sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.textureCoordinate, delta1 * coc2)) * 0.5;
+                            sampleWithDelta(diagonalTexture, diagonalSampler, vertexIn.textureCoordinate, delta1 * coc2)) * (1.0/3.0);
             color.rgb = pow(color.rgb, float3(power));
             return float4(color.rgb, 1.0);
         }
     }
+    
+    
 }
 
 

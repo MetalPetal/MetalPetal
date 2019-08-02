@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0611EAF71F90708E00CD3168 /* P1030510.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 0611EAF61F90708700CD3168 /* P1030510.jpg */; };
 		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
 		062816182005F0BB005D81BC /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816172005F0BB005D81BC /* Recorder.swift */; };
+		06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 06D7F6C922228C0400B02D3D /* art.scnassets */; };
+		06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */; };
+		06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */; };
+		06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CD21FC3A4800AD9955 /* Shaders.metal */; };
 		7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */; };
 		81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */; };
 		9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D1FCE3B1F21A99400264194 /* MainTableViewController.m */; };
@@ -19,16 +22,19 @@
 		9D3928B71EFF678800BA6B09 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B51EFF678800BA6B09 /* Main.storyboard */; };
 		9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B81EFF678800BA6B09 /* Assets.xcassets */; };
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
-		9D4F1C361F02B7E700FA48BE /* P1040602.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4F1C351F02B7E700FA48BE /* P1040602.jpg */; };
 		9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D7933A51F07A50B00135D46 /* P1040808.jpg */; };
+		EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4A930321523A5100B3006A /* BlendModeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0611EAF61F90708700CD3168 /* P1030510.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1030510.jpg; sourceTree = "<group>"; };
 		062816152005BBE1005D81BC /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		062816172005F0BB005D81BC /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		06AD314A1F9463B100AAAF35 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		06D668BB1F989C070091A8A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		06D7F6C922228C0400B02D3D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneKitViewController.swift; sourceTree = "<group>"; };
+		06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripleBufferingViewController.swift; sourceTree = "<group>"; };
+		06F9F6CD21FC3A4800AD9955 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		0A8FE4D1B0592FC3147A79BB /* Pods-MetalPetalDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetalPetalDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraViewController.h; sourceTree = "<group>"; };
@@ -45,10 +51,11 @@
 		9D3928B81EFF678800BA6B09 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9D3928BB1EFF678800BA6B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D3928BD1EFF678800BA6B09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9D4F1C351F02B7E700FA48BE /* P1040602.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040602.jpg; sourceTree = "<group>"; };
 		9D7933A51F07A50B00135D46 /* P1040808.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040808.jpg; sourceTree = "<group>"; };
 		9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalPetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
+		EE4A930221523A5100B3006A /* BlendModeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlendModeViewController.h; sourceTree = "<group>"; };
+		EE4A930321523A5100B3006A /* BlendModeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlendModeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +70,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06900953217F0D7A007219E1 /* DemoSupport */ = {
+			isa = PBXGroup;
+			children = (
+				9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */,
+				9D3928AF1EFF678800BA6B09 /* AppDelegate.h */,
+				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
+				9D1FCE3A1F21A99400264194 /* MainTableViewController.h */,
+				9D1FCE3B1F21A99400264194 /* MainTableViewController.m */,
+				062816152005BBE1005D81BC /* Camera.swift */,
+				062816172005F0BB005D81BC /* Recorder.swift */,
+			);
+			name = DemoSupport;
+			sourceTree = "<group>";
+		};
 		1613C7A74FF007BF1C17A81A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -94,25 +115,22 @@
 		9D3928AB1EFF678800BA6B09 /* MetalPetalDemo */ = {
 			isa = PBXGroup;
 			children = (
-				9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */,
-				9D3928AF1EFF678800BA6B09 /* AppDelegate.h */,
-				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
-				9D1FCE3A1F21A99400264194 /* MainTableViewController.h */,
-				9D1FCE3B1F21A99400264194 /* MainTableViewController.m */,
 				9D3928B21EFF678800BA6B09 /* ImageRendererViewController.h */,
 				9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */,
 				81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */,
 				81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */,
-				062816152005BBE1005D81BC /* Camera.swift */,
-				062816172005F0BB005D81BC /* Recorder.swift */,
-				0611EAF61F90708700CD3168 /* P1030510.jpg */,
-				9D4F1C351F02B7E700FA48BE /* P1040602.jpg */,
+				EE4A930221523A5100B3006A /* BlendModeViewController.h */,
+				EE4A930321523A5100B3006A /* BlendModeViewController.m */,
+				06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */,
+				06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */,
+				06F9F6CD21FC3A4800AD9955 /* Shaders.metal */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
-				9D3928B51EFF678800BA6B09 /* Main.storyboard */,
+				06D7F6C922228C0400B02D3D /* art.scnassets */,
 				9D3928B81EFF678800BA6B09 /* Assets.xcassets */,
+				9D3928B51EFF678800BA6B09 /* Main.storyboard */,
 				9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */,
-				9D3928BD1EFF678800BA6B09 /* Info.plist */,
 				06D668BB1F989C070091A8A8 /* LICENSE.md */,
+				06900953217F0D7A007219E1 /* DemoSupport */,
 				9D3928AC1EFF678800BA6B09 /* Supporting Files */,
 			);
 			path = MetalPetalDemo;
@@ -121,6 +139,7 @@
 		9D3928AC1EFF678800BA6B09 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9D3928BD1EFF678800BA6B09 /* Info.plist */,
 				9D3928AD1EFF678800BA6B09 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -142,11 +161,11 @@
 			buildConfigurationList = 9D3928C01EFF678800BA6B09 /* Build configuration list for PBXNativeTarget "MetalPetalDemo" */;
 			buildPhases = (
 				F480C99ECF24128A64CF0E82 /* [CP] Check Pods Manifest.lock */,
+				0672CF762022F10F00ADFB19 /* Update Umbrella Header */,
 				9D3928A51EFF678800BA6B09 /* Sources */,
 				9D3928A61EFF678800BA6B09 /* Frameworks */,
 				9D3928A71EFF678800BA6B09 /* Resources */,
 				AA0599CC4E8484835B5D9123 /* [CP] Embed Pods Frameworks */,
-				0672CF762022F10F00ADFB19 /* Update Umbrella Header */,
 			);
 			buildRules = (
 			);
@@ -163,20 +182,20 @@
 		9D3928A11EFF678800BA6B09 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = MetalPetal;
 				TargetAttributes = {
 					9D3928A81EFF678800BA6B09 = {
 						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = EE5R8VDWG7;
-						LastSwiftMigration = 0900;
+						DevelopmentTeam = DDPY9JD4B3;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
 			buildConfigurationList = 9D3928A41EFF678800BA6B09 /* Build configuration list for PBXProject "MetalPetalDemo" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -197,12 +216,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D4F1C361F02B7E700FA48BE /* P1040602.jpg in Resources */,
 				9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */,
 				9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */,
+				06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */,
 				9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */,
 				9D3928B71EFF678800BA6B09 /* Main.storyboard in Resources */,
-				0611EAF71F90708E00CD3168 /* P1030510.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -229,7 +247,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/MetalPetal/MetalPetal.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -238,7 +256,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F480C99ECF24128A64CF0E82 /* [CP] Check Pods Manifest.lock */ = {
@@ -268,11 +286,15 @@
 			files = (
 				9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */,
 				9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */,
+				06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */,
 				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
+				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,
 				062816162005BBE1005D81BC /* Camera.swift in Sources */,
+				EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */,
 				062816182005F0BB005D81BC /* Recorder.swift in Sources */,
 				9D3928AE1EFF678800BA6B09 /* main.m in Sources */,
+				06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,6 +324,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
@@ -371,6 +394,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
@@ -425,7 +449,6 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
-				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -438,14 +461,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = EE5R8VDWG7;
+				DEVELOPMENT_TEAM = DDPY9JD4B3;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -455,13 +478,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				DEVELOPMENT_TEAM = EE5R8VDWG7;
+				DEVELOPMENT_TEAM = DDPY9JD4B3;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

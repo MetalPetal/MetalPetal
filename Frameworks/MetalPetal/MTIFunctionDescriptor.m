@@ -7,8 +7,11 @@
 //
 
 #import "MTIFunctionDescriptor.h"
+#import "MTIHasher.h"
 
 @interface MTIFunctionDescriptor ()
+
+@property (nonatomic, readonly) NSUInteger cachedHashValue;
 
 @end
 
@@ -23,6 +26,11 @@
         _name = name;
         _libraryURL = [URL copy];
         _constantValues = nil;
+        
+        MTIHasher hasher = MTIHasherMake(0);
+        MTIHasherCombine(&hasher, _name.hash);
+        MTIHasherCombine(&hasher, _libraryURL.hash);
+        _cachedHashValue = MTIHasherFinalize(&hasher);
     }
     return self;
 }
@@ -32,6 +40,12 @@
         _name = [name copy];
         _libraryURL = [URL copy];
         _constantValues = [constantValues copy];
+        
+        MTIHasher hasher = MTIHasherMake(0);
+        MTIHasherCombine(&hasher, _name.hash);
+        MTIHasherCombine(&hasher, _libraryURL.hash);
+        MTIHasherCombine(&hasher, _constantValues.hash);
+        _cachedHashValue = MTIHasherFinalize(&hasher);
     }
     return self;
 }
@@ -46,10 +60,10 @@
     }
     
     MTIFunctionDescriptor *descriptor = object;
-    if ([descriptor.name isEqualToString:self.name] &&
-        ((descriptor.libraryURL == nil && self.libraryURL == nil) || [descriptor.libraryURL isEqual:self.libraryURL])) {
+    if ([descriptor -> _name isEqualToString:_name] &&
+        ((descriptor -> _libraryURL == nil && _libraryURL == nil) || [descriptor -> _libraryURL isEqual:_libraryURL])) {
         if (@available(iOS 10.0, *)) {
-            if ((descriptor.constantValues == nil && self.constantValues == nil) || [descriptor.constantValues isEqual:self.constantValues]) {
+            if ((descriptor -> _constantValues == nil && _constantValues == nil) || [descriptor -> _constantValues isEqual:_constantValues]) {
                 return YES;
             } else {
                 return NO;
@@ -63,11 +77,7 @@
 }
 
 - (NSUInteger)hash {
-    if (@available(iOS 10.0, *)) {
-        return self.name.hash ^ self.libraryURL.hash ^ self.constantValues.hash;
-    } else {
-        return self.name.hash ^ self.libraryURL.hash;
-    }
+    return _cachedHashValue;
 }
 
 - (id)copyWithZone:(NSZone *)zone {

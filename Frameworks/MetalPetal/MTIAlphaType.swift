@@ -24,3 +24,11 @@ extension MTIAlphaTypeHandlingRule {
     }
     
 }
+
+extension MTIAlphaType: CustomStringConvertible {
+    
+    public var description: String {
+        return MTIAlphaTypeGetDescription(self)
+    }
+    
+}

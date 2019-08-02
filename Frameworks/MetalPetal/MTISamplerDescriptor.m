@@ -12,6 +12,8 @@
 
 @property (nonatomic,copy) MTLSamplerDescriptor *metalSamplerDescriptor;
 
+@property (nonatomic, readonly) NSUInteger cachedHashValue;
+
 @end
 
 @implementation MTISamplerDescriptor
@@ -19,6 +21,7 @@
 - (instancetype)initWithMTLSamplerDescriptor:(MTLSamplerDescriptor *)samplerDescriptor {
     if (self = [super init]) {
         _metalSamplerDescriptor = [samplerDescriptor copy];
+        _cachedHashValue = [samplerDescriptor hash];
     }
     return self;
 }
@@ -36,13 +39,13 @@
         return YES;
     }
     if ([object isKindOfClass:[MTISamplerDescriptor class]]) {
-        return [self.metalSamplerDescriptor isEqual:((MTISamplerDescriptor *)object).metalSamplerDescriptor];
+        return [_metalSamplerDescriptor isEqual:((MTISamplerDescriptor *)object) -> _metalSamplerDescriptor];
     }
     return NO;
 }
 
 - (NSUInteger)hash {
-    return [_metalSamplerDescriptor hash];
+    return _cachedHashValue;
 }
 
 + (MTISamplerDescriptor *)defaultSamplerDescriptor {

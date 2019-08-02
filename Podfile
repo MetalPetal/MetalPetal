@@ -34,5 +34,13 @@ post_install do |installer|
         config.build_settings['CLANG_WARN_COMMA'] = 'YES'
         config.build_settings['CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF'] = 'YES'
         config.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'YES'
+        config.build_settings['GCC_WARN_ABOUT_MISSING_NEWLINE'] = 'YES'
+        config.build_settings['CLANG_WARN_SEMICOLON_BEFORE_METHOD_BODY'] = 'YES'
+        config.build_settings['CLANG_WARN_OBJC_IMPLICIT_ATOMIC_PROPERTIES'] = 'YES'
+        config.build_settings['CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK'] = 'YES'
+        config.build_settings['GCC_WARN_STRICT_SELECTOR_MATCH'] = 'YES'
+        config.build_settings['CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE'] = 'YES'
+        config.build_settings['CLANG_ANALYZER_GCD_PERFORMANCE'] = 'YES'
+        config.build_settings['CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED'] = 'YES'
     end
 end

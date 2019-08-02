@@ -21,6 +21,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIVector+SIMD.h"
+#import "MTIError.h"
 
 @import MetalPerformanceShaders;
 
@@ -41,6 +42,8 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 - (instancetype)initWithHistogramKernel:(MPSImageHistogram *)histogramKernel LUTGeneratingPipeline:(MTIComputePipeline *)LUTGeneratingPipeline {
     if (self = [super init]) {
+        NSParameterAssert(histogramKernel);
+        NSParameterAssert(LUTGeneratingPipeline);
         _histogramKernel = histogramKernel;
         _LUTGeneratingPipeline = LUTGeneratingPipeline;
     }
@@ -92,7 +95,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return (MTITextureDimensions){.width = MTICLAHEHistogramBinCount, .height = self.numberOfLUTs, .depth = 1};
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSParameterAssert(self.inputLightnessImage.alphaType == MTIAlphaTypeAlphaIsOne);
     
     NSError *error = nil;
@@ -115,13 +118,8 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
         return nil;
     }
     
-    MTLPixelFormat pixelFormat = MTLPixelFormatR8Unorm;
-    
-    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:MTICLAHEHistogramBinCount height:self.numberOfLUTs mipmapped:NO];
-    textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-    textureDescriptor.resourceOptions = MTLResourceCPUCacheModeDefaultCache | MTLResourceStorageModePrivate;
-    
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[textureDescriptor newMTITextureDescriptor] error:&error];
+    MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm width:MTICLAHEHistogramBinCount height:self.numberOfLUTs mipmapped:NO usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead resourceOptions:MTLResourceCPUCacheModeDefaultCache | MTLResourceStorageModePrivate];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -153,6 +151,14 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     parameters.numberOfLUTs = (uint)self.numberOfLUTs;
     
     __auto_type commandEncoder = [renderingContext.commandBuffer computeCommandEncoder];
+    
+    if (!commandEncoder) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+        }
+        return nil;
+    }
+    
     [commandEncoder setComputePipelineState:kernelState.LUTGeneratingPipeline.state];
     [commandEncoder setBuffer:histogramBuffer offset:0 atIndex:0];
     [commandEncoder setBytes:&parameters length:sizeof(parameters) atIndex:1];
@@ -190,7 +196,14 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @implementation MTICLAHELUTKernel
 
-- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (id)newKernelStateWithContext:(MTIContext *)context configuration:(id<MTIKernelConfiguration>)configuration error:(NSError * __autoreleasing *)inOutError {
+    if (!context.isMetalPerformanceShadersSupported) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorMPSKernelNotSupported, nil);
+        }
+        return nil;
+    }
+    
     MPSImageHistogramInfo info;
     info.numberOfHistogramEntries = MTICLAHEHistogramBinCount;
     info.minPixelValue = (vector_float4){0,0,0,0};

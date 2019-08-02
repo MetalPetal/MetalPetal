@@ -32,7 +32,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError **)error NS_SWIFT_NAME(startTask(toRender:to:sRGB:));
 
-- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error NS_SWIFT_NAME(startTask(toCreate:from:sRGB:));;
+- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error NS_SWIFT_NAME(startTask(toCreate:from:sRGB:));
+
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error NS_SWIFT_NAME(startTask(toRender:toDrawableWithRequest:));
+
+- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toCreate:from:sRGB:completion:));
+
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:sRGB:completion:));
+
+/// The default destinationAlphaType is premultiplied.
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image
+                                   toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
+                                              sRGB:(BOOL)sRGB
+                              destinationAlphaType:(MTIAlphaType)destinationAlphaType
+                                             error:(NSError **)error
+                                        completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:sRGB:destinationAlphaType:completion:));
+
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:toDrawableWithRequest:completion:));
+
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image
+                                         toTexture:(id<MTLTexture>)texture
+                              destinationAlphaType:(MTIAlphaType)destinationAlphaType
+                                             error:(NSError **)error
+                                        completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:destinationAlphaType:completion:));
 
 @end
 

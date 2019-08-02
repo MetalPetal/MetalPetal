@@ -11,11 +11,12 @@
 #import "MTIContext+Rendering.h"
 #import "MTIImage.h"
 #import "MTIPrint.h"
-#import <MetalKit/MetalKit.h>
 
-@interface MTIImageView () <MTKViewDelegate>
+@interface MTIImageView ()
 
-@property (nonatomic,weak) MTKView *renderView;
+@property (nonatomic, weak, readonly) MTKView *renderView;
+
+@property (nonatomic) CGFloat screenScale;
 
 @end
 
@@ -39,8 +40,9 @@
     if (@available(iOS 11.0, *)) {
         self.accessibilityIgnoresInvertColors = YES;
     }
-    self.opaque = YES;
+    
     _resizingMode = MTIDrawableRenderingResizingModeAspect;
+    
     NSError *error;
     _context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
     if (error) {
@@ -49,29 +51,33 @@
     MTKView *renderView = [[MTKView alloc] initWithFrame:self.bounds device:_context.device];
     renderView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     renderView.delegate = self;
+    renderView.paused = YES;
+    renderView.enableSetNeedsDisplay = YES;
     [self addSubview:renderView];
     _renderView = renderView;
-    
-    _renderView.paused = YES;
-    _renderView.enableSetNeedsDisplay = YES;
     _drawsImmediately = NO;
+    
+    self.opaque = YES;
 }
 
 - (void)setDrawsImmediately:(BOOL)drawsImmediately {
     _drawsImmediately = drawsImmediately;
+    MTKView *renderView = _renderView;
     if (drawsImmediately) {
-        _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = NO;
+        renderView.paused = YES;
+        renderView.enableSetNeedsDisplay = NO;
     } else {
-        _renderView.paused = YES;
-        _renderView.enableSetNeedsDisplay = YES;
+        renderView.paused = YES;
+        renderView.enableSetNeedsDisplay = YES;
     }
 }
 
 - (void)didMoveToWindow {
     [super didMoveToWindow];
-    if (self.window) {
-        _renderView.contentScaleFactor = self.window.screen.nativeScale;
+    if (self.window.screen) {
+        _screenScale = MIN(self.window.screen.nativeScale, self.window.screen.scale);
+    } else {
+        _screenScale = 1.0;
     }
 }
 
@@ -81,13 +87,39 @@
 }
 
 - (void)setOpaque:(BOOL)opaque {
+    BOOL oldOpaque = [super isOpaque];
     [super setOpaque:opaque];
-    _renderView.opaque = opaque;
-    _renderView.layer.opaque = opaque;
+    MTKView *renderView = _renderView;
+    renderView.opaque = opaque;
+    renderView.layer.opaque = opaque;
+    if (oldOpaque != opaque) {
+        [self setNeedsRedraw];
+    }
+}
+
+- (void)setHidden:(BOOL)hidden {
+    BOOL oldHidden = [super isHidden];
+    [super setHidden:hidden];
+    if (oldHidden) {
+        [self setNeedsRedraw];
+    }
+}
+
+- (void)setAlpha:(CGFloat)alpha {
+    CGFloat oldAlpha = [super alpha];
+    [super setAlpha:alpha];
+    if (oldAlpha <= 0) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (void)setColorPixelFormat:(MTLPixelFormat)colorPixelFormat {
-    _renderView.colorPixelFormat = colorPixelFormat;
+    MTKView *renderView = _renderView;
+    MTLPixelFormat oldColorPixelFormat = renderView.colorPixelFormat;
+    renderView.colorPixelFormat = colorPixelFormat;
+    if (oldColorPixelFormat != colorPixelFormat) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (MTLPixelFormat)colorPixelFormat {
@@ -95,7 +127,15 @@
 }
 
 - (void)setClearColor:(MTLClearColor)clearColor {
-    _renderView.clearColor = clearColor;
+    MTKView *renderView = _renderView;
+    MTLClearColor oldClearColor = renderView.clearColor;
+    renderView.clearColor = clearColor;
+    if (oldClearColor.red != clearColor.red ||
+        oldClearColor.green != clearColor.green ||
+        oldClearColor.blue != clearColor.blue ||
+        oldClearColor.alpha != clearColor.alpha) {
+        [self setNeedsRedraw];
+    }
 }
 
 - (MTLClearColor)clearColor {
@@ -103,38 +143,44 @@
 }
 
 - (void)updateContentScaleFactor {
-    if (_renderView.frame.size.width > 0 && _renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0 && self.window.screen != nil) {
+    MTKView *renderView = _renderView;
+    if (renderView.frame.size.width > 0 && renderView.frame.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0 && self.window.screen != nil) {
         CGSize imageSize = _image.size;
-        CGFloat widthScale = imageSize.width/_renderView.bounds.size.width;
-        CGFloat heightScale = imageSize.height/_renderView.bounds.size.height;
-        CGFloat nativeScale = self.window.screen.nativeScale;
+        CGFloat widthScale = imageSize.width/renderView.bounds.size.width;
+        CGFloat heightScale = imageSize.height/renderView.bounds.size.height;
+        CGFloat nativeScale = _screenScale;
         CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
-        if (ABS(_renderView.contentScaleFactor - scale) > 0.00001) {
-            _renderView.contentScaleFactor = scale;
+        if (ABS(renderView.contentScaleFactor - scale) > 0.00001) {
+            renderView.contentScaleFactor = scale;
         }
     }
 }
 
 - (void)setImage:(MTIImage *)image {
     NSAssert(NSThread.isMainThread, @"-[MTIImageView setImage:] can only be called on main thread.");
-    _image = image;
-    [self updateContentScaleFactor];
-    if (_drawsImmediately) {
-        [_renderView draw];
-    } else {
-        [_renderView setNeedsDisplay];
+    if (_image != image) {
+        _image = image;
+        [self updateContentScaleFactor];
+        [self setNeedsRedraw];
     }
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
     [self updateContentScaleFactor];
+    [self setNeedsRedraw];
+}
+
+- (void)setNeedsRedraw {
+    MTKView *renderView = _renderView;
     if (_drawsImmediately) {
-        [_renderView draw];
+        [renderView draw];
     } else {
-        [_renderView setNeedsDisplay];
+        [renderView setNeedsDisplay];
     }
 }
+
+#pragma mark - MTKViewDelegate
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
@@ -142,15 +188,33 @@
 
 - (void)drawInMTKView:(MTKView *)view {
     @autoreleasepool {
-        if (_image && !self.isHidden && self.alpha > 0) {
-            NSAssert(_context != nil, @"Context is nil.");
-            MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-            request.drawableProvider = _renderView;
-            request.resizingMode = _resizingMode;
-            NSError *error;
-            [_context renderImage:_image toDrawableWithRequest:request error:&error];
-            if (error) {
-                MTIPrint(@"%@: Failed to render image %@ - %@",self,_image,error);
+        if (!self.isHidden && self.alpha > 0) {
+            MTIContext *context = _context;
+            NSAssert(context != nil, @"Context is nil.");
+            if (!context) {
+                return;
+            }
+            MTIImage *imageToRender = _image;
+            if (imageToRender) {
+                MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
+                request.drawableProvider = view;
+                request.resizingMode = _resizingMode;
+                NSError *error;
+                [context renderImage:imageToRender toDrawableWithRequest:request error:&error];
+                if (error) {
+                    MTIPrint(@"%@: Failed to render image %@ - %@",self,imageToRender,error);
+                }
+            } else {
+                //Clear current drawable.
+                MTLRenderPassDescriptor *renderPassDescriptor = view.currentRenderPassDescriptor;
+                id<MTLDrawable> drawable = view.currentDrawable;
+                if (renderPassDescriptor && drawable) {
+                    id<MTLCommandBuffer> commandBuffer = [context.commandQueue commandBuffer];
+                    id<MTLRenderCommandEncoder> commandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+                    [commandEncoder endEncoding];
+                    [commandBuffer presentDrawable:drawable];
+                    [commandBuffer commit];
+                }
             }
         }
     }

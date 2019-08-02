@@ -11,11 +11,14 @@
 #import <MetalKit/MetalKit.h>
 #import <simd/simd.h>
 #import <CoreImage/CoreImage.h>
+#import <ModelIO/ModelIO.h>
 #import "MTIColor.h"
 #import "MTITextureDimensions.h"
 #import "MTIAlphaType.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
 
 @class MTIImage, MTIImageRenderingContext, MTIFunctionDescriptor, MTITextureDescriptor, MTIImagePromiseRenderTarget, MTIImagePromiseDebugInfo, MTICIImageRenderingOptions, MTIImageProperties;
 
@@ -60,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 
@@ -91,6 +94,15 @@ NS_AVAILABLE(10_12, 10_0)
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                    alphaType:(MTIAlphaType)alphaType;
+
+@end
+
+NS_AVAILABLE(10_12, 10_0)
+@interface MTIMDLTexturePromise: NSObject <MTIImagePromise>
+
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                         alphaType:(MTIAlphaType)alphaType;
 
 @end
 

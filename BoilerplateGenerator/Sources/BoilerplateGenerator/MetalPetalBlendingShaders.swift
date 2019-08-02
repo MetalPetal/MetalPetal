@@ -48,9 +48,6 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             //
 
             #include <metal_stdlib>
-
-            #if __HAVE_COLOR_ARGUMENTS__
-
             #include "MTIShaderLib.h"
 
             using namespace metal;
@@ -72,6 +69,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             
             """,
             content: """
+            #if __HAVE_COLOR_ARGUMENTS__
             fragment float4 multilayerComposite%BlendModeName%Blend(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 float4 currentColor [[color(0)]],
@@ -91,11 +89,36 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 textureColor.a *= parameters.opacity;
                 return %blendModeName%Blend(currentColor,textureColor);
             }
+            #else
+            fragment float4 multilayerComposite%BlendModeName%Blend(
+                                                                VertexOut vertexIn [[ stage_in ]],
+                                                                texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                                                texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                                                constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                                                texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                                                sampler colorSampler [[ sampler(0) ]],
+                                                                constant float2 & viewportSize [[buffer(1)]]
+                                                            ) {
+                constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
+                float2 location = vertexIn.position.xy / viewportSize;
+                float4 backgroundColor = backgroundTexture.sample(s, location);
+                float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+                if (parameters.contentHasPremultipliedAlpha) {
+                    textureColor = unpremultiply(textureColor);
+                }
+                if (parameters.hasCompositingMask) {
+                    float4 maskColor = maskTexture.sample(s, location);
+                    float maskValue = maskColor[parameters.compositingMaskComponent];
+                    textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
+                }
+                textureColor.a *= parameters.opacity;
+                return %blendModeName%Blend(backgroundColor,textureColor);
+            }
+            #endif
 
-
+            
             """,
             footer: """
-            #endif
             """)
         
         var arguments = [[String:String]]()

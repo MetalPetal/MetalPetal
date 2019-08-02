@@ -11,13 +11,13 @@ using namespace metal;
 
 namespace metalpetal {
     namespace clahe {
-        fragment float CLAHERGB2Lightness(VertexOut vertexIn [[ stage_in ]],
-                                texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+        fragment half CLAHERGB2Lightness(VertexOut vertexIn [[ stage_in ]],
+                                texture2d<half, access::sample> colorTexture [[ texture(0) ]],
                                 sampler colorSampler [[ sampler(0) ]],
                                 constant float2 & scale [[buffer(0)]]
                                 ) {
-            float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate * scale);
-            float3 hsl = rgb2hsl(textureColor.rgb);
+            half4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate * scale);
+            half3 hsl = rgb2hsl(textureColor.rgb);
             return hsl.b;
         }
 
@@ -43,40 +43,44 @@ namespace metalpetal {
             }
             
             const uint redistBatch = clipped / histSize;
-            const uint residual = clipped - redistBatch * histSize;
+            uint residual = clipped - redistBatch * histSize;
             
             for (uint i = 0; i < histSize; ++i) {
                 l[i] += redistBatch;
             }
             
-            for (uint i = 0; i < residual; ++i) {
-                l[i]++;
+            if (residual != 0) {
+                const uint residualStep = max(histSize / residual, (uint)1);
+                for (uint i = 0; i < histSize && residual > 0; i += residualStep, residual--) {
+                    l[i]++;
+                }
             }
             
             uint sum = 0;
+            const float lutScale = (histSize - 1) / float(parameters.totalPixelCountPerTile);
             for (uint index = 0; index < histSize; ++index) {
                 sum += l[index];
-                outTexture.write(round(sum * (histSize - 1) / float(parameters.totalPixelCountPerTile))/255.0, uint2(index, gid));
+                outTexture.write(round(sum * lutScale)/255.0, uint2(index, gid));
             }
         }
 
-        METAL_FUNC float CLAHELookup(texture2d<float, access::sample> lutTexture, sampler lutSamper, float index, float x) {
+        METAL_FUNC half CLAHELookup(texture2d<half, access::sample> lutTexture, sampler lutSamper, float index, float x) {
             //lutTexture is R8, no alpha.
             return lutTexture.sample(lutSamper, float2(x, (index + 0.5)/lutTexture.get_height())).r;
         }
-
-        fragment float4 CLAHEColorLookup (
+        
+        fragment half4 CLAHEColorLookup (
                                     VertexOut vertexIn [[stage_in]],
-                                    texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                    texture2d<float, access::sample> lutTexture [[texture(1)]],
+                                    texture2d<half, access::sample> sourceTexture [[texture(0)]],
+                                    texture2d<half, access::sample> lutTexture [[texture(1)]],
                                     sampler colorSampler [[sampler(0)]],
                                     sampler lutSamper [[sampler(1)]],
                                     constant float2 & tileGridSize [[ buffer(0) ]]
                                    )
         {
             float2 sourceCoord = vertexIn.textureCoordinate;
-            float4 color = sourceTexture.sample(colorSampler,sourceCoord);
-            float3 hslColor = rgb2hsl(color.rgb);
+            half4 color = sourceTexture.sample(colorSampler,sourceCoord);
+            half3 hslColor = rgb2hsl(color.rgb);
             
             float txf = sourceCoord.x * tileGridSize.x - 0.5;
             
@@ -103,17 +107,17 @@ namespace metalpetal {
             float srcVal = hslColor.b;
             float x = (srcVal * 255.0 + 0.5)/lutTexture.get_width();
             
-            float lutPlane1_ind1 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx1, x);
-            float lutPlane1_ind2 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx2, x);
-            float lutPlane2_ind1 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx1, x);
-            float lutPlane2_ind2 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx2, x);
+            half lutPlane1_ind1 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx1, x);
+            half lutPlane1_ind2 = CLAHELookup(lutTexture, lutSamper, ty1 * tileGridSize.x + tx2, x);
+            half lutPlane2_ind1 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx1, x);
+            half lutPlane2_ind2 = CLAHELookup(lutTexture, lutSamper, ty2 * tileGridSize.x + tx2, x);
             
-            float res = (lutPlane1_ind1 * xa1_p + lutPlane1_ind2 * xa_p) * ya1 + (lutPlane2_ind1 * xa1_p + lutPlane2_ind2 * xa_p) * ya;
+            half res = (lutPlane1_ind1 * xa1_p + lutPlane1_ind2 * xa_p) * ya1 + (lutPlane2_ind1 * xa1_p + lutPlane2_ind2 * xa_p) * ya;
             
-            float3 r = float3(hslColor.r, hslColor.g, res);
+            half3 r = half3(hslColor.r, hslColor.g, res);
             
-            float3 rgbResult = hsl2rgb(r);
-            return float4(rgbResult, color.a);
+            half3 rgbResult = hsl2rgb(r);
+            return half4(rgbResult, color.a);
         }
     }
 }

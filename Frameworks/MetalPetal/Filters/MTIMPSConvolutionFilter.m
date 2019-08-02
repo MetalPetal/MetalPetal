@@ -9,6 +9,7 @@
 #import "MTIMPSConvolutionFilter.h"
 #import "MTIMPSKernel.h"
 #import "MTIImage.h"
+#import "MTIHasher.h"
 
 @interface MTIMPSImageConvolutionSettings : NSObject <NSCopying>
 
@@ -43,13 +44,17 @@
     }
     if ([object isKindOfClass:[MTIMPSImageConvolutionSettings class]]) {
         MTIMPSImageConvolutionSettings *settings = object;
-        return [self.weights isEqualToData:settings.weights] && self.kernelWidth == settings.kernelWidth && self.kernelHeight == settings.kernelHeight;
+        return [_weights isEqualToData:settings -> _weights] && _kernelWidth == settings -> _kernelWidth && _kernelHeight == settings -> _kernelHeight;
     }
     return NO;
 }
 
 - (NSUInteger)hash {
-    return self.weights.hash ^ self.kernelWidth ^ self.kernelHeight;
+    MTIHasher hasher = MTIHasherMake(0);
+    MTIHasherCombine(&hasher, _weights.hash);
+    MTIHasherCombine(&hasher, _kernelWidth);
+    MTIHasherCombine(&hasher, _kernelHeight);
+    return MTIHasherFinalize(&hasher);
 }
 
 @end

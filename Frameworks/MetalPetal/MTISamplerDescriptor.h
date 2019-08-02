@@ -11,7 +11,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// An immutable wrapper for MTLSamplerDescriptor.
-
 @interface MTISamplerDescriptor : NSObject <NSCopying>
 
 - (instancetype)init NS_UNAVAILABLE;

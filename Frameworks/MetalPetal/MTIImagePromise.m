@@ -14,27 +14,13 @@
 #import "MTITextureDescriptor.h"
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
-#import "MTKTextureLoaderExtensions.h"
 #import "MTIContext+Internal.h"
 #import "MTICoreImageRendering.h"
 #import "MTIImageProperties.h"
 
-static NSDictionary<MTKTextureLoaderOption, id> * MTIProcessMTKTextureLoaderOptions(NSDictionary<MTKTextureLoaderOption, id> *options) {
-    #if TARGET_OS_IPHONE
-    if (MTIMTKTextureLoaderExtensions.automaticallyFlipsTextureOniOS9) {
-        NSMutableDictionary *opt = [NSMutableDictionary dictionaryWithDictionary:options];
-        if (opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] == nil) {
-            opt[MTIMTKTextureLoaderOptionOverrideImageOrientation_iOS9] = @(4);
-        }
-        return opt;
-    }
-    #endif
-    return options;
-}
-
 static NSString * const MTIMTKTextureLoaderCannotDecodeImageMessage = @"MetalPetal uses `MTKTextureLoader` to load `CGImage`s. However this image may not be able to load using MTKTextureLoader, see http://www.openradar.me/31722523. You can use `MTIImage(ciImage:isOpaque:)` to load the image using CoreImage. Or use a texture asset with `MTIImage(named:in:...)`";
 
-__unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
+BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     NSCParameterAssert(image);
     CGColorSpaceRef colorspace = CGImageGetColorSpace(image);
     CGColorSpaceModel model = CGColorSpaceGetModel(colorspace);
@@ -83,8 +69,8 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];
     if (!texture) {
         return nil;
     }
@@ -137,8 +123,8 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithCGImage:self.image options:self.options error:error];
     if (!texture) {
         return nil;
     }
@@ -183,7 +169,14 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    NSParameterAssert(renderingContext.context.device == self.texture.device);
+    if (renderingContext.context.device != self.texture.device) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorCrossDeviceRendering, nil);
+        }
+        return nil;
+    }
     return [renderingContext.context newRenderTargetWithTexture:self.texture];
 }
 
@@ -202,6 +195,8 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 
 @property (nonatomic, copy, readonly) CIImage *image;
 
+@property (nonatomic, readonly) CGRect bounds;
+
 @property (nonatomic, copy, readonly) MTITextureDescriptor *textureDescriptor;
 
 @property (nonatomic, readonly) BOOL isOpaque;
@@ -214,14 +209,13 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCIImage:(CIImage *)ciImage isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
+- (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options {
     if (self = [super init]) {
         _image = ciImage;
+        _bounds = bounds;
         _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
-        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO];
-        textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
-        _textureDescriptor = [textureDescriptor newMTITextureDescriptor];
+        _textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead];
         _options = [options copy];
     }
     return self;
@@ -252,7 +246,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     }
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSError *error;
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor error:&error];
     if (error) {
@@ -266,7 +260,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         renderDestination.flipped = self.options.isFlipped;
         renderDestination.colorSpace = self.options.colorSpace;
         renderDestination.alphaMode = self.options.alphaMode;
-        [renderingContext.context.coreImageContext startTaskToRender:self.image toDestination:renderDestination error:&error];
+        [renderingContext.context.coreImageContext startTaskToRender:self.image fromRect:self.bounds toDestination:renderDestination atPoint:CGPointZero error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -274,7 +268,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
             return nil;
         }
     } else {
-        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.image.extent colorSpace:self.options.colorSpace];
+        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.bounds colorSpace:self.options.colorSpace];
     }
     return renderTarget;
 }
@@ -320,7 +314,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     textureDescriptor.width = 1;
     textureDescriptor.height = 1;
@@ -339,7 +333,8 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         }
         return nil;
     }
-    uint8_t colors[4] = {round(_color.blue * 255), round(_color.green * 255), round(_color.red * 255), round(_color.alpha * 255)};
+    simd_float4 floatColor = simd_clamp(MTIColorToFloat4(_color), simd_make_float4(0,0,0,0), simd_make_float4(1,1,1,1)) * 255.0;
+    uint8_t colors[4] = {round(floatColor.b), round(floatColor.g), round(floatColor.r), round(floatColor.a)};
     [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
@@ -399,7 +394,7 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
     MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
     textureDescriptor.width = _dimensions.width;
     textureDescriptor.height = _dimensions.height;
@@ -408,26 +403,13 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     textureDescriptor.pixelFormat = _pixelFormat;
     //It's not safe to reuse a GPU texture here, 'cause we're going to fill its content using CPU.
     id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
-    if (!texture) {
-        if (error) {
-            *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
-        }
-        return nil;
-    }
     [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
-    /*
-    CFDataRef data = CFBridgingRetain(self.data);
-    id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithBytesNoCopy:(void *)CFDataGetBytePtr(data) length:CFDataGetLength(data) options:MTLResourceOptionCPUCacheModeDefault deallocator:^(void * _Nonnull pointer, NSUInteger length) {
-        CFRelease(data);
-    }];
-    id<MTLTexture> texture = [buffer newTextureWithDescriptor:textureDescriptor offset:0 bytesPerRow:_bytesPerRow];
     if (!texture) {
         if (error) {
             *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
         }
         return nil;
     }
-    */
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }
@@ -473,8 +455,8 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     return @[];
 }
 
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * _Nullable __autoreleasing *)error {
-    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithName:self.name scaleFactor:self.scaleFactor bundle:self.bundle options:MTIProcessMTKTextureLoaderOptions(self.options) error:error];
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithName:self.name scaleFactor:self.scaleFactor bundle:self.bundle options:self.options error:error];
     if (!texture) {
         return nil;
     }
@@ -500,6 +482,72 @@ __unused static BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     #define MTIStringFromSize NSStringFromSize
 #endif
     return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:[NSString stringWithFormat:@"Name: %@\nBundle: %@\nScale:%@\nSize:%@",self.name,self.bundle,@(self.scaleFactor),MTIStringFromSize(CGSizeMake(self.dimensions.width, self.dimensions.height))]];
+}
+
+@end
+
+@interface MTIMDLTexturePromise ()
+
+@property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption,id> *options;
+
+@property (nonatomic, strong, readonly) MDLTexture *texture;
+
+@end
+
+@implementation MTIMDLTexturePromise
+@synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
+
+- (instancetype)initWithMDLTexture:(MDLTexture *)texture
+                           options:(NSDictionary<MTKTextureLoaderOption,id> *)options
+                         alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _texture = texture;
+        _options = [options copy];
+        _dimensions = (MTITextureDimensions){
+            .width = texture.dimensions.x,
+            .height = texture.isCube ? texture.dimensions.y / 6 : texture.dimensions.y,
+            .depth = 1
+        };
+        _alphaType = alphaType;
+    }
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (instancetype)promiseByUpdatingDependencies:(nonnull NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(nonnull MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
+    id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithMDLTexture:_texture
+                                                             options:_options
+                                                               error:error];
+    if (!texture) {
+        return nil;
+    }
+    if (texture.width == self.dimensions.width && texture.height == self.dimensions.height && texture.depth == self.dimensions.depth) {
+        return [renderingContext.context newRenderTargetWithTexture:texture];
+    } else {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorTextureDimensionsMismatch, nil);
+        }
+        return nil;
+    }
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self
+                                                        type:MTIImagePromiseTypeSource
+                                                     content:[NSString stringWithFormat:@"Name: %@\nTexture:%@",self.texture.name,self.texture]];
 }
 
 @end
