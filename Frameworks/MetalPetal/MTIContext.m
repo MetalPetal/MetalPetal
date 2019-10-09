@@ -89,6 +89,15 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 }
 
 
+static BOOL MTIMPSSupportsMTLDevice(id<MTLDevice> device) {
+#if TARGET_OS_SIMULATOR
+    return NO;
+#else
+    return MPSSupportsMTLDevice(device);
+#endif
+}
+
+
 static void _MTIContextInstancesTracking(void (^action)(NSPointerArray *instances)) {
     static NSPointerArray * _MTIContextAllInstances;
     static id<MTILocking> _MTIContextAllInstancesAccessLock;
@@ -183,7 +192,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _commandQueue = [device newCommandQueue];
         _commandQueue.label = options.label;
         
-        _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
+        _isMetalPerformanceShadersSupported = MTIMPSSupportsMTLDevice(device);
         _isYCbCrPixelFormatSupported = options.enablesYCbCrPixelFormatSupport && MTIDeviceSupportsYCBCRPixelFormat(device);
         
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
@@ -235,7 +244,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-        _defaultMetalDeviceSupportsMPS = MPSSupportsMTLDevice(device);
+        _defaultMetalDeviceSupportsMPS = MTIMPSSupportsMTLDevice(device);
     });
     return _defaultMetalDeviceSupportsMPS;
 }
@@ -389,9 +398,18 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
         }
         
         if (@available(iOS 10.0, *)) {
+            NSString *functionName = descriptor.name;
+            #if TARGET_OS_SIMULATOR
+            for (NSString *name in library.functionNames) {
+                if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
+                    functionName = name;
+                    break;
+                }
+            }
+            #endif
             if (descriptor.constantValues) {
                 NSError *error = nil;
-                cachedFunction = [library newFunctionWithName:descriptor.name constantValues:descriptor.constantValues error:&error];
+                cachedFunction = [library newFunctionWithName:functionName constantValues:descriptor.constantValues error:&error];
                 if (error) {
                     if (inOutError) {
                         *inOutError = error;
@@ -399,7 +417,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
                     return nil;
                 }
             } else {
-                cachedFunction = [library newFunctionWithName:descriptor.name];
+                cachedFunction = [library newFunctionWithName:functionName];
             }
         } else {
             cachedFunction = [library newFunctionWithName:descriptor.name];

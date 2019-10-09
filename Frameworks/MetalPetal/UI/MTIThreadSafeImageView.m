@@ -15,21 +15,30 @@
 #import "MTIError.h"
 #import "MTIRenderTask.h"
 
-#if !__has_include(<QuartzCore/CAMetalLayer.h>)
+NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 
-/* CAMetalLayer stub for Xcode 10 simulators. */
 
-@class CAMetalLayer;
+@protocol MTICAMetalLayer
 
-@protocol CAMetalDrawable <MTLDrawable>
+@property(nullable, retain) id<MTLDevice> device;
 
-@property(readonly) id <MTLTexture> texture;
+@property MTLPixelFormat pixelFormat;
+
+@property CGSize drawableSize;
+
+@property(getter=isOpaque) BOOL opaque;
+
+@property CGFloat contentsScale;
+
+- (id<CAMetalDrawable>)nextDrawable;
 
 @end
 
-@interface CAMetalLayer : CALayer
 
-@property (nullable, retain, atomic) id <MTLDevice> device;
+// For simulator < iOS 13
+@interface MTIStubMetalLayer : CALayer <MTICAMetalLayer>
+
+@property (nullable, retain, atomic) id<MTLDevice> device;
 
 @property (atomic) MTLPixelFormat pixelFormat;
 
@@ -37,7 +46,7 @@
 
 @end
 
-@implementation CAMetalLayer
+@implementation MTIStubMetalLayer
 
 - (id<CAMetalDrawable>)nextDrawable {
     return nil;
@@ -45,14 +54,19 @@
 
 @end
 
-#endif
 
+@interface CAMetalLayer (MTICAMetalLayerProtocol) <MTICAMetalLayer>
 
-NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
+@end
+
+@implementation CAMetalLayer (MTICAMetalLayerProtocol)
+
+@end
+
 
 @interface MTIThreadSafeImageView ()
 
-@property (nonatomic, readonly, strong) CAMetalLayer *renderLayer;
+@property (nonatomic, readonly, strong) id<MTICAMetalLayer> renderLayer;
 
 @property (nonatomic) CGFloat screenScale;
 
@@ -73,7 +87,15 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 @synthesize resizingMode = _resizingMode;
 
 + (Class)layerClass {
+#if TARGET_OS_SIMULATOR
+    if (@available(iOS 13.0, *)) {
+        return CAMetalLayer.class;
+    } else {
+        return MTIStubMetalLayer.class;
+    }
+#else
     return CAMetalLayer.class;
+#endif
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -91,7 +113,7 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 }
 
 - (void)setupImageView {
-    _renderLayer = (CAMetalLayer *)self.layer;
+    _renderLayer = (id)self.layer;
     _resizingMode = MTIDrawableRenderingResizingModeAspect;
 
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
@@ -299,7 +321,7 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 - (void)updateContentScaleFactor {
     NSAssert([_lock tryLock] == NO, @"");
 
-    CAMetalLayer *renderLayer = _renderLayer;
+    __auto_type renderLayer = _renderLayer;
     if (_backgroundAccessingBounds.size.width > 0 && _backgroundAccessingBounds.size.height > 0 && _image && _image.size.width > 0 && _image.size.height > 0) {
         CGSize imageSize = _image.size;
         CGFloat widthScale = imageSize.width/_backgroundAccessingBounds.size.width;

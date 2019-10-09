@@ -233,7 +233,18 @@
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
-#if TARGET_OS_IPHONE
+#if TARGET_OS_SIMULATOR
+
+// SIMULATOR
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
+    NSError *error = MTIErrorCreate(MTIErrorFeatureNotAvailableOnSimulator, @{@"MTIFeatureNotAvailable": @"MTIMultilayerCompositeKernel"});
+    if (inOutError) {
+        *inOutError = error;
+    }
+    return nil;
+}
+
+#elif TARGET_OS_IPHONE
 
 // iOS
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {

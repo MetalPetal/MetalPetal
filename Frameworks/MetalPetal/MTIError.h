@@ -42,7 +42,10 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     
     //For operations do not support cross device or cross context rendering, we report these errors.
     MTIErrorCrossDeviceRendering = 5006,
-    MTIErrorCrossContextRendering = 5007
+    MTIErrorCrossContextRendering = 5007,
+    
+    //For features not available on iOS simulator.
+    MTIErrorFeatureNotAvailableOnSimulator = 6001
 };
 
 /// Create a NSError with MTIErrorDomain and the specified error code and user info. Creating a symbolic breakpoint for `_MTIErrorCreate` can help you locate the source of the error.
