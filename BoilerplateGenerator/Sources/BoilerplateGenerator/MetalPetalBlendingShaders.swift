@@ -52,6 +52,8 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
             using namespace metal;
             using namespace metalpetal;
+            
+            namespace metalpetal {
 
             vertex VertexOut multilayerCompositeVertexShader(
                                                     const device VertexIn * vertices [[ buffer(0) ]],
@@ -118,8 +120,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
             
             """,
-            footer: """
-            """)
+            footer: "}")
         
         var arguments = [[String:String]]()
         for mode in blendModes {
@@ -144,7 +145,8 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
             using namespace metal;
             using namespace metalpetal;
-
+            
+            namespace metalpetal {
             
             """,
             content: """
@@ -164,7 +166,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
 
             """,
-            footer: "")
+            footer: "}")
         
         var arguments = [[String:String]]()
         for mode in blendModes {

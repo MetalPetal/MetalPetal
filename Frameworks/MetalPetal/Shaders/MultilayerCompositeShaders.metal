@@ -8,6 +8,8 @@
 using namespace metal;
 using namespace metalpetal;
 
+namespace metalpetal {
+
 vertex VertexOut multilayerCompositeVertexShader(
                                         const device VertexIn * vertices [[ buffer(0) ]],
                                         constant float4x4 & transformMatrix [[ buffer(1) ]],
@@ -1243,3 +1245,4 @@ fragment float4 multilayerCompositeLuminosityBlend(
 }
 #endif
 
+}

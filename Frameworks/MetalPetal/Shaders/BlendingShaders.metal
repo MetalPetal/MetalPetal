@@ -8,6 +8,7 @@
 using namespace metal;
 using namespace metalpetal;
 
+namespace metalpetal {
 
 fragment float4 normalBlend(VertexOut vertexIn [[ stage_in ]],
                                     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
@@ -372,3 +373,4 @@ fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
     return mix(uCb,blendedColor,intensity);
 }
 
+}
