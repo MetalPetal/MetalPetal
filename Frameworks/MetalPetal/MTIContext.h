@@ -110,4 +110,11 @@ FOUNDATION_EXPORT NSURL * _Nullable MTIDefaultLibraryURLForBundle(NSBundle *bund
 
 @end
 
+@interface MTIContext (SimulatorSupport)
+
+/// Whether to render on iOS simulators. The default value is YES. If the value of this property is NO, the `MTIContext` initialization fails immediately with an error (MTIErrorFeatureNotAvailableOnSimulator) on Simulators. This property is relevant only during the initialization of an `MTIContext`.
+@property (nonatomic, class) BOOL enablesSimulatorSupport;
+
+@end
+
 NS_ASSUME_NONNULL_END

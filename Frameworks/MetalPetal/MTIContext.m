@@ -167,6 +167,17 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     if (self = [super init]) {
         NSParameterAssert(device);
         NSParameterAssert(options);
+        
+        #if TARGET_OS_SIMULATOR
+        if (!MTIContext.enablesSimulatorSupport) {
+            NSError *error = MTIErrorCreate(MTIErrorFeatureNotAvailableOnSimulator, @{@"MTIFeatureNotAvailable": @"MTIContext"});
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        #endif
+        
         if (!device) {
             if (inOutError) {
                 *inOutError = MTIErrorCreate(MTIErrorDeviceNotFound, nil);
@@ -568,6 +579,20 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
 
 - (void)handleMemoryWarning {
     [self reclaimResources];
+}
+
+@end
+
+@implementation MTIContext (SimulatorSupport)
+
+static BOOL _enablesSimulatorSupport = YES;
+
++ (void)setEnablesSimulatorSupport:(BOOL)enablesSimulatorSupport {
+    _enablesSimulatorSupport = enablesSimulatorSupport;
+}
+
++ (BOOL)enablesSimulatorSupport {
+    return _enablesSimulatorSupport;
 }
 
 @end
