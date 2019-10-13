@@ -5,7 +5,12 @@
 //
 
 #include <metal_stdlib>
+#include <TargetConditionals.h>
 #include "MTIShaderLib.h"
+
+#ifndef TARGET_OS_SIMULATOR
+    #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
+#endif
 
 using namespace metal;
 
@@ -150,7 +155,7 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(color,64,intensity,overlayTexture,overlaySampler);
     }
 
-    #if __HAVE_COLOR_ARGUMENTS__
+    #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
     
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                        VertexOut vertexIn [[ stage_in ]],
