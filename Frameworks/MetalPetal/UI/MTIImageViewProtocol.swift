@@ -7,7 +7,7 @@
 
 import Metal
 
-protocol MTIImageViewProtocol {
+public protocol MTIImageViewProtocol: class {
     
     var colorPixelFormat: MTLPixelFormat { get set }
     
