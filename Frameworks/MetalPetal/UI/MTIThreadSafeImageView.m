@@ -327,7 +327,7 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
         CGFloat widthScale = imageSize.width/_backgroundAccessingBounds.size.width;
         CGFloat heightScale = imageSize.height/_backgroundAccessingBounds.size.height;
         CGFloat nativeScale = _screenScale;
-        CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
+        CGFloat scale = MAX(MIN(MAX(widthScale,heightScale),nativeScale), 1.0);
         if (ABS(renderLayer.contentsScale - scale) > 0.00001) {
             renderLayer.contentsScale = scale;
             renderLayer.drawableSize = CGSizeMake(_backgroundAccessingBounds.size.width * scale, _backgroundAccessingBounds.size.height * scale);
