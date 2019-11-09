@@ -42,6 +42,7 @@
 #import <MetalPetal/MTIMultilayerCompositeKernel.h>
 #import <MetalPetal/MTIRenderPassOutputDescriptor.h>
 #import <MetalPetal/MTIVector.h>
+#import <MetalPetal/MTIGeometryUtilities.h>
 #import <MetalPetal/MTICVPixelBufferRendering.h>
 #import <MetalPetal/MTIImageOrientation.h>
 #import <MetalPetal/MTITextureLoader.h>
