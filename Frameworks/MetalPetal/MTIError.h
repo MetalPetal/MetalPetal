@@ -35,6 +35,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     
     //Render errors
     MTIErrorEmptyDrawable = 5001,
+    MTIErrorEmptyDrawableTexture = 5101,
     MTIErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,

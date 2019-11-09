@@ -380,6 +380,14 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         return nil;
     }
     
+    if (renderPassDescriptor.colorAttachments[0].texture == nil) {
+        NSAssert(NO, @"Rendering image to drawable: no texture found on color attachment 0. This could happen when the drawable size is less than 16x16 pixels on some devices.");
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorEmptyDrawableTexture, @{NSLocalizedFailureReasonErrorKey: @"Rendering image to drawable: no texture found on color attachment 0. This could happen when the drawable size is less than 16x16 pixels on some devices."});
+        }
+        return nil;
+    }
+    
     float heightScaling = 1.0;
     float widthScaling = 1.0;
     CGSize drawableSize = CGSizeMake(renderPassDescriptor.colorAttachments[0].texture.width, renderPassDescriptor.colorAttachments[0].texture.height);
