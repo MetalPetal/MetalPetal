@@ -14,7 +14,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTIComputePipeline.h"
-#import "MTITexturePool.h"
 #import "MTIKernel.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
@@ -40,6 +39,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
+        _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;
     }
     return self;
 }
@@ -54,6 +54,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.defaultLibraryURL = _defaultLibraryURL;
     options.textureLoaderClass = _textureLoaderClass;
     options.coreVideoMetalTextureBridgeClass = _coreVideoMetalTextureBridgeClass;
+    options.texturePoolClass = _texturePoolClass;
     return options;
 }
 
@@ -79,6 +80,16 @@ static Class _defaultCoreVideoMetalTextureBridgeClass = nil;
     } else {
         return _defaultCoreVideoMetalTextureBridgeClass ?: MTICVMetalTextureCache.class;
     }
+}
+
+static Class _defaultTexturePoolClass = nil;
+
++ (void)setDefaultTexturePoolClass:(Class<MTITexturePool>)defaultTexturePoolClass {
+    _defaultTexturePoolClass = defaultTexturePoolClass;
+}
+
++ (Class<MTITexturePool>)defaultTexturePoolClass {
+    return _defaultTexturePoolClass ?: MTIDeviceTexturePool.class;
 }
 
 @end
@@ -140,7 +151,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 @property (nonatomic, strong, readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
-@property (nonatomic, strong, readonly) MTITexturePool *texturePool;
+@property (nonatomic, strong, readonly) id<MTITexturePool> texturePool;
 
 @property (nonatomic, strong, readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
 
@@ -209,7 +220,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
         
-        _texturePool = [[MTITexturePool alloc] initWithDevice:device];
+        _texturePool = [options.texturePoolClass newTexturePoolWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];
         _functionCache = [NSMutableDictionary dictionary];
         _renderPipelineCache = [NSMutableDictionary dictionary];

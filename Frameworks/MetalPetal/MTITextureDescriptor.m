@@ -97,6 +97,26 @@
     return _metalTextureDescriptor.depth;
 }
 
+- (MTLResourceOptions)resourceOptions {
+    return _metalTextureDescriptor.resourceOptions;
+}
+
+- (MTLHazardTrackingMode)hazardTrackingMode {
+    return _metalTextureDescriptor.hazardTrackingMode;
+}
+
+- (MTLSizeAndAlign)heapTextureSizeAndAlignWithDevice:(id<MTLDevice>)device {
+    return [device heapTextureSizeAndAlignWithDescriptor:_metalTextureDescriptor];
+}
+
+- (id<MTLTexture>)newTextureWithDevice:(id<MTLDevice>)device {
+    return [device newTextureWithDescriptor:_metalTextureDescriptor];
+}
+
+- (id<MTLTexture>)newTextureWithHeap:(id<MTLHeap>)heap {
+    return [heap newTextureWithDescriptor:_metalTextureDescriptor];
+}
+
 @end
 
 @implementation MTLTextureDescriptor (MTITextureDescriptor)

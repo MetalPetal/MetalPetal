@@ -58,6 +58,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly, nonatomic) NSUInteger depth;
 
+@property (readonly, nonatomic) MTLResourceOptions resourceOptions;
+
+@property (readonly, nonatomic) MTLHazardTrackingMode hazardTrackingMode API_AVAILABLE(macos(10.15), ios(13.0));
+
+- (MTLSizeAndAlign)heapTextureSizeAndAlignWithDevice:(id<MTLDevice>)device NS_AVAILABLE(10_13, 10_0);
+
+- (nullable id<MTLTexture>)newTextureWithDevice:(id<MTLDevice>)device NS_SWIFT_NAME(makeTexture(device:));
+
+- (nullable id<MTLTexture>)newTextureWithHeap:(id<MTLHeap>)heap NS_SWIFT_NAME(makeTexture(heap:)) NS_AVAILABLE(10_13, 10_0);
+
 @end
 
 @interface MTLTextureDescriptor (MTITextureDescriptor)

@@ -68,13 +68,7 @@
 @end
 
 
-@interface MTITexturePool ()
-
-@property (nonatomic, strong) id<NSLocking> lock;
-
-@property (nonatomic, strong) id<MTLDevice> device;
-
-@property (nonatomic, strong) NSMutableDictionary<MTITextureDescriptor *, MTIStack<id<MTLTexture>> *> *textureCache;
+@protocol MTITexturePoolInternal <MTITexturePool>
 
 - (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor;
 
@@ -87,11 +81,13 @@
 
 @property (nonatomic, copy) MTITextureDescriptor *textureDescriptor;
 
-@property (nonatomic, weak) MTITexturePool *pool;
+@property (nonatomic, weak) id<MTITexturePoolInternal> pool;
 
 @property (nonatomic) NSInteger textureReferenceCount;
 
 @property (nonatomic) BOOL valid;
+
+@property (nonatomic, strong) id heap;
 
 @end
 
@@ -99,7 +95,7 @@
 
 @synthesize texture = _texture;
 
-- (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(MTITexturePool *)pool {
+- (instancetype)initWithTexture:(id<MTLTexture>)texture descriptor:(MTITextureDescriptor *)descriptor pool:(id<MTITexturePoolInternal>)pool {
     if (self = [super init]) {
         _lock = MTILockCreate();
         _textureReferenceCount = 1;
@@ -107,6 +103,9 @@
         _texture = texture;
         _textureDescriptor = [descriptor copy];
         _valid = YES;
+        if (@available(iOS 10.0, *)) {
+            _heap = texture.heap;
+        }
     }
     return self;
 }
@@ -157,6 +156,7 @@
     
     if (textureToReturn) {
         [_pool returnTexture:textureToReturn textureDescriptor:_textureDescriptor];
+        _heap = nil;
     }
 }
 
@@ -169,7 +169,17 @@
 @end
 
 
-@implementation MTITexturePool
+@interface MTIDeviceTexturePool () <MTITexturePoolInternal>
+
+@property (nonatomic, strong) id<NSLocking> lock;
+
+@property (nonatomic, strong) id<MTLDevice> device;
+
+@property (nonatomic, strong) NSMutableDictionary<MTITextureDescriptor *, MTIStack<id<MTLTexture>> *> *textureCache;
+
+@end
+
+@implementation MTIDeviceTexturePool
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device {
     if (self = [super init]) {
@@ -194,7 +204,7 @@
     [_lock unlock];
     
     if (!texture) {
-        texture = [_device newTextureWithDescriptor:[textureDescriptor newMTLTextureDescriptor]];
+        texture = [textureDescriptor newTextureWithDevice:_device];
         if (!texture) {
             if (error) {
                 *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
@@ -248,6 +258,182 @@
     }];
     [_lock unlock];
     return count;
+}
+
++ (instancetype)newTexturePoolWithDevice:(id<MTLDevice>)device {
+    return [[self alloc] initWithDevice:device];
+}
+
+@end
+
+
+#import "MTIHasher.h"
+
+NS_AVAILABLE(10_15, 13_0)
+@interface MTIHeapTextureReuseKey : NSObject <NSCopying>
+
+@property (nonatomic, readonly) NSUInteger size;
+@property (nonatomic, readonly) MTLResourceOptions resourceOptions;
+
+@end
+
+@implementation MTIHeapTextureReuseKey
+
+- (instancetype)initWithSize:(NSUInteger)size resourceOptions:(MTLResourceOptions)resourceOptions {
+    if (self = [super init]) {
+        _size = size;
+        _resourceOptions = resourceOptions;
+    }
+    return self;
+}
+
+- (NSUInteger)hash {
+    MTIHasher hasher = MTIHasherMake(0);
+    MTIHasherCombine(&hasher, _size);
+    MTIHasherCombine(&hasher, _resourceOptions);
+    return MTIHasherFinalize(&hasher);
+}
+
+- (BOOL)isEqual:(id)object {
+    if (self == object) {
+        return YES;
+    }
+    if ([object isKindOfClass:[MTIHeapTextureReuseKey class]]) {
+        return _size == ((MTIHeapTextureReuseKey *)object).size && _resourceOptions == ((MTIHeapTextureReuseKey *)object).resourceOptions;
+    }
+    return NO;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+@end
+
+@interface MTIHeapTexturePool () <MTITexturePoolInternal>
+
+@property (nonatomic, strong) id<NSLocking> lock;
+
+@property (nonatomic, strong) id<MTLDevice> device;
+
+@property (nonatomic, strong) NSMutableDictionary<MTIHeapTextureReuseKey *, MTIStack<id<MTLHeap>> *> *heaps;
+
+@end
+
+@implementation MTIHeapTexturePool
+
+- (instancetype)initWithDevice:(id<MTLDevice>)device {
+    if (self = [super init]) {
+        NSAssert([MTIHeapTexturePool isSupportedOnDevice:device], @"MTIHeapTexturePool is not supported on device: %@. See +[MTIHeapTexturePool isSupportedOnDevice:] for detail.", device);
+        _lock = MTILockCreate();
+        _device = device;
+        _heaps = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
+    [_lock lock];
+    
+    NSUInteger size = [textureDescriptor heapTextureSizeAndAlignWithDevice:_device].size;
+    MTIHeapTextureReuseKey *key = [[MTIHeapTextureReuseKey alloc] initWithSize:size resourceOptions:textureDescriptor.resourceOptions];
+    __auto_type avaliableHeaps = _heaps[key];
+    
+    id<MTLHeap> heap = nil;
+    
+    if (avaliableHeaps.count > 0) {
+        heap = [avaliableHeaps popObject];
+    }
+    
+    [_lock unlock];
+    
+    if (!heap) {
+        MTLHeapDescriptor *heapDescriptor = [[MTLHeapDescriptor alloc] init];
+        heapDescriptor.size = key.size;
+        heapDescriptor.resourceOptions = key.resourceOptions;
+        if (textureDescriptor.hazardTrackingMode == MTLHazardTrackingModeDefault) {
+            heapDescriptor.hazardTrackingMode = MTLHazardTrackingModeTracked;
+        }
+        heap = [_device newHeapWithDescriptor:heapDescriptor];
+        if (!heap) {
+            if (error) {
+                *error = MTIErrorCreate(MTIErrorFailedToCreateHeap, nil);
+            }
+            return nil;
+        }
+        MTIPrint(@"%@: new texture - %@x%@x%@/%@", self, @(textureDescriptor.width), @(textureDescriptor.height), @(textureDescriptor.depth),@(textureDescriptor.pixelFormat));
+    }
+    
+    id<MTLTexture> texture = [textureDescriptor newTextureWithHeap:heap];
+    if (!texture) {
+        if (error) {
+            *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        }
+        return nil;
+    }
+    
+    MTIReusableTexture *reusableTexture = [[MTIReusableTexture alloc] initWithTexture:texture descriptor:textureDescriptor pool:self];
+    return reusableTexture;
+}
+
+- (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor {
+    [_lock lock];
+    
+    NSParameterAssert(texture.heap != nil);
+    
+    NSUInteger size = [textureDescriptor heapTextureSizeAndAlignWithDevice:_device].size;
+    MTIHeapTextureReuseKey *key = [[MTIHeapTextureReuseKey alloc] initWithSize:size resourceOptions:textureDescriptor.resourceOptions];
+    __auto_type avaliableHeaps = _heaps[key];
+    if (!avaliableHeaps) {
+        avaliableHeaps = [[MTIStack alloc] init];
+        _heaps[key] = avaliableHeaps;
+    }
+    [texture makeAliasable];
+    [avaliableHeaps pushObject:texture.heap];
+    
+    [_lock unlock];
+}
+
+- (void)flush {
+    [_lock lock];
+    [_heaps removeAllObjects];
+    [_lock unlock];
+    MTIPrint(@"%@: flush", self);
+}
+
+- (NSUInteger)idleResourceSize {
+    [_lock lock];
+    NSUInteger __block size = 0;
+    [_heaps enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, MTIStack<id<MTLHeap>> * _Nonnull obj, BOOL * _Nonnull stop) {
+        for (id<MTLHeap> heap in obj) {
+            size += heap.currentAllocatedSize;
+        }
+    }];
+    [_lock unlock];
+    return size;
+}
+
+- (NSUInteger)idleResourceCount {
+    [_lock lock];
+    NSUInteger __block count = 0;
+    [_heaps enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, MTIStack<id<MTLHeap>> * _Nonnull obj, BOOL * _Nonnull stop) {
+        count += obj.count;
+    }];
+    [_lock unlock];
+    return count;
+}
+
++ (instancetype)newTexturePoolWithDevice:(id<MTLDevice>)device {
+    return [[self alloc] initWithDevice:device];
+}
+
++ (BOOL)isSupportedOnDevice:(id<MTLDevice>)device {
+    // https://forums.developer.apple.com/thread/113223
+    // This is unfortunately a hardware limitation on pre-A12 devices. Texture resolutions must be padded out to powers of two internally. Non-heap allocations can use virtual memory tricks to minimize this cost but heaps cannot.
+    if ([device supportsFamily:MTLGPUFamilyApple5] || [device supportsFamily:MTLGPUFamilyMac1] || [device supportsFamily:MTLGPUFamilyMacCatalyst1]) {
+        return YES;
+    }
+    return NO;
 }
 
 @end

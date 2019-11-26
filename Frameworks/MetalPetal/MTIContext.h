@@ -15,6 +15,7 @@
 #import "MTIMemoryWarningObserver.h"
 #import "MTICVMetalTextureBridging.h"
 #import "MTITextureLoader.h"
+#import "MTITexturePool.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -51,11 +52,17 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 /// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture).
 @property (nonatomic) Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass;
 
+/// The texture pool class to use.
+@property (nonatomic) Class<MTITexturePool> texturePoolClass;
+
 /// The default value for this property is MTKTextureLoader.class
 @property (nonatomic, class) Class<MTITextureLoader> defaultTextureLoaderClass;
 
 /// On iOS 11/macOS 10.11 or later, the default value is MTICVMetalIOSurfaceBridge.class. Before iOS 11/macOS 10.11, the defualt value is MTICVMetalTextureCache.class.
 @property (nonatomic, class) Class<MTICVMetalTextureBridging> defaultCoreVideoMetalTextureBridgeClass;
+
+/// The default value for this property is MTIDeviceTexturePool.class
+@property (nonatomic, class) Class<MTITexturePool> defaultTexturePoolClass;
 
 @end
 

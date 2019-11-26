@@ -27,14 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
 /// A texture pool which allocates and reuses metal textures.
-@interface MTITexturePool : NSObject
+@protocol MTITexturePool <NSObject>
 
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)new NS_UNAVAILABLE;
-
-- (instancetype)initWithDevice:(id<MTLDevice>)device NS_DESIGNATED_INITIALIZER;
++ (instancetype)newTexturePoolWithDevice:(id <MTLDevice>)device;
 
 - (nullable MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError **)error NS_SWIFT_NAME(makeTexture(descriptor:));
 
@@ -46,6 +43,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// The count of idle resources.
 @property (nonatomic, readonly) NSUInteger idleResourceCount;
+
+@end
+
+
+/// Deivce allocated texture pool.
+@interface MTIDeviceTexturePool: NSObject <MTITexturePool>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithDevice:(id<MTLDevice>)device NS_DESIGNATED_INITIALIZER;
+
+@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
+
+@end
+
+
+/// Heap texture pool. **May** have smaller memory footprint than `MTIDeviceTexturePool` depending on your use case. `MTIHeapTexturePool` uses `MTLHeap`s for texture allocations. Heaps are reused based on heap's size and resource options. For example, the heap for a 512x512 bgra8Unorm texture may then be reused to create a 256x256 rgba32Float texture.
+NS_AVAILABLE(10_15, 13_0)
+@interface MTIHeapTexturePool: NSObject <MTITexturePool>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithDevice:(id<MTLDevice>)device NS_DESIGNATED_INITIALIZER;
+
+/// MTIHeapTexturePool supports MTLGPUFamilyApple5 (See https://forums.developer.apple.com/thread/113223), MTLGPUFamilyMac1 and MTLGPUFamilyMacCatalyst1 devices.
++ (BOOL)isSupportedOnDevice:(id<MTLDevice>)device;
 
 @end
 
