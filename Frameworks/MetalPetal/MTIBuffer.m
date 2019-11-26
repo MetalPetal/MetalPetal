@@ -6,7 +6,6 @@
 //
 
 #import "MTIBuffer.h"
-#import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTILock.h"
 #import "MTIDefer.h"
 #import <mach/mach.h>
