@@ -31,6 +31,10 @@ NSString * const MTIColorMatrixFilterColorMatrixParameterKey = @"colorMatrix";
     return @{MTIColorMatrixFilterColorMatrixParameterKey: [NSData dataWithBytes:&_colorMatrix length:sizeof(MTIColorMatrix)]};
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end
 
 @implementation MTIExposureFilter

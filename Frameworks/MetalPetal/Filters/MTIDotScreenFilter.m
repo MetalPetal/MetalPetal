@@ -31,4 +31,8 @@
              @"grayColorTransform": [MTIVector vectorWithFloat3:self.grayColorTransform]};
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end

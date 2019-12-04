@@ -21,4 +21,8 @@
              @"scale": @(_scale)};
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.passthroughAlphaTypeHandlingRule;
+}
+
 @end

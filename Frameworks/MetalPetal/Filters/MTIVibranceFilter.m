@@ -38,4 +38,8 @@
              };
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end

@@ -33,4 +33,8 @@
              @"singleAngleMode": @(allAnglesAreEqual)};
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end

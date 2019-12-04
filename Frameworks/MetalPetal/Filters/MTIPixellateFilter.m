@@ -26,4 +26,8 @@
     return @{@"scale": [MTIVector vectorWithCGSize:self.scale]};
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.passthroughAlphaTypeHandlingRule;
+}
+
 @end
