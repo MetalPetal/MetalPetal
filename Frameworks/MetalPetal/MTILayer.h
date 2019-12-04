@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
-typedef NS_ENUM(NSInteger, MTILayerLayoutUnit) {
+typedef NS_CLOSED_ENUM(NSInteger, MTILayerLayoutUnit) {
     MTILayerLayoutUnitPixel,
     MTILayerLayoutUnitFractionOfBackgroundSize
 } NS_SWIFT_NAME(MTILayer.LayoutUnit);
