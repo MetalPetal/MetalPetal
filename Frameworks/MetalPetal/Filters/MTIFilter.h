@@ -23,7 +23,7 @@ FOUNDATION_EXPORT NSString * const MTIFilterColorMatrixFragmentFunctionName;
 
 @class MTIImage;
 
-@protocol MTIFilter <NSObject>
+@protocol MTIFilter
 
 @property (nonatomic) MTLPixelFormat outputPixelFormat; //Default: MTIPixelFormatUnspecified aka MTLPixelFormatInvalid
 
