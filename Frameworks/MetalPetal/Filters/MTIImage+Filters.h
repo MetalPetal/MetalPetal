@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation NS_SWIFT_NAME(oriented(_:));
 
+- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation outputPixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(oriented(_:outputPixelFormat:));
+
 @end
 
 NS_ASSUME_NONNULL_END
