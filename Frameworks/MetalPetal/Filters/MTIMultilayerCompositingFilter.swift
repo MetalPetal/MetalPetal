@@ -126,6 +126,14 @@ public class MultilayerCompositingFilter: MTIFilter {
     }
 }
 
+extension MultilayerCompositingFilter {
+    public static func makeLayer(content: MTIImage, configurator: (_ layer: inout Layer) -> Void) -> Layer {
+        var layer = Layer(content: content)
+        configurator(&layer)
+        return layer
+    }
+}
+
 extension MultilayerCompositingFilter.Layer {
     fileprivate func bridgeToObjectiveC() -> MTILayer {
         return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, blendMode: self.blendMode)
