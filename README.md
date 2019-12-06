@@ -28,6 +28,7 @@ An image processing framework based on Metal.
     - [Create a `MTIImage`](#create-a-mtiimage)
     - [Create a Filtered Image](#create-a-filtered-image)
     - [Render a `MTIImage`](#render-a-mtiimage)
+    - [Connecting Filters (Swift)](#connecting-filters-swift)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
@@ -313,6 +314,34 @@ do {
     print(error)
 }
 ```
+
+### Connecting Filters (Swift)
+
+MetalPetal has a type-safe Swift API for connecting filters. You can use `=>` operator in `FilterGraph.makeImage` function to connect filters and get the output image.
+
+Here are some examples:
+
+```Swift
+let image = try? FilterGraph.makeImage { output in
+    inputImage => saturationFilter => exposureFilter => output
+}
+```
+
+```Swift
+let image = try? FilterGraph.makeImage { output in
+    inputImage => saturationFilter => exposureFilter => contrastFilter => blendFilter.inputPorts.inputImage
+    exposureFilter => blendFilter.inputPorts.inputBackgroundImage
+    blendFilter => output
+}
+```
+
+- You can connect unary filters (`MTIUnaryFilter`) directly using `=>`.
+
+- For a filter with multiple inputs, you need to connect to one of its `inputPorts`.
+
+- `=>` operator only works in `FilterGraph.makeImage` method.
+
+- One and only one filter's output can be connected to `output`.
 
 ## Quick Look Debug Support
 
