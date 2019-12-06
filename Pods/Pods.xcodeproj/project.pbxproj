@@ -64,7 +64,7 @@
 		3C2FD2815CDFC4803A27D341A4D03810 /* MTIImagePromiseDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F646E813C5FE69EEE9338BB492FD912 /* MTIImagePromiseDebug.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3D2B6DB82C2624B94F07D0FAE0CEEAF7 /* MTIVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = BF175BF312F117954C66728D2DE2FF5C /* MTIVertex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3F6B21D4608DE073FB822243BD47B77E /* MTIComputePipelineKernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8EBB522CAE2D61E30E5A6E3D2F1A050 /* MTIComputePipelineKernel.swift */; };
-		3F8E1631882C310099E7074CE40A42A7 /* MTIFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C51C72CAC109F1B35A06F20C8928C04 /* MTIFilter.swift */; };
+		3F8E1631882C310099E7074CE40A42A7 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C51C72CAC109F1B35A06F20C8928C04 /* Filter.swift */; };
 		41889B96DE3F82E4D54C6CB427DBC2DE /* MTIRenderPassOutputDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A4A2F3CA174F49D5B0A1946FF3B52E2E /* MTIRenderPassOutputDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		43AAEADC5EA3035F21A68C9DF16103C2 /* MTICVMetalIOSurfaceBridge.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A41D762436BA26C115B765BE870593C /* MTICVMetalIOSurfaceBridge.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		455A132EAD3557F68A26BC61570DFDA8 /* MTITextureDimensions.h in Headers */ = {isa = PBXBuildFile; fileRef = A662303BB02C98F60A98364C3FE44223 /* MTITextureDimensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -247,7 +247,7 @@
 		187EEA1E228CF98D320104CFEF56EEED /* MTISamplerDescriptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTISamplerDescriptor.m; sourceTree = "<group>"; };
 		1928BA331F427B1ABC8D900F4E83614A /* MTIBlendWithMaskFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIBlendWithMaskFilter.m; sourceTree = "<group>"; };
 		1B083054107C7DB9F88BCE5F6C7B2CB4 /* MTICVMetalIOSurfaceBridge.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTICVMetalIOSurfaceBridge.m; sourceTree = "<group>"; };
-		1C51C72CAC109F1B35A06F20C8928C04 /* MTIFilter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MTIFilter.swift; sourceTree = "<group>"; };
+		1C51C72CAC109F1B35A06F20C8928C04 /* Filter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Filter.swift; sourceTree = "<group>"; };
 		1EA957EA88E9E72E24DEB31DCEBB6DFF /* MetalPetal.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MetalPetal.modulemap; sourceTree = "<group>"; };
 		1F38A5141FF45F6DFB2B3925DB311442 /* Pods-MetalPetalDemo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MetalPetalDemo-umbrella.h"; sourceTree = "<group>"; };
 		1FF8E78B0E436FFF5C6755011D7AAF46 /* Pods-MetalPetalDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MetalPetalDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
@@ -820,7 +820,7 @@
 		E3D71A61E057C501A18C4F39247C7E44 /* Filters */ = {
 			isa = PBXGroup;
 			children = (
-				1C51C72CAC109F1B35A06F20C8928C04 /* MTIFilter.swift */,
+				1C51C72CAC109F1B35A06F20C8928C04 /* Filter.swift */,
 				06F039522397A7AF004B656D /* MTIMultilayerCompositingFilter.swift */,
 			);
 			path = Filters;
@@ -1091,7 +1091,7 @@
 				CAE423F78BBE972131EFC399A9B156E2 /* MTIDrawableRendering.m in Sources */,
 				BB32245D41703F6AADD4E5A75AD00199 /* MTIError.m in Sources */,
 				20DB4D9E6EFE7A96B2BA884011035193 /* MTIFilter.m in Sources */,
-				3F8E1631882C310099E7074CE40A42A7 /* MTIFilter.swift in Sources */,
+				3F8E1631882C310099E7074CE40A42A7 /* Filter.swift in Sources */,
 				564C82687DCF2141FFD48829868EE528 /* MTIFunctionDescriptor.m in Sources */,
 				C1C4C07048452E0BEC9C6D82AA607422 /* MTIGeometry.m in Sources */,
 				60C78A346231164CDD66AE4F6136F769 /* MTIGeometryUtilities.m in Sources */,
