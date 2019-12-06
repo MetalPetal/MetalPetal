@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		01166BC4CBAC422BFC14C541A8192414 /* MTIRenderCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = C93EB136893CB5A27435BDD331E62BD7 /* MTIRenderCommand.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		03D4853BB55C898FD45264AB33ED8B60 /* LensBlur.metal in Sources */ = {isa = PBXBuildFile; fileRef = 622B353C76098F2E689327C9E20F8822 /* LensBlur.metal */; };
-		06F039532397A7AF004B656D /* MTIMultilayerCompositingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F039522397A7AF004B656D /* MTIMultilayerCompositingFilter.swift */; };
+		06F039532397A7AF004B656D /* MultilayerCompositingFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F039522397A7AF004B656D /* MultilayerCompositingFilter.swift */; };
 		06F039552397A7D4004B656D /* MTIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F039542397A7D4004B656D /* MTIImage.swift */; };
 		070532F36AB52F11EDA3FEAA4BEDEEE3 /* MTIRenderPipeline.m in Sources */ = {isa = PBXBuildFile; fileRef = 7400A06AAAEE8EA4CA0A03AB3FA4D438 /* MTIRenderPipeline.m */; };
 		074BEF3AE2A1DF3739C33C7900F038C9 /* MTIPrint.m in Sources */ = {isa = PBXBuildFile; fileRef = F6817BE61081E3158738BDFD8B2340C6 /* MTIPrint.m */; };
@@ -226,7 +226,7 @@
 /* Begin PBXFileReference section */
 		00D67B17EA01154AE2A6976253B66062 /* MTIChromaKeyBlendFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIChromaKeyBlendFilter.h; sourceTree = "<group>"; };
 		033D3F4A466A7EF6D9194E517D5613E1 /* MTIHasher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIHasher.h; sourceTree = "<group>"; };
-		06F039522397A7AF004B656D /* MTIMultilayerCompositingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTIMultilayerCompositingFilter.swift; sourceTree = "<group>"; };
+		06F039522397A7AF004B656D /* MultilayerCompositingFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilayerCompositingFilter.swift; sourceTree = "<group>"; };
 		06F039542397A7D4004B656D /* MTIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTIImage.swift; sourceTree = "<group>"; };
 		08360025844A5136D68FB8679FF6AEA3 /* MTIMultilayerCompositeKernel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MTIMultilayerCompositeKernel.h; sourceTree = "<group>"; };
 		0A0CE13784BD83E2612921CB718E91AC /* MTIMPSGaussianBlurFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MTIMPSGaussianBlurFilter.m; sourceTree = "<group>"; };
@@ -821,7 +821,7 @@
 			isa = PBXGroup;
 			children = (
 				1C51C72CAC109F1B35A06F20C8928C04 /* Filter.swift */,
-				06F039522397A7AF004B656D /* MTIMultilayerCompositingFilter.swift */,
+				06F039522397A7AF004B656D /* MultilayerCompositingFilter.swift */,
 			);
 			path = Filters;
 			sourceTree = "<group>";
@@ -1141,7 +1141,7 @@
 				8EA95F72D39645BCA12EE400D008ECDB /* MTITextureDescriptor.m in Sources */,
 				9BD70B095F937689AFED674964474EF7 /* MTITextureDimensions.m in Sources */,
 				0C90791E1F30DE69C369D279857710A0 /* MTITextureDimensions.swift in Sources */,
-				06F039532397A7AF004B656D /* MTIMultilayerCompositingFilter.swift in Sources */,
+				06F039532397A7AF004B656D /* MultilayerCompositingFilter.swift in Sources */,
 				73AB427486F02FC7760C9CA30E006F2C /* MTITextureLoader.m in Sources */,
 				4AA01957ED5270B4F3D3616E81DA1299 /* MTITextureLoaderForiOS9.m in Sources */,
 				FAE6504807A0D6090F7DA7E72DB3EE99 /* MTITexturePool.mm in Sources */,
