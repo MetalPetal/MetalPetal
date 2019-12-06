@@ -131,9 +131,15 @@ public class FilterGraph {
     }
     
     public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) throws -> MTIImage? {
+        return try makeImage(input: ()) { _, output in
+            builder(output)
+        }
+    }
+    
+    public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) throws -> MTIImage?  {
         let outputReceiver = ImageReceiver()
         PortConnectionsBuildingContext.push()
-        builder(Port(outputReceiver, \.image))
+        builder(input, Port(outputReceiver, \.image))
         let connections = PortConnectionsBuildingContext.pop()
         
         let rootConnections = connections.filter({ $0.toObject === outputReceiver })
@@ -235,3 +241,13 @@ public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MT
     return rhs
 }
 
+import Combine
+
+extension FilterGraph {
+    @available(iOS 13.0, *)
+    public static func makePublisher<T>(upstream: T, builder: @escaping (T.Output, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> AnyPublisher<MTIImage?,Never> where T: Publisher, T.Failure == Never {
+        return upstream.map { value -> MTIImage? in
+            return try? makeImage(input: value, builder: builder)
+        }.eraseToAnyPublisher()
+    }
+}

@@ -218,10 +218,27 @@
                                 <rect key="frame" x="0.0" y="44" width="320" height="524"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o7a-Xe-W7f">
+                                <rect key="frame" x="16" y="52" width="265" height="34"/>
+                                <color key="backgroundColor" systemColor="secondarySystemBackgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
+                                <state key="normal" title="Live Feed using Combine.framework"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="8"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="driveWithCameraFeedButtonTapped:" destination="0tR-jO-hSE" eventType="touchUpInside" id="cFz-mH-qRG"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="o7a-Xe-W7f" firstAttribute="top" secondItem="rdK-qw-ltf" secondAttribute="bottom" constant="8" id="3JR-n0-HPd"/>
                             <constraint firstAttribute="trailing" secondItem="0JF-JJ-Ney" secondAttribute="trailing" id="DbM-Rj-KcJ"/>
+                            <constraint firstItem="o7a-Xe-W7f" firstAttribute="leading" secondItem="uTb-09-zVd" secondAttribute="leading" constant="16" id="Xkx-JD-YrD"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="o7a-Xe-W7f" secondAttribute="trailing" constant="8" id="bPz-7D-jzn"/>
                             <constraint firstItem="h9Y-qM-Bge" firstAttribute="top" secondItem="0JF-JJ-Ney" secondAttribute="bottom" id="lWb-g3-h9Q"/>
                             <constraint firstItem="0JF-JJ-Ney" firstAttribute="top" secondItem="rdK-qw-ltf" secondAttribute="bottom" id="oqi-QQ-z16"/>
                             <constraint firstItem="0JF-JJ-Ney" firstAttribute="leading" secondItem="uTb-09-zVd" secondAttribute="leading" id="p0h-OH-kji"/>

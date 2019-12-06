@@ -27,6 +27,8 @@ import AVFoundation
         self.captureSession.commitConfiguration()
     }
     
+    private var sampleBufferReceiver: Any?
+    
     func enableVideoDataOutputWithSampleBufferDelegate(_ delegate: AVCaptureVideoDataOutputSampleBufferDelegate, queue: DispatchQueue) {
         self.captureSession.beginConfiguration()
         if let videoDataOuput = self.videoDataOuput {
@@ -100,5 +102,29 @@ import AVFoundation
                 break
             }
         }
+    }
+}
+
+import Combine
+import MetalPetal
+
+@available(iOS 13.0, *)
+extension Camera {
+    
+    private class SampleBufferReceiver:NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+        @Published var image: MTIImage?
+        func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+            if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                self.image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+            }
+        }
+    }
+    
+    func subscribeVideoDataOutput(queue: DispatchQueue) -> AnyPublisher<MTIImage?, Never> {
+        assert(self.sampleBufferReceiver == nil)
+        let sampleBufferReceiver = SampleBufferReceiver()
+        self.enableVideoDataOutputWithSampleBufferDelegate(sampleBufferReceiver, queue: queue)
+        self.sampleBufferReceiver = sampleBufferReceiver
+        return sampleBufferReceiver.$image.eraseToAnyPublisher()
     }
 }
