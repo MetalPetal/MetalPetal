@@ -57,7 +57,7 @@ private struct PortConnectionsBuildingContext {
     static var contexts: [PortConnectionsBuildingContext] = []
     
     static func add(connection: PortConnection) {
-        precondition(self.contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGroup.makeImage function.")
+        precondition(self.contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGraph.makeImage function.")
         self.contexts[self.contexts.count - 1].connections.append(connection)
     }
     
