@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Port for read `Value` from `Object`
 public protocol OutputPort {
     associatedtype Object: AnyObject
     associatedtype Value
@@ -14,6 +15,7 @@ public protocol OutputPort {
     var keyPath: KeyPath<Object, Value> { get }
 }
 
+/// Port for write `Value` to `Object`
 public protocol InputPort {
     associatedtype Object: AnyObject
     associatedtype Value
@@ -41,6 +43,22 @@ extension Port: InputPort where Property: WritableKeyPath<Object, Value> {
     public var writableKeyPath: WritableKeyPath<Object, Value> {
         return self.property
     }
+}
+
+public struct ProxyPortTarget {
+    public let object: AnyObject
+    public let keyPath: AnyKeyPath?
+    public let writableKeyPath: AnyKeyPath?
+    
+    public init(object: AnyObject, keyPath: AnyKeyPath? = nil, writableKeyPath: AnyKeyPath? = nil) {
+        self.object = object
+        self.keyPath = keyPath
+        self.writableKeyPath = writableKeyPath
+    }
+}
+
+public protocol ProxyPort {
+    var target: ProxyPortTarget { get }
 }
 
 private class PortConnectionContext {
@@ -80,11 +98,11 @@ public class FilterGraph {
     fileprivate struct Connection<FromPort, ToPort>: PortConnection where FromPort: OutputPort, ToPort: InputPort, FromPort.Value == MTIImage?, ToPort.Value == MTIImage? {
         
         var fromObject: AnyObject {
-            return self.from.object
+            return (self.from as? ProxyPort)?.target.object ?? self.from.object
         }
         
         var toObject: AnyObject {
-            return self.to.object
+            return (self.to as? ProxyPort)?.target.object ?? self.to.object
         }
         
         let from: FromPort
@@ -96,22 +114,25 @@ public class FilterGraph {
         }
         
         func connect(context: PortConnectionContext) {
+            let fromObjectIdentifier = ObjectIdentifier(self.fromObject)
+            let toObjectIdentifier = ObjectIdentifier(self.toObject)
+            let fromKeyPath = (self.from as? ProxyPort)?.target.keyPath ?? self.from.keyPath
             var object = to.object
-            if let c = context.portValueCache[ObjectIdentifier(from.object)], let v = c[from.keyPath]  {
+            if let c = context.portValueCache[fromObjectIdentifier], let v = c[fromKeyPath]  {
                 object[keyPath: to.writableKeyPath] = v
             } else {
                 let value = from.object[keyPath: from.keyPath]
-                if var c = context.portValueCache[ObjectIdentifier(from.object)] {
-                    c[from.keyPath] = value
-                    context.portValueCache[ObjectIdentifier(from.object)] = c
+                if var c = context.portValueCache[fromObjectIdentifier] {
+                    c[fromKeyPath] = value
+                    context.portValueCache[fromObjectIdentifier] = c
                 } else {
                     if let value = value {
-                        context.portValueCache[ObjectIdentifier(from.object)] = [from.keyPath: value]
+                        context.portValueCache[fromObjectIdentifier] = [fromKeyPath: value]
                     }
                 }
                 object[keyPath: to.writableKeyPath] = value
             }
-            context.portValueCache[ObjectIdentifier(to.object)] = [:]
+            context.portValueCache[toObjectIdentifier] = [:]
         }
     }
     
@@ -204,47 +225,132 @@ extension MTIImage {
     }
 }
 
+public class PassthroughPort<Value>: InputPort, OutputPort {
+    public var object: PassthroughPort {
+        return self
+    }
+    
+    private var value: Value
+    
+    public var writableKeyPath: WritableKeyPath<PassthroughPort, Value> = \.value
+    
+    public var keyPath: KeyPath<PassthroughPort, Value> = \.value
+    
+    public init(_ value: Value) {
+        self.value = value
+    }
+    
+    public func toAnyIOPort() -> AnyIOPort<Value> { AnyIOPort(self) }
+}
+
+public typealias ImagePassthroughPort = PassthroughPort<MTIImage?>
+
+extension PassthroughPort where Value == MTIImage? {
+    public convenience init() {
+        self.init(nil)
+    }
+}
+
+public struct AnyIOPort<Value>: InputPort, OutputPort, ProxyPort {
+    public class ObjectProxy {
+        
+        var readableValue: Value {
+            return self.rReader()
+        }
+        
+        var writableValue: Value {
+            get {
+                return self.wReader()
+            }
+            set {
+                self.wWriter(newValue)
+            }
+        }
+        
+        private var rReader: () -> Value
+        private var wReader: () -> Value
+        private var wWriter: (Value) -> ()
+        
+        init<T>(object: T, keyPath: KeyPath<T,Value>, writableKeyPath: WritableKeyPath<T, Value>) where T: AnyObject {
+            var object = object
+            self.rReader = {
+                return object[keyPath: keyPath]
+            }
+            self.wReader = {
+                return object[keyPath: writableKeyPath]
+            }
+            self.wWriter = { value in
+                return object[keyPath: writableKeyPath] = value
+            }
+        }
+    }
+    
+    public let object: ObjectProxy
+    public let keyPath: KeyPath<ObjectProxy, Value> = \ObjectProxy.readableValue
+    public let writableKeyPath: WritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
+    
+    public let target: ProxyPortTarget
+    
+    public init<T>(_ port: T) where T: InputPort, T: OutputPort, T.Value == Value {
+        self.object = ObjectProxy(object: port.object, keyPath: port.keyPath, writableKeyPath: port.writableKeyPath)
+        self.target = ProxyPortTarget(object: port.object, keyPath: port.keyPath, writableKeyPath: port.writableKeyPath)
+    }
+    
+    public init<T>(_ filter: T) where T: MTIUnaryFilter, Value == MTIImage? {
+        self.init(filter.ioPort)
+    }
+}
+
+
 infix operator =>: AdditionPrecedence
+
+extension OutputPort where Value == MTIImage? {
+    fileprivate func connect<Input>(to port: Input) where Input: InputPort, Input.Value == Self.Value {
+        let connection = FilterGraph.Connection<Self, Input>(from: self, to: port)
+        PortConnectionsBuildingContext.add(connection: connection)
+    }
+}
 
 @discardableResult
 public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: InputPort, Output: OutputPort, Input.Value == Output.Value, Output.Value == MTIImage? {
-    let connection = FilterGraph.Connection<Output, Input>(from: lhs, to: rhs)
-    PortConnectionsBuildingContext.add(connection: connection)
+    lhs.connect(to: rhs)
     return rhs
 }
 
 @discardableResult
 public func =><Input>(lhs: MTIImage, rhs: Input) -> Input where Input: InputPort, Input.Value == MTIImage? {
-    let connection = FilterGraph.Connection(from: lhs.outputPort, to: rhs)
-    PortConnectionsBuildingContext.add(connection: connection)
+    lhs.outputPort.connect(to: rhs)
     return rhs
 }
 
 @discardableResult
 public func =><Input>(lhs: MTIImage, rhs: Input) -> Input where Input: MTIUnaryFilter {
-    let connection = FilterGraph.Connection(from: lhs.outputPort, to: rhs.ioPort)
-    PortConnectionsBuildingContext.add(connection: connection)
+    lhs.outputPort.connect(to: rhs.ioPort)
     return rhs
 }
 
 @discardableResult
 public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MTIFilter, Input: MTIUnaryFilter {
-    let connection = FilterGraph.Connection(from: lhs.outputPort, to: rhs.ioPort)
-    PortConnectionsBuildingContext.add(connection: connection)
+    lhs.outputPort.connect(to: rhs.ioPort)
+    return rhs
+}
+
+@discardableResult
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: OutputPort, Input: MTIUnaryFilter, Output.Value == MTIImage? {
+    lhs.connect(to: rhs.ioPort)
     return rhs
 }
 
 @discardableResult
 public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MTIFilter, Input: InputPort, Input.Value == MTIImage? {
-    let connection = FilterGraph.Connection(from: lhs.outputPort, to: rhs)
-    PortConnectionsBuildingContext.add(connection: connection)
+    lhs.outputPort.connect(to: rhs)
     return rhs
 }
 
 import Combine
 
+@available(iOS 13.0, macOS 10.15, *)
 extension FilterGraph {
-    @available(iOS 13.0, *)
     public static func makePublisher<T>(upstream: T, builder: @escaping (T.Output, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> AnyPublisher<MTIImage?,Never> where T: Publisher, T.Failure == Never {
         return upstream.map { value -> MTIImage? in
             return try? makeImage(input: value, builder: builder)
