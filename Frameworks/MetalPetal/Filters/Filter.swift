@@ -74,19 +74,19 @@ private protocol PortConnection {
 private struct PortConnectionsBuildingContext {
     static var contexts: [PortConnectionsBuildingContext] = []
     
-    static func add(connection: PortConnection) {
-        precondition(self.contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGraph.makeImage function.")
-        self.contexts[self.contexts.count - 1].connections.append(connection)
-    }
-    
     private var connections: [PortConnection] = []
-    
+
+    static func add(connection: PortConnection) {
+        precondition(contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGraph.makeImage function.")
+        contexts[contexts.count - 1].connections.append(connection)
+    }
+        
     static func push() {
         contexts.append(PortConnectionsBuildingContext())
     }
     
     static func pop() -> [PortConnection] {
-        guard let current = Self.contexts.popLast() else {
+        guard let current = contexts.popLast() else {
             fatalError()
         }
         return current.connections
@@ -157,11 +157,16 @@ public class FilterGraph {
         }
     }
     
+    private static let builderLock = MTILockCreate()
+    
     public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) throws -> MTIImage?  {
         let outputReceiver = ImageReceiver()
+        
+        builderLock.lock()
         PortConnectionsBuildingContext.push()
         builder(input, Port(outputReceiver, \.image))
         let connections = PortConnectionsBuildingContext.pop()
+        builderLock.unlock()
         
         let rootConnections = connections.filter({ $0.toObject === outputReceiver })
         if rootConnections.count != 1 {
