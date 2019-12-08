@@ -26,7 +26,7 @@ class ChainableAPIViewController: UIViewController {
         }
         
         let saturationFilter = MTISaturationFilter()
-        saturationFilter.saturation = 0.5
+        saturationFilter.saturation = 0.2
         
         let exposureFilter = MTIExposureFilter()
         exposureFilter.exposure = 1
@@ -36,11 +36,13 @@ class ChainableAPIViewController: UIViewController {
         
         let overlayBlendFilter = MTIBlendFilter(blendMode: .overlay)
         
+        let enableSaturationAdjustment = Bool.random()
+        
         let image = try! FilterGraph.makeImage { output in
-            inputImage => saturationFilter => exposureFilter => contrastFilter => overlayBlendFilter.inputPorts.inputImage
+            inputImage => (enableSaturationAdjustment ? AnyIOPort(saturationFilter) : AnyIOPort(ImagePassthroughPort())) => exposureFilter => contrastFilter => overlayBlendFilter.inputPorts.inputImage
             exposureFilter => overlayBlendFilter.inputPorts.inputBackgroundImage
             overlayBlendFilter => output
-        }
+        }!
         
         self.imageView.image = image
     }
