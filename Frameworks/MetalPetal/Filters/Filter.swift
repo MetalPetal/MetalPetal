@@ -183,7 +183,11 @@ public class FilterGraph {
 
 @dynamicMemberLookup
 public struct FilterInputPorts<Filter> where Filter: AnyObject {
-    let filter: Filter
+    private let filter: Filter
+    
+    public init(filter: Filter) {
+        self.filter = filter
+    }
     
     public subscript(dynamicMember keyPath: WritableKeyPath<Filter, MTIImage?>) -> Port<Filter, MTIImage?, WritableKeyPath<Filter, MTIImage?>> {
         return Port(self.filter, keyPath)
@@ -244,8 +248,6 @@ public class PassthroughPort<Value>: InputPort, OutputPort {
     public init(_ value: Value) {
         self.value = value
     }
-    
-    public func toAnyIOPort() -> AnyIOPort<Value> { AnyIOPort(self) }
 }
 
 public typealias ImagePassthroughPort = PassthroughPort<MTIImage?>
@@ -300,12 +302,91 @@ public struct AnyIOPort<Value>: InputPort, OutputPort, ProxyPort {
         self.object = ObjectProxy(object: port.object, keyPath: port.keyPath, writableKeyPath: port.writableKeyPath)
         self.target = ProxyPortTarget(object: port.object, keyPath: port.keyPath, writableKeyPath: port.writableKeyPath)
     }
-    
+}
+
+extension AnyIOPort {
     public init<T>(_ filter: T) where T: MTIUnaryFilter, Value == MTIImage? {
         self.init(filter.ioPort)
     }
 }
 
+public struct AnyInputPort<Value>: InputPort, ProxyPort {
+    public class ObjectProxy {
+        var writableValue: Value {
+            get {
+                return self.wReader()
+            }
+            set {
+                self.wWriter(newValue)
+            }
+        }
+        
+        private var wReader: () -> Value
+        private var wWriter: (Value) -> ()
+        
+        init<T>(object: T, writableKeyPath: WritableKeyPath<T, Value>) where T: AnyObject {
+            var object = object
+            self.wReader = {
+                return object[keyPath: writableKeyPath]
+            }
+            self.wWriter = { value in
+                return object[keyPath: writableKeyPath] = value
+            }
+        }
+    }
+    
+    public let object: ObjectProxy
+    public let writableKeyPath: WritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
+    
+    public let target: ProxyPortTarget
+    
+    public init<T>(_ port: T) where T: InputPort, T.Value == Value {
+        self.object = ObjectProxy(object: port.object, writableKeyPath: port.writableKeyPath)
+        self.target = ProxyPortTarget(object: port.object, keyPath: nil, writableKeyPath: port.writableKeyPath)
+    }
+}
+
+extension AnyInputPort {
+    public init<T>(_ filter: T) where T: MTIUnaryFilter, Value == MTIImage? {
+        self.init(filter.ioPort)
+    }
+}
+
+public struct AnyOutputPort<Value>: OutputPort, ProxyPort {
+    public class ObjectProxy {
+        var readableValue: Value {
+            return self.rReader()
+        }
+        private var rReader: () -> Value
+        init<T>(object: T, keyPath: KeyPath<T,Value>) where T: AnyObject {
+            self.rReader = {
+                return object[keyPath: keyPath]
+            }
+        }
+    }
+    
+    public let object: ObjectProxy
+    public let keyPath: KeyPath<ObjectProxy, Value> = \ObjectProxy.readableValue
+    
+    public let target: ProxyPortTarget
+    
+    public init<T>(_ port: T) where T: OutputPort, T.Value == Value {
+        self.object = ObjectProxy(object: port.object, keyPath: port.keyPath)
+        self.target = ProxyPortTarget(object: port.object, keyPath: port.keyPath, writableKeyPath: nil)
+    }
+}
+
+extension AnyOutputPort {
+    public init<T>(_ filter: T) where T: MTIFilter, Value == MTIImage? {
+        self.init(filter.outputPort)
+    }
+}
+
+extension AnyOutputPort where Value == MTIImage? {
+    public init(_ image: MTIImage) {
+        self.init(image.outputPort)
+    }
+}
 
 infix operator =>: AdditionPrecedence
 
