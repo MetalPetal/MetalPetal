@@ -31,3 +31,9 @@ extension MTIThreadSafeImageView: MTIImageViewProtocol {
 }
 
 #endif
+
+extension MTIImageViewProtocol {
+    public var inputPort: Port<Self, MTIImage?, WritableKeyPath<Self, MTIImage?>> {
+        return Port(self, \.image)
+    }
+}
