@@ -234,6 +234,12 @@ extension MTIImage {
     }
 }
 
+extension MTIImageViewProtocol {
+    public var inputPort: Port<Self, MTIImage?, WritableKeyPath<Self, MTIImage?>> {
+        return Port(self, \.image)
+    }
+}
+
 public class PassthroughPort<Value>: InputPort, OutputPort {
     public var object: PassthroughPort {
         return self
