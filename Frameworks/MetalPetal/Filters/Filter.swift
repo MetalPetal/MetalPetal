@@ -77,7 +77,7 @@ private struct PortConnectionsBuildingContext {
     private var connections: [PortConnection] = []
 
     static func add(connection: PortConnection) {
-        precondition(contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGraph.makeImage function.")
+        precondition(contexts.count > 0, "No avaliable PortConnectionsBuildingContext. You can only use `=>` operator in FilterGraph.makeImage or FilterGraph.connect function.")
         contexts[contexts.count - 1].connections.append(connection)
     }
         
@@ -140,14 +140,9 @@ public class FilterGraph {
         var image: MTIImage?
     }
     
-    public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage? {
-        return makeImage(input: ()) { _, output in
-            builder(output)
-        }
-    }
-    
     private static let builderLock = MTILockCreate()
     
+    /// Performs the `builder` block to create an output image. The `builder` block provides an `input` object and an `output` port. You can use `=>` operator to connect filters and input/output ports. One and only one port is allowed to connect to the `output` port.
     public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage?  {
         let outputReceiver = ImageReceiver()
         
@@ -168,6 +163,24 @@ public class FilterGraph {
             connection.connect(context: context)
         }
         return outputReceiver.image
+    }
+    
+    public static func connect(builder: () -> Void) {
+        builderLock.lock()
+        PortConnectionsBuildingContext.push()
+        builder()
+        let connections = PortConnectionsBuildingContext.pop()
+        builderLock.unlock()
+        let context = PortConnectionContext()
+        for connection in connections {
+            connection.connect(context: context)
+        }
+    }
+    
+    public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage? {
+        return makeImage(input: ()) { _, output in
+            builder(output)
+        }
     }
 }
 
