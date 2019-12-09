@@ -29,8 +29,6 @@ BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
 
 @property (nonatomic, readonly) NSUInteger length;
 
-- (id<MTLBuffer>)bufferForDevice:(id<MTLDevice>)device;
-
 - (void)encodeToVertexBufferAtIndex:(NSUInteger)index withCommandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder;
 
 @end
@@ -97,7 +95,7 @@ BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
 @interface MTIVertices ()
 
 @property (nonatomic, readonly, strong) id<MTIVertexBuffer> vertexBuffer;
-@property (nonatomic, readonly, strong) id<MTIVertexBuffer> indexBuffer;
+@property (nonatomic, readonly, strong) MTIDataBuffer *indexBuffer;
 
 @end
 
