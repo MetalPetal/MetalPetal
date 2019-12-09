@@ -388,6 +388,15 @@ extension AnyOutputPort where Value == MTIImage? {
     }
 }
 
+public protocol OutputPortProvider {
+    associatedtype Port: OutputPort
+    var outputPort: Port { get }
+}
+
+extension MTIImage: OutputPortProvider {
+    
+}
+
 infix operator =>: AdditionPrecedence
 
 extension OutputPort where Value == MTIImage? {
@@ -404,14 +413,20 @@ public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: Inp
 }
 
 @discardableResult
-public func =><Input>(lhs: MTIImage, rhs: Input) -> Input where Input: InputPort, Input.Value == MTIImage? {
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: InputPort, Output: OutputPortProvider, Output.Port.Value == Input.Value, Input.Value == MTIImage? {
     lhs.outputPort.connect(to: rhs)
     return rhs
 }
 
 @discardableResult
-public func =><Input>(lhs: MTIImage, rhs: Input) -> Input where Input: MTIUnaryFilter {
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: MTIUnaryFilter, Output: OutputPortProvider, Output.Port.Value == MTIImage? {
     lhs.outputPort.connect(to: rhs.ioPort)
+    return rhs
+}
+
+@discardableResult
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MTIFilter, Input: InputPort, Input.Value == MTIImage? {
+    lhs.outputPort.connect(to: rhs)
     return rhs
 }
 
@@ -424,12 +439,6 @@ public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MT
 @discardableResult
 public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: OutputPort, Input: MTIUnaryFilter, Output.Value == MTIImage? {
     lhs.connect(to: rhs.ioPort)
-    return rhs
-}
-
-@discardableResult
-public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MTIFilter, Input: InputPort, Input.Value == MTIImage? {
-    lhs.outputPort.connect(to: rhs)
     return rhs
 }
 
