@@ -140,26 +140,15 @@ public class FilterGraph {
         var image: MTIImage?
     }
     
-    public enum Error: Swift.Error, LocalizedError {
-        case invalidOutputConnection(count: Int)
-        
-        public var failureReason: String? {
-            switch self {
-            case .invalidOutputConnection(let count):
-                return "One and only one port is allowed to connect to the graph output port. (\(count) currently)"
-            }
-        }
-    }
-    
-    public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) throws -> MTIImage? {
-        return try makeImage(input: ()) { _, output in
+    public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage? {
+        return makeImage(input: ()) { _, output in
             builder(output)
         }
     }
     
     private static let builderLock = MTILockCreate()
     
-    public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) throws -> MTIImage?  {
+    public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage?  {
         let outputReceiver = ImageReceiver()
         
         builderLock.lock()
@@ -170,7 +159,8 @@ public class FilterGraph {
         
         let rootConnections = connections.filter({ $0.toObject === outputReceiver })
         if rootConnections.count != 1 {
-            throw Error.invalidOutputConnection(count: rootConnections.count)
+            assertionFailure("One and only one port is allowed to connect to the graph output port. (\(rootConnections.count) currently)")
+            return nil
         }
         
         let context = PortConnectionContext()
@@ -471,7 +461,7 @@ import Combine
 extension FilterGraph {
     public static func makePublisher<T>(upstream: T, builder: @escaping (T.Output, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> AnyPublisher<MTIImage?,Never> where T: Publisher, T.Failure == Never {
         return upstream.map { value -> MTIImage? in
-            return try? makeImage(input: value, builder: builder)
+            return makeImage(input: value, builder: builder)
         }.eraseToAnyPublisher()
     }
 }

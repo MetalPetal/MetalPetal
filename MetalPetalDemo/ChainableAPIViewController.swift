@@ -38,11 +38,11 @@ class ChainableAPIViewController: UIViewController {
         
         let enableSaturationAdjustment = Bool.random()
         
-        let image = try! FilterGraph.makeImage { output in
+        let image = FilterGraph.makeImage { output in
             inputImage => (enableSaturationAdjustment ? AnyIOPort(saturationFilter) : AnyIOPort(ImagePassthroughPort())) => exposureFilter => contrastFilter => overlayBlendFilter.inputPorts.inputImage
             exposureFilter => overlayBlendFilter.inputPorts.inputBackgroundImage
             overlayBlendFilter => output
-        }!
+        }
         
         self.imageView.image = image
     }
