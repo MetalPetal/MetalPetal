@@ -393,6 +393,11 @@ public protocol OutputPortProvider {
     var outputPort: Port { get }
 }
 
+public protocol InputPortProvider {
+    associatedtype Port: InputPort
+    var inputPort: Port { get }
+}
+
 extension MTIImage: OutputPortProvider {
     
 }
@@ -439,6 +444,24 @@ public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MT
 @discardableResult
 public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: OutputPort, Input: MTIUnaryFilter, Output.Value == MTIImage? {
     lhs.connect(to: rhs.ioPort)
+    return rhs
+}
+
+@discardableResult
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: MTIFilter, Input: InputPortProvider, Input.Port.Value == MTIImage? {
+    lhs.outputPort.connect(to: rhs.inputPort)
+    return rhs
+}
+
+@discardableResult
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Output: OutputPort, Input: InputPortProvider, Output.Value == Input.Port.Value, Output.Value == MTIImage? {
+    lhs.connect(to: rhs.inputPort)
+    return rhs
+}
+
+@discardableResult
+public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: InputPortProvider, Output: OutputPortProvider, Output.Port.Value == Input.Port.Value, Input.Port.Value == MTIImage? {
+    lhs.outputPort.connect(to: rhs.inputPort)
     return rhs
 }
 

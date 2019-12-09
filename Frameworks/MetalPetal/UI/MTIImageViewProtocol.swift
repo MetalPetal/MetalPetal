@@ -20,6 +20,12 @@ public protocol MTIImageViewProtocol: class {
     var image: MTIImage? { get set }
 }
 
+extension MTIImageViewProtocol {
+    public var inputPort: Port<Self, MTIImage?, WritableKeyPath<Self, MTIImage?>> {
+        return Port(self, \.image)
+    }
+}
+
 #if canImport(UIKit)
 
 extension MTIImageView: MTIImageViewProtocol {
@@ -30,10 +36,13 @@ extension MTIThreadSafeImageView: MTIImageViewProtocol {
     
 }
 
+extension MTIImageView: InputPortProvider {
+    
+}
+
+extension MTIThreadSafeImageView: InputPortProvider {
+    
+}
+
 #endif
 
-extension MTIImageViewProtocol {
-    public var inputPort: Port<Self, MTIImage?, WritableKeyPath<Self, MTIImage?>> {
-        return Port(self, \.image)
-    }
-}
