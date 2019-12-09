@@ -21,7 +21,7 @@ public protocol MTIImageViewProtocol: class {
 }
 
 extension MTIImageViewProtocol {
-    public var inputPort: Port<Self, MTIImage?, WritableKeyPath<Self, MTIImage?>> {
+    public var inputPort: Port<Self, MTIImage?, ReferenceWritableKeyPath<Self, MTIImage?>> {
         return Port(self, \.image)
     }
 }

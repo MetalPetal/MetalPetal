@@ -20,7 +20,7 @@ public protocol InputPort {
     associatedtype Object: AnyObject
     associatedtype Value
     var object: Object { get }
-    var writableKeyPath: WritableKeyPath<Object, Value> { get }
+    var writableKeyPath: ReferenceWritableKeyPath<Object, Value> { get }
 }
 
 public struct Port<Object, Value, Property> where Property: KeyPath<Object, Value>, Object: AnyObject {
@@ -39,8 +39,8 @@ extension Port: OutputPort {
     }
 }
 
-extension Port: InputPort where Property: WritableKeyPath<Object, Value> {
-    public var writableKeyPath: WritableKeyPath<Object, Value> {
+extension Port: InputPort where Property: ReferenceWritableKeyPath<Object, Value> {
+    public var writableKeyPath: ReferenceWritableKeyPath<Object, Value> {
         return self.property
     }
 }
@@ -117,11 +117,11 @@ public class FilterGraph {
             let fromObjectIdentifier = ObjectIdentifier(self.fromObject)
             let toObjectIdentifier = ObjectIdentifier(self.toObject)
             let fromKeyPath = (self.from as? ProxyPort)?.target.keyPath ?? self.from.keyPath
-            var object = to.object
             if let c = context.portValueCache[fromObjectIdentifier], let v = c[fromKeyPath]  {
-                object[keyPath: to.writableKeyPath] = v
+                to.object[keyPath: to.writableKeyPath] = v
             } else {
                 let value = from.object[keyPath: from.keyPath]
+                to.object[keyPath: to.writableKeyPath] = value
                 if var c = context.portValueCache[fromObjectIdentifier] {
                     c[fromKeyPath] = value
                     context.portValueCache[fromObjectIdentifier] = c
@@ -130,7 +130,6 @@ public class FilterGraph {
                         context.portValueCache[fromObjectIdentifier] = [fromKeyPath: value]
                     }
                 }
-                object[keyPath: to.writableKeyPath] = value
             }
             context.portValueCache[toObjectIdentifier] = [:]
         }
@@ -140,10 +139,12 @@ public class FilterGraph {
         var image: MTIImage?
     }
     
+    public typealias ImageReceiverInputPort = Port<ImageReceiver,MTIImage?,ReferenceWritableKeyPath<ImageReceiver,MTIImage?>>
+    
     private static let builderLock = MTILockCreate()
     
     /// Performs the `builder` block to create an output image. The `builder` block provides an `input` object and an `output` port. You can use `=>` operator to connect filters and input/output ports. One and only one port is allowed to connect to the `output` port.
-    public static func makeImage<T>(input: T, builder: (T, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage?  {
+    public static func makeImage<T>(input: T, builder: (T, ImageReceiverInputPort) -> Void) -> MTIImage?  {
         let outputReceiver = ImageReceiver()
         
         builderLock.lock()
@@ -177,7 +178,7 @@ public class FilterGraph {
         }
     }
     
-    public static func makeImage(builder: (Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> MTIImage? {
+    public static func makeImage(builder: (ImageReceiverInputPort) -> Void) -> MTIImage? {
         return makeImage(input: ()) { _, output in
             builder(output)
         }
@@ -192,7 +193,9 @@ public struct FilterInputPorts<Filter> where Filter: AnyObject {
         self.filter = filter
     }
     
-    public subscript(dynamicMember keyPath: WritableKeyPath<Filter, MTIImage?>) -> Port<Filter, MTIImage?, WritableKeyPath<Filter, MTIImage?>> {
+    public typealias InputKeyPath = ReferenceWritableKeyPath<Filter, MTIImage?>
+    
+    public subscript(dynamicMember keyPath: InputKeyPath) -> Port<Filter, MTIImage?, InputKeyPath> {
         return Port(self.filter, keyPath)
     }
 }
@@ -213,7 +216,7 @@ public struct UnaryFilterIOPort<Filter>: InputPort, OutputPort where Filter: MTI
     
     public let keyPath: KeyPath<Filter, MTIImage?> = \.outputImage
     
-    public let writableKeyPath: WritableKeyPath<Filter, MTIImage?> = \.inputImage
+    public let writableKeyPath: ReferenceWritableKeyPath<Filter, MTIImage?> = \.inputImage
 }
 
 extension MTIUnaryFilter {
@@ -244,7 +247,7 @@ public class PassthroughPort<Value>: InputPort, OutputPort {
     
     private var value: Value
     
-    public var writableKeyPath: WritableKeyPath<PassthroughPort, Value> = \.value
+    public var writableKeyPath: ReferenceWritableKeyPath<PassthroughPort, Value> = \.value
     
     public var keyPath: KeyPath<PassthroughPort, Value> = \.value
     
@@ -281,8 +284,7 @@ public struct AnyIOPort<Value>: InputPort, OutputPort, ProxyPort {
         private var wReader: () -> Value
         private var wWriter: (Value) -> ()
         
-        init<T>(object: T, keyPath: KeyPath<T,Value>, writableKeyPath: WritableKeyPath<T, Value>) where T: AnyObject {
-            var object = object
+        init<T>(object: T, keyPath: KeyPath<T,Value>, writableKeyPath: ReferenceWritableKeyPath<T, Value>) where T: AnyObject {
             self.rReader = {
                 return object[keyPath: keyPath]
             }
@@ -297,7 +299,7 @@ public struct AnyIOPort<Value>: InputPort, OutputPort, ProxyPort {
     
     public let object: ObjectProxy
     public let keyPath: KeyPath<ObjectProxy, Value> = \ObjectProxy.readableValue
-    public let writableKeyPath: WritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
+    public let writableKeyPath: ReferenceWritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
     
     public let target: ProxyPortTarget
     
@@ -327,8 +329,7 @@ public struct AnyInputPort<Value>: InputPort, ProxyPort {
         private var wReader: () -> Value
         private var wWriter: (Value) -> ()
         
-        init<T>(object: T, writableKeyPath: WritableKeyPath<T, Value>) where T: AnyObject {
-            var object = object
+        init<T>(object: T, writableKeyPath: ReferenceWritableKeyPath<T, Value>) where T: AnyObject {
             self.wReader = {
                 return object[keyPath: writableKeyPath]
             }
@@ -339,7 +340,7 @@ public struct AnyInputPort<Value>: InputPort, ProxyPort {
     }
     
     public let object: ObjectProxy
-    public let writableKeyPath: WritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
+    public let writableKeyPath: ReferenceWritableKeyPath<ObjectProxy, Value> = \ObjectProxy.writableValue
     
     public let target: ProxyPortTarget
     
@@ -472,7 +473,7 @@ import Combine
 
 @available(iOS 13.0, macOS 10.15, *)
 extension FilterGraph {
-    public static func makePublisher<T>(upstream: T, builder: @escaping (T.Output, Port<ImageReceiver,MTIImage?,WritableKeyPath<ImageReceiver,MTIImage?>>) -> Void) -> AnyPublisher<MTIImage?,Never> where T: Publisher, T.Failure == Never {
+    public static func makePublisher<T>(upstream: T, builder: @escaping (T.Output, ImageReceiverInputPort) -> Void) -> AnyPublisher<MTIImage?,Never> where T: Publisher, T.Failure == Never {
         return upstream.map { value -> MTIImage? in
             return makeImage(input: value, builder: builder)
         }.eraseToAnyPublisher()
