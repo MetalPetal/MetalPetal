@@ -469,6 +469,8 @@ public func =><Output, Input>(lhs: Output, rhs: Input) -> Input where Input: Inp
     return rhs
 }
 
+#if canImport(Combine)
+
 import Combine
 
 @available(iOS 13.0, macOS 10.15, *)
@@ -479,3 +481,5 @@ extension FilterGraph {
         }.eraseToAnyPublisher()
     }
 }
+
+#endif
