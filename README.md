@@ -604,7 +604,7 @@ We also provide a script to generate dynamic `.framework`s for you. You need to 
 
 MetalPetal can run on Simulator with Xcode 11+ and macOS 10.15+.
 
-`MetalPerformanceShaders.framework` is not available on Simulator, so filters relies on `MetalPerformanceShaders`, such as `MTIMPSGaussianBlurFilter`, `MTICLAHEFilter`, do not work.
+`MetalPerformanceShaders.framework` is not available on Simulator, so filters rely on `MetalPerformanceShaders`, such as `MTIMPSGaussianBlurFilter`, `MTICLAHEFilter`, do not work.
 
 Simulator supports fewer features or different implementation limits than an actual Apple GPU. See [Developing Metal Apps that Run in Simulator](https://developer.apple.com/documentation/metal/developing_metal_apps_that_run_in_simulator) for detail.
 
