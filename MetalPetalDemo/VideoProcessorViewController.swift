@@ -94,7 +94,7 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
         let outputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("temp.mp4")
         try? fileManager.removeItem(at: outputURL)
         
-        var configuration = AssetExportSession.Configuration(videoSettings: .h264(videoSize: videoComposition.renderSize), audioSettings: .aac(channels: 2, sampleRate: 44100, bitRate: 128 * 1000))
+        var configuration = AssetExportSession.Configuration(fileType: .mp4, videoSettings: .h264(videoSize: videoComposition.renderSize), audioSettings: .aac(channels: 2, sampleRate: 44100, bitRate: 128 * 1000))
         configuration.videoComposition = videoComposition.makeAVVideoComposition()
         let exporter = try! AssetExportSession(asset: asset, configuration: configuration, outputURL: outputURL)
         exporter.export(progress: { p in
