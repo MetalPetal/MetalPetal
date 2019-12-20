@@ -3,6 +3,7 @@
 
 #import <MetalPetal/MTIComputePipeline.h>
 #import <MetalPetal/MTIMPSBoxBlurFilter.h>
+#import <MetalPetal/MTIRoundCornerFilter.h>
 #import <MetalPetal/MTIBulgeDistortionFilter.h>
 #import <MetalPetal/MTIMPSConvolutionFilter.h>
 #import <MetalPetal/MTIMPSDefinitionFilter.h>

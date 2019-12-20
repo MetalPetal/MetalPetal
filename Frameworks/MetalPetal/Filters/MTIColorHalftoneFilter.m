@@ -28,7 +28,7 @@
     if (self.angles.x == self.angles.y && self.angles.y == self.angles.z) {
         allAnglesAreEqual = YES;
     }
-    return @{@"scale": @(self.scale),
+    return @{@"scale": @(MAX(self.scale, 1.0f)),
              @"angles": [MTIVector vectorWithFloat4:self.angles],
              @"singleAngleMode": @(allAnglesAreEqual)};
 }

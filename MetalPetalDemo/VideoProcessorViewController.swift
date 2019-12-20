@@ -12,7 +12,6 @@ import MetalPetal
 import MobileCoreServices
 import VideoIO
 
-@available(iOS 10.0, *)
 class VideoProcessorViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     private var playerViewController: AVPlayerViewController? {
@@ -23,7 +22,8 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     private var asset: AVAsset?
     private var videoComposition: VideoComposition<BlockBasedVideoCompositor>?
     private let context = try! MTIContext(device: MTLCreateSystemDefaultDevice()!)
-    private let filter = MTIPixellateFilter()
+    private let halftoneFilter = MTIColorHalftoneFilter()
+    private let roundCornerFilter = MTIRoundCornerFilter()
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -41,15 +41,16 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     }
     
     /// Preview
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let asset = AVURLAsset(url: info[.mediaURL] as! URL)
+    
+    private func update(asset: AVAsset) {
+        self.roundCornerFilter.radius = SIMD4<Float>(repeating: Float(min(asset.presentationVideoSize!.width,asset.presentationVideoSize!.height))/2)
         
         let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) { request in
             let scale = CGFloat(abs(sin(request.compositionTime.seconds))) * 32
-            self.filter.scale = CGSize(width: scale, height: scale)
+            self.halftoneFilter.scale = Float(scale)
             return FilterGraph.makeImage { output in
-                request.anySourceImage => self.filter => output
-            }!
+                request.anySourceImage => self.halftoneFilter => self.roundCornerFilter => output
+                }!
         }
         let composition = VideoComposition(propertiesOf: asset, compositionRequestHandler: handler.handle(request:))
         
@@ -61,7 +62,11 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
         
         self.asset = asset
         self.videoComposition = composition
-        
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let asset = AVURLAsset(url: info[.mediaURL] as! URL)
+        self.update(asset: asset)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -71,6 +76,7 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     
     /// Export
     private var exporter: AssetExportSession?
+    
     @IBAction private func shareButtonTapped(_ sender: Any) {
         guard let asset = self.asset, let videoComposition = self.videoComposition else {
             return
