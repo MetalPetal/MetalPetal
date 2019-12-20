@@ -3,13 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
 		062816182005F0BB005D81BC /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816172005F0BB005D81BC /* Recorder.swift */; };
 		06461E27239A43E200D5F588 /* ChainableAPIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */; };
+		06A3200C23AB87B100A5EA59 /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = 06A3200B23AB87B100A5EA59 /* VideoIO */; };
+		06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A3200D23AB8AD600A5EA59 /* Alert.swift */; };
+		06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC557923AB43350098C308 /* VideoProcessorViewController.swift */; };
 		06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 06D7F6C922228C0400B02D3D /* art.scnassets */; };
 		06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */; };
 		06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */; };
@@ -31,7 +34,9 @@
 		062816152005BBE1005D81BC /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
 		062816172005F0BB005D81BC /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainableAPIViewController.swift; sourceTree = "<group>"; };
+		06A3200D23AB8AD600A5EA59 /* Alert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		06AD314A1F9463B100AAAF35 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		06BC557923AB43350098C308 /* VideoProcessorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessorViewController.swift; sourceTree = "<group>"; };
 		06D668BB1F989C070091A8A8 /* LICENSE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
 		06D7F6C922228C0400B02D3D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneKitViewController.swift; sourceTree = "<group>"; };
@@ -65,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06A3200C23AB87B100A5EA59 /* VideoIO in Frameworks */,
 				7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -82,6 +88,7 @@
 				9D1FCE3B1F21A99400264194 /* MainTableViewController.m */,
 				062816152005BBE1005D81BC /* Camera.swift */,
 				062816172005F0BB005D81BC /* Recorder.swift */,
+				06A3200D23AB8AD600A5EA59 /* Alert.swift */,
 			);
 			name = DemoSupport;
 			sourceTree = "<group>";
@@ -126,6 +133,7 @@
 				06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */,
 				06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */,
 				06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */,
+				06BC557923AB43350098C308 /* VideoProcessorViewController.swift */,
 				06F9F6CD21FC3A4800AD9955 /* Shaders.metal */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
 				06D7F6C922228C0400B02D3D /* art.scnassets */,
@@ -175,6 +183,9 @@
 			dependencies = (
 			);
 			name = MetalPetalDemo;
+			packageProductDependencies = (
+				06A3200B23AB87B100A5EA59 /* VideoIO */,
+			);
 			productName = MetalPetalDemo;
 			productReference = 9D3928A91EFF678800BA6B09 /* MetalPetalDemo.app */;
 			productType = "com.apple.product-type.application";
@@ -205,6 +216,9 @@
 				Base,
 			);
 			mainGroup = 9D3928A01EFF678800BA6B09;
+			packageReferences = (
+				06A3200A23AB87B100A5EA59 /* XCRemoteSwiftPackageReference "VideoIO" */,
+			);
 			productRefGroup = 9D3928AA1EFF678800BA6B09 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -293,8 +307,10 @@
 				06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */,
 				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
+				06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */,
 				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,
 				062816162005BBE1005D81BC /* Camera.swift in Sources */,
+				06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */,
 				EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */,
 				062816182005F0BB005D81BC /* Recorder.swift in Sources */,
 				9D3928AE1EFF678800BA6B09 /* main.m in Sources */,
@@ -453,7 +469,8 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -467,7 +484,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = DDPY9JD4B3;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
@@ -484,7 +504,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = DDPY9JD4B3;
 				INFOPLIST_FILE = MetalPetalDemo/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalDemo/MetalPetalDemo-Bridging-Header.h";
@@ -514,6 +537,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		06A3200A23AB87B100A5EA59 /* XCRemoteSwiftPackageReference "VideoIO" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MetalPetal/VideoIO.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		06A3200B23AB87B100A5EA59 /* VideoIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 06A3200A23AB87B100A5EA59 /* XCRemoteSwiftPackageReference "VideoIO" */;
+			productName = VideoIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9D3928A11EFF678800BA6B09 /* Project object */;
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bFS-dw-d0K">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bFS-dw-d0K">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -202,6 +202,53 @@
             </objects>
             <point key="canvasLocation" x="1343" y="663"/>
         </scene>
+        <!--Video Processor View Controller-->
+        <scene sceneID="coL-68-S5I">
+            <objects>
+                <viewController id="Wzz-4g-pCW" customClass="VideoProcessorViewController" customModule="MetalPetalDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fhl-VD-48J"/>
+                        <viewControllerLayoutGuide type="bottom" id="lxJ-Jw-BX1"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="uAW-Dv-zOf">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IwR-5x-tV8">
+                                <rect key="frame" x="0.0" y="44" width="320" height="524"/>
+                                <connections>
+                                    <segue destination="l6z-hQ-IMk" kind="embed" id="f8p-qB-ufc"/>
+                                </connections>
+                            </containerView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="IwR-5x-tV8" secondAttribute="trailing" id="Dp0-pL-tM1"/>
+                            <constraint firstItem="lxJ-Jw-BX1" firstAttribute="top" secondItem="IwR-5x-tV8" secondAttribute="bottom" id="Kf2-0S-MHw"/>
+                            <constraint firstItem="IwR-5x-tV8" firstAttribute="top" secondItem="fhl-VD-48J" secondAttribute="bottom" id="Zkp-rK-9Mz"/>
+                            <constraint firstItem="IwR-5x-tV8" firstAttribute="leading" secondItem="uAW-Dv-zOf" secondAttribute="leading" id="fmz-Cq-9Un"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="d0E-nF-Fzh">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="YSK-xW-QZz">
+                            <connections>
+                                <action selector="shareButtonTapped:" destination="Wzz-4g-pCW" id="AqE-2C-K67"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="RPL-FZ-bgB" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1343" y="1368"/>
+        </scene>
+        <!--AV Player View Controller-->
+        <scene sceneID="0md-hm-9fc">
+            <objects>
+                <avPlayerViewController videoGravity="AVLayerVideoGravityResizeAspect" id="l6z-hQ-IMk" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8lC-jh-Pmh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2205" y="1368"/>
+        </scene>
         <!--ChainableAPI View Controller-->
         <scene sceneID="BkD-yz-6Kt">
             <objects>
@@ -382,6 +429,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="0tR-jO-hSE" kind="show" id="dEn-bk-Uiy"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="tPg-Du-9dQ" style="IBUITableViewCellStyleDefault" id="RPM-R0-Qhj">
+                                        <rect key="frame" x="0.0" y="282" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RPM-R0-Qhj" id="cuU-fL-ePR">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Video Processing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="tPg-Du-9dQ">
+                                                    <rect key="frame" x="16" y="0.0" width="288" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="Wzz-4g-pCW" kind="show" id="wlS-JN-Plj"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
