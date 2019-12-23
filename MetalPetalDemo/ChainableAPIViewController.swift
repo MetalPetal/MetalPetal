@@ -13,7 +13,7 @@ import VideoIO
 import Combine
 
 @available(iOS 13.0, *)
-class ChainableAPIViewController: UIViewController {
+class ChainableAPIViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     @IBOutlet private weak var imageView: MTIImageView!
     
@@ -59,9 +59,7 @@ class ChainableAPIViewController: UIViewController {
         sender.isHidden = true
         
         let colorLookupTable = UIImage(named: "ColorLookup512")?.makeMTIImage(sRGB: false, isOpaque: true)
-        try? self.camera.enableVideoDataOutput(bufferOutputCallback: { [weak self] sampleBuffer in
-            self?.cameraImage = MTIImage(cvPixelBuffer: CMSampleBufferGetImageBuffer(sampleBuffer)!, alphaType: .alphaIsOne)
-        })
+        try? self.camera.enableVideoDataOutput(delegate: self)
         
         let colorLookupFilter = MTIColorLookupFilter()
         colorLookupFilter.inputColorLookupTable = colorLookupTable
@@ -76,5 +74,9 @@ class ChainableAPIViewController: UIViewController {
         }.receive(on: DispatchQueue.main).assign(to: \.image, on: self.imageView)
         
         self.camera.startRunningCaptureSession()
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        self.cameraImage = MTIImage(cvPixelBuffer: CMSampleBufferGetImageBuffer(sampleBuffer)!, alphaType: .alphaIsOne)
     }
 }

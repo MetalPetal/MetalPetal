@@ -11,7 +11,7 @@ import MetalPetal
 import VideoIO
 import AVKit
 
-class CameraViewController: UIViewController {
+class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private let folderName = "videos"
     
@@ -19,6 +19,7 @@ class CameraViewController: UIViewController {
     private let videoQueue = DispatchQueue(label: "com.metalpetal.MetalPetalDemo.videoCallback")
     
     private var recorder: MovieRecorder?
+    
     private var isRecording = false
     
     private var pixelBufferPool: MTICVPixelBufferPool?
@@ -61,37 +62,7 @@ class CameraViewController: UIViewController {
         pixelBufferPool = try? MTICVPixelBufferPool(pixelBufferWidth: 1080, pixelBufferHeight: 1920, pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)
         
         camera = Camera(captureSessionPreset: .hd1920x1080)
-        try? camera?.enableVideoDataOutput(on: self.videoQueue, bufferOutputCallback: { [weak self] sampleBuffer in
-            guard let strongSelf = self else { return }
-            guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-                return
-            }
-            var outputSampleBuffer = sampleBuffer
-            let inputImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
-            var outputImage = inputImage
-            if strongSelf.isFilterEnabled {
-                strongSelf.colorLookupFilter.inputImage = inputImage
-                if let image = strongSelf.colorLookupFilter.outputImage?.withCachePolicy(.persistent) {
-                    outputImage = image
-                }
-                if let pixelBuffer = try? strongSelf.pixelBufferPool?.makePixelBuffer(allocationThreshold: 30) {
-                    do {
-                        try strongSelf.context.render(outputImage, to: pixelBuffer)
-                        if let smbf = SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: pixelBuffer) {
-                            outputSampleBuffer = smbf
-                        }
-                    } catch {
-                        print("\(error)")
-                    }
-                }
-            }
-            if strongSelf.isRecording {
-                strongSelf.recorder?.append(sampleBuffer: outputSampleBuffer)
-            }
-            DispatchQueue.main.async {
-                strongSelf.renderView.image = outputImage
-            }
-        })
+        try? camera?.enableVideoDataOutput(on: self.videoQueue, delegate: self)
         camera?.videoDataOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
     }
     
@@ -116,8 +87,6 @@ class CameraViewController: UIViewController {
             return
         }
 
-        self.isRecording = true
-
         let videoSettings: [String : Any] = [
             AVVideoCodecKey : AVVideoCodecH264,
             AVVideoWidthKey : 1080,
@@ -136,6 +105,8 @@ class CameraViewController: UIViewController {
         recorder.videoSettings = videoSettings
         self.recorder = recorder
         recorder.prepareToRecord()
+        
+        self.isRecording = true
     }
     
     @IBAction func recordButtonTouchUp(_ sender: Any) {
@@ -157,6 +128,37 @@ class CameraViewController: UIViewController {
         playerViewController.player = player
         self.present(playerViewController, animated: true) {
             player.play()
+        }
+    }
+    
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return
+        }
+        var outputSampleBuffer = sampleBuffer
+        let inputImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+        var outputImage = inputImage
+        if self.isFilterEnabled {
+            self.colorLookupFilter.inputImage = inputImage
+            if let image = self.colorLookupFilter.outputImage?.withCachePolicy(.persistent) {
+                outputImage = image
+            }
+            if let pixelBuffer = try? self.pixelBufferPool?.makePixelBuffer(allocationThreshold: 30) {
+                do {
+                    try self.context.render(outputImage, to: pixelBuffer)
+                    if let smbf = SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: pixelBuffer) {
+                        outputSampleBuffer = smbf
+                    }
+                } catch {
+                    print("\(error)")
+                }
+            }
+        }
+        DispatchQueue.main.async {
+            if self.isRecording {
+                self.recorder?.append(sampleBuffer: outputSampleBuffer)
+            }
+            self.renderView.image = outputImage
         }
     }
 }

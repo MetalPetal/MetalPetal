@@ -12,7 +12,7 @@ import MetalKit
 import MetalPetal
 import VideoIO
 
-class SceneKitViewController: UIViewController {
+class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private let camera: Camera = Camera(captureSessionPreset: AVCaptureSession.Preset.hd1280x720)
 
@@ -59,9 +59,7 @@ class SceneKitViewController: UIViewController {
         self.view.addSubview(renderView)
         self.renderView = renderView
         
-        try? self.camera.enableVideoDataOutput(bufferOutputCallback: { [weak self] (sampleBuffer) in
-            self?.handleSampleBuffer(sampleBuffer)
-        })
+        try? self.camera.enableVideoDataOutput(delegate: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -81,7 +79,7 @@ class SceneKitViewController: UIViewController {
         return filter
     }()
     
-    func handleSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
             let backgroundImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
             let sceneImage = self.sceneRenderer.snapshot(atTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds, viewport: CGRect(x: 0, y: 0, width: 720, height: 1280), pixelFormat: MTLPixelFormat.unspecified, isOpaque: false).unpremultiplyingAlpha()
@@ -91,5 +89,5 @@ class SceneKitViewController: UIViewController {
             self.renderView.image = self.colorLookupFilter.outputImage
         }
     }
-
+    
 }
