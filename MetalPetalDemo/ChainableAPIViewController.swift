@@ -9,8 +9,10 @@
 import Foundation
 import UIKit
 import MetalPetal
+import VideoIO
 import Combine
 
+@available(iOS 13.0, *)
 class ChainableAPIViewController: UIViewController {
     
     @IBOutlet private weak var imageView: MTIImageView!
@@ -47,32 +49,32 @@ class ChainableAPIViewController: UIViewController {
         self.imageView.image = image
     }
     
-    private var camera = Camera(sessionPreset: .hd1920x1080, cameraPosition: .back)
+    private var camera = Camera(captureSessionPreset: .hd1920x1080)
+    
+    @Published var cameraImage: MTIImage?
     
     private var cameraImageSubscriber: Any?
 
     @IBAction func driveWithCameraFeedButtonTapped(_ sender: UIButton) {
-        if #available(iOS 13.0, *) {
-            sender.isHidden = true
-            
-            let colorLookupTable = UIImage(named: "ColorLookup512")?.makeMTIImage(sRGB: false, isOpaque: true)
-            let cameraImagePublisher = self.camera.subscribeVideoDataOutput(queue: DispatchQueue.main)
-            
-            let colorLookupFilter = MTIColorLookupFilter()
-            colorLookupFilter.inputColorLookupTable = colorLookupTable
-            let saturationFilter = MTISaturationFilter()
-            saturationFilter.saturation = 0
-
-            self.cameraImageSubscriber = FilterGraph.makePublisher(upstream: cameraImagePublisher) { input, output in
-                if let image = input {
-                    image => colorLookupFilter.inputPorts.inputImage
-                    colorLookupFilter => saturationFilter => output
-                }
-            }.receive(on: DispatchQueue.main).assign(to: \.image, on: self.imageView)
-            
-            self.camera.startRunningCaptureSession()
-        } else {
-            assertionFailure()
-        }
+        sender.isHidden = true
+        
+        let colorLookupTable = UIImage(named: "ColorLookup512")?.makeMTIImage(sRGB: false, isOpaque: true)
+        try? self.camera.enableVideoDataOutput(bufferOutputCallback: { [weak self] sampleBuffer in
+            self?.cameraImage = MTIImage(cvPixelBuffer: CMSampleBufferGetImageBuffer(sampleBuffer)!, alphaType: .alphaIsOne)
+        })
+        
+        let colorLookupFilter = MTIColorLookupFilter()
+        colorLookupFilter.inputColorLookupTable = colorLookupTable
+        let saturationFilter = MTISaturationFilter()
+        saturationFilter.saturation = 0
+        
+        self.cameraImageSubscriber = FilterGraph.makePublisher(upstream: $cameraImage) { input, output in
+            if let image = input {
+                image => colorLookupFilter.inputPorts.inputImage
+            }
+            colorLookupFilter => saturationFilter => output
+        }.receive(on: DispatchQueue.main).assign(to: \.image, on: self.imageView)
+        
+        self.camera.startRunningCaptureSession()
     }
 }

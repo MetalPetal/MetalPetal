@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
-		062816182005F0BB005D81BC /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816172005F0BB005D81BC /* Recorder.swift */; };
 		06461E27239A43E200D5F588 /* ChainableAPIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */; };
 		06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A3200D23AB8AD600A5EA59 /* Alert.swift */; };
 		06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC557923AB43350098C308 /* VideoProcessorViewController.swift */; };
@@ -31,8 +29,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		062816152005BBE1005D81BC /* Camera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Camera.swift; sourceTree = "<group>"; };
-		062816172005F0BB005D81BC /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 		06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainableAPIViewController.swift; sourceTree = "<group>"; };
 		06A3200D23AB8AD600A5EA59 /* Alert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		06AD314A1F9463B100AAAF35 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -85,8 +81,6 @@
 				9D3928B01EFF678800BA6B09 /* AppDelegate.m */,
 				9D1FCE3A1F21A99400264194 /* MainTableViewController.h */,
 				9D1FCE3B1F21A99400264194 /* MainTableViewController.m */,
-				062816152005BBE1005D81BC /* Camera.swift */,
-				062816172005F0BB005D81BC /* Recorder.swift */,
 				06A3200D23AB8AD600A5EA59 /* Alert.swift */,
 			);
 			name = DemoSupport;
@@ -306,10 +300,8 @@
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
 				06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */,
 				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,
-				062816162005BBE1005D81BC /* Camera.swift in Sources */,
 				06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */,
 				EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */,
-				062816182005F0BB005D81BC /* Recorder.swift in Sources */,
 				9D3928AE1EFF678800BA6B09 /* main.m in Sources */,
 				06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */,
 			);
@@ -398,7 +390,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -462,7 +454,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = iphoneos;

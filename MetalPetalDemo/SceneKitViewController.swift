@@ -10,10 +10,11 @@ import UIKit
 import SceneKit
 import MetalKit
 import MetalPetal
+import VideoIO
 
-class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+class SceneKitViewController: UIViewController {
     
-    private let camera: Camera = Camera(sessionPreset: AVCaptureSession.Preset.hd1280x720, cameraPosition: .back)
+    private let camera: Camera = Camera(captureSessionPreset: AVCaptureSession.Preset.hd1280x720)
 
     private weak var renderView: MTIImageView!
     
@@ -58,7 +59,9 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
         self.view.addSubview(renderView)
         self.renderView = renderView
         
-        self.camera.enableVideoDataOutputWithSampleBufferDelegate(self, queue: DispatchQueue.main)
+        try? self.camera.enableVideoDataOutput(bufferOutputCallback: { [weak self] (sampleBuffer) in
+            self?.handleSampleBuffer(sampleBuffer)
+        })
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -78,7 +81,7 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
         return filter
     }()
     
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    func handleSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
         if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
             let backgroundImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
             let sceneImage = self.sceneRenderer.snapshot(atTime: CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds, viewport: CGRect(x: 0, y: 0, width: 720, height: 1280), pixelFormat: MTLPixelFormat.unspecified, isOpaque: false).unpremultiplyingAlpha()

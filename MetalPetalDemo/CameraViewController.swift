@@ -21,7 +21,7 @@ class CameraViewController: UIViewController {
     private var recorder: MovieRecorder?
     private var isRecording = false
     
-    private var pixelBufferPool: CVPixelBufferPool?
+    private var pixelBufferPool: MTICVPixelBufferPool?
     
     private var renderView: MTIImageView!
 
@@ -58,11 +58,41 @@ class CameraViewController: UIViewController {
         renderView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.insertSubview(renderView, at: 0)
         
-        CVPixelBufferPoolCreate(kCFAllocatorDefault, [kCVPixelBufferPoolMinimumBufferCountKey:30] as CFDictionary, [kCVPixelBufferPixelFormatTypeKey:kCVPixelFormatType_32BGRA, kCVPixelBufferWidthKey:1080,kCVPixelBufferHeightKey:1920,kCVPixelBufferIOSurfacePropertiesKey:[:]] as CFDictionary, &self.pixelBufferPool)
+        pixelBufferPool = try? MTICVPixelBufferPool(pixelBufferWidth: 1080, pixelBufferHeight: 1920, pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)
         
-        camera = Camera(sessionPreset: .hd1920x1080, cameraPosition: .back)
-        camera?.enableVideoDataOutputWithSampleBufferDelegate(self, queue: self.videoQueue)
-        camera?.videoDataOuput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
+        camera = Camera(captureSessionPreset: .hd1920x1080)
+        try? camera?.enableVideoDataOutput(on: self.videoQueue, bufferOutputCallback: { [weak self] sampleBuffer in
+            guard let strongSelf = self else { return }
+            guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+                return
+            }
+            var outputSampleBuffer = sampleBuffer
+            let inputImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+            var outputImage = inputImage
+            if strongSelf.isFilterEnabled {
+                strongSelf.colorLookupFilter.inputImage = inputImage
+                if let image = strongSelf.colorLookupFilter.outputImage?.withCachePolicy(.persistent) {
+                    outputImage = image
+                }
+                if let pixelBuffer = try? strongSelf.pixelBufferPool?.makePixelBuffer(allocationThreshold: 30) {
+                    do {
+                        try strongSelf.context.render(outputImage, to: pixelBuffer)
+                        if let smbf = SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: pixelBuffer) {
+                            outputSampleBuffer = smbf
+                        }
+                    } catch {
+                        print("\(error)")
+                    }
+                }
+            }
+            if strongSelf.isRecording {
+                strongSelf.recorder?.append(sampleBuffer: outputSampleBuffer)
+            }
+            DispatchQueue.main.async {
+                strongSelf.renderView.image = outputImage
+            }
+        })
+        camera?.videoDataOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -77,8 +107,8 @@ class CameraViewController: UIViewController {
     }
     
     @IBAction func rotateCamera(_ sender: Any) {
-        let position: AVCaptureDevice.Position = self.camera?.videoCaptureDevice?.position == .back ? .front : .back
-        self.camera?.useVideoCaptureDeviceAtPosition(position)
+        let position: AVCaptureDevice.Position = self.camera?.videoDevice?.position == .back ? .front : .back
+        try? self.camera?.switchToVideoCaptureDevice(with: position)
     }
     
     @IBAction func recordButtonTouchDown(_ sender: Any) {
@@ -94,8 +124,7 @@ class CameraViewController: UIViewController {
             AVVideoHeightKey : 1920,
             AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
             AVVideoCompressionPropertiesKey: [
-                AVVideoAverageBitRateKey : 1 * 1024 * 1024,
-                AVVideoMaxKeyFrameIntervalKey : 30
+                AVVideoAverageBitRateKey : 10 * 1024 * 1024
             ]
         ]
 
@@ -106,9 +135,7 @@ class CameraViewController: UIViewController {
         recorder.audioEnabled = false
         recorder.videoSettings = videoSettings
         self.recorder = recorder
-
         recorder.prepareToRecord()
-
     }
     
     @IBAction func recordButtonTouchUp(_ sender: Any) {
@@ -132,60 +159,9 @@ class CameraViewController: UIViewController {
             player.play()
         }
     }
-    
 }
 
-extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
-    
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        
-        guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer), CMFormatDescriptionGetMediaType(formatDescription) == kCMMediaType_Video, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
-            return
-        }
-        
-        var outputSampleBuffer = sampleBuffer
-        
-        let inputImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
-        
-        var outputImage = inputImage
-        
-        if self.isFilterEnabled {
-            self.colorLookupFilter.inputImage = inputImage
-            if let image = self.colorLookupFilter.outputImage?.withCachePolicy(.persistent) {
-                outputImage = image
-            }
-            
-            var outputPixelBuffer: CVPixelBuffer?
-            
-            CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, self.pixelBufferPool!, &outputPixelBuffer)
-            
-            if let pixelBuffer = outputPixelBuffer {
-                do {
-                    try self.context.render(outputImage, to: pixelBuffer)
-                    
-                    if let smbf = outputSampleBuffer.replacing(imageBuffer: pixelBuffer) {
-                        outputSampleBuffer = smbf
-                    }
-                    
-                } catch {
-                    print("\(error)")
-                }
-            }
-            
-        }
-        
-        if self.isRecording {
-            self.recorder?.append(sampleBuffer: outputSampleBuffer)
-        }
-        
-        DispatchQueue.main.async {
-            self.renderView.image = outputImage
-        }
-        
-    }
-    
-}
-
+@available(iOS 10.0, *)
 extension CameraViewController: MovieRecorderDelegate {
     
     func movieRecorderDidFinishPreparing(_ recorder: MovieRecorder) {
@@ -202,29 +178,12 @@ extension CameraViewController: MovieRecorderDelegate {
     
     func movieRecorderDidFinishRecording(_ recorder: MovieRecorder) {
         recordingStopped()
-        
         if let url = self.currentVideoURL {
             showPlayerViewController(url: url)
         }
-        
     }
     
     func movieRecorder(_ recorder: MovieRecorder, didUpdateWithTotalDuration totalDuration: TimeInterval) {
         
     }
-    
-}
-
-extension CMSampleBuffer {
-    
-    func replacing(imageBuffer: CVPixelBuffer) -> CMSampleBuffer? {
-        var timingInfo: CMSampleTimingInfo = .invalid
-        CMSampleBufferGetSampleTimingInfo(self, at: 0, timingInfoOut: &timingInfo)
-        var result: CMSampleBuffer?
-        var formatDescription: CMVideoFormatDescription?
-        CMVideoFormatDescriptionCreateForImageBuffer(allocator: kCFAllocatorDefault, imageBuffer: imageBuffer, formatDescriptionOut: &formatDescription)
-        CMSampleBufferCreateReadyWithImageBuffer(allocator: kCFAllocatorDefault, imageBuffer: imageBuffer, formatDescription: formatDescription!, sampleTiming: &timingInfo, sampleBufferOut: &result)
-        return result
-    }
-    
 }
