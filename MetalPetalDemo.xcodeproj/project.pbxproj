@@ -10,7 +10,6 @@
 		062816162005BBE1005D81BC /* Camera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816152005BBE1005D81BC /* Camera.swift */; };
 		062816182005F0BB005D81BC /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062816172005F0BB005D81BC /* Recorder.swift */; };
 		06461E27239A43E200D5F588 /* ChainableAPIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */; };
-		06A3200C23AB87B100A5EA59 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 06A3200B23AB87B100A5EA59 /* SwiftPackageProductDependency */; };
 		06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06A3200D23AB8AD600A5EA59 /* Alert.swift */; };
 		06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06BC557923AB43350098C308 /* VideoProcessorViewController.swift */; };
 		06D7F6CA22228C0400B02D3D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 06D7F6C922228C0400B02D3D /* art.scnassets */; };
@@ -18,7 +17,6 @@
 		06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */; };
 		06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 06F9F6CD21FC3A4800AD9955 /* Shaders.metal */; };
 		7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */; };
-		81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */; };
 		9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D1FCE3B1F21A99400264194 /* MainTableViewController.m */; };
 		9D3928AE1EFF678800BA6B09 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928AD1EFF678800BA6B09 /* main.m */; };
 		9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9D3928B01EFF678800BA6B09 /* AppDelegate.m */; };
@@ -27,6 +25,8 @@
 		9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B81EFF678800BA6B09 /* Assets.xcassets */; };
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
 		9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D7933A51F07A50B00135D46 /* P1040808.jpg */; };
+		E05B8C8B23B0745B0040C1DF /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */; };
+		E05B8C8F23B0BD390040C1DF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = E05B8C8E23B0BD390040C1DF /* VideoIO */; };
 		EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4A930321523A5100B3006A /* BlendModeViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -44,8 +44,6 @@
 		06F9F6CD21FC3A4800AD9955 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		0A8FE4D1B0592FC3147A79BB /* Pods-MetalPetalDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		0D6DB7180D5EAD8BDBE12762 /* Pods_MetalPetalDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetalPetalDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraViewController.h; sourceTree = "<group>"; };
-		81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraViewController.m; sourceTree = "<group>"; };
 		9D1FCE3A1F21A99400264194 /* MainTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTableViewController.h; sourceTree = "<group>"; };
 		9D1FCE3B1F21A99400264194 /* MainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTableViewController.m; sourceTree = "<group>"; };
 		9D3928A91EFF678800BA6B09 /* MetalPetalDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPetalDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,6 +59,7 @@
 		9D7933A51F07A50B00135D46 /* P1040808.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040808.jpg; sourceTree = "<group>"; };
 		9D9B4DE71F0558C40084ED0D /* MetalPetalDemo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MetalPetalDemo-Bridging-Header.h"; sourceTree = "<group>"; };
 		B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
+		E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		EE4A930221523A5100B3006A /* BlendModeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlendModeViewController.h; sourceTree = "<group>"; };
 		EE4A930321523A5100B3006A /* BlendModeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlendModeViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -70,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06A3200C23AB87B100A5EA59 /* BuildFile in Frameworks */,
+				E05B8C8F23B0BD390040C1DF /* VideoIO in Frameworks */,
 				7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -126,14 +125,13 @@
 			children = (
 				9D3928B21EFF678800BA6B09 /* ImageRendererViewController.h */,
 				9D3928B31EFF678800BA6B09 /* ImageRendererViewController.m */,
-				81C3E7B61F1E0E8500E6AF14 /* CameraViewController.h */,
-				81C3E7B71F1E0E8500E6AF14 /* CameraViewController.m */,
 				EE4A930221523A5100B3006A /* BlendModeViewController.h */,
 				EE4A930321523A5100B3006A /* BlendModeViewController.m */,
 				06D7F6CB22228C1800B02D3D /* SceneKitViewController.swift */,
 				06F9F6CB21FC389B00AD9955 /* TripleBufferingViewController.swift */,
 				06461E26239A43E200D5F588 /* ChainableAPIViewController.swift */,
 				06BC557923AB43350098C308 /* VideoProcessorViewController.swift */,
+				E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */,
 				06F9F6CD21FC3A4800AD9955 /* Shaders.metal */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
 				06D7F6C922228C0400B02D3D /* art.scnassets */,
@@ -184,7 +182,7 @@
 			);
 			name = MetalPetalDemo;
 			packageProductDependencies = (
-				06A3200B23AB87B100A5EA59 /* SwiftPackageProductDependency */,
+				E05B8C8E23B0BD390040C1DF /* VideoIO */,
 			);
 			productName = MetalPetalDemo;
 			productReference = 9D3928A91EFF678800BA6B09 /* MetalPetalDemo.app */;
@@ -217,7 +215,7 @@
 			);
 			mainGroup = 9D3928A01EFF678800BA6B09;
 			packageReferences = (
-				06A3200A23AB87B100A5EA59 /* RemoteSwiftPackageReference */,
+				E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */,
 			);
 			productRefGroup = 9D3928AA1EFF678800BA6B09 /* Products */;
 			projectDirPath = "";
@@ -302,9 +300,9 @@
 			files = (
 				9D3928B41EFF678800BA6B09 /* ImageRendererViewController.m in Sources */,
 				9D1FCE3C1F21A99400264194 /* MainTableViewController.m in Sources */,
+				E05B8C8B23B0745B0040C1DF /* CameraViewController.swift in Sources */,
 				06461E27239A43E200D5F588 /* ChainableAPIViewController.swift in Sources */,
 				06D7F6CC22228C1800B02D3D /* SceneKitViewController.swift in Sources */,
-				81C3E7B81F1E0E8500E6AF14 /* CameraViewController.m in Sources */,
 				9D3928B11EFF678800BA6B09 /* AppDelegate.m in Sources */,
 				06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */,
 				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,
@@ -538,7 +536,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		06A3200A23AB87B100A5EA59 /* RemoteSwiftPackageReference */ = {
+		E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MetalPetal/VideoIO.git";
 			requirement = {
@@ -549,9 +547,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		06A3200B23AB87B100A5EA59 /* SwiftPackageProductDependency */ = {
+		E05B8C8E23B0BD390040C1DF /* VideoIO */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 06A3200A23AB87B100A5EA59 /* RemoteSwiftPackageReference */;
+			package = E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */;
 			productName = VideoIO;
 		};
 /* End XCSwiftPackageProductDependency section */

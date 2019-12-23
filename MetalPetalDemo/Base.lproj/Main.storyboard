@@ -29,7 +29,7 @@
         <!--Camera View Controller-->
         <scene sceneID="RKY-ya-ybE">
             <objects>
-                <viewController id="EE0-ac-Nhx" customClass="CameraViewController" sceneMemberID="viewController">
+                <viewController id="EE0-ac-Nhx" customClass="CameraViewController" customModule="MetalPetalDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Bng-Ig-1Pk"/>
                         <viewControllerLayoutGuide type="bottom" id="zad-pD-3fr"/>
@@ -49,9 +49,9 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="recordButtonTouchDown:" destination="EE0-ac-Nhx" eventType="touchDown" id="5c5-jr-jIA"/>
-                                    <action selector="recordButtonTouchUp:" destination="EE0-ac-Nhx" eventType="touchUpOutside" id="0v4-bx-xfi"/>
-                                    <action selector="recordButtonTouchUp:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="KTO-rP-5rQ"/>
+                                    <action selector="recordButtonTouchDown:" destination="EE0-ac-Nhx" eventType="touchDown" id="NI2-YG-VET"/>
+                                    <action selector="recordButtonTouchUp:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="GRi-bN-VhJ"/>
+                                    <action selector="recordButtonTouchUp:" destination="EE0-ac-Nhx" eventType="touchUpOutside" id="uhK-Kw-G2D"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaZ-t5-i80">
@@ -65,7 +65,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <action selector="rotateCamera:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="Byw-GS-cP5"/>
+                                    <action selector="rotateCamera:" destination="EE0-ac-Nhx" eventType="touchUpInside" id="FUT-3a-qHL"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="roL-vy-2sv">
@@ -83,7 +83,7 @@
                                             <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9Nq-ph-18H">
                                                 <rect key="frame" x="47" y="0.0" width="51" height="31"/>
                                                 <connections>
-                                                    <action selector="filterSwitchValueChanged:" destination="EE0-ac-Nhx" eventType="valueChanged" id="IBH-Wl-0Qt"/>
+                                                    <action selector="filterSwitchValueChanged:" destination="EE0-ac-Nhx" eventType="valueChanged" id="tfD-l3-cbq"/>
                                                 </connections>
                                             </switch>
                                         </subviews>

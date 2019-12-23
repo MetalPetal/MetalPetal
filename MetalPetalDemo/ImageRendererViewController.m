@@ -8,7 +8,6 @@
 
 #import "ImageRendererViewController.h"
 #import "MetalPetalDemo-Swift.h"
-#import "CameraViewController.h"
 #import <sys/kdebug_signpost.h>
 @import MetalPetal;
 @import MetalKit;
