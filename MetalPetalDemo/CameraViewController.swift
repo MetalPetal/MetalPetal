@@ -24,7 +24,7 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     private var pixelBufferPool: MTICVPixelBufferPool?
     
-    private var renderView: MTIImageView!
+    @IBOutlet private var renderView: MTIImageView!
 
     private var context = try! MTIContext(device: MTLCreateSystemDefaultDevice()!)
     
@@ -55,10 +55,6 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             print("\(error)")
         }
         
-        renderView = MTIImageView(frame: view.bounds)
-        renderView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.insertSubview(renderView, at: 0)
-        
         pixelBufferPool = try? MTICVPixelBufferPool(pixelBufferWidth: 1080, pixelBufferHeight: 1920, pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)
         
         camera = Camera(captureSessionPreset: .hd1920x1080)
@@ -68,7 +64,6 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.setNavigationBarHidden(true, animated: true)
         camera?.startRunningCaptureSession()
     }
     
@@ -87,22 +82,12 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             return
         }
 
-        let videoSettings: [String : Any] = [
-            AVVideoCodecKey : AVVideoCodecH264,
-            AVVideoWidthKey : 1080,
-            AVVideoHeightKey : 1920,
-            AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-            AVVideoCompressionPropertiesKey: [
-                AVVideoAverageBitRateKey : 10 * 1024 * 1024
-            ]
-        ]
-
         let url = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(folderName)/\(UUID().uuidString).mp4")
         self.currentVideoURL = url
-        let recorder = MovieRecorder(url: url)
-        recorder.delegate = self
-        recorder.audioEnabled = false
-        recorder.videoSettings = videoSettings
+        
+        var configuration = MovieRecorder.Configuration()
+        configuration.isAudioEnabled = false
+        let recorder = MovieRecorder(url: url, configuration: configuration, delegate: self)
         self.recorder = recorder
         recorder.prepareToRecord()
         

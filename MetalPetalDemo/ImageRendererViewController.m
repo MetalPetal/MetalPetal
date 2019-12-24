@@ -96,7 +96,6 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
     self.renderView.contentScaleFactor = self.view.window.screen.nativeScale;
 }
 
@@ -231,10 +230,6 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size {
     
-}
-
-- (BOOL)prefersStatusBarHidden {
-    return YES;
 }
 
 @end
