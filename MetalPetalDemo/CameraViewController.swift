@@ -186,6 +186,6 @@ extension CameraViewController: MovieRecorderDelegate {
     }
     
     func movieRecorder(_ recorder: MovieRecorder, didUpdateWithTotalDuration totalDuration: TimeInterval) {
-        
+        print(totalDuration)
     }
 }
