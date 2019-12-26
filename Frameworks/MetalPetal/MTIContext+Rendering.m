@@ -586,4 +586,35 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     }
 }
 
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask * _Nonnull))completion {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    
+    NSError *error = nil;
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+    if (completion) {
+        [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            completion(task);
+        }];
+    }
+    [renderingContext.commandBuffer commit];
+    [renderingContext.commandBuffer waitUntilScheduled];
+    return task;
+}
+
 @end
