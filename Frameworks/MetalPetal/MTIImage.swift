@@ -69,6 +69,22 @@ extension MTIImage {
         assert(size.width >= 1 && size.height >= 1)
         return MTIUnaryImageRenderingFilter.image(byProcessingImage: self, orientation: .up, parameters: [:], outputPixelFormat: outputPixelFormat, outputImageSize: size)
     }
+    
+    public func resized(to target: CGSize, resizingMode: MTIDrawableRenderingResizingMode, outputPixelFormat: MTLPixelFormat = .unspecified) -> MTIImage {
+        let size: CGSize
+        switch resizingMode {
+        case .aspect:
+            size = MTIMakeRect(aspectRatio: self.size, insideRect: CGRect(origin: .zero, size: target)).size
+        case .aspectFill:
+            size = MTIMakeRect(aspectRatio: self.size, fillRect: CGRect(origin: .zero, size: target)).size
+        case .scale:
+            size = target
+        @unknown default:
+            fatalError()
+        }
+        assert(size.width >= 1 && size.height >= 1)
+        return MTIUnaryImageRenderingFilter.image(byProcessingImage: self, orientation: .up, parameters: [:], outputPixelFormat: outputPixelFormat, outputImageSize: size)
+    }
 }
 
 #if canImport(UIKit)
