@@ -332,6 +332,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @implementation MTIContext (RenderedImageBuffer)
 
 - (MTIImage *)renderedBufferForImage:(MTIImage *)targetImage {
+    NSParameterAssert(targetImage.cachePolicy == MTIImageCachePolicyPersistent);
     MTIPersistImageResolutionHolder *persistResolution = [self valueForImage:targetImage inTable:MTIContextImagePersistentResolutionHolderTable];
     if (!persistResolution) {
         return nil;
