@@ -73,6 +73,7 @@ static const MTIYUVColorConversion MTIYUVColorConversion709 = {
 
 MTIContextPromiseAssociatedValueTableName const MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable = @"MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable";
 
+// for internal use only
 static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sRGB) {
     switch (type) {
         case kCVPixelFormatType_32BGRA:
@@ -88,11 +89,13 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         case kCVPixelFormatType_DisparityFloat16:
         case kCVPixelFormatType_DepthFloat16:
         case kCVPixelFormatType_OneComponent16Half:
+            NSCParameterAssert(!sRGB);
             return MTLPixelFormatR16Float;
             
         case kCVPixelFormatType_DisparityFloat32:
         case kCVPixelFormatType_DepthFloat32:
         case kCVPixelFormatType_OneComponent32Float:
+            NSCParameterAssert(!sRGB);
             return MTLPixelFormatR32Float;
             
         case kCVPixelFormatType_OneComponent8:
