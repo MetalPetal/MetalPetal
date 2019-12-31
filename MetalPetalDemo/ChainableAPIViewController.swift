@@ -49,7 +49,7 @@ class ChainableAPIViewController: UIViewController, AVCaptureVideoDataOutputSamp
         self.imageView.image = image
     }
     
-    private var camera = Camera(captureSessionPreset: .hd1920x1080)
+    private var camera = Camera(captureSessionPreset: .hd1920x1080, configurator: .portraitFrontMirroredVideoOutput)
     
     @Published var cameraImage: MTIImage?
     

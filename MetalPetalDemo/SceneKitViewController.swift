@@ -14,7 +14,7 @@ import VideoIO
 
 class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let camera: Camera = Camera(captureSessionPreset: AVCaptureSession.Preset.hd1280x720)
+    private let camera: Camera = Camera(captureSessionPreset: AVCaptureSession.Preset.hd1280x720, configurator: .portraitFrontMirroredVideoOutput)
 
     private weak var renderView: MTIImageView!
     

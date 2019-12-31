@@ -55,9 +55,11 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             print("\(error)")
         }
         
+        self.renderView.context = self.context
+        
         pixelBufferPool = try? MTICVPixelBufferPool(pixelBufferWidth: 1080, pixelBufferHeight: 1920, pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)
         
-        camera = Camera(captureSessionPreset: .hd1920x1080)
+        camera = Camera(captureSessionPreset: .hd1920x1080, configurator: .portraitFrontMirroredVideoOutput)
         try? camera?.enableVideoDataOutput(on: self.videoQueue, delegate: self)
         camera?.videoDataOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
     }
@@ -66,9 +68,9 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         super.viewDidAppear(animated)
         camera?.startRunningCaptureSession()
     }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+   
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         camera?.stopRunningCaptureSession()
     }
     
@@ -128,19 +130,19 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             if let image = self.colorLookupFilter.outputImage?.withCachePolicy(.persistent) {
                 outputImage = image
             }
-            if let pixelBuffer = try? self.pixelBufferPool?.makePixelBuffer(allocationThreshold: 30) {
-                do {
-                    try self.context.render(outputImage, to: pixelBuffer)
-                    if let smbf = SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: pixelBuffer) {
-                        outputSampleBuffer = smbf
-                    }
-                } catch {
-                    print("\(error)")
-                }
-            }
         }
         DispatchQueue.main.async {
             if self.isRecording {
+                if let pixelBuffer = try? self.pixelBufferPool?.makePixelBuffer(allocationThreshold: 30) {
+                    do {
+                        try self.context.render(outputImage, to: pixelBuffer)
+                        if let smbf = SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: pixelBuffer) {
+                            outputSampleBuffer = smbf
+                        }
+                    } catch {
+                        print("\(error)")
+                    }
+                }
                 self.recorder?.append(sampleBuffer: outputSampleBuffer)
             }
             self.renderView.image = outputImage
