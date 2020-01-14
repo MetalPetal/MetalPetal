@@ -28,6 +28,7 @@ An image processing framework based on Metal.
     - [Create a `MTIImage`](#create-a-mtiimage)
     - [Create a Filtered Image](#create-a-filtered-image)
     - [Render a `MTIImage`](#render-a-mtiimage)
+    - [Connecting Filters (Swift)](#connecting-filters-swift)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
@@ -38,6 +39,7 @@ An image processing framework based on Metal.
     - [Custom Vertex Data](#custom-vertex-data)
     - [Custom Processing Module](#custom-processing-module)
 - [Install](#install)
+- [iOS Simulator Support](#ios-simulator-support)
 - [Trivia](#trivia)
 - [Contribute](#contribute)
 - [License](#license)
@@ -313,6 +315,34 @@ do {
 }
 ```
 
+### Connecting Filters (Swift)
+
+MetalPetal has a type-safe Swift API for connecting filters. You can use `=>` operator in `FilterGraph.makeImage` function to connect filters and get the output image.
+
+Here are some examples:
+
+```Swift
+let image = try? FilterGraph.makeImage { output in
+    inputImage => saturationFilter => exposureFilter => output
+}
+```
+
+```Swift
+let image = try? FilterGraph.makeImage { output in
+    inputImage => saturationFilter => exposureFilter => contrastFilter => blendFilter.inputPorts.inputImage
+    exposureFilter => blendFilter.inputPorts.inputBackgroundImage
+    blendFilter => output
+}
+```
+
+- You can connect unary filters (`MTIUnaryFilter`) directly using `=>`.
+
+- For a filter with multiple inputs, you need to connect to one of its `inputPorts`.
+
+- `=>` operator only works in `FilterGraph.makeImage` method.
+
+- One and only one filter's output can be connected to `output`.
+
 ## Quick Look Debug Support
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
@@ -569,6 +599,14 @@ pod 'MetalPetal/Swift'
 ```
 
 We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
+
+## iOS Simulator Support
+
+MetalPetal can run on Simulator with Xcode 11+ and macOS 10.15+.
+
+`MetalPerformanceShaders.framework` is not available on Simulator, so filters rely on `MetalPerformanceShaders`, such as `MTIMPSGaussianBlurFilter`, `MTICLAHEFilter`, do not work.
+
+Simulator supports fewer features or different implementation limits than an actual Apple GPU. See [Developing Metal Apps that Run in Simulator](https://developer.apple.com/documentation/metal/developing_metal_apps_that_run_in_simulator) for detail.
 
 ## Trivia
 

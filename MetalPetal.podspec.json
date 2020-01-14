@@ -1,53 +1,54 @@
 {
-  "default_subspecs" : "Core",
-  "source" : {
-    "tag" : "1.4.4",
-    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git"
-  },
-  "swift_versions" : "5.0",
-  "license" : {
-    "type" : "MIT"
-  },
-  "name" : "MetalPetal",
-  "summary" : "GPU-accelerated image and video processing framework based on Metal.",
+  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
+  "swift_version" : "5.0",
   "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
-  "prefix_header_file" : false,
+  "default_subspecs" : "Core",
+  "swift_versions" : "5.0",
+  "requires_arc" : true,
   "subspecs" : [
     {
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ],
+      "name" : "Core",
       "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "private_header_files" : [
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h",
         "Frameworks\/MetalPetal\/MTIHasher.h"
-      ],
-      "name" : "Core",
-      "weak_frameworks" : [
-        "MetalPerformanceShaders",
-        "MetalKit"
       ]
     },
     {
       "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}",
-      "weak_frameworks" : [
-        "MetalPerformanceShaders",
-        "MetalKit"
-      ],
       "dependencies" : {
         "MetalPetal\/Core" : [
 
         ]
       },
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ],
       "name" : "Swift"
     }
   ],
-  "version" : "1.4.4",
+  "authors" : {
+    "YuAo" : "me@imyuao.com"
+  },
+  "prefix_header_file" : false,
+  "source" : {
+    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git",
+    "tag" : "1.6.0"
+  },
+  "version" : "1.6.0",
+  "summary" : "GPU-accelerated image and video processing framework based on Metal.",
+  "name" : "MetalPetal",
   "platforms" : {
     "ios" : "9.0",
     "osx" : "10.13"
   },
-  "authors" : {
-    "YuAo" : "me@imyuao.com"
-  },
-  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
-  "requires_arc" : true
+  "license" : {
+    "type" : "MIT"
+  }
 }

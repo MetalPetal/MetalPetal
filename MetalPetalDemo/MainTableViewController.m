@@ -7,7 +7,6 @@
 //
 
 #import "MainTableViewController.h"
-#import "CameraViewController.h"
 
 @interface MainTableViewController ()
 

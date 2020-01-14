@@ -48,10 +48,17 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             //
 
             #include <metal_stdlib>
+            #include <TargetConditionals.h>
             #include "MTIShaderLib.h"
 
+            #ifndef TARGET_OS_SIMULATOR
+                #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
+            #endif
+            
             using namespace metal;
             using namespace metalpetal;
+            
+            namespace metalpetal {
 
             vertex VertexOut multilayerCompositeVertexShader(
                                                     const device VertexIn * vertices [[ buffer(0) ]],
@@ -69,7 +76,8 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             
             """,
             content: """
-            #if __HAVE_COLOR_ARGUMENTS__
+            #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+            
             fragment float4 multilayerComposite%BlendModeName%Blend(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 float4 currentColor [[color(0)]],
@@ -89,7 +97,9 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 textureColor.a *= parameters.opacity;
                 return %blendModeName%Blend(currentColor,textureColor);
             }
+            
             #else
+            
             fragment float4 multilayerComposite%BlendModeName%Blend(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
@@ -114,12 +124,12 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 textureColor.a *= parameters.opacity;
                 return %blendModeName%Blend(backgroundColor,textureColor);
             }
+            
             #endif
 
             
             """,
-            footer: """
-            """)
+            footer: "}")
         
         var arguments = [[String:String]]()
         for mode in blendModes {
@@ -144,7 +154,8 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
             using namespace metal;
             using namespace metalpetal;
-
+            
+            namespace metalpetal {
             
             """,
             content: """
@@ -164,7 +175,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
 
 
             """,
-            footer: "")
+            footer: "}")
         
         var arguments = [[String:String]]()
         for mode in blendModes {

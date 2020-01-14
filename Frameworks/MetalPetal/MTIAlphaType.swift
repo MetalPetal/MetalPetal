@@ -19,6 +19,18 @@ extension MTIAlphaTypeHandlingRule {
         self.init(__acceptableAlphaTypes: acceptableAlphaTypes.map({ NSNumber(value: $0.rawValue) }), outputAlphaType: outputAlphaType)
     }
     
+    public convenience init(acceptableAlphaTypes: [MTIAlphaType], _ handler: @escaping ([MTIAlphaType]) -> MTIAlphaType) {
+        self.init(__acceptableAlphaTypes: acceptableAlphaTypes.map({ NSNumber(value: $0.rawValue) }), outputAlphaTypeHandler: { types in
+            return handler(types.map({ MTIAlphaType.init(rawValue: $0.intValue)! }))
+        })
+    }
+    
+    public convenience init(_ handler: @escaping ([MTIAlphaType]) -> MTIAlphaType) {
+        self.init(__acceptableAlphaTypes: [MTIAlphaType.premultiplied, MTIAlphaType.nonPremultiplied, MTIAlphaType.alphaIsOne].map({ NSNumber(value: $0.rawValue) }), outputAlphaTypeHandler: { types in
+            return handler(types.map({ MTIAlphaType.init(rawValue: $0.intValue)! }))
+        })
+    }
+    
     public func outputAlphaType(forInputAlphaTypes inputAlphaTypes: [MTIAlphaType]) -> MTIAlphaType {
         return self.__outputAlphaType(forInputAlphaTypes: inputAlphaTypes.map({ NSNumber(value: $0.rawValue) }))
     }

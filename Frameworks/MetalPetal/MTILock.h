@@ -17,6 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 ///Create a non-recursive lock. Unlocking a lock from a different thread other than the locking thread can result in undefined behavior.
-FOUNDATION_EXPORT id<MTILocking> MTILockCreate(void);
+FOUNDATION_EXPORT id<MTILocking> MTILockCreate(void) NS_RETURNS_RETAINED;
 
 NS_ASSUME_NONNULL_END

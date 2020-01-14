@@ -23,7 +23,11 @@
 }
 
 - (NSDictionary<NSString *,id> *)parameters {
-    return @{@"scale": [MTIVector vectorWithCGSize:self.scale]};
+    return @{@"scale": [MTIVector vectorWithCGSize:CGSizeMake(MAX(self.scale.width,1), MAX(self.scale.height,1))]};
+}
+
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.passthroughAlphaTypeHandlingRule;
 }
 
 @end

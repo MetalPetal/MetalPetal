@@ -186,7 +186,13 @@
 }
 
 + (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
-    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+    if (self == MTIUnaryImageRenderingFilter.class) {
+        //for MTIUnaryImageRenderingFilter
+        return MTIAlphaTypeHandlingRule.passthroughAlphaTypeHandlingRule;
+    } else {
+        //Subclass default
+        return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+    }
 }
 
 @end

@@ -20,6 +20,13 @@
 }
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation {
+    return [self imageByApplyingCGOrientation:orientation outputPixelFormat:MTIPixelFormatUnspecified];
+}
+
+- (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation outputPixelFormat:(MTLPixelFormat)pixelFormat {
+    if (orientation == kCGImagePropertyOrientationUp) {
+        return self;
+    }
     MTIImageOrientation imageOrientation;
     switch (orientation) {
         case kCGImagePropertyOrientationUp:
@@ -50,7 +57,7 @@
             imageOrientation = MTIImageOrientationUnknown;
             break;
     }
-    return [[MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:MTIPixelFormatUnspecified] imageWithCachePolicy:self.cachePolicy];
+    return [[MTIUnaryImageRenderingFilter imageByProcessingImage:self orientation:imageOrientation parameters:@{} outputPixelFormat:pixelFormat] imageWithCachePolicy:self.cachePolicy];
 }
 
 @end

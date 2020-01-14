@@ -3,6 +3,7 @@
 
 #import <MetalPetal/MTIComputePipeline.h>
 #import <MetalPetal/MTIMPSBoxBlurFilter.h>
+#import <MetalPetal/MTIRoundCornerFilter.h>
 #import <MetalPetal/MTIBulgeDistortionFilter.h>
 #import <MetalPetal/MTIMPSConvolutionFilter.h>
 #import <MetalPetal/MTIMPSDefinitionFilter.h>
@@ -43,6 +44,7 @@
 #import <MetalPetal/MTIMultilayerCompositeKernel.h>
 #import <MetalPetal/MTIRenderPassOutputDescriptor.h>
 #import <MetalPetal/MTIVector.h>
+#import <MetalPetal/MTIGeometryUtilities.h>
 #import <MetalPetal/MTICVPixelBufferRendering.h>
 #import <MetalPetal/MTIImageOrientation.h>
 #import <MetalPetal/MTITextureLoader.h>

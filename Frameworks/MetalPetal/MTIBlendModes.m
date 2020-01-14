@@ -95,19 +95,17 @@ static id<NSLocking> _registeredBlendModesLock;
                                                 MTIBlendModeHue,
                                                 MTIBlendModeColor,
                                                 MTIBlendModeSaturation,
-                                                MTIBlendModeLuminosity
+                                                MTIBlendModeLuminosity,
+                                                MTIBlendModeColorLookup512x512
                                                 ];
         NSMutableDictionary *modes = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in builtinModes) {
             NSString *fragmentFunctionNameForBlendFilter = [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
+            NSString *fragmentFunctionNameForMultilayerCompositingFilter = [NSString stringWithFormat:@"multilayerComposite%@Blend",mode];
             MTIBlendFunctionDescriptors *descriptors = [[MTIBlendFunctionDescriptors alloc] initWithFragmentFunctionDescriptorForBlendFilter:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForBlendFilter]
-                                                                                    fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:[NSString stringWithFormat:@"multilayerComposite%@Blend",mode]]];
+                                                                                    fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForMultilayerCompositingFilter]];
             modes[mode] = descriptors;
         }
-
-        MTIBlendFunctionDescriptors *colorLookup512x512BlendDescriptor = [[MTIBlendFunctionDescriptors alloc] initWithFragmentFunctionDescriptorForBlendFilter:[[MTIFunctionDescriptor alloc] initWithName:@"colorLookup512x512Blend"] fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeColorLookup512x512Blend"]];
-        modes[MTIBlendModeColorLookup512x512] = colorLookup512x512BlendDescriptor;
-        
         _registeredBlendModes = [modes copy];
         _registeredBlendModesLock = MTILockCreate();
     });

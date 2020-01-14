@@ -23,6 +23,8 @@
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
 
+#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR)
+
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
 @property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
@@ -90,7 +92,7 @@
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
     renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-    #if TARGET_OS_IPHONE
+    #if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
     // on macOS colorAttachments 1 is not used.
     renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
     #endif
@@ -160,7 +162,7 @@
             renderPipelineDescriptor.fragmentFunction = fragmentFunction;
             
             renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-            #if TARGET_OS_IPHONE
+            #if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
             // on macOS colorAttachments 1 is not used.
             renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
             #endif
@@ -257,7 +259,7 @@
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
-#if TARGET_OS_IPHONE
+#if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
 
 // iOS
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
@@ -503,7 +505,7 @@
 
 #else
 
-// macOS
+// macOS || Simulator
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     
     NSError *error = nil;
@@ -648,7 +650,15 @@
     
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
+        
+        #if TARGET_OS_SIMULATOR
+        //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
+        [commandEncoder endEncoding];
+        commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+        #else
+        //we are on macOS, use textureBarrier.
         [commandEncoder textureBarrier];
+        #endif
         
         MTILayer *layer = self.layers[index];
         
@@ -693,7 +703,7 @@
         parameters.opacity = layer.opacity;
         parameters.contentHasPremultipliedAlpha = (layer.content.alphaType == MTIAlphaTypePremultiplied);
         parameters.hasCompositingMask = !(layer.compositingMask == nil);
-        parameters.compositingMaskComponent = layer.compositingMask.component;
+        parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         

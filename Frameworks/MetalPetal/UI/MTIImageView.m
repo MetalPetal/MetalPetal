@@ -149,7 +149,7 @@
         CGFloat widthScale = imageSize.width/renderView.bounds.size.width;
         CGFloat heightScale = imageSize.height/renderView.bounds.size.height;
         CGFloat nativeScale = _screenScale;
-        CGFloat scale = MIN(MAX(widthScale,heightScale),nativeScale);
+        CGFloat scale = MAX(MIN(MAX(widthScale,heightScale),nativeScale), 1.0);
         if (ABS(renderView.contentScaleFactor - scale) > 0.00001) {
             renderView.contentScaleFactor = scale;
         }

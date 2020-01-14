@@ -18,6 +18,10 @@
     return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end
 
 @implementation MTISRGBToneCurveToLinearFilter
@@ -28,6 +32,10 @@
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
     return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
+}
+
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
 }
 
 @end
@@ -42,6 +50,10 @@
     return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
 }
 
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
+}
+
 @end
 
 @implementation MTIITUR709RGBToSRGBFilter
@@ -52,6 +64,10 @@
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image {
     return [self imageByProcessingImage:image withInputParameters:@{} outputPixelFormat:MTIPixelFormatUnspecified];
+}
+
++ (MTIAlphaTypeHandlingRule *)alphaTypeHandlingRule {
+    return MTIAlphaTypeHandlingRule.generalAlphaTypeHandlingRule;
 }
 
 @end

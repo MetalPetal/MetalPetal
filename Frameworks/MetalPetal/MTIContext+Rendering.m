@@ -380,6 +380,14 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         return nil;
     }
     
+    if (renderPassDescriptor.colorAttachments[0].texture == nil) {
+        NSAssert(NO, @"Rendering image to drawable: no texture found on color attachment 0. This could happen when the drawable size is less than 16x16 pixels on some devices.");
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorEmptyDrawableTexture, @{NSLocalizedFailureReasonErrorKey: @"Rendering image to drawable: no texture found on color attachment 0. This could happen when the drawable size is less than 16x16 pixels on some devices."});
+        }
+        return nil;
+    }
+    
     float heightScaling = 1.0;
     float widthScaling = 1.0;
     CGSize drawableSize = CGSizeMake(renderPassDescriptor.colorAttachments[0].texture.width, renderPassDescriptor.colorAttachments[0].texture.height);
@@ -576,6 +584,37 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
         [renderingContext.commandBuffer waitUntilScheduled];
         return task;
     }
+}
+
+- (MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask * _Nonnull))completion {
+    [self lockForRendering];
+    @MTI_DEFER {
+        [self unlockForRendering];
+    };
+    
+    MTIImageRenderingContext *renderingContext = [[MTIImageRenderingContext alloc] initWithContext:self];
+    
+    NSError *error = nil;
+    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
+    @MTI_DEFER {
+        [resolution markAsConsumedBy:self];
+    };
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
+        }
+        return nil;
+    }
+    
+    MTIRenderTask *task = [[MTIRenderTask alloc] initWithCommandBuffer:renderingContext.commandBuffer];
+    if (completion) {
+        [renderingContext.commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            completion(task);
+        }];
+    }
+    [renderingContext.commandBuffer commit];
+    [renderingContext.commandBuffer waitUntilScheduled];
+    return task;
 }
 
 @end

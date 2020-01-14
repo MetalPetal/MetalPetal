@@ -81,25 +81,10 @@
     self.imageBlendModes = [modes copy];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    self.navigationController.navigationBar.hidden = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-        self.navigationController.navigationBar.hidden = NO;
-}
-
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     self.renderView.frame = self.view.bounds;
     [self render];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (void)render {

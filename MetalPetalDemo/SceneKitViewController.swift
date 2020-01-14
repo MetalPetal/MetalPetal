@@ -10,10 +10,11 @@ import UIKit
 import SceneKit
 import MetalKit
 import MetalPetal
+import VideoIO
 
 class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let camera: Camera = Camera(sessionPreset: AVCaptureSession.Preset.hd1280x720, cameraPosition: .back)
+    private let camera: Camera = Camera(captureSessionPreset: AVCaptureSession.Preset.hd1280x720, configurator: .portraitFrontMirroredVideoOutput)
 
     private weak var renderView: MTIImageView!
     
@@ -58,7 +59,7 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
         self.view.addSubview(renderView)
         self.renderView = renderView
         
-        self.camera.enableVideoDataOutputWithSampleBufferDelegate(self, queue: DispatchQueue.main)
+        try? self.camera.enableVideoDataOutput(delegate: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -88,5 +89,5 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
             self.renderView.image = self.colorLookupFilter.outputImage
         }
     }
-
+    
 }

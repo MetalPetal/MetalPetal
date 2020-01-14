@@ -19,6 +19,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateSamplerState = 1003,
     MTIErrorFailedToCreateTexture = 1004,
     MTIErrorFailedToCreateCommandEncoder = 1005,
+    MTIErrorFailedToCreateHeap = 1006,
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,
@@ -35,6 +36,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     
     //Render errors
     MTIErrorEmptyDrawable = 5001,
+    MTIErrorEmptyDrawableTexture = 5101,
     MTIErrorFailedToCreateCGImageFromCVPixelBuffer = 5002,
     MTIErrorFailedToCreateCVPixelBuffer = 5003,
     MTIErrorInvalidCVPixelBufferRenderingAPI = 5004,
@@ -42,7 +44,10 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     
     //For operations do not support cross device or cross context rendering, we report these errors.
     MTIErrorCrossDeviceRendering = 5006,
-    MTIErrorCrossContextRendering = 5007
+    MTIErrorCrossContextRendering = 5007,
+    
+    //For features not available on iOS simulator.
+    MTIErrorFeatureNotAvailableOnSimulator = 6001
 };
 
 /// Create a NSError with MTIErrorDomain and the specified error code and user info. Creating a symbolic breakpoint for `_MTIErrorCreate` can help you locate the source of the error.

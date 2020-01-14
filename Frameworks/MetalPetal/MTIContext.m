@@ -14,7 +14,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIRenderPipeline.h"
 #import "MTIComputePipeline.h"
-#import "MTITexturePool.h"
 #import "MTIKernel.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTIError.h"
@@ -40,6 +39,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
+        _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;
     }
     return self;
 }
@@ -54,6 +54,7 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
     options.defaultLibraryURL = _defaultLibraryURL;
     options.textureLoaderClass = _textureLoaderClass;
     options.coreVideoMetalTextureBridgeClass = _coreVideoMetalTextureBridgeClass;
+    options.texturePoolClass = _texturePoolClass;
     return options;
 }
 
@@ -81,11 +82,30 @@ static Class _defaultCoreVideoMetalTextureBridgeClass = nil;
     }
 }
 
+static Class _defaultTexturePoolClass = nil;
+
++ (void)setDefaultTexturePoolClass:(Class<MTITexturePool>)defaultTexturePoolClass {
+    _defaultTexturePoolClass = defaultTexturePoolClass;
+}
+
++ (Class<MTITexturePool>)defaultTexturePoolClass {
+    return _defaultTexturePoolClass ?: MTIDeviceTexturePool.class;
+}
+
 @end
 
 
 NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
     return [bundle URLForResource:@"default" withExtension:@"metallib"];
+}
+
+
+static BOOL MTIMPSSupportsMTLDevice(id<MTLDevice> device) {
+#if TARGET_OS_SIMULATOR
+    return NO;
+#else
+    return MPSSupportsMTLDevice(device);
+#endif
 }
 
 
@@ -131,7 +151,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 @property (nonatomic, strong, readonly) NSMutableDictionary<MTISamplerDescriptor *, id<MTLSamplerState>> *samplerStateCache;
 
-@property (nonatomic, strong, readonly) MTITexturePool *texturePool;
+@property (nonatomic, strong, readonly) id<MTITexturePool> texturePool;
 
 @property (nonatomic, strong, readonly) NSMapTable<id<MTIKernel>, id> *kernelStateMap;
 
@@ -158,6 +178,17 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     if (self = [super init]) {
         NSParameterAssert(device);
         NSParameterAssert(options);
+        
+        #if TARGET_OS_SIMULATOR
+        if (!MTIContext.enablesSimulatorSupport) {
+            NSError *error = MTIErrorCreate(MTIErrorFeatureNotAvailableOnSimulator, @{@"MTIFeatureNotAvailable": @"MTIContext"});
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        #endif
+        
         if (!device) {
             if (inOutError) {
                 *inOutError = MTIErrorCreate(MTIErrorDeviceNotFound, nil);
@@ -183,13 +214,13 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _commandQueue = [device newCommandQueue];
         _commandQueue.label = options.label;
         
-        _isMetalPerformanceShadersSupported = MPSSupportsMTLDevice(device);
+        _isMetalPerformanceShadersSupported = MTIMPSSupportsMTLDevice(device);
         _isYCbCrPixelFormatSupported = options.enablesYCbCrPixelFormatSupport && MTIDeviceSupportsYCBCRPixelFormat(device);
         
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
         
-        _texturePool = [[MTITexturePool alloc] initWithDevice:device];
+        _texturePool = [options.texturePoolClass newTexturePoolWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];
         _functionCache = [NSMutableDictionary dictionary];
         _renderPipelineCache = [NSMutableDictionary dictionary];
@@ -235,7 +266,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-        _defaultMetalDeviceSupportsMPS = MPSSupportsMTLDevice(device);
+        _defaultMetalDeviceSupportsMPS = MTIMPSSupportsMTLDevice(device);
     });
     return _defaultMetalDeviceSupportsMPS;
 }
@@ -389,9 +420,18 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
         }
         
         if (@available(iOS 10.0, *)) {
+            NSString *functionName = descriptor.name;
+            #if TARGET_OS_SIMULATOR
+            for (NSString *name in library.functionNames) {
+                if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
+                    functionName = name;
+                    break;
+                }
+            }
+            #endif
             if (descriptor.constantValues) {
                 NSError *error = nil;
-                cachedFunction = [library newFunctionWithName:descriptor.name constantValues:descriptor.constantValues error:&error];
+                cachedFunction = [library newFunctionWithName:functionName constantValues:descriptor.constantValues error:&error];
                 if (error) {
                     if (inOutError) {
                         *inOutError = error;
@@ -399,7 +439,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
                     return nil;
                 }
             } else {
-                cachedFunction = [library newFunctionWithName:descriptor.name];
+                cachedFunction = [library newFunctionWithName:functionName];
             }
         } else {
             cachedFunction = [library newFunctionWithName:descriptor.name];
@@ -550,6 +590,20 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
 
 - (void)handleMemoryWarning {
     [self reclaimResources];
+}
+
+@end
+
+@implementation MTIContext (SimulatorSupport)
+
+static BOOL _enablesSimulatorSupport = YES;
+
++ (void)setEnablesSimulatorSupport:(BOOL)enablesSimulatorSupport {
+    _enablesSimulatorSupport = enablesSimulatorSupport;
+}
+
++ (BOOL)enablesSimulatorSupport {
+    return _enablesSimulatorSupport;
 }
 
 @end

@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
                                              error:(NSError **)error
                                         completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:destinationAlphaType:completion:));
 
+/// Render the image to nowhere.
+- (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image
+                                             error:(NSError **)error
+                                        completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:completion:));
+
 @end
 
 NS_ASSUME_NONNULL_END

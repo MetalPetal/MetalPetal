@@ -5,7 +5,12 @@
 //
 
 #include <metal_stdlib>
+#include <TargetConditionals.h>
 #include "MTIShaderLib.h"
+
+#ifndef TARGET_OS_SIMULATOR
+    #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
+#endif
 
 using namespace metal;
 
@@ -150,7 +155,7 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(color,64,intensity,overlayTexture,overlaySampler);
     }
 
-    #if __HAVE_COLOR_ARGUMENTS__
+    #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
     
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                        VertexOut vertexIn [[ stage_in ]],
@@ -553,4 +558,23 @@ namespace metalpetal {
             return s;
         }
     }
+    
+    fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
+                                         constant float & radius [[buffer(0)]],
+                                         constant float2 & center [[buffer(1)]],
+                                         float4 currentColor [[ color(0) ]]) {
+        //4xAA
+        float2 samplePoint1 = vertexIn.textureCoordinate + float2(-0.25, -0.25);
+        float2 samplePoint2 = vertexIn.textureCoordinate + float2(0.25, 0.25);
+        float2 samplePoint3 = vertexIn.textureCoordinate + float2(0.25, -0.25);
+        float2 samplePoint4 = vertexIn.textureCoordinate + float2(-0.25, 0.25);
+        float4 inRadius = float4(bool4(distance(samplePoint1, center) < radius,
+                                       distance(samplePoint2, center) < radius,
+                                       distance(samplePoint3, center) < radius,
+                                       distance(samplePoint4, center) < radius));
+        float alpha = dot(inRadius, 0.25);
+        float4 result = float4(currentColor.rgb, alpha);
+        return result;
+    }
+
 }
