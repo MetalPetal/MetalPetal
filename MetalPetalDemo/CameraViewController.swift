@@ -55,6 +55,7 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
             print("\(error)")
         }
         
+        self.renderView.contentMode = .scaleAspectFit
         self.renderView.context = self.context
         
         pixelBufferPool = try? MTICVPixelBufferPool(pixelBufferWidth: 1080, pixelBufferHeight: 1920, pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)

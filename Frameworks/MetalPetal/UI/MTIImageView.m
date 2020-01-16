@@ -53,6 +53,7 @@
     renderView.delegate = self;
     renderView.paused = YES;
     renderView.enableSetNeedsDisplay = YES;
+    renderView.contentMode = self.contentMode;
     [self addSubview:renderView];
     _renderView = renderView;
     _drawsImmediately = NO;
@@ -84,6 +85,11 @@
 - (void)setContext:(MTIContext *)context {
     _context = context;
     _renderView.device = context.device;
+}
+
+- (void)setContentMode:(UIViewContentMode)contentMode {
+    [super setContentMode:contentMode];
+    _renderView.contentMode = contentMode;
 }
 
 - (void)setOpaque:(BOOL)opaque {
