@@ -559,6 +559,8 @@ namespace metalpetal {
         }
     }
     
+    #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+
     fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
                                          constant float & radius [[buffer(0)]],
                                          constant float2 & center [[buffer(1)]],
@@ -573,8 +575,56 @@ namespace metalpetal {
                                        distance(samplePoint3, center) < radius,
                                        distance(samplePoint4, center) < radius));
         float alpha = dot(inRadius, 0.25);
-        float4 result = float4(currentColor.rgb, alpha);
+        float4 result = currentColor;
+        result.a *= alpha;
         return result;
     }
-
+    
+    #else
+    
+    fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
+                                constant float4 & radius [[buffer(0)]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]]) {
+        float2 textureCoordinate = vertexIn.textureCoordinate * float2(sourceTexture.get_width(), sourceTexture.get_height());
+        //lt rt rb lb
+        float2 lt = float2(radius[0], radius[0]);
+        float2 rt = float2(sourceTexture.get_width() - radius[1], radius[1]);
+        float2 rb = float2(sourceTexture.get_width() - radius[2], sourceTexture.get_height() - radius[2]);
+        float2 lb = float2(radius[3], sourceTexture.get_height() - radius[3]);
+        
+        float r;
+        float2 center;
+        if (textureCoordinate.x < lt.x && textureCoordinate.y < lt.y) {
+            center = lt;
+            r = radius[0];
+        } else if (textureCoordinate.x > rt.x && textureCoordinate.y < rt.y) {
+            center = rt;
+            r = radius[1];
+        } else if (textureCoordinate.x > rb.x && textureCoordinate.y > rb.y) {
+            center = rb;
+            r = radius[2];
+        } else if (textureCoordinate.x < lb.x && textureCoordinate.y > lb.y) {
+            center = lb;
+            r = radius[3];
+        } else {
+            return sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+        }
+        
+        //4xAA
+        float2 samplePoint1 = textureCoordinate + float2(-0.25, -0.25);
+        float2 samplePoint2 = textureCoordinate + float2(0.25, 0.25);
+        float2 samplePoint3 = textureCoordinate + float2(0.25, -0.25);
+        float2 samplePoint4 = textureCoordinate + float2(-0.25, 0.25);
+        float4 inRadius = float4(bool4(distance(samplePoint1, center) < r,
+                                       distance(samplePoint2, center) < r,
+                                       distance(samplePoint3, center) < r,
+                                       distance(samplePoint4, center) < r));
+        float f = dot(inRadius, 0.25);
+        float4 result = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+        result.a *= f;
+        return result;
+    }
+    
+    #endif
 }
