@@ -60,6 +60,9 @@ public class MTIAsyncVideoCompositionRequestHandler {
         }
         assert(request.renderContext.renderTransform.isIdentity == true)
         let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+        if track.preferredTransform.isIdentity {
+            return image
+        }
         transformFilter.inputImage = image
         var transform = track.preferredTransform
         transform.tx = 0
