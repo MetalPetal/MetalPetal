@@ -74,7 +74,7 @@ NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDoma
         pixelFormat = _pixelFormat;
     }
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height usage:MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead] error:error];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate] error:error];
     if (!renderTarget) {
         return nil;
     }
@@ -192,7 +192,9 @@ NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDoma
         return NO;
     }
     
-    id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:[MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO] planeIndex:0 error:&error];
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
+    textureDescriptor.storageMode = MTLStorageModePrivate;
+    id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;

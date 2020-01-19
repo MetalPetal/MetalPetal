@@ -118,9 +118,10 @@
         mtlTextureDescriptor.depth = _dimensions.depth;
         mtlTextureDescriptor.pixelFormat = pixelFormat;
         mtlTextureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
+        mtlTextureDescriptor.storageMode = MTLStorageModePrivate;
         textureDescriptor = [mtlTextureDescriptor newMTITextureDescriptor];
     } else {
-        textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead];
+        textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate];
     }
 
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];

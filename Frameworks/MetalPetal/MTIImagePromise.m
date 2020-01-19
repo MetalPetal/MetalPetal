@@ -128,6 +128,11 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     if (!texture) {
         return nil;
     }
+    if (@available(iOS 12.0, macOS 10.14, *)) {
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder optimizeContentsForGPUAccess:texture];
+        [blitCommandEncoder endEncoding];
+    }
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 
@@ -215,7 +220,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         _bounds = bounds;
         _isOpaque = isOpaque;
         _dimensions = (MTITextureDimensions){ciImage.extent.size.width, ciImage.extent.size.height, 1};
-        _textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead];
+        _textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:options.destinationPixelFormat width:ciImage.extent.size.width height:ciImage.extent.size.height mipmapped:NO usage:MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate];
         _options = [options copy];
     }
     return self;
@@ -320,6 +325,7 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     textureDescriptor.height = 1;
     textureDescriptor.depth = 1;
     textureDescriptor.textureType = MTLTextureType2D;
+    textureDescriptor.usage = MTLTextureUsageShaderRead;
     if (_sRGB) {
         textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
     } else {
@@ -336,6 +342,13 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     simd_float4 floatColor = simd_clamp(MTIColorToFloat4(_color), simd_make_float4(0,0,0,0), simd_make_float4(1,1,1,1)) * 255.0;
     uint8_t colors[4] = {round(floatColor.b), round(floatColor.g), round(floatColor.r), round(floatColor.a)};
     [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:colors bytesPerRow:4 * textureDescriptor.width bytesPerImage:4 * textureDescriptor.width * textureDescriptor.height];
+    
+    if (@available(iOS 12.0, macOS 10.14, *)) {
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder optimizeContentsForGPUAccess:texture];
+        [blitCommandEncoder endEncoding];
+    }
+    
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }
@@ -401,15 +414,24 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
     textureDescriptor.depth = _dimensions.depth;
     textureDescriptor.textureType = MTLTextureType2D;
     textureDescriptor.pixelFormat = _pixelFormat;
+    textureDescriptor.usage = MTLTextureUsageShaderRead;
     //It's not safe to reuse a GPU texture here, 'cause we're going to fill its content using CPU.
     id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor];
-    [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
     if (!texture) {
         if (error) {
             *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
         }
         return nil;
     }
+    
+    [texture replaceRegion:MTLRegionMake2D(0, 0, textureDescriptor.width, textureDescriptor.height) mipmapLevel:0 slice:0 withBytes:_data.bytes bytesPerRow:_bytesPerRow bytesPerImage:_bytesPerRow * textureDescriptor.height];
+    
+    if (@available(iOS 12.0, macOS 10.14, *)) {
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder optimizeContentsForGPUAccess:texture];
+        [blitCommandEncoder endEncoding];
+    }
+    
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:texture];
     return renderTarget;
 }

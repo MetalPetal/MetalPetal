@@ -74,11 +74,12 @@
     NSUInteger bufferSize = _dimensions.width * _dimensions.height * bytesPerComponent;
     NSAssert(bufferSize >= [kernel histogramSizeForSourceFormat:resolution.texture.pixelFormat], @"Buffer too small.");
     
-    id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithLength:bufferSize options:MTLResourceCPUCacheModeDefaultCache];
+    id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithLength:bufferSize options:MTLResourceStorageModePrivate];
     [kernel encodeToCommandBuffer:renderingContext.commandBuffer sourceTexture:resolution.texture histogram:buffer histogramOffset:0];
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR32Uint width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;
+    textureDescriptor.storageMode = MTLStorageModePrivate;
     
     MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithTexture:[buffer newTextureWithDescriptor:textureDescriptor offset:0 bytesPerRow:self.histogramInfo.numberOfHistogramEntries * bytesPerComponent]];
     if (error) {
