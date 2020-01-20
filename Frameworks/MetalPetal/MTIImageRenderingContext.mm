@@ -173,7 +173,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
     NSAssert(promise != nil, @"");
     auto result = currentDependencyResolutionsMap[image];
     if (!result || !promise) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Do not query resolved texture for image which is not the current resolving promise's dependency." userInfo:nil];
+        [NSException raise:NSInternalInconsistencyException format:@"Do not query resolved texture for image which is not the current resolving promise's dependency. (Promise: %@, Image: %@)", promise, image];
     }
     return result;
 }
