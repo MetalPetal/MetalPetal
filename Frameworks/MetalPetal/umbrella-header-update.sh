@@ -29,7 +29,7 @@ struct MetalPetalUmbrellaHeaderGenerator {
             scriptURL = currentDirectoryURL.appendingPathComponent(CommandLine.arguments[0])
         }
         let directoryURL = scriptURL.deletingLastPathComponent()
-        let privateHeaderFiles = ["MetalPetal.h","MTIPrint.h","MTIDefer.h","MTIContext+Internal.h","MTIImage+Promise.h","MTIHasher.h"]
+        let privateHeaderFiles = ["MetalPetal.h","MTIPrint.h","MTIDefer.h","MTIContext+Internal.h","MTIImage+Promise.h","MTIHasher.h","MTIImageRenderingContext+Internal.h"]
         let headerFileNames = self.headerFileNames(in: directoryURL).filter({ !privateHeaderFiles.contains($0) })
         let content = """
         // MetalPetal Umbrella Header

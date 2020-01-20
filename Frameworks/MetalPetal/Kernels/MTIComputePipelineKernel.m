@@ -15,7 +15,6 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIComputePipeline.h"
-#import "MTIDefer.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
@@ -75,28 +74,6 @@
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSError *error = nil;
     
-    NSUInteger inputResolutionsCount = self.inputImages.count;
-    id<MTIImagePromiseResolution> inputResolutions[inputResolutionsCount];
-    memset(inputResolutions, 0, sizeof inputResolutions);
-    const id<MTIImagePromiseResolution> * inputResolutionsRef = inputResolutions;
-    @MTI_DEFER {
-        for (NSUInteger index = 0; index < inputResolutionsCount; index+=1) {
-            [inputResolutionsRef[index] markAsConsumedBy:self];
-        }
-    };
-    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
-        MTIImage *image = self.inputImages[index];
-        id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:image error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        NSAssert(resolution != nil, @"");
-        inputResolutions[index] = resolution;
-    }
-    
     MTIComputePipeline *computePipeline = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
     
     if (error) {
@@ -143,10 +120,11 @@
     
     [commandEncoder setComputePipelineState:computePipeline.state];
 
-    for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
-        [commandEncoder setTexture:inputResolutions[index].texture atIndex:index];
+    NSUInteger index = 0;
+    for (MTIImage *image in self.inputImages) {
+        [commandEncoder setTexture:[renderingContext resolvedTextureForImage:image] atIndex:index];
+        index += 1;
     }
-    [commandEncoder setTexture:renderTarget.texture atIndex:inputResolutionsCount];
     
     [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     

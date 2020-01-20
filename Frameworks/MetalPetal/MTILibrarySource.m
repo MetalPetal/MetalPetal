@@ -7,7 +7,6 @@
 
 #import "MTILibrarySource.h"
 #import "MTILock.h"
-#import "MTIDefer.h"
 
 NSString * const MTIURLSchemeForLibraryWithSource = @"mti.library-source";
 

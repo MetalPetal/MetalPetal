@@ -1,26 +1,38 @@
 {
-  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
-  "swift_version" : "5.0",
+  "source" : {
+    "tag" : "1.7.0",
+    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git"
+  },
   "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
   "default_subspecs" : "Core",
-  "swift_versions" : "5.0",
+  "authors" : {
+    "YuAo" : "me@imyuao.com"
+  },
+  "prefix_header_file" : false,
+  "name" : "MetalPetal",
   "requires_arc" : true,
+  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
+  "summary" : "GPU-accelerated image and video processing framework based on Metal.",
+  "platforms" : {
+    "ios" : "9.0",
+    "osx" : "10.13"
+  },
   "subspecs" : [
     {
-      "weak_frameworks" : [
-        "MetalPerformanceShaders",
-        "MetalKit"
-      ],
-      "name" : "Core",
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "private_header_files" : [
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h",
-        "Frameworks\/MetalPetal\/MTIHasher.h"
+        "Frameworks\/MetalPetal\/MTIHasher.h",
+        "Frameworks\/MetalPetal\/MTIImageRenderingContext+Internal.h"
+      ],
+      "name" : "Core",
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
       ]
     },
     {
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}",
       "dependencies" : {
         "MetalPetal\/Core" : [
 
@@ -30,25 +42,14 @@
         "MetalPerformanceShaders",
         "MetalKit"
       ],
-      "name" : "Swift"
+      "name" : "Swift",
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}"
     }
   ],
-  "authors" : {
-    "YuAo" : "me@imyuao.com"
-  },
-  "prefix_header_file" : false,
-  "source" : {
-    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git",
-    "tag" : "1.6.0"
-  },
-  "version" : "1.6.0",
-  "summary" : "GPU-accelerated image and video processing framework based on Metal.",
-  "name" : "MetalPetal",
-  "platforms" : {
-    "ios" : "9.0",
-    "osx" : "10.13"
-  },
   "license" : {
     "type" : "MIT"
-  }
+  },
+  "swift_versions" : "5.0",
+  "version" : "1.7.0",
+  "swift_version" : "5.0"
 }

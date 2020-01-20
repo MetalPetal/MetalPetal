@@ -7,7 +7,6 @@
 
 #import "MTICVMetalTextureCache.h"
 #import "MTILock.h"
-#import "MTIDefer.h"
 
 NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErrorDomain";
 

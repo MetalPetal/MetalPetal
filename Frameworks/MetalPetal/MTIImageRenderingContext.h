@@ -17,14 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 /*! @brief Rendering context related constant for MTIContextImageAssociatedValueTableName. */
 FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTableName;
 
-@protocol MTIImagePromiseResolution <NSObject>
-
-@property (nonatomic,readonly) id<MTLTexture> texture;
-
-- (void)markAsConsumedBy:(id)consumer;
-
-@end
-
 @interface MTIImageRenderingContext : NSObject
 
 @property (nonatomic, strong, readonly) MTIContext *context;
@@ -35,9 +27,8 @@ FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTabl
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithContext:(MTIContext *)context;
-
-- (nullable id<MTIImagePromiseResolution>)resolutionForImage:(MTIImage *)image error:(NSError **)error;
+/// Use this method in -[MTIImagePromise resolveWithContext:error:] to get the resolved dependencies of the promise. The `image` parameter must be one of the resolving promise's dependencies. An exception is thrown when calling this method outside the -[MTIImagePromise resolveWithContext:error:] method or passing an invalid image.
+- (id<MTLTexture>)resolvedTextureForImage:(MTIImage *)image;
 
 @end
 

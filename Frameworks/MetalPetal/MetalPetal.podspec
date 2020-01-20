@@ -21,7 +21,8 @@ s.subspec 'Core' do |ss|
     ss.private_header_files = [
     'MTIPrint.h',
     'MTIDefer.h',
-    'MTIHasher.h'
+    'MTIHasher.h',
+    'MTIImageRenderingContext+Internal.h'
     ]
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end

@@ -11,7 +11,6 @@
 #import "MTIContext.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage+Promise.h"
-#import "MTIDefer.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTISamplerDescriptor.h"
@@ -52,18 +51,8 @@
     NSError *error = nil;
     
     NSParameterAssert(self.inputImage.alphaType == MTIAlphaTypeAlphaIsOne || self.inputImage.alphaType == MTIAlphaTypeNonPremultiplied);
-    id<MTIImagePromiseResolution> resolution = [renderingContext resolutionForImage:self.inputImage error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    NSAssert(resolution != nil, @"");
     
-    @MTI_DEFER {
-        [resolution markAsConsumedBy:self];
-    };
+    id<MTLTexture> inputTexture = [renderingContext resolvedTextureForImage:self.inputImage];
     
     MPSImageHistogramInfo info = self.histogramInfo;
     MPSImageHistogram *kernel = [[MPSImageHistogram alloc] initWithDevice:renderingContext.context.device histogramInfo:&info];
@@ -72,10 +61,10 @@
     
     NSUInteger bytesPerComponent = 4;
     NSUInteger bufferSize = _dimensions.width * _dimensions.height * bytesPerComponent;
-    NSAssert(bufferSize >= [kernel histogramSizeForSourceFormat:resolution.texture.pixelFormat], @"Buffer too small.");
+    NSAssert(bufferSize >= [kernel histogramSizeForSourceFormat:inputTexture.pixelFormat], @"Buffer too small.");
     
     id<MTLBuffer> buffer = [renderingContext.context.device newBufferWithLength:bufferSize options:MTLResourceStorageModePrivate];
-    [kernel encodeToCommandBuffer:renderingContext.commandBuffer sourceTexture:resolution.texture histogram:buffer histogramOffset:0];
+    [kernel encodeToCommandBuffer:renderingContext.commandBuffer sourceTexture:inputTexture histogram:buffer histogramOffset:0];
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR32Uint width:_dimensions.width height:_dimensions.height mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageShaderRead;

@@ -25,6 +25,7 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import "MTICoreImageRendering.h"
 #import "MTIRenderTask.h"
+#import "MTIImageRenderingContext+Internal.h"
 
 @implementation MTIContext (Rendering)
 

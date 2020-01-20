@@ -11,7 +11,6 @@
 #import "MTIContext.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage+Promise.h"
-#import "MTIDefer.h"
 #import "MTIImageRenderingContext.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTISamplerDescriptor.h"
@@ -99,16 +98,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     NSParameterAssert(self.inputLightnessImage.alphaType == MTIAlphaTypeAlphaIsOne);
     
     NSError *error = nil;
-    id<MTIImagePromiseResolution> inputLightnessImageResolution = [renderingContext resolutionForImage:self.inputLightnessImage error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    @MTI_DEFER {
-        [inputLightnessImageResolution markAsConsumedBy:self];
-    };
+    id<MTLTexture> inputLightnessImageTexture = [renderingContext resolvedTextureForImage:self.inputLightnessImage];
     
     MTICLAHELUTKernelState *kernelState = [renderingContext.context kernelStateForKernel:self.kernel configuration:nil error:&error];
     if (error) {
@@ -131,7 +121,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     MPSImageHistogram *histogramKernel = kernelState.histogramKernel;
     
     //todo: Optimize buffer alloc here
-    size_t histogramSize = [histogramKernel histogramSizeForSourceFormat:inputLightnessImageResolution.texture.pixelFormat];
+    size_t histogramSize = [histogramKernel histogramSizeForSourceFormat:inputLightnessImageTexture.pixelFormat];
     id<MTLBuffer> histogramBuffer = [renderingContext.context.device newBufferWithLength:histogramSize * self.numberOfLUTs options:MTLResourceStorageModePrivate];
     
     for (NSUInteger tileIndex = 0; tileIndex < self.numberOfLUTs; tileIndex += 1) {
@@ -139,7 +129,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
         NSInteger row = tileIndex / self.tileGridSize.width;
         histogramKernel.clipRectSource = MTLRegionMake2D(colum * self.tileSize.width, row * self.tileSize.height, self.tileSize.width, self.tileSize.height);
         [histogramKernel encodeToCommandBuffer:renderingContext.commandBuffer
-                                 sourceTexture:inputLightnessImageResolution.texture
+                                 sourceTexture:inputLightnessImageTexture
                                      histogram:histogramBuffer
                                histogramOffset:tileIndex * histogramSize];
     }

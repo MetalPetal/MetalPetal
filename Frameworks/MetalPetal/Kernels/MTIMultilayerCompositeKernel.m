@@ -241,16 +241,6 @@
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     
     NSError *error = nil;
-    id<MTIImagePromiseResolution> backgroundImageResolution = [renderingContext resolutionForImage:self.backgroundImage error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    @MTI_DEFER {
-        [backgroundImageResolution markAsConsumedBy:self];
-    };
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
 
@@ -260,49 +250,6 @@
             *inOutError = error;
         }
         return nil;
-    }
-    
-    //calc layerContentResolutions early to avoid recursive command encoding.
-    const NSUInteger layerCount = self.layers.count;
-    
-    id<MTIImagePromiseResolution> layerContentResolutions[layerCount];
-    memset(layerContentResolutions, 0, sizeof layerContentResolutions);
-    const id<MTIImagePromiseResolution> * layerContentResolutionsRef = layerContentResolutions;
-
-    id<MTIImagePromiseResolution> layerCompositingMaskResolutions[layerCount];
-    memset(layerCompositingMaskResolutions, 0, sizeof layerCompositingMaskResolutions);
-    const id<MTIImagePromiseResolution> * layerCompositingMaskResolutionsRef = layerCompositingMaskResolutions;
-    
-    @MTI_DEFER {
-        for (NSUInteger index = 0; index < layerCount; index += 1) {
-            [layerContentResolutionsRef[index] markAsConsumedBy:self];
-            [layerCompositingMaskResolutionsRef[index] markAsConsumedBy:self];
-        }
-    };
-    
-    for (NSUInteger index = 0; index < layerCount; index += 1) {
-        MTILayer *layer = self.layers[index];
-        
-        NSError *error = nil;
-        id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        layerContentResolutions[index] = contentResolution;
-        
-        if (layer.compositingMask) {
-            id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask.content error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
-                }
-                return nil;
-            }
-            layerCompositingMaskResolutions[index] = compositingMaskResolution;
-        }
     }
     
     MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate];
@@ -408,7 +355,7 @@
     
     [commandEncoder setRenderPipelineState:renderPipeline.state];
 
-    [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
+    [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:self.backgroundImage] atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
     
     [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
@@ -417,10 +364,8 @@
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         MTILayer *layer = self.layers[index];
         
-        id<MTIImagePromiseResolution> compositingMaskResolution = nil;
         if (layer.compositingMask) {
             NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
-            compositingMaskResolution = layerCompositingMaskResolutions[index];
             
             MTIRenderPipeline *renderPipeline;
             if (layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied) {
@@ -430,14 +375,13 @@
             }
             [commandEncoder setRenderPipelineState:renderPipeline.state];
             
-            [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:0];
+            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:0];
             [commandEncoder setFragmentSamplerState:compositingMaskSamplerStates[index] atIndex:0];
             
             [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
         }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
-        id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
         CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
         CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
@@ -460,7 +404,7 @@
         simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
-        [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
+        [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
         [commandEncoder setFragmentSamplerState:layerSamplerStates[index] atIndex:0];
         
         //parameters
@@ -487,16 +431,6 @@
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     
     NSError *error = nil;
-    id<MTIImagePromiseResolution> backgroundImageResolution = [renderingContext resolutionForImage:self.backgroundImage error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    @MTI_DEFER {
-        [backgroundImageResolution markAsConsumedBy:self];
-    };
     
     MTLPixelFormat pixelFormat = (self.outputPixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : self.outputPixelFormat;
     
@@ -506,49 +440,6 @@
             *inOutError = error;
         }
         return nil;
-    }
-    
-    //calc layerContentResolutions early to avoid recursive command encoding.
-    const NSUInteger layerCount = self.layers.count;
-    
-    id<MTIImagePromiseResolution> layerContentResolutions[layerCount];
-    memset(layerContentResolutions, 0, sizeof layerContentResolutions);
-    const id<MTIImagePromiseResolution> * layerContentResolutionsRef = layerContentResolutions;
-    
-    id<MTIImagePromiseResolution> layerCompositingMaskResolutions[layerCount];
-    memset(layerCompositingMaskResolutions, 0, sizeof layerCompositingMaskResolutions);
-    const id<MTIImagePromiseResolution> * layerCompositingMaskResolutionsRef = layerCompositingMaskResolutions;
-    
-    @MTI_DEFER {
-        for (NSUInteger index = 0; index < layerCount; index += 1) {
-            [layerContentResolutionsRef[index] markAsConsumedBy:self];
-            [layerCompositingMaskResolutionsRef[index] markAsConsumedBy:self];
-        }
-    };
-    
-    for (NSUInteger index = 0; index < layerCount; index += 1) {
-        MTILayer *layer = self.layers[index];
-        
-        NSError *error = nil;
-        id<MTIImagePromiseResolution> contentResolution = [renderingContext resolutionForImage:layer.content error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        layerContentResolutions[index] = contentResolution;
-        
-        if (layer.compositingMask) {
-            id<MTIImagePromiseResolution> compositingMaskResolution = [renderingContext resolutionForImage:layer.compositingMask.content error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
-                }
-                return nil;
-            }
-            layerCompositingMaskResolutions[index] = compositingMaskResolution;
-        }
     }
     
     MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate];
@@ -622,7 +513,7 @@
         renderPipeline = [kernelState passthroughRenderPipeline];
     }
     [commandEncoder setRenderPipelineState:renderPipeline.state];
-    [commandEncoder setFragmentTexture:backgroundImageResolution.texture atIndex:0];
+    [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:self.backgroundImage] atIndex:0];
     [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
     [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
@@ -640,17 +531,14 @@
         
         MTILayer *layer = self.layers[index];
         
-        id<MTIImagePromiseResolution> compositingMaskResolution = nil;
         if (layer.compositingMask) {
             NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
             //Configuration not supported on macOS currently.
             NSParameterAssert(!(layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied && layer.compositingMask.component != MTIColorComponentAlpha));
-            compositingMaskResolution = layerCompositingMaskResolutions[index];
-            [commandEncoder setFragmentTexture:compositingMaskResolution.texture atIndex:2];
+            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:2];
         }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
-        id<MTIImagePromiseResolution> contentResolution = layerContentResolutions[index];
         
         CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
         CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
@@ -673,7 +561,7 @@
         simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
-        [commandEncoder setFragmentTexture:contentResolution.texture atIndex:0];
+        [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
         [commandEncoder setFragmentSamplerState:layerSamplerStates[index] atIndex:0];
         
         [commandEncoder setFragmentTexture:renderTarget.texture atIndex:1];
