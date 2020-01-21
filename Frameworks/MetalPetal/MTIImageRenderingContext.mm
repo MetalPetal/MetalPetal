@@ -138,8 +138,8 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @interface MTIImageRenderingContext () {
     std::unordered_map<__unsafe_unretained id<MTIImagePromise>, MTIImagePromiseRenderTarget __strong *, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> _resolvedPromises;
     MTIImageRenderingDependencyGraph *_dependencyGraph;
-    std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLTexture>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> currentDependencyResolutionsMap;
-    __unsafe_unretained id<MTIImagePromise> currentResolvingPromise;
+    std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLTexture>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> _currentDependencyResolutionsMap;
+    __unsafe_unretained id<MTIImagePromise> _currentResolvingPromise;
 }
 
 @end
@@ -164,9 +164,9 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 }
 
 - (id<MTLTexture>)resolvedTextureForImage:(MTIImage *)image {
-    auto promise = currentResolvingPromise;
+    auto promise = _currentResolvingPromise;
     NSAssert(promise != nil, @"");
-    auto result = currentDependencyResolutionsMap[image];
+    auto result = _currentDependencyResolutionsMap[image];
     if (!result || !promise) {
         [NSException raise:NSInternalInconsistencyException format:@"Do not query resolved texture for image which is not the current resolving promise's dependency. (Promise: %@, Image: %@)", promise, image];
     }
@@ -236,14 +236,14 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             }
             
             if (!error) {
-                currentDependencyResolutionsMap = map;
+                _currentDependencyResolutionsMap = map;
                 
-                currentResolvingPromise = promise;
+                _currentResolvingPromise = promise;
                 
                 renderTarget = [promise resolveWithContext:self error:&error];
                 //New render target got from promise resolving, texture ref-count is 1. [B]
                 
-                currentResolvingPromise = nil;
+                _currentResolvingPromise = nil;
             }
             
             for (NSUInteger index = 0; index < inputResolutionsCount; index += 1) {
