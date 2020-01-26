@@ -45,7 +45,10 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     private func update(asset: AVAsset) {
         self.roundCornerFilter.radius = SIMD4<Float>(repeating: Float(min(asset.presentationVideoSize!.width,asset.presentationVideoSize!.height))/2)
         
-        let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) { request in
+        let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) { [weak self] request in
+            guard let `self` = self else {
+                return request.anySourceImage
+            }
             let scale = CGFloat(abs(sin(request.compositionTime.seconds))) * 32
             self.halftoneFilter.scale = Float(scale)
             return FilterGraph.makeImage { output in
