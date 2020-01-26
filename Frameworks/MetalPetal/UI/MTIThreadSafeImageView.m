@@ -275,10 +275,9 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
     
     [self invalidateCurrentDrawable];
     
+    MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] initWithDrawableProvider:self resizingMode:resizingMode];
+
     if (imageToRender) {
-        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-        request.drawableProvider = self;
-        request.resizingMode = resizingMode;
         NSError *error;
         [context startTaskToRenderImage:image
                   toDrawableWithRequest:request
@@ -296,7 +295,6 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
         }
     } else {
         //Clear current drawable.
-        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
         MTLRenderPassDescriptor *renderPassDescriptor = [self renderPassDescriptorForRequest:request];
         id<MTLDrawable> drawable = [self drawableForRequest:request];
         if (renderPassDescriptor && drawable) {

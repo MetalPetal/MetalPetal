@@ -10,9 +10,10 @@
 
 @implementation MTIDrawableRenderingRequest
 
-- (instancetype)init {
+- (instancetype)initWithDrawableProvider:(id<MTIDrawableProvider>)drawableProvider resizingMode:(MTIDrawableRenderingResizingMode)resizingMode {
     if (self = [super init]) {
-        _identifier = [NSUUID UUID];
+        _drawableProvider = drawableProvider;
+        _resizingMode = resizingMode;
     }
     return self;
 }

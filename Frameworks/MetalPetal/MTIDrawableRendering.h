@@ -29,13 +29,15 @@ typedef NS_ENUM(NSUInteger, MTIDrawableRenderingResizingMode) {
 
 @interface MTIDrawableRenderingRequest : NSObject
 
-@property (nonatomic, copy, readonly) NSUUID *identifier;
+@property (nonatomic, weak, readonly) id<MTIDrawableProvider> drawableProvider;
 
-@property (nonatomic, weak) id<MTIDrawableProvider> drawableProvider;
+@property (nonatomic, readonly) MTIDrawableRenderingResizingMode resizingMode;
 
-@property (nonatomic) MTIDrawableRenderingResizingMode resizingMode;
+- (instancetype)initWithDrawableProvider:(id<MTIDrawableProvider>)drawableProvider resizingMode:(MTIDrawableRenderingResizingMode)resizingMode;
 
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 @end
 

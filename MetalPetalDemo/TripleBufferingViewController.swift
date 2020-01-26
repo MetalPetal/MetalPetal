@@ -113,9 +113,7 @@ class TripleBufferingViewController: UIViewController, MTKViewDelegate {
         let outputDescriptor = MTIRenderPassOutputDescriptor(dimensions: MTITextureDimensions(width: 750, height: 750, depth: 1), pixelFormat: .bgra8Unorm, loadAction: .clear, storeAction: .store)
         let image = MTIRenderCommand.images(byPerforming: [renderCommand], outputDescriptors: [outputDescriptor]).first!
         do {
-            let request = MTIDrawableRenderingRequest()
-            request.drawableProvider = self.renderView
-            request.resizingMode = .aspect
+            let request = MTIDrawableRenderingRequest(drawableProvider: view, resizingMode: .aspect)
             try self.context.startTask(toRender: image, toDrawableWithRequest: request) { (task) in
                 bufferState.reclaimBuffer()
             }

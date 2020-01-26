@@ -216,9 +216,7 @@
             kdebug_signpost_start(1, 0, 0, 0, 1);
         }
         MTIImage *outputImage = [self saturationTestOutputImage];
-        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-        request.drawableProvider = self.renderView;
-        request.resizingMode = MTIDrawableRenderingResizingModeAspect;
+        MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] initWithDrawableProvider:view resizingMode:MTIDrawableRenderingResizingModeAspect];
         NSError *error;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
         if (@available(iOS 10.0, *)) {

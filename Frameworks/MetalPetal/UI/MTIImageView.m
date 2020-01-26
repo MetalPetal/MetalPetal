@@ -202,9 +202,7 @@
             }
             MTIImage *imageToRender = _image;
             if (imageToRender) {
-                MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] init];
-                request.drawableProvider = view;
-                request.resizingMode = _resizingMode;
+                MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] initWithDrawableProvider:view resizingMode:_resizingMode];
                 NSError *error;
                 [context renderImage:imageToRender toDrawableWithRequest:request error:&error];
                 if (error) {
