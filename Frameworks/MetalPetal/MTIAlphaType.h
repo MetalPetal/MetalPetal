@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// Describe different ways to represent the opacity of a color value. See also: https://microsoft.github.io/Win2D/html/PremultipliedAlpha.htm
-typedef NS_ENUM(NSInteger, MTIAlphaType) {
+typedef NS_CLOSED_ENUM(NSInteger, MTIAlphaType) {
     /// MTIAlphaTypeUnknown The alpha type is unknown.
     MTIAlphaTypeUnknown = 0,
     
