@@ -16,7 +16,6 @@ public struct MTICoreImageKernel {
     
     public enum Error: Swift.Error {
         case failedToCreateCIImage
-        case outputDimensionsMismatch
         case nilOutput
     }
     
@@ -48,11 +47,22 @@ public struct MTICoreImageKernel {
             return self
         }
         
+        private func ciImage(for mtiImage: MTIImage, from texture: MTLTexture) throws -> CIImage {
+            let options: [CIImageOption: Any] = [.colorSpace: colorSpace ?? NSNull()]
+            if let image = CIImage(mtlTexture: texture, options: options) {
+                if mtiImage.alphaType == .nonPremultiplied {
+                    return image.premultiplyingAlpha().oriented(.downMirrored)
+                } else {
+                    return image.oriented(.downMirrored)
+                }
+            } else {
+                throw Error.failedToCreateCIImage
+            }
+        }
+        
         func resolve(with renderingContext: MTIImageRenderingContext) throws -> MTIImagePromiseRenderTarget {
             let inputCIImages: [CIImage] = try dependencies.map({
                 let texture = renderingContext.resolvedTexture(for: $0)
-                let options: [CIImageOption: Any] = [.colorSpace: colorSpace ?? NSNull()]
-                
                 // CoreImage does not support yCbCr8_420_2p, yCbCr8_420_2p_srgb pixel format. We have to convert.
                 if texture.pixelFormat == .yCbCr8_420_2p || texture.pixelFormat == .yCbCr8_420_2p_srgb {
                     let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: texture.width, height: texture.height, mipmapped: false)
@@ -74,31 +84,15 @@ public struct MTICoreImageKernel {
                     commandEncoder.setFragmentSamplerState(try renderingContext.context.samplerState(with: MTISamplerDescriptor.default), index: 0)
                     MTIVertices.fullViewportSquare.encodeDrawCall(with: commandEncoder, context: pipeline)
                     commandEncoder.endEncoding()
-                    if let image = CIImage(mtlTexture: tempTexture, options: options) {
-                        if $0.alphaType == .nonPremultiplied {
-                            return image.premultiplyingAlpha()
-                        } else {
-                            return image
-                        }
-                    }
-                }
-                if let image = CIImage(mtlTexture: texture, options: options) {
-                    if $0.alphaType == .nonPremultiplied {
-                        return image.premultiplyingAlpha()
-                    } else {
-                        return image
-                    }
+                    return try ciImage(for: $0, from: tempTexture)
                 } else {
-                    throw Error.failedToCreateCIImage
+                    return try ciImage(for: $0, from: texture)
                 }
             })
             let renderTarget = try renderingContext.context.makeRenderTarget(resuableTextureDescriptor: MTITextureDescriptor(pixelFormat: pixelFormat == .invalid ? renderingContext.context.workingPixelFormat : pixelFormat, width: dimensions.width, height: dimensions.height, mipmapped: false, usage: [.shaderRead,.shaderWrite], resourceOptions: .storageModePrivate))
             let outputCIImage = try filter(inputCIImages)
-            if UInt(outputCIImage.extent.width) != dimensions.width || UInt(outputCIImage.extent.height) != dimensions.height {
-                throw Error.outputDimensionsMismatch
-            }
             let renderDestination = CIRenderDestination(mtlTexture: renderTarget.texture!, commandBuffer: renderingContext.commandBuffer)
-            renderDestination.isFlipped = false
+            renderDestination.isFlipped = true
             switch alphaType {
             case .alphaIsOne:
                 renderDestination.alphaMode = .none
@@ -178,18 +172,24 @@ public final class MTICoreImageUnaryFilter: MTIUnaryFilter {
     
     public var inputImage: MTIImage?
     
+    public var outputImageSize: CGSize?
+    
     public var outputImage: MTIImage? {
         guard let inputImage = self.inputImage, let filter = filter?.copy() as? CIFilter else {
             return nil
         }
-        let placeholder = CIImage(color: CIColor()).cropped(to: inputImage.extent)
-        filter.setValue(placeholder, forKey: kCIInputImageKey)
         let dimensions: MTITextureDimensions
-        if let output = filter.outputImage {
-            dimensions = MTITextureDimensions(cgSize: output.extent.size)
+        if let outputImageSize = self.outputImageSize {
+            dimensions = MTITextureDimensions(cgSize: outputImageSize)
         } else {
-            assertionFailure()
-            dimensions = inputImage.dimensions
+            let placeholder = CIImage(color: CIColor()).cropped(to: inputImage.extent)
+            filter.setValue(placeholder, forKey: kCIInputImageKey)
+            if let output = filter.outputImage {
+                dimensions = MTITextureDimensions(cgSize: output.extent.size)
+            } else {
+                assertionFailure()
+                dimensions = inputImage.dimensions
+            }
         }
         return MTICoreImageKernel.image(byProcessing: inputImage, using: filter, colorSpace: colorSpace, outputDimensions: dimensions, outputPixelFormat: outputPixelFormat, outputAlphaType: .nonPremultiplied)
     }
