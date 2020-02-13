@@ -21,6 +21,7 @@ An image processing framework based on Metal.
     - [Advantages over Core Image](#advantages-over-core-image)
     - [Extensions](#extensions)
         - [Working with SceneKit](#working-with-scenekit)
+        - [Working with Core Image](#working-with-core-image)
         - [Working with JavaScript](#working-with-javascript)
         - [Texture Loader](#texture-loader)
 - [Builtin Filters](#builtin-filters)
@@ -150,6 +151,14 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 You can use `MTISCNSceneRenderer` to generate `MTIImage`s from a `SCNScene`. You may want to handle the SceneKit renderer's linear RGB color space, see issue [#76 The image from SceneKit is darker than normal](https://github.com/MetalPetal/MetalPetal/issues/76).
 
+#### Working with Core Image
+
+You can create `MTIImage`s from `CIImage`s.
+
+You can render a `MTIImage` to a `CIImage` using a `MTIContext`.
+
+You can use a `CIFilter` directly with `MTICoreImageKernel` or the `MTICoreImageUnaryFilter` class.
+
 #### Working with JavaScript
 
 See [MetalPetalJS](https://github.com/MetalPetal/MetalPetalJS)
@@ -264,6 +273,8 @@ if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
 
 - Dot Screen
 
+- All Core Image Filters
+
 ## Example Code
 
 ### Create a `MTIImage`
@@ -357,7 +368,7 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 - Use `MTIImage.cachePolicy` wisely.
     
-    Use `MTIImageCachePolicyTransient` when you do not want to preserve the render result of a image, for example when the image is just an intermediate result in a filter chain, so the underlying texture of the render result can be reused. It is the most memory efficient option. However, when you ask the context to render a previously rendered image, it may re-render that image since its underlying texture has been reused.
+    Use `MTIImageCachePolicyTransient` when you do not want to preserve the render result of an image, for example when the image is just an intermediate result in a filter chain, so the underlying texture of the render result can be reused. It is the most memory efficient option. However, when you ask the context to render a previously rendered image, it may re-render that image since its underlying texture has been reused.
     
     By default, a filter's output image has the `transient` policy.
 
