@@ -176,7 +176,7 @@ public final class MTICoreImageUnaryFilter: MTIUnaryFilter {
     
     public var outputImage: MTIImage? {
         guard let inputImage = self.inputImage, let filter = filter?.copy() as? CIFilter else {
-            return nil
+            return self.inputImage
         }
         let dimensions: MTITextureDimensions
         if let outputImageSize = self.outputImageSize {
