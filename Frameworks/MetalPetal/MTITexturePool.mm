@@ -193,12 +193,12 @@
 - (MTIReusableTexture *)newTextureWithDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
     [_lock lock];
 
-    __auto_type avaliableTextures = _textureCache[textureDescriptor];
+    __auto_type availableTextures = _textureCache[textureDescriptor];
     
     id<MTLTexture> texture = nil;
     
-    if (avaliableTextures.count > 0) {
-        texture = [avaliableTextures popObject];
+    if (availableTextures.count > 0) {
+        texture = [availableTextures popObject];
     }
     
     [_lock unlock];
@@ -221,12 +221,12 @@
 - (void)returnTexture:(id<MTLTexture>)texture textureDescriptor:(MTITextureDescriptor *)textureDescriptor {
     [_lock lock];
     
-    __auto_type avaliableTextures = _textureCache[textureDescriptor];
-    if (!avaliableTextures) {
-        avaliableTextures = [[MTIStack alloc] init];
-        _textureCache[textureDescriptor] = avaliableTextures;
+    __auto_type availableTextures = _textureCache[textureDescriptor];
+    if (!availableTextures) {
+        availableTextures = [[MTIStack alloc] init];
+        _textureCache[textureDescriptor] = availableTextures;
     }
-    [avaliableTextures pushObject:texture];
+    [availableTextures pushObject:texture];
     
     [_lock unlock];
 }
@@ -337,12 +337,12 @@ NS_AVAILABLE(10_15, 13_0)
     
     NSUInteger size = [textureDescriptor heapTextureSizeAndAlignWithDevice:_device].size;
     MTIHeapTextureReuseKey *key = [[MTIHeapTextureReuseKey alloc] initWithSize:size resourceOptions:textureDescriptor.resourceOptions];
-    __auto_type avaliableHeaps = _heaps[key];
+    __auto_type availableHeaps = _heaps[key];
     
     id<MTLHeap> heap = nil;
     
-    if (avaliableHeaps.count > 0) {
-        heap = [avaliableHeaps popObject];
+    if (availableHeaps.count > 0) {
+        heap = [availableHeaps popObject];
     }
     
     [_lock unlock];
@@ -383,13 +383,13 @@ NS_AVAILABLE(10_15, 13_0)
     
     NSUInteger size = [textureDescriptor heapTextureSizeAndAlignWithDevice:_device].size;
     MTIHeapTextureReuseKey *key = [[MTIHeapTextureReuseKey alloc] initWithSize:size resourceOptions:textureDescriptor.resourceOptions];
-    __auto_type avaliableHeaps = _heaps[key];
-    if (!avaliableHeaps) {
-        avaliableHeaps = [[MTIStack alloc] init];
-        _heaps[key] = avaliableHeaps;
+    __auto_type availableHeaps = _heaps[key];
+    if (!availableHeaps) {
+        availableHeaps = [[MTIStack alloc] init];
+        _heaps[key] = availableHeaps;
     }
     [texture makeAliasable];
-    [avaliableHeaps pushObject:texture.heap];
+    [availableHeaps pushObject:texture.heap];
     
     [_lock unlock];
 }

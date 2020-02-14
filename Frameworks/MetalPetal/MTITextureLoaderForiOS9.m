@@ -15,7 +15,7 @@ NSString * const MTITextureLoaderForiOS9ErrorDomain = @"MTITextureLoaderForiOS9E
 
 typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS9Error) {
     MTITextureLoaderForiOS9ErrorCannotDecodeImage = 1001,
-    MTITextureLoaderForiOS9ErrorInvaildTextureCache = 1002,
+    MTITextureLoaderForiOS9ErrorInvalidTextureCache = 1002,
     MTITextureLoaderForiOS9ErrorFailedToAllocateMemory = 1003,
     MTITextureLoaderForiOS9ErrorFeatureNotSupported = 1004,
     MTITextureLoaderForiOS9ErrorCannotRenderImage = 1005
@@ -49,7 +49,7 @@ typedef NS_ERROR_ENUM(MTITextureLoaderForiOS9ErrorDomain, MTITextureLoaderForiOS
     
     if (!_textureCache) {
         if (error) {
-            *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorInvaildTextureCache userInfo:nil];
+            *error = [[NSError alloc] initWithDomain:MTITextureLoaderForiOS9ErrorDomain code:MTITextureLoaderForiOS9ErrorInvalidTextureCache userInfo:nil];
         }
         return nil;
     }
