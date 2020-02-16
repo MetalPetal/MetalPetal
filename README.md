@@ -157,7 +157,7 @@ You can create `MTIImage`s from `CIImage`s.
 
 You can render a `MTIImage` to a `CIImage` using a `MTIContext`.
 
-You can use a `CIFilter` directly with `MTICoreImageKernel` or the `MTICoreImageUnaryFilter` class.
+You can use a `CIFilter` directly with `MTICoreImageKernel` or the `MTICoreImageUnaryFilter` class. (Swift Only)
 
 #### Working with JavaScript
 
@@ -604,7 +604,7 @@ use_frameworks!
 
 pod 'MetalPetal'
 
-# Swift extensions (optional).
+# If you are using Swift
 pod 'MetalPetal/Swift'
 
 ```
