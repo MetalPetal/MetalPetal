@@ -224,7 +224,6 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:targetPixelFormat width:frameWidth height:frameHeight mipmapped:NO];
     textureDescriptor.usage = MTLTextureUsageShaderWrite | MTLTextureUsageRenderTarget;
-    textureDescriptor.storageMode = MTLStorageModePrivate;
     id<MTICVMetalTexture> renderTexture = [self.coreVideoTextureBridge newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (!renderTexture || error) {
         if (inOutError) {

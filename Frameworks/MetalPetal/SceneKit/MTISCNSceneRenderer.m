@@ -193,7 +193,6 @@ NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDoma
     }
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
-    textureDescriptor.storageMode = MTLStorageModePrivate;
     id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (error) {
         if (inOutError) {

@@ -251,7 +251,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 NSError *error = nil;
                 MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
                 textureDescriptor.usage = MTLTextureUsageShaderRead;
-                textureDescriptor.storageMode = MTLStorageModePrivate;
                 id<MTICVMetalTexture> cvMetalTexture = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:_pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
                 if (cvMetalTexture) {
                     [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
@@ -291,7 +290,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 size_t plane0Height = CVPixelBufferGetHeightOfPlane(self.pixelBuffer, 0);
                 MTLTextureDescriptor *yTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatR8Unorm width:plane0Width height:plane0Height mipmapped:NO];
                 yTextureDescriptor.usage = MTLTextureUsageShaderRead;
-                yTextureDescriptor.storageMode = MTLStorageModePrivate;
                 id<MTICVMetalTexture> cvMetalTextureY = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:_pixelBuffer textureDescriptor:yTextureDescriptor planeIndex:0 error:&error];
                 if (error || !cvMetalTextureY) {
                     if (inOutError) {
@@ -304,7 +302,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 size_t plane1Height = CVPixelBufferGetHeightOfPlane(self.pixelBuffer, 1);
                 MTLTextureDescriptor *uvTextureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatRG8Unorm width:plane1Width height:plane1Height mipmapped:NO];
                 uvTextureDescriptor.usage = MTLTextureUsageShaderRead;
-                uvTextureDescriptor.storageMode = MTLStorageModePrivate;
                 id<MTICVMetalTexture> cvMetalTextureCbCr = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:self.pixelBuffer textureDescriptor:uvTextureDescriptor planeIndex:1 error:&error];
                 if (error || !cvMetalTextureCbCr) {
                     if (inOutError) {
@@ -363,7 +360,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             NSError *error = nil;
             MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
             textureDescriptor.usage = MTLTextureUsageShaderRead;
-            textureDescriptor.storageMode = MTLStorageModePrivate;
             id<MTICVMetalTexture> cvMetalTexture = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:_pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
             if (cvMetalTexture) {
                 [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
