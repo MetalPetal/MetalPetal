@@ -267,76 +267,56 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 }
 
 - (instancetype)initWithMTKTextureLoaderIncompatibleCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
-    if (@available(iOS 10.0, macOS 10.12, *)) {
-        //Handle monochrome image.
-        CGColorSpaceRef sourceColorspace = CGImageGetColorSpace(cgImage);
-        size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
-        size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage);
-        size_t componentsPerPixel = bitsPerPixel/bitsPerComponent;
-        
-        static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
-        static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
-                                    (id)kCGColorSpaceExtendedGray: @YES,
-                                    (id)kCGColorSpaceLinearGray: @NO,
-                                    (id)kCGColorSpaceExtendedLinearGray: @NO};
-            flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
-                          MTKTextureLoaderOriginBottomLeft: @YES,
-                          MTKTextureLoaderOriginFlippedVertically: @YES};
-        });
-        NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
-        if (CGColorSpaceGetModel(sourceColorspace) == kCGColorSpaceModelMonochrome &&
-            bitsPerComponent == 8 &&
-            (componentsPerPixel == 1 || componentsPerPixel == 2) &&
-            sRGBValue) {
-            BOOL sRGB = [sRGBValue boolValue];
-            
-            id sRGBOption = options[MTKTextureLoaderOptionSRGB];
-            if (sRGBOption) {
-                sRGB = [sRGBOption boolValue];
-            }
-            
-            MTKTextureLoaderOrigin originOption = options[MTKTextureLoaderOptionOrigin];
-            BOOL flip = NO;
-            if (originOption) {
-                flip = [flipTable[originOption] boolValue];
-            }
-            
-            CGImageAlphaInfo alphaInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapAlphaInfoMask;
-            CGImageByteOrderInfo byteOrderInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderMask;
-            size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
-            CGDataProviderRef dataProvider = CGImageGetDataProvider(cgImage);
-            CFDataRef dataRef = CGDataProviderCopyData(dataProvider);
-            NSData *bitmapData = (__bridge_transfer NSData *)dataRef;
-            if (componentsPerPixel == 1) {
-                MTIImage *rImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatR8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
-                return [[MTIImage imageFromRChannelMonochromeImage:rImage sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
-            } else {
-                MTIImage *rgImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatRG8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
-                return [[MTIImage imageFromRGChannelMonochromeImage:rgImage alphaInfo:alphaInfo byteOrderInfo:byteOrderInfo sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
-            }
-        }
-    }
+    //Handle monochrome image.
+    CGColorSpaceRef sourceColorspace = CGImageGetColorSpace(cgImage);
+    size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
+    size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage);
+    size_t componentsPerPixel = bitsPerPixel/bitsPerComponent;
     
-    //Fallback using CoreImage.
-    /*
-    BOOL sRGB = [options[MTKTextureLoaderOptionSRGB] boolValue];
-    BOOL flip = NO;
-    if (@available(iOS 10.0, *)) {
+    static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
+    static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
+                                (id)kCGColorSpaceExtendedGray: @YES,
+                                (id)kCGColorSpaceLinearGray: @NO,
+                                (id)kCGColorSpaceExtendedLinearGray: @NO};
+        flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
+                      MTKTextureLoaderOriginBottomLeft: @YES,
+                      MTKTextureLoaderOriginFlippedVertically: @YES};
+    });
+    NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
+    if (CGColorSpaceGetModel(sourceColorspace) == kCGColorSpaceModelMonochrome &&
+        bitsPerComponent == 8 &&
+        (componentsPerPixel == 1 || componentsPerPixel == 2) &&
+        sRGBValue) {
+        BOOL sRGB = [sRGBValue boolValue];
+        
+        id sRGBOption = options[MTKTextureLoaderOptionSRGB];
+        if (sRGBOption) {
+            sRGB = [sRGBOption boolValue];
+        }
+        
         MTKTextureLoaderOrigin originOption = options[MTKTextureLoaderOptionOrigin];
-        if ([originOption isEqualToString:MTKTextureLoaderOriginBottomLeft] || [originOption isEqualToString:MTKTextureLoaderCubeLayoutVertical]) {
-            flip = YES;
+        BOOL flip = NO;
+        if (originOption) {
+            flip = [flipTable[originOption] boolValue];
+        }
+        
+        CGImageAlphaInfo alphaInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapAlphaInfoMask;
+        CGImageByteOrderInfo byteOrderInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderMask;
+        size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
+        CGDataProviderRef dataProvider = CGImageGetDataProvider(cgImage);
+        CFDataRef dataRef = CGDataProviderCopyData(dataProvider);
+        NSData *bitmapData = (__bridge_transfer NSData *)dataRef;
+        if (componentsPerPixel == 1) {
+            MTIImage *rImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatR8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
+            return [[MTIImage imageFromRChannelMonochromeImage:rImage sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
+        } else {
+            MTIImage *rgImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatRG8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
+            return [[MTIImage imageFromRGChannelMonochromeImage:rgImage alphaInfo:alphaInfo byteOrderInfo:byteOrderInfo sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
         }
     }
-    BOOL ciFlip = !flip;
-    CIImage *ciImage = [CIImage imageWithCGImage:cgImage];
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    MTICIImagePromise *promise = [[MTICIImagePromise alloc] initWithCIImage:ciImage isOpaque:isOpaque options:[[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm colorSpace:sRGB ? colorspace : nil  flipped:ciFlip]];
-    CGColorSpaceRelease(colorspace);
-    return [self initWithPromise:promise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
-    */
     
     //Fallback: Redraw `cgImage`.
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();

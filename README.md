@@ -171,14 +171,6 @@ MetalPetal, by default, uses `MTKTextureLoader` to load `CGImage`s, images from 
 
 You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
 
-The `MTKTextureLoader` on iOS 9 loads images with the bottom-left origin by default. MetalPetal provides a custom texture loader to resolve this issue. You can add the following code if you'd like MetalPetal to use the `MTITextureLoaderForiOS9WithImageOrientationFix` on iOS 9. Releated issue(s): [#67 MTIColorLookupFilter error result](https://github.com/MetalPetal/MetalPetal/issues/67)
-
-```
-if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_9_x_Max) {
-    MTIContextOptions.defaultTextureLoaderClass = MTITextureLoaderForiOS9WithImageOrientationFix.class;
-}
-```
-
 ## Builtin Filters
 
 - Color Matrix

@@ -8,7 +8,7 @@ s.license      = { :type => 'MIT'}
 s.source       = { :git => 'https://github.com/MetalPetal/MetalPetal.git', :tag => s.version}
 s.requires_arc = true
 
-s.ios.deployment_target = '9.0'
+s.ios.deployment_target = '10.0'
 s.macos.deployment_target = '10.13'
 
 s.module_map = 'MetalPetal.modulemap'

@@ -41,18 +41,6 @@ OS_UNFAIR_LOCK_AVAILABILITY
 
 @end
 
-@interface NSLock (MTILocking) <MTILocking>
-
-@end
-
-@implementation NSLock (MTILocking)
-
-@end
-
 id<MTILocking> MTILockCreate(void) {
-    if (@available(iOS 10.0, *)) {
-        return [[MTILock alloc] init];
-    } else {
-        return [[NSLock alloc] init];
-    }
+    return [[MTILock alloc] init];
 }

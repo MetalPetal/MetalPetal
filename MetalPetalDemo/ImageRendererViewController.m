@@ -212,16 +212,12 @@
 - (void)drawInMTKView:(MTKView *)view {
     //https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/MTLBestPracticesGuide/Drawables.html
     @autoreleasepool {
-        if (@available(iOS 10.0, *)) {
-            kdebug_signpost_start(1, 0, 0, 0, 1);
-        }
+        kdebug_signpost_start(1, 0, 0, 0, 1);
         MTIImage *outputImage = [self saturationTestOutputImage];
         MTIDrawableRenderingRequest *request = [[MTIDrawableRenderingRequest alloc] initWithDrawableProvider:view resizingMode:MTIDrawableRenderingResizingModeAspect];
         NSError *error;
         [self.context renderImage:outputImage toDrawableWithRequest:request error:&error];
-        if (@available(iOS 10.0, *)) {
-            kdebug_signpost_end(1, 0, 0, 0, 1);
-        }
+        kdebug_signpost_end(1, 0, 0, 0, 1);
     }
 }
 

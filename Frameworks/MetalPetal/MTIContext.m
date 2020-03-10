@@ -276,9 +276,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     
     [_coreVideoTextureBridge flushCache];
     
-    if (@available(iOS 10.0, *)) {
-        [_coreImageContext clearCaches];
-    }
+    [_coreImageContext clearCaches];
     
     [_imageKeyValueTablesLock lock];
     for (NSString *key in _imageKeyValueTables) {
@@ -419,30 +417,27 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
             return nil;
         }
         
-        if (@available(iOS 10.0, *)) {
-            NSString *functionName = descriptor.name;
-            #if TARGET_OS_SIMULATOR
-            for (NSString *name in library.functionNames) {
-                if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
-                    functionName = name;
-                    break;
-                }
+        NSString *functionName = descriptor.name;
+        #if TARGET_OS_SIMULATOR
+        for (NSString *name in library.functionNames) {
+            if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
+                functionName = name;
+                break;
             }
-            #endif
-            if (descriptor.constantValues) {
-                NSError *error = nil;
-                cachedFunction = [library newFunctionWithName:functionName constantValues:descriptor.constantValues error:&error];
-                if (error) {
-                    if (inOutError) {
-                        *inOutError = error;
-                    }
-                    return nil;
+        }
+        #endif
+        
+        if (descriptor.constantValues) {
+            NSError *error = nil;
+            cachedFunction = [library newFunctionWithName:functionName constantValues:descriptor.constantValues error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
                 }
-            } else {
-                cachedFunction = [library newFunctionWithName:functionName];
+                return nil;
             }
         } else {
-            cachedFunction = [library newFunctionWithName:descriptor.name];
+            cachedFunction = [library newFunctionWithName:functionName];
         }
         
         if (!cachedFunction) {

@@ -151,7 +151,6 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     }
 }
 
-@available(iOS 10.0, *)
 extension CameraViewController: MovieRecorderDelegate {
     
     func movieRecorderDidFinishPreparing(_ recorder: MovieRecorder) {

@@ -64,7 +64,6 @@
 #import <MetalPetal/MTISCNSceneRenderer.h>
 #import <MetalPetal/MTILock.h>
 #import <MetalPetal/MTICVMetalTextureCache.h>
-#import <MetalPetal/MTITextureLoaderForiOS9.h>
 #import <MetalPetal/MTIAlphaType.h>
 #import <MetalPetal/MTICVPixelBufferPool.h>
 #import <MetalPetal/MTITransform.h>
