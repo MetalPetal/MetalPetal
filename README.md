@@ -1,6 +1,6 @@
 # MetalPetal
 
-[![Platform](https://img.shields.io/badge/platform-iOS%209.0%2B%20%7C%20macOS%2010.13%2B-blue.svg?style=flat-square)](#)
+[![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B%20%7C%20macOS%2010.13%2B-blue.svg?style=flat-square)](#)
 [![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?style=flat-square)](#)
 [![License](https://img.shields.io/cocoapods/l/MetalPetal.svg?style=flat-square)](#)
 
