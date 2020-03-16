@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/Filters/MTIHighPassSkinSmoothingFilter.h
+../../../Frameworks/MetalPetal/Filters/MTIHighPassSkinSmoothingFilter.h

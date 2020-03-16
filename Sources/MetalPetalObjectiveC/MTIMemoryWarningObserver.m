@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIMemoryWarningObserver.m
+../../Frameworks/MetalPetal/MTIMemoryWarningObserver.m

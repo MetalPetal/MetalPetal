@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIImage.swift
+../../Frameworks/MetalPetal/MTIImage.swift

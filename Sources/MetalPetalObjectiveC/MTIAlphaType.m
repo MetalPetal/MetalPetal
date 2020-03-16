@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIAlphaType.m
+../../Frameworks/MetalPetal/MTIAlphaType.m

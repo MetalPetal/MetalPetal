@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIFunctionDescriptor.swift
+../../Frameworks/MetalPetal/MTIFunctionDescriptor.swift

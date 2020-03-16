@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTITextureLoader.h
+../../../Frameworks/MetalPetal/MTITextureLoader.h

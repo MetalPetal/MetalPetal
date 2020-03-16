@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIRenderPassOutputDescriptor.m
+../../Frameworks/MetalPetal/MTIRenderPassOutputDescriptor.m

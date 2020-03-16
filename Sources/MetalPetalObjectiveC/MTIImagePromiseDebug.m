@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIImagePromiseDebug.m
+../../Frameworks/MetalPetal/MTIImagePromiseDebug.m

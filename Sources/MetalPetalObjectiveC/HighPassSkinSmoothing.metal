@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/Shaders/HighPassSkinSmoothing.metal
+../../Frameworks/MetalPetal/Shaders/HighPassSkinSmoothing.metal

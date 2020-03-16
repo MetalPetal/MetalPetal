@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIVertex.m
+../../Frameworks/MetalPetal/MTIVertex.m

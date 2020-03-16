@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTITexturePool.mm
+../../Frameworks/MetalPetal/MTITexturePool.mm

@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/Shaders/CLAHE.metal
+../../Frameworks/MetalPetal/Shaders/CLAHE.metal

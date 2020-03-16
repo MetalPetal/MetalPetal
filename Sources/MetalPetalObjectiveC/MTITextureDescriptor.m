@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTITextureDescriptor.m
+../../Frameworks/MetalPetal/MTITextureDescriptor.m

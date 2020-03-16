@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTITextureDimensions.h
+../../../Frameworks/MetalPetal/MTITextureDimensions.h

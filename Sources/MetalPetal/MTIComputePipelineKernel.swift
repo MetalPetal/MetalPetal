@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/Kernels/MTIComputePipelineKernel.swift
+../../Frameworks/MetalPetal/Kernels/MTIComputePipelineKernel.swift

@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/UI/MTIThreadSafeImageView.h
+../../../Frameworks/MetalPetal/UI/MTIThreadSafeImageView.h

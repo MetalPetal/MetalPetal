@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIImage.m
+../../Frameworks/MetalPetal/MTIImage.m

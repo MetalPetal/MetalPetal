@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIMemoryWarningObserver.h
+../../../Frameworks/MetalPetal/MTIMemoryWarningObserver.h

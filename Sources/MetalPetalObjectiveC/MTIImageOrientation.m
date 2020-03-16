@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIImageOrientation.m
+../../Frameworks/MetalPetal/MTIImageOrientation.m

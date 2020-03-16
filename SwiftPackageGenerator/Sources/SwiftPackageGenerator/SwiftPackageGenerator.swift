@@ -78,12 +78,12 @@ struct SwiftPackageGenerator: ParsableCommand {
     
     func run() throws {
         let sourcesDirectory = projectRoot.appendingPathComponent("Frameworks/MetalPetal/")
-        let packageSourcesDirectory = projectRoot.appendingPathComponent("Sources")
+        let packageSourcesDirectory = projectRoot.appendingPathComponent("Sources/")
         try? fileManager.removeItem(at: packageSourcesDirectory)
         try fileManager.createDirectory(at: packageSourcesDirectory, withIntermediateDirectories: true, attributes: nil)
-        let swiftTargetDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetal")
-        let objectiveCTargetDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetalObjectiveC")
-        let objectiveCHeaderDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetalObjectiveC/include")
+        let swiftTargetDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetal/")
+        let objectiveCTargetDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetalObjectiveC/")
+        let objectiveCHeaderDirectory = packageSourcesDirectory.appendingPathComponent("MetalPetalObjectiveC/include/")
         try fileManager.createDirectory(at: swiftTargetDirectory, withIntermediateDirectories: true, attributes: nil)
         try fileManager.createDirectory(at: objectiveCTargetDirectory, withIntermediateDirectories: true, attributes: nil)
         try fileManager.createDirectory(at: objectiveCHeaderDirectory, withIntermediateDirectories: true, attributes: nil)
@@ -124,12 +124,34 @@ struct SwiftPackageGenerator: ParsableCommand {
         let targetURL: URL
         let fileManager: FileManager
         
+        enum Error: String, Swift.Error, LocalizedError {
+            case cannotCreateRelativePath
+            var errorDescription: String? {
+                return self.rawValue
+            }
+        }
+        
         func handle(_ file: URL) throws -> Bool {
             if fileTypes.contains(file.pathExtension) {
-                try fileManager.createSymbolicLink(at: targetURL.appendingPathComponent(file.lastPathComponent), withDestinationURL: URL(fileURLWithPath: file.path, relativeTo: projectRoot))
+                let fileRelativeToProjectRoot = try relativePathComponents(for: file, baseURL: projectRoot)
+                let targetRelativeToProjectRoot = try relativePathComponents(for: targetURL, baseURL: projectRoot)
+                let destinationURL = URL(string: (Array<String>(repeating: "..", count: targetRelativeToProjectRoot.count) + fileRelativeToProjectRoot).joined(separator: "/"))!
+                print(destinationURL)
+                try fileManager.createSymbolicLink(at: targetURL.appendingPathComponent(file.lastPathComponent), withDestinationURL: destinationURL)
                 return true
             } else {
                 return false
+            }
+        }
+        
+        private func relativePathComponents(for url: URL, baseURL: URL) throws -> [String] {
+            let filePathComponents = url.standardized.pathComponents
+            let basePathComponents = baseURL.standardized.pathComponents
+            let r: [String] = filePathComponents.dropLast(filePathComponents.count - basePathComponents.count)
+            if r == basePathComponents {
+                return [String](filePathComponents.dropFirst(basePathComponents.count))
+            } else {
+                throw Error.cannotCreateRelativePath
             }
         }
     }

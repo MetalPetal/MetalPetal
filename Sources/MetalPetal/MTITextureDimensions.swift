@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTITextureDimensions.swift
+../../Frameworks/MetalPetal/MTITextureDimensions.swift

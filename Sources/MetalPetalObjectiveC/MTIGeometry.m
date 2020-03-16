@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/MTIGeometry.m
+../../Frameworks/MetalPetal/MTIGeometry.m

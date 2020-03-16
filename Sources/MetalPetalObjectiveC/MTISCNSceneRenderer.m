@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/SceneKit/MTISCNSceneRenderer.m
+../../Frameworks/MetalPetal/SceneKit/MTISCNSceneRenderer.m

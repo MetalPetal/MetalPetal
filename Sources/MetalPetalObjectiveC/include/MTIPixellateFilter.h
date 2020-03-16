@@ -1,1 +1,1 @@
-/Users/yuao/Developer/MetalPetal/Frameworks/MetalPetal/Filters/MTIPixellateFilter.h
+../../../Frameworks/MetalPetal/Filters/MTIPixellateFilter.h
