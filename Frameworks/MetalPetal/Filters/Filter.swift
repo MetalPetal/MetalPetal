@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 /// Port for read `Value` from `Object`
 public protocol OutputPort {
     associatedtype Object: AnyObject

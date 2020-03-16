@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIImage {
     
     public func adjusting(saturation: Float, outputPixelFormat: MTLPixelFormat = .unspecified) -> MTIImage {

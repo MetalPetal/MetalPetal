@@ -7,6 +7,10 @@
 
 import Metal
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 public protocol MTIImageViewProtocol: class {
     
     var colorPixelFormat: MTLPixelFormat { get set }

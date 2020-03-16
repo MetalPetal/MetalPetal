@@ -36,7 +36,11 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _enablesYCbCrPixelFormatSupport = YES;
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
+        #ifdef SWIFTPM_MODULE_BUNDLE
+        _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
+        #else
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+        #endif
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
         _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;

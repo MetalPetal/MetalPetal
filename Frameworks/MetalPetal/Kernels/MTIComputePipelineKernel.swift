@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIComputeFunctionDispatchOptions {
     public convenience init(_ generator: @escaping (_ pipelineState: MTLComputePipelineState) -> (threads: MTLSize, threadgroups: MTLSize, threadsPerThreadgroup: MTLSize)) {
         self.init(__generator: { pipelineState, threadsPtr, threadgroupsPtr, threadsPerThreadgroupPtr in

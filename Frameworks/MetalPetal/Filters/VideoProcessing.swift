@@ -8,6 +8,10 @@
 import Foundation
 import AVFoundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIImage {
     public func applyingAssetTrackTransform(_ transform: CGAffineTransform) -> MTIImage {
         let transformFilter = MTITransformFilter()

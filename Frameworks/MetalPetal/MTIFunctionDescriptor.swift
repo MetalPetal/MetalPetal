@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIFunctionDescriptor {
     public static let passthroughFragment: MTIFunctionDescriptor = MTIFunctionDescriptor(name: MTIFilterPassthroughFragmentFunctionName)
     

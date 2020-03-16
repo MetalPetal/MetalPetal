@@ -7,6 +7,10 @@
 
 import Metal
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTLPixelFormat {
     public static let unspecified = MTLPixelFormat.invalid
     public static let yCbCr8_420_2p = __MTIPixelFormatYCBCR8_420_2P

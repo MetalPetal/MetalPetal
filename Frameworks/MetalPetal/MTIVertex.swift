@@ -9,6 +9,10 @@
 import Foundation
 import simd
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIVertex {
     public init(position: (Float,Float,Float,Float), textureCoordinate: (Float, Float)) {
         self.init()

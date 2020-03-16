@@ -7,6 +7,10 @@
 
 import Foundation
 
+#if SWIFT_PACKAGE
+@_exported import MetalPetalObjectiveC
+#endif
+
 extension MTIDataBuffer {
     
     public convenience init?<T>(values: [T], options: MTLResourceOptions = []) {
