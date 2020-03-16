@@ -164,7 +164,6 @@
 			buildConfigurationList = 9D3928C01EFF678800BA6B09 /* Build configuration list for PBXNativeTarget "MetalPetalDemo" */;
 			buildPhases = (
 				F480C99ECF24128A64CF0E82 /* [CP] Check Pods Manifest.lock */,
-				0672CF762022F10F00ADFB19 /* Update Umbrella Header */,
 				9D3928A51EFF678800BA6B09 /* Sources */,
 				9D3928A61EFF678800BA6B09 /* Frameworks */,
 				9D3928A71EFF678800BA6B09 /* Resources */,
@@ -235,20 +234,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0672CF762022F10F00ADFB19 /* Update Umbrella Header */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Update Umbrella Header";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Frameworks/MetalPetal/umbrella-header-update.sh\"\n";
-		};
 		AA0599CC4E8484835B5D9123 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
