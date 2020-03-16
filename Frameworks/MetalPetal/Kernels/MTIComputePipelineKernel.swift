@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Metal
 
 #if SWIFT_PACKAGE
 @_exported import MetalPetalObjectiveC

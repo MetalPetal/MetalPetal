@@ -64,15 +64,14 @@ struct SwiftPackageGenerator: ParsableCommand {
     
     private let objectiveCModuleMapContents = """
     module MetalPetalObjectiveC {
-      header "MetalPetal.h"
-      export *
-      
-      explicit module Extension {
-          header "MTIContext+Internal.h"
-          header "MTIImage+Promise.h"
-          export *
-      }
-      
+        header "MetalPetal.h"
+        export *
+
+        explicit module Extension {
+            header "MTIContext+Internal.h"
+            header "MTIImage+Promise.h"
+            export *
+        }
     }
     """
     
@@ -136,7 +135,6 @@ struct SwiftPackageGenerator: ParsableCommand {
                 let fileRelativeToProjectRoot = try relativePathComponents(for: file, baseURL: projectRoot)
                 let targetRelativeToProjectRoot = try relativePathComponents(for: targetURL, baseURL: projectRoot)
                 let destinationURL = URL(string: (Array<String>(repeating: "..", count: targetRelativeToProjectRoot.count) + fileRelativeToProjectRoot).joined(separator: "/"))!
-                print(destinationURL)
                 try fileManager.createSymbolicLink(at: targetURL.appendingPathComponent(file.lastPathComponent), withDestinationURL: destinationURL)
                 return true
             } else {

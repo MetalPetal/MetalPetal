@@ -40,6 +40,8 @@ An image processing framework based on Metal.
     - [Custom Vertex Data](#custom-vertex-data)
     - [Custom Processing Module](#custom-processing-module)
 - [Install](#install)
+    - [CocoaPods](#cocoapods)
+    - [Swift Package Manager](#swift-package-manager)
 - [iOS Simulator Support](#ios-simulator-support)
 - [Trivia](#trivia)
 - [Contribute](#contribute)
@@ -400,7 +402,7 @@ If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you 
 
 If you want to include the `MTIShaderLib.h` in your `.metal` file, you need to add the path of `MTIShaderLib.h` file to the `Metal Compiler - Header Search Paths` (`MTL_HEADER_SEARCH_PATHS`) setting.
 
-For example, if you use CocoaPods you can set the `MTL_HEADER_SEARCH_PATHS` to  `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` or `${PODS_ROOT}/MetalPetal/Frameworks/MetalPetal/Shaders`.
+For example, if you use CocoaPods you can set the `MTL_HEADER_SEARCH_PATHS` to  `${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers` or `${PODS_ROOT}/MetalPetal/Frameworks/MetalPetal/Shaders`. If you use Swift Package Manager, set the `MTL_HEADER_SEARCH_PATHS` to `$(HEADER_SEARCH_PATHS)`
 
 ### Shader Function Arguments Encoding
 
@@ -583,11 +585,15 @@ In rare scenarios, you may want to access the underlying texture directly, use m
 
 `MTIImagePromise` protocol provides direct access to the underlying texture and the render context for a step in MetalPetal.
 
-You can create new input sources or fully custom processing unit by implementing `MTIImagePromise` protocol. You will need to import an additional module to do so. For Swift: `import MetalPetal.Extension`, Objective-C: `@import MetalPetal.Extension;`.
+You can create new input sources or fully custom processing unit by implementing `MTIImagePromise` protocol. You will need to import an additional module to do so. 
+
+Objective-C: `@import MetalPetal.Extension;`.
 
 See the implementation of `MTIComputePipelineKernel`, `MTICLAHELUTRecipe` or `MTIImage` for example.
 
 ## Install
+
+### CocoaPods
 
 You can use [CocoaPods](https://cocoapods.org/) to install the lastest version.
 
@@ -602,6 +608,10 @@ pod 'MetalPetal/Swift'
 ```
 
 We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
+
+### Swift Package Manager
+
+This repo contains a package description file. However using Swift Package Manager is not supported until [SE-0271](https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md) is fully implemented.
 
 ## iOS Simulator Support
 
