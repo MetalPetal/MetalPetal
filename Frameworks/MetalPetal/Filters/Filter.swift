@@ -8,7 +8,7 @@
 import Foundation
 
 #if SWIFT_PACKAGE
-@_exported import MetalPetalObjectiveC
+import MetalPetalObjectiveC.Core
 #endif
 
 /// Port for read `Value` from `Object`

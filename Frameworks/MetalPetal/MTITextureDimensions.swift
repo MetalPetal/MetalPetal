@@ -6,7 +6,7 @@
 //
 
 #if SWIFT_PACKAGE
-@_exported import MetalPetalObjectiveC
+import MetalPetalObjectiveC.Core
 #endif
 
 extension MTITextureDimensions : Equatable {

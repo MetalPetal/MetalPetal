@@ -16,15 +16,17 @@ public struct SwiftPackageGenerator: ParsableCommand {
     
     private let objectiveCModuleMapContents = """
     module MetalPetalObjectiveC {
-        header "MetalPetal.h"
-        export *
-
+        explicit module Core {
+            header "MetalPetal.h"
+            export *
+        }
         explicit module Extension {
             header "MTIContext+Internal.h"
             header "MTIImage+Promise.h"
             export *
         }
     }
+
     """
     
     public init() { }
