@@ -201,7 +201,12 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         }
         
         NSError *libraryError = nil;
-        id<MTLLibrary> defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+        id<MTLLibrary> defaultLibrary = nil;
+        if ([options.defaultLibraryURL.scheme isEqualToString:MTIURLSchemeForLibraryWithSource]) {
+            defaultLibrary = [MTILibrarySourceRegistration.sharedRegistration newLibraryWithURL:options.defaultLibraryURL device:device error:&libraryError];
+        } else {
+            defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+        }
         if (!defaultLibrary || libraryError) {
             if (inOutError) {
                 *inOutError = libraryError;
@@ -226,6 +231,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _texturePool = [options.texturePoolClass newTexturePoolWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];
+        _libraryCache[options.defaultLibraryURL] = defaultLibrary;
         _functionCache = [NSMutableDictionary dictionary];
         _renderPipelineCache = [NSMutableDictionary dictionary];
         _computePipelineCache = [NSMutableDictionary dictionary];
