@@ -16,39 +16,32 @@ fileprivate func listMetalDevices() {
     }
 }
 
-fileprivate func makeContext() throws -> MTIContext {
+fileprivate func makeContext() throws -> MTIContext? {
     if let device = MTLCreateSystemDefaultDevice() {
         let compileOption = MTLCompileOptions()
         compileOption.languageVersion = .version1_2
         let options = MTIContextOptions()
         options.defaultLibraryURL = try BuiltinMetalLibraryWithoutSE0271.makeBuiltinMetalLibrary(compileOptions: compileOption)
         return try MTIContext(device: device, options: options)
-    } else {
-        throw MTIError(.deviceNotFound)
     }
+    return nil
 }
 
 final class MetalPetalContextTests: XCTestCase {
     
-    func testDeviceCreation() {
+    static override func setUp() {
+        super.setUp()
+        
         print("----- Metal Devices -----")
         listMetalDevices()
         print("-------------------------")
-        let device = MTLCreateSystemDefaultDevice()
-        XCTAssertNotNil(device)
     }
     
     func testContextCreation() {
-        if let device = MTLCreateSystemDefaultDevice() {
-            let options = MTIContextOptions()
-            do {
-                options.defaultLibraryURL = try BuiltinMetalLibraryWithoutSE0271.makeBuiltinMetalLibrary()
-                let _ = try MTIContext(device: device, options: options)
-            } catch {
-                XCTFail(error.localizedDescription)
-            }
-        } else {
-            XCTAssert(false, "Cannot create system default metal device.")
+        do {
+            let _ = try makeContext()
+        } catch {
+            XCTFail(error.localizedDescription)
         }
     }
 }
@@ -57,8 +50,8 @@ final class MetalPetalRenderTests: XCTestCase {
     
     func testRenderSolidColorImage() {
         do {
+            guard let context = try makeContext() else { return }
             let image = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 2, height: 2))
-            let context = try makeContext()
             let cgImage = try context.makeCGImage(from: image)
             PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinate) in
                 XCTAssert(pixel.r == 255 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
@@ -70,8 +63,8 @@ final class MetalPetalRenderTests: XCTestCase {
     
     func testColorInvert() {
         do {
+            guard let context = try makeContext() else { return }
             let image = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 2, height: 2))
-            let context = try makeContext()
             let filter = MTIColorInvertFilter()
             filter.inputImage = image
             let output = filter.outputImage
