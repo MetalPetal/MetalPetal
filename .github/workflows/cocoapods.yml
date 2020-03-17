@@ -19,7 +19,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-      run: |
+    - run: |
         CURRENT_TAG=`git describe --abbrev=0 --tags`
         echo "::set-env name=METAL_PETAL_RELEASE_TAG::${CURRENT_TAG}"
 
