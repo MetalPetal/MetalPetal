@@ -20,14 +20,13 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     - run: |
-        CURRENT_TAG=`git describe --abbrev=0 --tags`
-        echo "::set-env name=METAL_PETAL_RELEASE_TAG::${CURRENT_TAG}"
+        git fetch --tags
 
     # Runs a single command using the runners shell
     - name: Update Podspec
       run: |
         cd ./Utilities/
-        swift run main podspec-generator --version ${METAL_PETAL_RELEASE_TAG} ../
+        swift run main podspec-generator ../
 
     # Runs a set of commands using the runners shell
     - name: Release
