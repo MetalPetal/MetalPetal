@@ -13,7 +13,7 @@ import XCTest
 public struct BuiltinMetalLibraryWithoutSE0271 {
     public static func makeBuiltinMetalLibrary(compileOptions: MTLCompileOptions? = nil) throws -> URL {
         var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().deletingLastPathComponent().appendingPathComponent("MetalPetalObjectiveC")
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
         let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
         librarySource += try String(contentsOf: headerURL)
         let fileManager = FileManager()

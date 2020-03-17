@@ -14,35 +14,6 @@ public struct SwiftPackageGenerator: ParsableCommand {
     
     private let fileManager = FileManager()
     
-    private let packageFileContents = """
-    // swift-tools-version:5.1
-    
-    // requires SE-0271
-
-    import PackageDescription
-
-    let package = Package(
-        name: "MetalPetal",
-        platforms: [.macOS(.v10_13), .iOS(.v10)],
-        products: [
-            .library(
-                name: "MetalPetal",
-                targets: ["MetalPetal"]
-            )
-        ],
-        dependencies: [],
-        targets: [
-            .target(
-                name: "MetalPetal",
-                dependencies: ["MetalPetalObjectiveC"]),
-            .target(
-                name: "MetalPetalObjectiveC",
-                dependencies: []),
-        ],
-        cxxLanguageStandard: .cxx14
-    )
-    """
-    
     private let objectiveCModuleMapContents = """
     module MetalPetalObjectiveC {
         header "MetalPetal.h"
@@ -79,10 +50,6 @@ public struct SwiftPackageGenerator: ParsableCommand {
         try processSources(in: sourcesDirectory, fileHandlers: fileHandlers)
         
         try objectiveCModuleMapContents.write(to: objectiveCHeaderDirectory.appendingPathComponent("module.modulemap"), atomically: true, encoding: .utf8)
-        
-        let packageFileURL = projectRoot.appendingPathComponent("Package.swift")
-        try? fileManager.removeItem(at: packageFileURL)
-        try packageFileContents.write(to: packageFileURL, atomically: true, encoding: .utf8)
     }
     
     private func processSources(in directory: URL, fileHandlers: [SourceFileHandler]) throws {

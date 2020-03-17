@@ -23,7 +23,8 @@ let package = Package(
             dependencies: []),
         .target(
             name: "MetalPetalTestHelpers",
-            dependencies: ["MetalPetal"]),
+            dependencies: ["MetalPetal"],
+            path: "Tests/MetalPetalTestHelpers"),
         .testTarget(
             name: "MetalPetalTests",
             dependencies: ["MetalPetal", "MetalPetalTestHelpers"]),
