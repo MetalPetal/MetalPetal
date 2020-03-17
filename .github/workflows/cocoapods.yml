@@ -5,8 +5,8 @@ name: Pod Release
 # Controls when the action will run. Triggers the workflow on push or pull request 
 # events but only for the master branch
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [published]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,19 +19,15 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    # Runs a single command using the runners shell
+      
     - name: Update Podspec
       run: |
         git fetch --tags
         cd ./Utilities/
         swift run main podspec-generator ../
 
-    # Runs a set of commands using the runners shell
     - name: Release
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
       run: |
-        pod lib lint
+        pod trunk push
