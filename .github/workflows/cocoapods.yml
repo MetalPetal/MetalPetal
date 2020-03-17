@@ -19,8 +19,8 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    - run: |
-        git fetch --tags
+      with:
+        fetch-depth: 0
 
     # Runs a single command using the runners shell
     - name: Update Podspec
