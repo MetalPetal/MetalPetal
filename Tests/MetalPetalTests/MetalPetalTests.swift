@@ -9,6 +9,13 @@ import XCTest
 import MetalPetal
 import MetalPetalTestHelpers
 
+fileprivate func listMetalDevices() {
+    let devices = MTLCopyAllDevices()
+    for device in devices {
+        print(device)
+    }
+}
+
 fileprivate func makeContext() throws -> MTIContext {
     if let device = MTLCreateSystemDefaultDevice() {
         let compileOption = MTLCompileOptions()
@@ -24,6 +31,9 @@ fileprivate func makeContext() throws -> MTIContext {
 final class MetalPetalContextTests: XCTestCase {
     
     func testDeviceCreation() {
+        print("----- Metal Devices -----")
+        listMetalDevices()
+        print("-------------------------")
         let device = MTLCreateSystemDefaultDevice()
         XCTAssertNotNil(device)
     }
