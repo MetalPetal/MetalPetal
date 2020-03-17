@@ -587,7 +587,21 @@ In rare scenarios, you may want to access the underlying texture directly, use m
 
 You can create new input sources or fully custom processing unit by implementing `MTIImagePromise` protocol. You will need to import an additional module to do so. 
 
-Objective-C: `@import MetalPetal.Extension;`.
+Objective-C
+
+```
+@import MetalPetal.Extension;
+```
+
+Swift
+
+```
+// CocoaPods
+import MetalPetal.Extension
+
+// Swift Package Manager
+import MetalPetalObjectiveC.Extension
+```
 
 See the implementation of `MTIComputePipelineKernel`, `MTICLAHELUTRecipe` or `MTIImage` for example.
 
