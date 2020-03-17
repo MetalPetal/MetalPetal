@@ -25,6 +25,7 @@ jobs:
     # Runs a single command using the runners shell
     - name: Update Podspec
       run: |
+        git fetch --tags
         cd ./Utilities/
         swift run main podspec-generator ../
 
