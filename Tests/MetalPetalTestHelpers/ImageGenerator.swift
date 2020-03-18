@@ -6,6 +6,28 @@
 //
 
 import Foundation
+import CoreGraphics
+
+#if canImport(UIKit)
+import UIKit
+#endif
+
+extension CGColor {
+    static var mti_white: CGColor {
+        #if canImport(UIKit)
+        return UIColor.white.cgColor
+        #else
+        return .white
+        #endif
+    }
+    static var mti_black: CGColor {
+        #if canImport(UIKit)
+        return UIColor.black.cgColor
+        #else
+        return .black
+        #endif
+    }
+}
 
 public struct ImageGenerator {
     
@@ -21,9 +43,9 @@ public struct ImageGenerator {
         guard let context = CGContext(data: nil, width: 2, height: 2, bitsPerComponent: 8, bytesPerRow: 2 * 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue) else {
             throw Error.cannotCreateCGContext
         }
-        context.setFillColor(CGColor.white)
+        context.setFillColor(CGColor.mti_white)
         context.fill(CGRect(x: 0, y: 0, width: 2, height: 2))
-        context.setFillColor(CGColor.black)
+        context.setFillColor(CGColor.mti_black)
         context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
         context.fill(CGRect(x: 1, y: 1, width: 1, height: 1))
         guard let image = context.makeImage() else {

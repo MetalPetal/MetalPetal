@@ -7,7 +7,6 @@
 
 import Foundation
 import MetalPetal
-import XCTest
 
 //TODO: remove this when SE0271 is ready
 public struct BuiltinMetalLibraryWithoutSE0271 {

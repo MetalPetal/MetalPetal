@@ -10,10 +10,16 @@ import MetalPetal
 import MetalPetalTestHelpers
 
 fileprivate func listMetalDevices() {
+    #if os(macOS)
     let devices = MTLCopyAllDevices()
     for device in devices {
         print(device)
     }
+    #else
+    if let device = MTLCreateSystemDefaultDevice() {
+        print(device)
+    }
+    #endif
 }
 
 fileprivate func makeContext() throws -> MTIContext? {
