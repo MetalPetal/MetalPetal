@@ -21,8 +21,7 @@
 #import "MTIContext+Internal.h"
 #import "MTIVector+SIMD.h"
 #import "MTIError.h"
-
-@import MetalPerformanceShaders;
+#import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 NSInteger const MTICLAHEHistogramBinCount = 256;
 
