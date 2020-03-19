@@ -7,8 +7,10 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  target_macOS:
 
+    name: Smoke Test (macOS)
+    
     runs-on: macos-latest
 
     steps:
@@ -17,3 +19,16 @@ jobs:
       run: swift build -v
     - name: Run tests
       run: swift test -v
+
+  target_iOS:
+
+    name: Smoke Test (iOS)
+    
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: xcodebuild build -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
+    - name: Run tests
+      run: xcodebuild test -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
