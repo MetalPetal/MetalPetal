@@ -11,4 +11,5 @@ about: Discussions or questions about MetalPetal
 -->
 
 ### Checklist
+- [ ] I've read the [README](https://github.com/MetalPetal/MetalPetal/blob/master/README.md)
 - [ ] I've searched for [existing GitHub issues](https://github.com/MetalPetal/MetalPetal/issues)
