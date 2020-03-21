@@ -10,6 +10,5 @@
 
 @interface ImageRendererViewController : UIViewController
 
-
 @end
 
