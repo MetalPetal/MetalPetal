@@ -1,6 +1,6 @@
 ---
 name: ❓ Discussions & Questions
-about: Discussions or questions about MetalPetal.
+about: Discussions or questions about MetalPetal
 ---
 
 <!--
