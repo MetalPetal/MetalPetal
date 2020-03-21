@@ -257,4 +257,108 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testImageOrientations() throws {
+        guard let context = try makeContext() else { return }
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0, 0],
+            [0, 0, 255],
+            [0, 255, 255],
+            [0, 255, 255],
+        ]), options: [.SRGB: false], isOpaque: true)
+        let renderResult = try context.makeCGImage(from: image)
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: renderResult, target: [
+            [0, 0, 0],
+            [0, 0, 255],
+            [0, 255, 255],
+            [0, 255, 255],
+        ]))
+        
+        // * * *
+        // * *
+        // *
+        // *
+        let up = try context.makeCGImage(from: image.oriented(.up))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: up, target: [
+            [0, 0, 0],
+            [0, 0, 255],
+            [0, 255, 255],
+            [0, 255, 255],
+        ]))
+        
+        // * * *
+        //   * *
+        //     *
+        //     *
+        let upMirrored = try context.makeCGImage(from: image.oriented(.upMirrored))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: upMirrored, target: [
+            [0,     0,   0],
+            [255,   0,   0],
+            [255, 255,   0],
+            [255, 255,   0],
+        ]))
+        
+        //     *
+        //     *
+        //   * *
+        // * * *
+        let down = try context.makeCGImage(from: image.oriented(.down))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: down, target: [
+            [255, 255,   0],
+            [255, 255,   0],
+            [255,   0,   0],
+            [  0,   0,   0],
+        ]))
+        
+        // *
+        // *
+        // * *
+        // * * *
+        let downMirrored = try context.makeCGImage(from: image.oriented(.downMirrored))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: downMirrored, target: [
+            [  0, 255, 255],
+            [  0, 255, 255],
+            [  0,   0, 255],
+            [  0,   0,   0],
+        ]))
+        
+        // * * * *
+        // * *
+        // *
+        let leftMirrored = try context.makeCGImage(from: image.oriented(.leftMirrored))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: leftMirrored, target: [
+            [  0,   0,   0,   0],
+            [  0,   0, 255, 255],
+            [  0, 255, 255, 255]
+        ]))
+        
+        // * * * *
+        //     * *
+        //       *
+        let right = try context.makeCGImage(from: image.oriented(.right))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: right, target: [
+            [  0,   0,   0,   0],
+            [255, 255,   0,   0],
+            [255, 255, 255,   0],
+        ]))
+        
+        //       *
+        //     * *
+        // * * * *
+        let rightMirrored = try context.makeCGImage(from: image.oriented(.rightMirrored))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: rightMirrored, target: [
+            [255, 255, 255,   0],
+            [255, 255,   0,   0],
+            [  0,   0,   0,   0],
+        ]))
+        
+        // *
+        // * *
+        // * * * *
+        let left = try context.makeCGImage(from: image.oriented(.left))
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: left, target: [
+            [  0, 255, 255, 255],
+            [  0,   0, 255, 255],
+            [  0,   0,   0,   0],
+        ]))
+    }
 }

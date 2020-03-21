@@ -53,4 +53,17 @@ public struct ImageGenerator {
         }
         return image
     }
+    
+    public static func makeMonochromeImage(_ data: [[UInt8]]) throws -> CGImage {
+        var buffer: [PixelEnumerator.Pixel] = data.flatMap { row in
+            return row.map { PixelEnumerator.Pixel(b: $0, g: $0, r: $0, a: 255) }
+        }
+        guard let context = CGContext(data: &buffer, width: data[0].count, height: data.count, bitsPerComponent: 8, bytesPerRow: data[0].count * 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue) else {
+            throw Error.cannotCreateCGContext
+        }
+        guard let image = context.makeImage() else {
+            throw Error.cannotCreateImageFromContext
+        }
+        return image
+    }
 }

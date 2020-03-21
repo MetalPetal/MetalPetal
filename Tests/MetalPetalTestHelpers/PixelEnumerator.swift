@@ -33,3 +33,17 @@ public struct PixelEnumerator {
         }
     }
 }
+
+extension PixelEnumerator {
+    public static func monochromeImageEqual(image: CGImage, target: [[UInt8]]) -> Bool {
+        var allEqual = true
+        self.enumeratePixels(in: image) { (pixel, coordinate) in
+            if pixel.r == pixel.g && pixel.g == pixel.b && pixel.a == 255 {
+                if pixel.r != target[coordinate.y][coordinate.x] {
+                    allEqual = false
+                }
+            }
+        }
+        return allEqual
+    }
+}
