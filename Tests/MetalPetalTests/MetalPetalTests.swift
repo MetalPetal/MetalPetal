@@ -195,6 +195,7 @@ final class RenderTests: XCTestCase {
         XCTAssert(context.idleResourceCount == 0)
     }
     
+    @available(iOS 11.0, *)
     func testCoreImageFilter() throws {
         guard let context = try makeContext() else { return }
         
@@ -209,6 +210,7 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    @available(iOS 11.0, *)
     func testCoreImageGenerator() throws {
         guard let context = try makeContext() else { return }
         
