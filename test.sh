@@ -8,7 +8,7 @@ swift build
 swift test
 
 echo "------------------"
-echo "Somke Test (iOS)"
+echo "Somke Test (iOS Simulator)"
 echo "------------------"
 
 if hash xcpretty 2>/dev/null; then
