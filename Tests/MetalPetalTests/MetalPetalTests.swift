@@ -361,4 +361,32 @@ final class RenderTests: XCTestCase {
             [  0,   0,   0,   0],
         ]))
     }
+    
+    func testCustomComputePipeline() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+        texture2d<float, access::read> inTexture [[texture(0)]],
+        texture2d<float, access::write> outTexture [[texture(1)]],
+        constant float4 &color [[buffer(0)]],
+        uint2 gid [[thread_position_in_grid]]
+        ) {
+            if (gid.x >= inTexture.get_width() || gid.y >= inTexture.get_height()) {
+                return;
+            }
+            outTexture.write(inTexture.read(gid) + color, gid);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
 }

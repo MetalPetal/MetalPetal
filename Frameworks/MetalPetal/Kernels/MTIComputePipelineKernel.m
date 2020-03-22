@@ -125,6 +125,7 @@
         [commandEncoder setTexture:[renderingContext resolvedTextureForImage:image] atIndex:index];
         index += 1;
     }
+    [commandEncoder setTexture:renderTarget.texture atIndex:index];
     
     [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     
