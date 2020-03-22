@@ -373,16 +373,138 @@ final class RenderTests: XCTestCase {
         constant float4 &color [[buffer(0)]],
         uint2 gid [[thread_position_in_grid]]
         ) {
-            if (gid.x >= inTexture.get_width() || gid.y >= inTexture.get_height()) {
+            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
                 return;
             }
-            outTexture.write(inTexture.read(gid) + color, gid);
+            outTexture.write(inTexture.read(uint2(0,0)) + color, gid);
         }
         """
         let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
         let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
+        
+        try autoreleasepool {
+            let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 32, height: 32))
+            let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+            guard let context = try makeContext() else { return }
+            let output = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+        
+        try autoreleasepool {
+            let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+            let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+            guard let context = try makeContext() else { return }
+            let output = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testCustomComputePipelineWithFunctionConstants() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        constant float4 constColor [[function_constant(0)]];
+
+        kernel void testCompute(
+        texture2d<float, access::read> inTexture [[texture(0)]],
+        texture2d<float, access::write> outTexture [[texture(1)]],
+        uint2 gid [[thread_position_in_grid]]
+        ) {
+            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
+                return;
+            }
+            outTexture.write(inTexture.read(uint2(0,0)) + constColor, gid);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let constantValues = MTLFunctionConstantValues()
+        var color = SIMD4<Float>(1, 0, 0, 0)
+        constantValues.setConstantValue(&color, type: .float4, withName: "constColor")
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", constantValues: constantValues, libraryURL: libraryURL))
+        
+        try autoreleasepool {
+            let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 32, height: 32))
+            let outputImage = computeKernel.apply(toInputImages: [image], parameters: [:], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+            guard let context = try makeContext() else { return }
+            let output = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+        
+        try autoreleasepool {
+            let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+            let outputImage = computeKernel.apply(toInputImages: [image], parameters: [:], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+            guard let context = try makeContext() else { return }
+            let output = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testCustomRenderPipeline() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant float4 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            return textureColor + color;
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
+    func testCustomRenderPipelineWithFunctionConstants() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        constant float4 constColor [[function_constant(0)]];
+        
+        fragment float4 testRender(
+            VertexOut vertexIn [[stage_in]],
+            texture2d<float, access::sample> sourceTexture [[texture(0)]],
+            sampler sourceSampler [[sampler(0)]]
+        ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            return textureColor + constColor;
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let constantValues = MTLFunctionConstantValues()
+        var color = SIMD4<Float>(1, 0, 0, 0)
+        constantValues.setConstantValue(&color, type: .float4, withName: "constColor")
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", constantValues: constantValues, libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: [:], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
         guard let context = try makeContext() else { return }
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
