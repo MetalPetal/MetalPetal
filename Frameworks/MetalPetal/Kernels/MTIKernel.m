@@ -26,7 +26,7 @@ static inline void MTIArgumentsEncoderEncodeBytes(MTLFunctionType functionType, 
             if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
                 [(id<MTLComputeCommandEncoder>)encoder setBytes:bytes length:length atIndex:index];
             } else if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                #if TARGET_OS_IPHONE
+                #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
                 if (@available(iOS 11.0, *)) {
                     [(id<MTLRenderCommandEncoder>)encoder setTileBytes:bytes length:length atIndex:index];
                 }
@@ -52,7 +52,7 @@ static inline void MTIArgumentsEncoderEncodeBuffer(MTLFunctionType functionType,
             if ([encoder conformsToProtocol:@protocol(MTLComputeCommandEncoder)]) {
                 [(id<MTLComputeCommandEncoder>)encoder setBuffer:buffer offset:0 atIndex:index];
             } else if ([encoder conformsToProtocol:@protocol(MTLRenderCommandEncoder)]) {
-                #if TARGET_OS_IPHONE
+                #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
                 if (@available(iOS 11.0, *)) {
                     [(id<MTLRenderCommandEncoder>)encoder setTileBuffer:buffer offset:0 atIndex:index];
                 }

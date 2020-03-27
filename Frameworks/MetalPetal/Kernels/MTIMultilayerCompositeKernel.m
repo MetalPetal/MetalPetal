@@ -23,7 +23,7 @@
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
 
-#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR)
+#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
 
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -504,7 +504,7 @@
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         
-        #if TARGET_OS_SIMULATOR
+        #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
         //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
         [commandEncoder endEncoding];
         commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];

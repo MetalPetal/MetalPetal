@@ -17,7 +17,11 @@ BOOL MTIDeviceSupportsYCBCRPixelFormat(id<MTLDevice> device) {
     #if TARGET_OS_SIMULATOR
     return NO;
     #elif TARGET_OS_IPHONE
-    return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1];
+        #if TARGET_OS_MACCATALYST
+        return NO;
+        #elif
+        return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1];
+        #endif
     #else
     return NO;
     #endif

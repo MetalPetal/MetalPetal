@@ -99,7 +99,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             return MTLPixelFormatR32Float;
             
         case kCVPixelFormatType_OneComponent8:
-            #if TARGET_OS_IPHONE
+            #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
             return sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
             #else
             NSCParameterAssert(!sRGB); //R8Unorm_sRGB texture is not available on macOS.
@@ -370,7 +370,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 return nil;
             }
             
-            #if TARGET_OS_IPHONE
+            #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
             //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
             if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
                 NSError *error;

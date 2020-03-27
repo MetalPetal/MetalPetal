@@ -181,7 +181,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
             targetPixelFormat = MTLPixelFormatRGBA32Float;
         } break;
         case kCVPixelFormatType_OneComponent8: {
-            #if TARGET_OS_IPHONE
+            #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
             targetPixelFormat = sRGB ? MTLPixelFormatR8Unorm_sRGB : MTLPixelFormatR8Unorm;
             #else
             NSParameterAssert(!sRGB); //R8Unorm_sRGB texture is not available on macOS.

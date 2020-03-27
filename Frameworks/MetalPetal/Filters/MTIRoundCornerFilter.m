@@ -51,7 +51,7 @@
         return self.inputImage;
     }
     
-#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR)
+#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
 
 #if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel: MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:MTIVertices.fullViewportSquareVertices images:@[self.inputImage] parameters:@{}];
