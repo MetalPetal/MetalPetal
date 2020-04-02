@@ -15,6 +15,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
     - name: Build
       run: swift build -v
     - name: Run tests
@@ -28,6 +30,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
     - name: Build
       run: xcodebuild build -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
     - name: Run tests
@@ -41,6 +45,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
     - name: Build
       run: xcodebuild build -scheme MetalPetal -destination generic/platform=iOS -workspace .
 
@@ -52,6 +58,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
     - name: Build
       run: xcodebuild build -scheme MetalPetal -destination 'platform=macOS,variant=Mac Catalyst' -workspace .
     - name: Run tests
