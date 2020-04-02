@@ -32,3 +32,16 @@ jobs:
       run: xcodebuild build -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
     - name: Run tests
       run: xcodebuild test -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
+
+  target_macCatalyst:
+
+    name: Smoke Test (macCatalyst)
+    
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: xcodebuild build -scheme MetalPetal -destination 'platform=macOS,variant=Mac Catalyst' -workspace .
+    - name: Run tests
+      run: xcodebuild test -scheme MetalPetal -destination 'platform=macOS,variant=Mac Catalyst' -workspace .
