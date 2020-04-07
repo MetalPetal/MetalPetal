@@ -68,6 +68,45 @@ final class ImageLoadingTests: XCTestCase {
             }
         }
     }
+    
+    func testCVPixelBufferLoading() throws {
+        var buffer: CVPixelBuffer?
+        let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)
+        guard let pixelBuffer = buffer, r == kCVReturnSuccess else {
+            XCTFail("Cannot create pixel buffer.")
+            return
+        }
+        CVPixelBufferLockBaseAddress(pixelBuffer, [])
+        if let pixels = CVPixelBufferGetBaseAddress(pixelBuffer)?.assumingMemoryBound(to: UInt8.self) {
+            pixels.advanced(by: 0).assign(repeating: 255, count: 1)
+            pixels.advanced(by: 1).assign(repeating: 0, count: 1)
+            pixels.advanced(by: 2).assign(repeating: 0, count: 1)
+            pixels.advanced(by: 3).assign(repeating: 255, count: 1)
+            pixels.advanced(by: 0 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
+            pixels.advanced(by: 1 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
+            pixels.advanced(by: 2 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
+            pixels.advanced(by: 3 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
+        }
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, [])
+        
+        let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .nonPremultiplied)
+        guard let context = try makeContext() else { return }
+        let cgImage = try context.makeCGImage(from: image)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
+            }
+            if coordinates.x == 0 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
+            }
+            if coordinates.x == 1 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
 }
 
 final class RenderTests: XCTestCase {
