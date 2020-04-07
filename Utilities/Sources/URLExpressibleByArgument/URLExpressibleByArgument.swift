@@ -11,20 +11,10 @@ import ArgumentParser
 extension URL: ExpressibleByArgument {
     public init?(argument: String) {
         if let url = URL(string: argument), url.scheme != nil {
-            self.init(url: url)
+            self.init(string: argument)
         } else {
             //Assuming it is a file url.
-            if argument.hasPrefix("/") {
-                //Absolute path.
-                self.init(fileURLWithPath: argument)
-            } else {
-                //Relative to FileManager.default.currentDirectoryPath
-                let url = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent(argument)
-                self.init(url: url.standardizedFileURL)
-            }
+            self.init(fileURLWithPath: argument)
         }
-    }
-    private init(url: URL) {
-        self.init(string: url.absoluteString)!
     }
 }

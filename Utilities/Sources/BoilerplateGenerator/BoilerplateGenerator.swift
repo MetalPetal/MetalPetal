@@ -37,7 +37,5 @@ public struct BoilerplateGenerator: ParsableCommand {
             let url = shadersFileDirectory.appendingPathComponent(file)
             try! content.write(to: url, atomically: true, encoding: .utf8)
         }
-        
-        //Umbrella Header
     }
 }
