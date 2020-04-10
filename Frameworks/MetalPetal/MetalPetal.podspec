@@ -33,6 +33,14 @@ s.subspec 'Swift' do |ss|
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
 
+s.subspec 'Static' do |ss|
+    ss.dependency 'MetalPetal/Core'
+    ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
+    ss.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
+    ss.resource_bundle = { 'MetalPetal' => '' }
+    ss.prefix_header_contents = '#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[NSBundle.mainBundle URLForResource:@"MetalPetal" withExtension:@"bundle"]])'
+end
+
 s.default_subspec = 'Core'
 
 end
