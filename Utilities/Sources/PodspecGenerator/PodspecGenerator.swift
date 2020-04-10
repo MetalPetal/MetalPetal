@@ -50,7 +50,7 @@ public struct PodspecGenerator: ParsableCommand {
                 
                 //files
                 let pathPrefix = "Frameworks/\(podName)/"
-                let fileFields = ["source_files","public_header_files","private_header_files","vendored_frameworks","vendored_library","resource_bundle","resource","exclude_files","preserve_path","module_map","resources"]
+                let fileFields = ["source_files","public_header_files","private_header_files","vendored_frameworks","vendored_library","resource_bundle","resource_bundles","resource","exclude_files","preserve_path","module_map","resources"]
                 
                 func updateFields(in json: [String: Any]) -> [String: Any] {
                     var podJSON = json
@@ -63,6 +63,16 @@ public struct PodspecGenerator: ParsableCommand {
                                 var newContents = [String]()
                                 for text in array {
                                     newContents.append(pathPrefix.appending(text))
+                                }
+                                podJSON[field] = newContents
+                            case let dic as [String: [String]]:
+                                var newContents = dic
+                                for (key, value) in dic {
+                                    var newValues = [String]()
+                                    for text in value {
+                                        newValues.append(pathPrefix.appending(text))
+                                    }
+                                    newContents[key] = newValues
                                 }
                                 podJSON[field] = newContents
                             default:

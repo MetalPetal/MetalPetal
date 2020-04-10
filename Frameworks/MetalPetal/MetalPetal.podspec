@@ -36,9 +36,10 @@ end
 s.subspec 'Static' do |ss|
     ss.dependency 'MetalPetal/Core'
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
-    ss.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
-    ss.resource_bundle = { 'MetalPetal' => '' }
-    ss.prefix_header_contents = '#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[NSBundle.mainBundle URLForResource:@"MetalPetal" withExtension:@"bundle"]])'
+    ss.ios.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
+    ss.osx.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources' }
+    ss.resource_bundle = { 'MetalPetal' => ['CocoaPodsBundledResourcePlaceholder'] }
+    ss.prefix_header_contents = '#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]])'
 end
 
 s.default_subspec = 'Core'

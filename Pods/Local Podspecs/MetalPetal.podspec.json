@@ -49,6 +49,34 @@
         "MetalPerformanceShaders",
         "MetalKit"
       ]
+    },
+    {
+      "name": "Static",
+      "dependencies": {
+        "MetalPetal/Core": [
+
+        ]
+      },
+      "weak_frameworks": [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ],
+      "ios": {
+        "pod_target_xcconfig": {
+          "METAL_LIBRARY_OUTPUT_DIR": "${TARGET_BUILD_DIR}/MetalPetal.bundle/"
+        }
+      },
+      "osx": {
+        "pod_target_xcconfig": {
+          "METAL_LIBRARY_OUTPUT_DIR": "${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources"
+        }
+      },
+      "resource_bundles": {
+        "MetalPetal": [
+          "CocoaPodsBundledResourcePlaceholder"
+        ]
+      },
+      "prefix_header_contents": "#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@\"MetalPetal\" withExtension:@\"bundle\"]])"
     }
   ],
   "swift_version": "5.0"
