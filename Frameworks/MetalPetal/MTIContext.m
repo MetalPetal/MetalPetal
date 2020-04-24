@@ -24,6 +24,11 @@
 #import "MTILibrarySource.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+// TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+#if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+#import "MTISwiftPMBuiltinLibrarySupport.h"
+#endif
+
 NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @implementation MTIContextOptions
@@ -36,13 +41,18 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _enablesYCbCrPixelFormatSupport = YES;
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
-        #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
-        _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleWithURL:[[NSBundle bundleForClass:self.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]]);
+        #ifdef SWIFTPM_MODULE_BUNDLE
+        _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
         #else
-            #ifdef SWIFTPM_MODULE_BUNDLE
-            _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
+            #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
+            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleWithURL:[[NSBundle bundleForClass:self.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]]);
             #else
-            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+                // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+                #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+                _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
+                #else
+                _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+                #endif
             #endif
         #endif
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
