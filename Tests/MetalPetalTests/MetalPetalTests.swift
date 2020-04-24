@@ -24,11 +24,7 @@ fileprivate func listMetalDevices() {
 
 fileprivate func makeContext(options: MTIContextOptions? = nil) throws -> MTIContext? {
     if let device = MTLCreateSystemDefaultDevice() {
-        let compileOption = MTLCompileOptions()
-        compileOption.languageVersion = .version1_2
-        let contextOptions = options ?? MTIContextOptions()
-        contextOptions.defaultLibraryURL = try BuiltinMetalLibraryWithoutSE0271.makeBuiltinMetalLibrary(compileOptions: compileOption)
-        return try MTIContext(device: device, options: contextOptions)
+        return try MTIContext(device: device)
     }
     return nil
 }

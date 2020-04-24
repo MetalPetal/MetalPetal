@@ -24,6 +24,11 @@
 #import "MTILibrarySource.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
+// TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+#if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+#import "MTISwiftPMBuiltinLibrarySupport.h"
+#endif
+
 NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @implementation MTIContextOptions
@@ -39,7 +44,12 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         #ifdef SWIFTPM_MODULE_BUNDLE
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
         #else
-        _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+            // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+            #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+            _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
+            #else
+            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+            #endif
         #endif
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;

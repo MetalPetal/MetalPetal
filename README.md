@@ -625,7 +625,7 @@ We also provide a script to generate dynamic `.framework`s for you. You need to 
 
 ### Swift Package Manager
 
-This repo contains a package description file. However using Swift Package Manager is not supported until [SE-0271](https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md) is fully implemented.
+[Adding Package Dependencies to Your App](https://developer.apple.com/documentation/xcode/adding_package_dependencies_to_your_app)
 
 ## iOS Simulator Support
 
