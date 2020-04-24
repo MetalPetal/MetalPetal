@@ -17,6 +17,7 @@ s.prefix_header_file = false
 s.swift_version = '5.0'
 
 s.subspec 'Core' do |ss|
+    ss.prefix_header_file = false
     ss.source_files = '**/*.{h,m,c,mm,metal}'
     ss.private_header_files = [
     'MTIPrint.h',
@@ -28,18 +29,20 @@ s.subspec 'Core' do |ss|
 end
 
 s.subspec 'Swift' do |ss|
+    ss.prefix_header_file = false
     ss.dependency 'MetalPetal/Core'
     ss.source_files = '**/*.{swift}'
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
 
 s.subspec 'Static' do |ss|
+    ss.prefix_header_file = false
     ss.dependency 'MetalPetal/Core'
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
     ss.ios.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
     ss.osx.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources' }
     ss.resource_bundle = { 'MetalPetal' => ['CocoaPodsBundledResourcePlaceholder'] }
-    ss.prefix_header_contents = '#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]])'
+    ss.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1'}
 end
 
 s.default_subspec = 'Core'

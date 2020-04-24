@@ -44,11 +44,15 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         #ifdef SWIFTPM_MODULE_BUNDLE
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
         #else
-            // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
-            #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
-            _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
+            #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
+            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleWithURL:[[NSBundle bundleForClass:self.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]]);
             #else
-            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+                // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+                #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+                _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
+                #else
+                _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
+                #endif
             #endif
         #endif
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;

@@ -25,6 +25,7 @@
   "subspecs": [
     {
       "name": "Core",
+      "prefix_header_file": false,
       "source_files": "**/*.{h,m,c,mm,metal}",
       "private_header_files": [
         "MTIPrint.h",
@@ -39,6 +40,7 @@
     },
     {
       "name": "Swift",
+      "prefix_header_file": false,
       "dependencies": {
         "MetalPetal/Core": [
 
@@ -52,6 +54,7 @@
     },
     {
       "name": "Static",
+      "prefix_header_file": false,
       "dependencies": {
         "MetalPetal/Core": [
 
@@ -76,7 +79,9 @@
           "CocoaPodsBundledResourcePlaceholder"
         ]
       },
-      "prefix_header_contents": "#define SWIFTPM_MODULE_BUNDLE ([NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@\"MetalPetal\" withExtension:@\"bundle\"]])"
+      "pod_target_xcconfig": {
+        "GCC_PREPROCESSOR_DEFINITIONS": "METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1"
+      }
     }
   ],
   "swift_version": "5.0"
