@@ -194,22 +194,18 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 - (NSArray<MTIImagePromiseRenderTarget *> *)resolveWithContext:(MTIImageRenderingContext *)renderingContext resolver:(id<MTIImagePromise>)promise error:(NSError * __autoreleasing *)inOutError {
     NSError *error = nil;
+
+    MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     
     NSUInteger outputCount = self.outputDescriptors.count;
     MTLPixelFormat pixelFormats[outputCount];
-    for (NSUInteger index = 0; index < outputCount; index += 1) {
-        MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
-        MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
-        pixelFormats[index] = pixelFormat;
-    }
-    
-    MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    
     MTIImagePromiseRenderTarget *renderTargets[outputCount];
     for (NSUInteger index = 0; index < outputCount; index += 1) {
-        MTLPixelFormat pixelFormat = pixelFormats[index];
-        
         MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
+        
+        MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
+        pixelFormats[index] = pixelFormat;
+        
         MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate];
         MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
         if (error) {
