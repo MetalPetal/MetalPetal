@@ -208,20 +208,17 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         inputResolutions[index] = resolution;
     }
     
-    MTLPixelFormat pixelFormats[self.outputDescriptors.count];
-    for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
-        MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
-        MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
-        pixelFormats[index] = pixelFormat;
-    }
-    
     MTLRenderPassDescriptor *renderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
     
+    MTLPixelFormat pixelFormats[self.outputDescriptors.count];
     MTIImagePromiseRenderTarget *renderTargets[self.outputDescriptors.count];
     for (NSUInteger index = 0; index < self.outputDescriptors.count; index += 1) {
-        MTLPixelFormat pixelFormat = pixelFormats[index];
-        
+
         MTIRenderPassOutputDescriptor *outputDescriptor = self.outputDescriptors[index];
+        
+        MTLPixelFormat pixelFormat = (outputDescriptor.pixelFormat == MTIPixelFormatUnspecified) ? renderingContext.context.workingPixelFormat : outputDescriptor.pixelFormat;
+        pixelFormats[index] = pixelFormat;
+        
         MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:outputDescriptor.dimensions.width height:outputDescriptor.dimensions.height usage:MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead];
         MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
         if (error) {
