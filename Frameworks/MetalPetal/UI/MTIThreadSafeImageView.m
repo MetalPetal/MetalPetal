@@ -78,6 +78,8 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 
 @property (nonatomic) BOOL currentDrawableValid;
 
+@property (nonatomic) CGSize currentDrawableSize;
+
 @end
 
 @implementation MTIThreadSafeImageView
@@ -123,6 +125,7 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
         NSLog(@"%@: Failed to create MTIContext - %@",self,error);
     }
     _renderLayer.device = device;
+    _currentDrawableSize = _renderLayer.drawableSize;
     _lock = MTILockCreate();
     self.opaque = YES;
 }
@@ -326,9 +329,11 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
         CGFloat heightScale = imageSize.height/_backgroundAccessingBounds.size.height;
         CGFloat nativeScale = _screenScale;
         CGFloat scale = MAX(MIN(MAX(widthScale,heightScale),nativeScale), 1.0);
-        if (ABS(renderLayer.contentsScale - scale) > 0.00001) {
+        CGSize drawableSize = CGSizeMake(_backgroundAccessingBounds.size.width * scale, _backgroundAccessingBounds.size.height * scale);
+        if (ABS(renderLayer.contentsScale - scale) > 0.00001 || !CGSizeEqualToSize(drawableSize, _currentDrawableSize)) {
             renderLayer.contentsScale = scale;
-            renderLayer.drawableSize = CGSizeMake(_backgroundAccessingBounds.size.width * scale, _backgroundAccessingBounds.size.height * scale);
+            renderLayer.drawableSize = drawableSize;
+            _currentDrawableSize = drawableSize;
         }
     }
 }
