@@ -20,6 +20,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateTexture = 1004,
     MTIErrorFailedToCreateCommandEncoder = 1005,
     MTIErrorFailedToCreateHeap = 1006,
+    MTIErrorDefaultLibraryNotFound = 1007,
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,

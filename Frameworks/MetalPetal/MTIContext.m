@@ -219,7 +219,12 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         if ([options.defaultLibraryURL.scheme isEqualToString:MTIURLSchemeForLibraryWithSource]) {
             defaultLibrary = [MTILibrarySourceRegistration.sharedRegistration newLibraryWithURL:options.defaultLibraryURL device:device error:&libraryError];
         } else {
-            defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+            if (options.defaultLibraryURL.path) {
+                defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+            } else {
+                NSAssert(NO, @"MetalPetal: default library not found.");
+                libraryError = MTIErrorCreate(MTIErrorDefaultLibraryNotFound, @{@"path": options.defaultLibraryURL.path ?: @"(null)"});
+            }
         }
         if (!defaultLibrary || libraryError) {
             if (inOutError) {
