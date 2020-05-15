@@ -262,18 +262,46 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
             if (argument.type == MTLArgumentTypeTexture) {
                 NSUInteger index = argument.index;
-                id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
-                [commandEncoder setVertexTexture:texture atIndex:index];
-                [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+                if (index < command.images.count) {
+                    id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
+                    [commandEncoder setVertexTexture:texture atIndex:index];
+                    [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+                } else {
+                    NSAssert(NO, @"Failed to set vertex textures.");
+                    if (inOutError) {
+                        NSDictionary *userInfo = @{
+                            @"kernel": command.kernel,
+                            @"stage": @"vertex",
+                            @"argument": argument.name
+                        };
+                        *inOutError = MTIErrorCreate(MTIErrorTextureBindingFailed, userInfo);
+                    }
+                    [commandEncoder endEncoding];
+                    return nil;
+                }
             }
         }
         
         for (MTLArgument *argument in renderPipeline.reflection.fragmentArguments) {
             if (argument.type == MTLArgumentTypeTexture) {
                 NSUInteger index = argument.index;
-                id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
-                [commandEncoder setFragmentTexture:texture atIndex:index];
-                [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
+                if (index < command.images.count) {
+                    id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
+                    [commandEncoder setFragmentTexture:texture atIndex:index];
+                    [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
+                } else {
+                    NSAssert(NO, @"Failed to set fragment textures.");
+                    if (inOutError) {
+                        NSDictionary *userInfo = @{
+                            @"kernel": command.kernel,
+                            @"stage": @"fragment",
+                            @"argument": argument.name
+                        };
+                        *inOutError = MTIErrorCreate(MTIErrorTextureBindingFailed, userInfo);
+                    }
+                    [commandEncoder endEncoding];
+                    return nil;
+                }
             }
         }
                 
@@ -281,20 +309,20 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
         if (command.parameters.count > 0) {
             [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:command.parameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
             if (error) {
+                NSAssert(NO, @"Cannot encode vertex arguments: %@", error);
                 if (inOutError) {
                     *inOutError = error;
                 }
-                
                 [commandEncoder endEncoding];
                 return nil;
             }
             
             [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:command.parameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
             if (error) {
+                NSAssert(NO, @"Cannot encode fragment arguments: %@", error);
                 if (inOutError) {
                     *inOutError = error;
                 }
-                
                 [commandEncoder endEncoding];
                 return nil;
             }
