@@ -34,6 +34,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorParameterDataTypeNotSupported = 4002,
     MTIErrorMPSKernelInputCountMismatch = 4003,
     MTIErrorMPSKernelNotSupported = 4004,
+    MTIErrorTextureBindingFailed = 4005,
     
     //Render errors
     MTIErrorEmptyDrawable = 5001,
