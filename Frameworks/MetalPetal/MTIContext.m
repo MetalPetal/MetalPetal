@@ -238,7 +238,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
             if (options.defaultLibraryURL.path) {
                 defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
             } else {
-                NSAssert(NO, @"MetalPetal: default library not found.");
+                NSAssert(NO, @"Default library not found.");
                 libraryError = MTIErrorCreate(MTIErrorDefaultLibraryNotFound, @{
                     @"defaultBuiltinLibraryBundlePath": MTIDefaultBuiltinLibraryBundle().bundleURL.path ?: @"(null)"
                 });
