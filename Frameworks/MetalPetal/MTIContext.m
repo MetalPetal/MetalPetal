@@ -33,6 +33,28 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @implementation MTIContextOptions
 
+static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
+    static NSBundle *bundle = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        #ifdef SWIFTPM_MODULE_BUNDLE
+        bundle = SWIFTPM_MODULE_BUNDLE;
+        #else
+            #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
+            bundle = [NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]];
+            #else
+                // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+                #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+                bundle = nil;
+                #else
+                bundle = [NSBundle bundleForClass:MTIContext.class];
+                #endif
+            #endif
+        #endif
+    });
+    return bundle;
+}
+
 - (instancetype)init {
     if (self = [super init]) {
         _coreImageContextOptions = nil;
@@ -41,20 +63,14 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
         _enablesYCbCrPixelFormatSupport = YES;
         _automaticallyReclaimResources = YES;
         _label = MTIContextDefaultLabel;
-        #ifdef SWIFTPM_MODULE_BUNDLE
-        _defaultLibraryURL = MTIDefaultLibraryURLForBundle(SWIFTPM_MODULE_BUNDLE);
+        
+        // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
+        #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
+        _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
         #else
-            #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
-            _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleWithURL:[[NSBundle bundleForClass:self.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]]);
-            #else
-                // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
-                #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
-                _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
-                #else
-                _defaultLibraryURL = MTIDefaultLibraryURLForBundle([NSBundle bundleForClass:self.class]);
-                #endif
-            #endif
+        _defaultLibraryURL = MTIDefaultLibraryURLForBundle(MTIDefaultBuiltinLibraryBundle());
         #endif
+        
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
         _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;
@@ -219,7 +235,14 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         if ([options.defaultLibraryURL.scheme isEqualToString:MTIURLSchemeForLibraryWithSource]) {
             defaultLibrary = [MTILibrarySourceRegistration.sharedRegistration newLibraryWithURL:options.defaultLibraryURL device:device error:&libraryError];
         } else {
-            defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+            if (options.defaultLibraryURL.path) {
+                defaultLibrary = [device newLibraryWithFile:options.defaultLibraryURL.path error:&libraryError];
+            } else {
+                NSAssert(NO, @"Default library not found.");
+                libraryError = MTIErrorCreate(MTIErrorDefaultLibraryNotFound, @{
+                    @"defaultBuiltinLibraryBundlePath": MTIDefaultBuiltinLibraryBundle().bundleURL.path ?: @"(null)"
+                });
+            }
         }
         if (!defaultLibrary || libraryError) {
             if (inOutError) {
