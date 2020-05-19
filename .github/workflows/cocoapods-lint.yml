@@ -21,6 +21,12 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    
+    - name: Update Podspec
+      run: |
+        git fetch --tags
+        cd ./Utilities/
+        swift run main podspec-generator ../
 
     # Runs a single command using the runners shell
     - name: Lint
