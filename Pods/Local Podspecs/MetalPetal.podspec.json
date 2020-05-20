@@ -33,6 +33,11 @@
         "MTIHasher.h",
         "MTIImageRenderingContext+Internal.h"
       ],
+      "libraries": "c++",
+      "xcconfig": {
+        "CLANG_CXX_LANGUAGE_STANDARD": "c++14",
+        "CLANG_CXX_LIBRARY": "libc++"
+      },
       "weak_frameworks": [
         "MetalPerformanceShaders",
         "MetalKit"
