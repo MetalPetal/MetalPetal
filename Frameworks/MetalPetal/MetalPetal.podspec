@@ -26,9 +26,8 @@ s.subspec 'Core' do |ss|
     'MTIImageRenderingContext+Internal.h'
     ]
     ss.library = 'c++'
-    ss.xcconfig = {
-      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14',
-      'CLANG_CXX_LIBRARY' => 'libc++'
+    ss.pod_target_xcconfig = {
+      'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14'
     }
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
