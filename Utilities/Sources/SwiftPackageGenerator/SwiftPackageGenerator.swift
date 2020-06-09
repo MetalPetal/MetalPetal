@@ -80,7 +80,8 @@ public struct SwiftPackageGenerator: ParsableCommand {
             static NSURL *url;
             static dispatch_once_t onceToken;
             dispatch_once(&onceToken, ^{
-                NSString *librarySource = [NSString stringWithCString:MTIBuiltinLibrarySource encoding:NSUTF8StringEncoding];
+                NSString *targetConditionals = [NSString stringWithFormat:@"#ifndef TARGET_OS_SIMULATOR\\n#define TARGET_OS_SIMULATOR %@\\n#endif",@(TARGET_OS_SIMULATOR)];
+                NSString *librarySource = [targetConditionals stringByAppendingString:[NSString stringWithCString:MTIBuiltinLibrarySource encoding:NSUTF8StringEncoding]];
                 MTLCompileOptions *options = [[MTLCompileOptions alloc] init];
                 options.fastMathEnabled = YES;
                 options.languageVersion = MTLLanguageVersion1_2;
@@ -97,10 +98,12 @@ public struct SwiftPackageGenerator: ParsableCommand {
         let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
         librarySource += try String(contentsOf: headerURL)
         let fileManager = FileManager()
-        for source in try fileManager.contentsOfDirectory(at: sourceFileDirectory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) {
+        for source in try fileManager.contentsOfDirectory(at: sourceFileDirectory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
             if source.pathExtension == "metal" {
                 librarySource += "\n"
-                librarySource += try String(contentsOf: source).replacingOccurrences(of: "#include \"MTIShaderLib.h\"", with: "\n")
+                librarySource += try String(contentsOf: source)
+                    .replacingOccurrences(of: "#include \"MTIShaderLib.h\"", with: "\n")
+                    .replacingOccurrences(of: "#include <TargetConditionals.h>", with: "\n")
             }
         }
         return librarySource
