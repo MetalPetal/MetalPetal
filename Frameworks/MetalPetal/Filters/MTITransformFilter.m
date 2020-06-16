@@ -124,7 +124,7 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
         { .position = {br.x, br.y, 0, br.w} , .textureCoordinate = { 1, 0 } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(viewport.size) pixelFormat:MTIPixelFormatUnspecified loadAction:MTLLoadActionClear];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(viewport.size) pixelFormat:self.outputPixelFormat loadAction:MTLLoadActionClear];
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:geomerty images:@[self.inputImage] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
                                             outputDescriptors:@[outputDescriptor]].firstObject;
