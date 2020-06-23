@@ -46,7 +46,8 @@ public struct SwiftPackageGenerator: ParsableCommand {
         let fileHandlers = [
             SourceFileHandler(fileTypes: ["h"], projectRoot: projectRoot, targetURL: objectiveCHeaderDirectory, fileManager: fileManager),
             SourceFileHandler(fileTypes: ["m", "mm", "metal"], projectRoot: projectRoot, targetURL: objectiveCTargetDirectory, fileManager: fileManager),
-            SourceFileHandler(fileTypes: ["swift"], projectRoot: projectRoot, targetURL: swiftTargetDirectory, fileManager: fileManager)
+            SourceFileHandler(fileTypes: ["swift"], projectRoot: projectRoot, targetURL: swiftTargetDirectory, fileManager: fileManager),
+            SourceFileHandler(fileTypes: ["MTIShaderLib.h"], projectRoot: projectRoot, targetURL: objectiveCTargetDirectory, fileManager: fileManager)
         ]
         
         try processSources(in: sourcesDirectory, fileHandlers: fileHandlers)
@@ -62,9 +63,8 @@ public struct SwiftPackageGenerator: ParsableCommand {
         // Auto generated.
         #import <Foundation/Foundation.h>
 
-        #ifndef SWIFTPM_MODULE_BUNDLE
         FOUNDATION_EXPORT NSURL * _MTISwiftPMBuiltinLibrarySourceURL(void);
-        #endif
+        
         """.write(to: directory.appendingPathComponent("MTISwiftPMBuiltinLibrarySupport.h"), atomically: true, encoding: .utf8)
         
         try """
@@ -116,9 +116,7 @@ public struct SwiftPackageGenerator: ParsableCommand {
                 try processSources(in: sourceFile, fileHandlers: fileHandlers)
             } else {
                 for fileHandler in fileHandlers {
-                    if try fileHandler.handle(sourceFile) {
-                        break
-                    }
+                    try fileHandler.handle(sourceFile)
                 }
             }
         }
@@ -137,8 +135,8 @@ public struct SwiftPackageGenerator: ParsableCommand {
             }
         }
         
-        func handle(_ file: URL) throws -> Bool {
-            if fileTypes.contains(file.pathExtension) {
+        @discardableResult func handle(_ file: URL) throws -> Bool {
+            if fileTypes.contains(file.pathExtension) || fileTypes.contains(file.lastPathComponent) {
                 let fileRelativeToProjectRoot = try relativePathComponents(for: file, baseURL: projectRoot)
                 let targetRelativeToProjectRoot = try relativePathComponents(for: targetURL, baseURL: projectRoot)
                 let destinationURL = URL(string: (Array<String>(repeating: "..", count: targetRelativeToProjectRoot.count) + fileRelativeToProjectRoot).joined(separator: "/"))!
