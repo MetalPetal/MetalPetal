@@ -14,7 +14,10 @@
 #import "MTIError.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
+#import "MTIImagePromise.h"
+#import "MTIPixelFormat.h"
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSProcessingRecipe : NSObject <MTIImagePromise>
 
 @property (nonatomic,strong) MTIMPSKernel *kernel;

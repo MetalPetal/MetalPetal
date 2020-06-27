@@ -11,6 +11,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIImage.h"
 #import "MTIVector.h"
+#import "MTIVertex.h"
 #import "MTIRenderPassOutputDescriptor.h"
 
 @implementation MTIRoundCornerFilter

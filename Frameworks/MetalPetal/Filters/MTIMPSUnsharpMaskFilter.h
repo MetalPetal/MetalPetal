@@ -5,10 +5,11 @@
 //  Created by yi chen on 2018/2/7.
 //
 
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSUnsharpMaskFilter : NSObject  <MTIUnaryFilter>
 
 @property (nonatomic) float scale; //(0, 1]. Default is 0.5.

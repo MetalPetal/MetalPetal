@@ -5,7 +5,7 @@
 //  Created by YuAo on 13/10/2017.
 //
 
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,6 +16,7 @@ typedef struct MTICLAHESize MTICLAHESize;
 
 FOUNDATION_EXPORT MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) NS_SWIFT_UNAVAILABLE("Use MTICLAHESize.init instead.");
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICLAHEFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) float clipLimit;

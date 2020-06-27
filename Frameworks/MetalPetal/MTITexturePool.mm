@@ -14,6 +14,7 @@
 
 #include <vector>
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIStack<__covariant ObjectType> : NSObject <NSFastEnumeration> {
     std::vector<__strong id> *_items;
 }
@@ -267,6 +268,7 @@
 
 #import "MTIHasher.h"
 
+__attribute__((objc_subclassing_restricted))
 NS_AVAILABLE(10_15, 13_0)
 @interface MTIHeapTextureReuseKey : NSObject <NSCopying>
 

@@ -11,6 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageProperties : NSObject <NSCopying>
 
 + (instancetype)new NS_UNAVAILABLE;

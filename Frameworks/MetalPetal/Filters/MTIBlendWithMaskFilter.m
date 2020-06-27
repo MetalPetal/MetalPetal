@@ -9,6 +9,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
+#import "MTIMask.h"
 
 @implementation MTIBlendWithMaskFilter
 @synthesize outputPixelFormat = _outputPixelFormat;

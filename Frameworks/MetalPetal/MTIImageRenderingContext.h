@@ -6,9 +6,7 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIImagePromise.h"
 
 @class MTIImage, MTIContext;
 
@@ -17,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /*! @brief Rendering context related constant for MTIContextImageAssociatedValueTableName. */
 FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTableName;
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageRenderingContext : NSObject
 
 @property (nonatomic, strong, readonly) MTIContext *context;
@@ -34,8 +33,7 @@ FOUNDATION_EXPORT NSString * const MTIContextImagePersistentResolutionHolderTabl
 
 NS_ASSUME_NONNULL_END
 
-
-#import "MTIContext.h"
+#import <MTIContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

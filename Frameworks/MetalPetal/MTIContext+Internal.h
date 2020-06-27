@@ -9,10 +9,14 @@
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
 #import <CoreVideo/CoreVideo.h>
-#import "MTIContext.h"
+#import <MTIContext.h>
+
+@class MTIImage;
+@protocol MTIKernelConfiguration, MTIKernel, MTIImagePromise;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImagePromiseRenderTarget : NSObject
 
 @property (nonatomic,strong,readonly,nullable) id<MTLTexture> texture;

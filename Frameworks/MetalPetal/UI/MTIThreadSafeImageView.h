@@ -8,7 +8,7 @@
 #if __has_include(<UIKit/UIKit.h>)
 
 #import <UIKit/UIKit.h>
-#import "MTIDrawableRendering.h"
+#import <MTIDrawableRendering.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,6 +23,7 @@ typedef NS_ERROR_ENUM(MTIImageViewErrorDomain, MTIImageViewError) {
 
 /// An image view that immediately draws its `image` on the calling thread. Most of the custom properties can be accessed from any thread safely. It's recommanded to use the `MTIImageView` which draws it's content on the main thread instead of this view.
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIThreadSafeImageView : UIView <MTIDrawableProvider>
 
 @property (atomic) MTLPixelFormat colorPixelFormat;

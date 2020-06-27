@@ -15,9 +15,11 @@
 #import "MTITextureDescriptor.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIError.h"
+#import "MTIImagePromise.h"
 
 NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDomain";
 
+__attribute__((objc_subclassing_restricted))
 @interface MTISCNSceneImagePromise: NSObject <MTIImagePromise>
 
 @property (nonatomic) MTLPixelFormat pixelFormat;

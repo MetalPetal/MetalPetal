@@ -10,6 +10,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRenderPassOutputDescriptor.h"
+#import "MTIVertex.h"
 
 @implementation MTIUnaryImageRenderingFilter
 @synthesize outputPixelFormat = _outputPixelFormat;

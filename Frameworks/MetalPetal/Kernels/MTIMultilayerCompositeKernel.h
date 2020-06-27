@@ -5,18 +5,15 @@
 //  Created by YuAo on 27/09/2017.
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIKernel.h"
-#import "MTIBlendModes.h"
-#import "MTITextureDimensions.h"
-#import "MTIPixelFormat.h"
-#import "MTIImagePromise.h"
+#import <MTIKernel.h>
+#import <MTITextureDimensions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTILayer;
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositeKernel : NSObject <MTIKernel>
 
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image

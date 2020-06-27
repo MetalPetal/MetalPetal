@@ -17,6 +17,7 @@
 #import "MTIComputePipeline.h"
 #import "MTITextureDescriptor.h"
 #import "MTIShaderLib.h"
+#import "MTIImagePromise.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIVector+SIMD.h"
@@ -29,6 +30,7 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
     return (MTICLAHESize){.width = width, .height = height };
 }
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICLAHELUTKernelState: NSObject
 
 @property (nonatomic,strong,readonly) MPSImageHistogram *histogramKernel;
@@ -50,10 +52,12 @@ MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) {
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICLAHELUTKernel: NSObject <MTIKernel>
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICLAHELUTRecipe: NSObject <MTIImagePromise>
 
 @property (nonatomic,strong,readonly) MTICLAHELUTKernel *kernel;

@@ -5,11 +5,13 @@
 //  Created by Yu Ao on 15/01/2018.
 //
 
-#import "MTIFilter.h"
-#import "MTIVector.h"
+#import <MTIFilter.h>
+
+@class MTIVector;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIHighPassSkinSmoothingFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;

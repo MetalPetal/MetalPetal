@@ -5,8 +5,7 @@
 //  Created by Yu Ao on 07/01/2018.
 //
 
-#import <Foundation/Foundation.h>
-#import "MTICVMetalTextureBridging.h"
+#import <MTICVMetalTextureBridging.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +18,7 @@ typedef NS_ERROR_ENUM(MTICVMetalTextureCacheErrorDomain, MTICVMetalTextureCacheE
 };
 
 /// Thread-safe object-orientated CVMetalTextureCache.
-
+__attribute__((objc_subclassing_restricted))
 @interface MTICVMetalTextureCache : NSObject <MTICVMetalTextureBridging>
 
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device

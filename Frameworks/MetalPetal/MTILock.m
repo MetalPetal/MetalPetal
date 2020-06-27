@@ -11,6 +11,7 @@
 
 //https://gist.github.com/steipete/36350a8a60693d440954b95ea6cbbafc
 
+__attribute__((objc_subclassing_restricted))
 OS_UNFAIR_LOCK_AVAILABILITY
 @interface MTILock : NSObject <MTILocking>  {
     os_unfair_lock _unfairlock;

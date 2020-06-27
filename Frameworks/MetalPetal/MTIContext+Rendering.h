@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreImage/CoreImage.h>
-#import "MTIContext.h"
+#import <MTIContext.h>
+#import <MTIAlphaType.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

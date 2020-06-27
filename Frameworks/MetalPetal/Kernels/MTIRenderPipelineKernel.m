@@ -24,6 +24,7 @@
 #import "MTIContext+Internal.h"
 #import "MTIHasher.h"
 #import "MTIError.h"
+#import "MTIPixelFormat.h"
 
 NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
@@ -175,6 +176,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageRenderingRecipe : NSObject
 
 @property (nonatomic, copy, readonly) NSArray<MTIRenderCommand *> *renderCommands;
@@ -368,7 +370,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 @end
 
-
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageRenderingPromise: NSObject <MTIImagePromise>
 
 @property (nonatomic, strong, readonly) MTIImageRenderingRecipe *recipe;

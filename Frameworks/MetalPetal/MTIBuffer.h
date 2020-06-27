@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// A GPU mutable data buffer. You can pass a `MTIDataBuffer` instance to multiple processing units, they can all read and write the buffer's content. However, accessing a `MTIDataBuffer`'s contents using CPU is not safe. You must ensure all the GPU reads/writes to this buffer is completed. e.g. call a render task's waitUntilCompleted. For one `MTIDataBuffer` instance, one and only one underlaying `MTLBuffer` will be created for one GPU device.
+__attribute__((objc_subclassing_restricted))
 @interface MTIDataBuffer : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;

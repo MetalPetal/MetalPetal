@@ -6,7 +6,7 @@
 //
 
 #import <CoreGraphics/CoreGraphics.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,6 +37,7 @@ typedef struct MTICropRegion MTICropRegion;
 
 FOUNDATION_EXPORT MTICropRegion MTICropRegionMake(CGRect rect, MTICropRegionUnit unit) NS_SWIFT_UNAVAILABLE("Use MTICropRegion.init instead.");
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICropFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) MTICropRegion cropRegion;

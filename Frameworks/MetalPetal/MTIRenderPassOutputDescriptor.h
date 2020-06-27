@@ -5,13 +5,12 @@
 //  Created by YuAo on 18/11/2017.
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTITextureDimensions.h"
-#import "MTIPixelFormat.h"
+#import <MTITextureDimensions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderPassOutputDescriptor: NSObject <NSCopying>
 
 @property (nonatomic,readonly) MTITextureDimensions dimensions;

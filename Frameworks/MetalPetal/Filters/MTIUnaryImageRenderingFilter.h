@@ -5,10 +5,10 @@
 //  Created by Yu Ao on 10/10/2017.
 //
 
-#import "MTIFilter.h"
-#import "MTIImageOrientation.h"
-#import "MTIAlphaType.h"
 #import <QuartzCore/QuartzCore.h>
+#import <MTIFilter.h>
+#import <MTIImageOrientation.h>
+#import <MTIAlphaType.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

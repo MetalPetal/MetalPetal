@@ -36,6 +36,7 @@ NSString * const MTIImageViewErrorDomain = @"MTIImageViewErrorDomain";
 
 
 // For simulator < iOS 13
+__attribute__((objc_subclassing_restricted))
 @interface MTIStubMetalLayer : CALayer <MTICAMetalLayer>
 
 @property (nullable, retain, atomic) id<MTLDevice> device;

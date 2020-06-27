@@ -5,13 +5,13 @@
 //  Created by 杨乃川 on 2017/10/26.
 //
 
-#import <Foundation/Foundation.h>
-#import "MTIFilter.h"
-#import "MTIColor.h"
-#import "MTIMask.h"
+#import <MTIFilter.h>
+
+@class MTIMask;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIBlendWithMaskFilter: NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;

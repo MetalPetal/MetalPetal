@@ -17,11 +17,14 @@
 #import "MTIComputePipeline.h"
 #import "MTITextureDescriptor.h"
 #import "MTIShaderLib.h"
+#import "MTIImagePromise.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
 #import "MTIComputePipelineKernel.h"
+#import "MTITextureDimensions.h"
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSHistogramRecipe : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) MTIImage *inputImage;

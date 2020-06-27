@@ -5,15 +5,12 @@
 //  Created by Yu Ao on 14/11/2017.
 //
 
-#import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "MTIBlendModes.h"
-#import "MTIColor.h"
-#import "MTIMask.h"
+#import <MTIBlendModes.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIImage;
+@class MTIImage, MTIMask;
 
 typedef NS_CLOSED_ENUM(NSInteger, MTILayerLayoutUnit) {
     MTILayerLayoutUnitPixel,
@@ -27,6 +24,7 @@ typedef NS_OPTIONS(NSUInteger, MTILayerFlipOptions) {
 } NS_SWIFT_NAME(MTILayer.FlipOptions);
 
 /// A MTILayer represents a compositing layer for MTIMultilayerCompositingFilter. MTILayers use a UIKit like coordinate system.
+__attribute__((objc_subclassing_restricted))
 @interface MTILayer: NSObject <NSCopying>
 
 @property (nonatomic, strong, readonly) MTIImage *content;

@@ -10,6 +10,7 @@
 
 NSString * const MTICVMetalTextureCacheErrorDomain = @"MTICVMetalTextureCacheErrorDomain";
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICVMetalTextureCacheTexture: NSObject <MTICVMetalTexture>
 
 #if COREVIDEO_SUPPORTS_METAL

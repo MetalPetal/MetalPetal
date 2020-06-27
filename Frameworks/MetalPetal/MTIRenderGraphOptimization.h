@@ -5,13 +5,13 @@
 //  Created by Yu Ao on 20/11/2017.
 //
 
-#import <Foundation/Foundation.h>
-#import "MTIImagePromise.h"
+#import <MTIImagePromise.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class MTIImage;
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderGraphNode: NSObject
 
 @property (nonatomic, strong, nullable) NSMutableArray<MTIRenderGraphNode *> *inputs;
@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderGraphOptimizer : NSObject
 
 + (id<MTIImagePromise>)promiseByOptimizingRenderGraphOfPromise:(id<MTIImagePromise>)promise;

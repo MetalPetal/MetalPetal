@@ -5,10 +5,9 @@
 //  Created by Yu Ao on 2018/6/11.
 //
 
-#import <Foundation/Foundation.h>
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +16,7 @@ typedef NS_OPTIONS(NSUInteger, MTIHistogramType) {
     MTIHistogramTypeRGB = 1 << 1
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSHistogramFilter : NSObject <MTIFilter>
 
 - (void)setOutputPixelFormat:(MTLPixelFormat)outputPixelFormat NS_UNAVAILABLE;
@@ -29,6 +29,7 @@ typedef NS_OPTIONS(NSUInteger, MTIHistogramType) {
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIHistogramDisplayFilter: NSObject <MTIUnaryFilter>
 
 @property (nonatomic) CGSize outputSize;

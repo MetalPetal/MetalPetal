@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, MTIDrawableRenderingResizingMode) {
     MTIDrawableRenderingResizingModeAspectFill
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIDrawableRenderingRequest : NSObject
 
 @property (nonatomic, weak, readonly) id<MTIDrawableProvider> drawableProvider;

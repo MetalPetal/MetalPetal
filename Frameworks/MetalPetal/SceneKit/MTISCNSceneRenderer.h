@@ -20,6 +20,7 @@ typedef NS_ERROR_ENUM(MTISCNSceneRendererErrorDomain, MTISCNSceneRendererError) 
     MTISCNSceneRendererErrorSceneKitDoesNotSupportMetal = 1001
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTISCNSceneRenderer : NSObject
 
 @property (nonatomic, strong, nullable) SCNScene *scene;

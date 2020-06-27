@@ -6,7 +6,7 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef CGRect MTITransformFilterViewport NS_SWIFT_NAME(MTITransformFilter.Viewport);
 
+__attribute__((objc_subclassing_restricted))
 @interface MTITransformFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) CATransform3D transform;

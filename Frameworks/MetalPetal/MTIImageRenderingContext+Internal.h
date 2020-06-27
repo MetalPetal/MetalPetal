@@ -5,8 +5,7 @@
 //  Created by Yu Ao on 2020/1/20.
 //
 
-#import <Foundation/Foundation.h>
-#import "MTIImageRenderingContext.h"
+#import <MTIImageRenderingContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

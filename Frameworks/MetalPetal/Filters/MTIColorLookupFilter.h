@@ -6,7 +6,7 @@
 //
 
 #import <CoreGraphics/CoreGraphics.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
     MTIColorLookupTableType3D
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIColorLookupTableInfo: NSObject <NSCopying>
 
 @property (nonatomic,readonly) MTIColorLookupTableType type;
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSInteger, MTIColorLookupTableType) {
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIColorLookupFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;
