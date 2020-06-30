@@ -267,71 +267,6 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     return [[[MTIImage alloc] initWithPromise:[[MTICVPixelBufferDirectBridgePromise alloc] initWithCVPixelBuffer:pixelBuffer planeIndex:planeIndex textureDescriptor:textureDescriptor alphaType:alphaType]] imageWithCachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithMTKTextureLoaderIncompatibleCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
-    //Handle monochrome image.
-    CGColorSpaceRef sourceColorspace = CGImageGetColorSpace(cgImage);
-    size_t bitsPerComponent = CGImageGetBitsPerComponent(cgImage);
-    size_t bitsPerPixel = CGImageGetBitsPerPixel(cgImage);
-    size_t componentsPerPixel = bitsPerPixel/bitsPerComponent;
-    
-    static NSDictionary<NSString *, NSNumber *> *colorspaceSRGBTable;
-    static NSDictionary<MTKTextureLoaderOrigin, NSNumber *> *flipTable;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        colorspaceSRGBTable = @{(id)kCGColorSpaceGenericGrayGamma2_2: @YES,
-                                (id)kCGColorSpaceExtendedGray: @YES,
-                                (id)kCGColorSpaceLinearGray: @NO,
-                                (id)kCGColorSpaceExtendedLinearGray: @NO};
-        flipTable = @{MTKTextureLoaderOriginTopLeft: @NO,
-                      MTKTextureLoaderOriginBottomLeft: @YES,
-                      MTKTextureLoaderOriginFlippedVertically: @YES};
-    });
-    NSNumber *sRGBValue = colorspaceSRGBTable[(__bridge_transfer id)CGColorSpaceCopyName(sourceColorspace)];
-    if (CGColorSpaceGetModel(sourceColorspace) == kCGColorSpaceModelMonochrome &&
-        bitsPerComponent == 8 &&
-        (componentsPerPixel == 1 || componentsPerPixel == 2) &&
-        sRGBValue) {
-        BOOL sRGB = [sRGBValue boolValue];
-        
-        id sRGBOption = options[MTKTextureLoaderOptionSRGB];
-        if (sRGBOption) {
-            sRGB = [sRGBOption boolValue];
-        }
-        
-        MTKTextureLoaderOrigin originOption = options[MTKTextureLoaderOptionOrigin];
-        BOOL flip = NO;
-        if (originOption) {
-            flip = [flipTable[originOption] boolValue];
-        }
-        
-        CGImageAlphaInfo alphaInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapAlphaInfoMask;
-        CGImageByteOrderInfo byteOrderInfo = CGImageGetBitmapInfo(cgImage) & kCGBitmapByteOrderMask;
-        size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
-        CGDataProviderRef dataProvider = CGImageGetDataProvider(cgImage);
-        CFDataRef dataRef = CGDataProviderCopyData(dataProvider);
-        NSData *bitmapData = (__bridge_transfer NSData *)dataRef;
-        if (componentsPerPixel == 1) {
-            MTIImage *rImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatR8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
-            return [[MTIImage imageFromRChannelMonochromeImage:rImage sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
-        } else {
-            MTIImage *rgImage = [[MTIImage alloc] initWithPromise:[[MTIBitmapDataImagePromise alloc] initWithBitmapData:bitmapData width:CGImageGetWidth(cgImage) height:CGImageGetHeight(cgImage) bytesPerRow:bytesPerRow pixelFormat:MTLPixelFormatRG8Unorm alphaType:MTIAlphaTypeAlphaIsOne]];
-            return [[MTIImage imageFromRGChannelMonochromeImage:rgImage alphaInfo:alphaInfo byteOrderInfo:byteOrderInfo sRGBToLinear:sRGB flip:flip] imageWithCachePolicy:MTIImageCachePolicyPersistent];
-        }
-    }
-    
-    //Fallback: Redraw `cgImage`.
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(nil, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), 8, CGImageGetWidth(cgImage) * 4, colorspace, kCGImageAlphaPremultipliedLast);
-    CGColorSpaceRelease(colorspace);
-    CGContextDrawImage(context, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
-    CGImageRef redrawedImage = CGBitmapContextCreateImage(context);
-    CGContextRelease(context);
-    @MTI_DEFER {
-        CGImageRelease(redrawedImage);
-    };
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:redrawedImage options:options alphaType:isOpaque ? MTIAlphaTypeAlphaIsOne : MTIAlphaTypePremultiplied] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
-}
-
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options {
     return [self initWithCGImage:cgImage options:options isOpaque:NO];
 }
@@ -343,11 +278,7 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
     NSParameterAssert(cgImage);
     MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
-    if (MTIMTKTextureLoaderCanDecodeImage(cgImage)) {
-        return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
-    } else {
-        return [self initWithMTKTextureLoaderIncompatibleCGImage:cgImage options:options isOpaque:isOpaque];
-    }
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
