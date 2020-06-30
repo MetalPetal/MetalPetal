@@ -8,6 +8,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage+Promise.h"
+#import "MTIImagePromise.h"
 #import <QuartzCore/QuartzCore.h>
 
 #if TARGET_OS_IPHONE

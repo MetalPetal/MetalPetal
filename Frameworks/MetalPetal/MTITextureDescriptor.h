@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// An immutable wrapper for MTLTextureDescriptor
+__attribute__((objc_subclassing_restricted))
 @interface MTITextureDescriptor : NSObject <NSCopying>
 
 - (instancetype)init NS_UNAVAILABLE;

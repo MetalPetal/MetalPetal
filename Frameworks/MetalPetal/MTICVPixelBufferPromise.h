@@ -6,12 +6,12 @@
 //
 //
 
-#import <Foundation/Foundation.h>
-#import "MTIImagePromise.h"
-#import "MTICVPixelBufferRendering.h"
+#import <MTIImagePromise.h>
+#import <MTICVPixelBufferRendering.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICVPixelBufferPromise : NSObject <MTIImagePromise>
 
 @property (nonatomic, readonly) MTICVPixelBufferRenderingAPI renderingAPI;
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICVPixelBufferDirectBridgePromise : NSObject <MTIImagePromise>
 
 - (instancetype)init NS_UNAVAILABLE;

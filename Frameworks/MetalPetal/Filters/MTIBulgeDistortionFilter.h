@@ -5,11 +5,12 @@
 //  Created by Yu Ao on 2019/2/14.
 //
 
-#import "MTIUnaryImageRenderingFilter.h"
 #import <simd/simd.h>
+#import <MTIUnaryImageRenderingFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIBulgeDistortionFilter : MTIUnaryImageRenderingFilter
 
 @property (nonatomic) simd_float2 center; //in pixels

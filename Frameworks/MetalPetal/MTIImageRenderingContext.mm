@@ -80,6 +80,7 @@ public:
     }
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTITransientImagePromiseResolution: NSObject <MTIImagePromiseResolution>
 
 @property (nonatomic,copy) void (^invalidationHandler)(id);
@@ -109,6 +110,7 @@ public:
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIPersistImageResolutionHolder : NSObject
 
 @property (nonatomic,strong) MTIImagePromiseRenderTarget *renderTarget;
@@ -312,6 +314,7 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
 @end
 
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageBufferPromise: NSObject <MTIImagePromise>
 
 @property (nonatomic, strong, readonly) MTIPersistImageResolutionHolder *resolution;

@@ -6,10 +6,11 @@
 //
 
 #import <simd/simd.h>
-#import "MTIUnaryImageRenderingFilter.h"
+#import <MTIUnaryImageRenderingFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIVibranceFilter : MTIUnaryImageRenderingFilter
 
 @property (nonatomic) float amount;

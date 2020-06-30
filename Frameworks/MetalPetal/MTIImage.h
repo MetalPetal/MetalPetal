@@ -6,14 +6,13 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import <CoreImage/CoreImage.h>
 #import <MetalKit/MetalKit.h>
-#import "MTICVPixelBufferRendering.h"
-#import "MTIColor.h"
-#import "MTIAlphaType.h"
-#import "MTITextureDimensions.h"
+#import <CoreImage/CoreImage.h>
+#import <MTICVPixelBufferRendering.h>
+#import <MTIColor.h>
+#import <MTIAlphaType.h>
+#import <MTITextureDimensions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +24,7 @@ typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
 } NS_SWIFT_NAME(MTIImage.CachePolicy);
 
 /// A representation of an image to be processed or produced.
+__attribute__((objc_subclassing_restricted))
 @interface MTIImage : NSObject <NSCopying>
 
 @property (nonatomic, readonly) MTIImageCachePolicy cachePolicy;

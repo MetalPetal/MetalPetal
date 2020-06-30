@@ -6,13 +6,12 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Accelerate/Accelerate.h>
 #import <simd/simd.h>
 #import <Metal/Metal.h>
-#import "MTIShaderLib.h"
-#import "MTIGeometry.h"
-#import "MTIBuffer.h"
+#import <MTIShaderLib.h>
+#import <MTIGeometry.h>
+#import <MTIBuffer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +20,7 @@ FOUNDATION_EXPORT BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) NS_SWI
 
 
 /// A MTIGeometry implementation. A MTIVertices contains MTIVertex data structures. It is designed to handle small amount of vertices. A MTIVertices bounds its contents to the vertex buffer with index of 0. The shader receives a MTIVertices' contents as `MTIVertex *`. e.g. `const device MTIVertex * vertices [[ buffer(0) ]]`.
+__attribute__((objc_subclassing_restricted))
 @interface MTIVertices : NSObject <MTIGeometry>
 
 @property (nonatomic, readonly) NSUInteger vertexCount;

@@ -22,6 +22,8 @@
 #import "MTILock.h"
 #import "MTIPixelFormat.h"
 #import "MTILibrarySource.h"
+#import "MTITexturePool.h"
+#import "MTITextureLoader.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md

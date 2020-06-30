@@ -6,7 +6,7 @@
 //
 
 #import <simd/simd.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 typedef NS_ENUM(NSUInteger, MTIMPSSobelColorMode) {
     MTIMPSSobelColorModeAuto,
@@ -14,6 +14,7 @@ typedef NS_ENUM(NSUInteger, MTIMPSSobelColorMode) {
     MTIMPSSobelColorModeGrayscaleInverted
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSSobelFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic, readonly) simd_float3 grayColorTransform;

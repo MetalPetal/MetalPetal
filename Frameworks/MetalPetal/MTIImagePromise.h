@@ -6,15 +6,14 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import <simd/simd.h>
 #import <CoreImage/CoreImage.h>
 #import <ModelIO/ModelIO.h>
-#import "MTIColor.h"
-#import "MTITextureDimensions.h"
-#import "MTIAlphaType.h"
+#import <MTIColor.h>
+#import <MTITextureDimensions.h>
+#import <MTIAlphaType.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,6 +39,7 @@ FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
 
 #pragma mark - Promises
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
@@ -49,24 +49,28 @@ FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTITexturePromise : NSObject <MTIImagePromise>
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
 
 @property (nonatomic, readonly) MTIColor color;
@@ -75,12 +79,14 @@ FOUNDATION_EXPORT BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image);
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIBitmapDataImagePromise: NSObject <MTIImagePromise>
 
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 NS_AVAILABLE(10_12, 10_0)
 @interface MTINamedImagePromise: NSObject <MTIImagePromise>
 
@@ -97,6 +103,7 @@ NS_AVAILABLE(10_12, 10_0)
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 NS_AVAILABLE(10_12, 10_0)
 @interface MTIMDLTexturePromise: NSObject <MTIImagePromise>
 

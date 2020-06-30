@@ -5,7 +5,6 @@
 //  Created by Yu Ao on 2018/12/7.
 //
 
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,6 +19,7 @@ typedef NS_ERROR_ENUM(MTICVPixelBufferPoolErrorDomain, MTICVPixelBufferPoolError
     MTICVPixelBufferPoolErrorRetry = kCVReturnRetry
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICVPixelBufferPool : NSObject
 
 @property (nonatomic, readonly) size_t pixelBufferWidth;

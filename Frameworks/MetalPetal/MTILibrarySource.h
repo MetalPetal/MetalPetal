@@ -18,6 +18,7 @@ typedef NS_ERROR_ENUM(MTILibrarySourceErrorDomain, MTILibrarySourceError) {
 };
 
 /// MTILibrarySourceRegistration can be used under the situation where it is impossible to use a offline metal compiler. You should avoid using this class as possbile as you can.
+__attribute__((objc_subclassing_restricted))
 @interface MTILibrarySourceRegistration : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;

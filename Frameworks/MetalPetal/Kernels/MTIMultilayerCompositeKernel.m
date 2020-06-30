@@ -22,9 +22,12 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
+#import "MTIMask.h"
+#import "MTIPixelFormat.h"
 
 #define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
 @property (nonatomic,readonly) MTLPixelFormat outputPixelFormat;
@@ -52,6 +55,7 @@
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositeKernelState: NSObject
 
 @property (nonatomic,copy,readonly) NSDictionary<MTIBlendMode, MTIRenderPipeline *> *pipelines;
@@ -190,6 +194,7 @@
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositingRecipe : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) MTIImage *backgroundImage;

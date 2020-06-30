@@ -18,6 +18,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
+#import "MTIPixelFormat.h"
 
 @interface MTIComputeFunctionDispatchOptions ()
 
@@ -53,6 +54,7 @@
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIImageComputeRecipe : NSObject <MTIImagePromise>
 
 @property (nonatomic,copy,readonly) NSArray<MTIImage *> *inputImages;

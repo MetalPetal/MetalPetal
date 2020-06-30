@@ -12,6 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICIImageRenderingOptions : NSObject <NSCopying>
 
 @property (nullable, nonatomic, readonly) CGColorSpaceRef colorSpace;
@@ -34,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICIImageCreationOptions: NSObject <NSCopying>
 
 @property (nonatomic, nullable, readonly) CGColorSpaceRef colorSpace;

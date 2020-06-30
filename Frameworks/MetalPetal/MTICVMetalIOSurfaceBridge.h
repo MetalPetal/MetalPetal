@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "MTICVMetalTextureBridging.h"
+#import <MTICVMetalTextureBridging.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +18,7 @@ typedef NS_ERROR_ENUM(MTICVMetalIOSurfaceBridgeErrorDomain, MTICVMetalIOSurfaceB
     MTICVMetalIOSurfaceBridgeErrorCoreVideoDoesNotSupportIOSurface = 10003
 };
 
+__attribute__((objc_subclassing_restricted))
 NS_CLASS_AVAILABLE(10_11, 11_0)
 @interface MTICVMetalIOSurfaceBridge : NSObject <MTICVMetalTextureBridging>
 

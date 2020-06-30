@@ -6,20 +6,18 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIKernel.h"
-#import "MTIVertex.h"
-#import "MTIAlphaType.h"
-#import "MTIImagePromise.h"
-#import "MTIRenderCommand.h"
+#import <MTIKernel.h>
+#import <MTITextureDimensions.h>
+#import <MTIRenderCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPassOutputDescriptor;
+@class MTIRenderPipeline, MTIFunctionDescriptor, MTIContext, MTIImage, MTIRenderPassOutputDescriptor, MTIAlphaTypeHandlingRule;
 
 FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderPipelineKernelConfiguration: NSObject <MTIKernelConfiguration>
 
 @property (nonatomic, readonly) const MTLPixelFormat *colorAttachmentPixelFormats;
@@ -42,6 +40,7 @@ FOUNDATION_EXPORT NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount;
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderPipelineKernel : NSObject <MTIKernel>
 
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *vertexFunctionDescriptor;

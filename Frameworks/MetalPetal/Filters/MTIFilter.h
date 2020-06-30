@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "MTIPixelFormat.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

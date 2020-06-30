@@ -5,10 +5,10 @@
 //  Created by Yu Ao on 29/12/2017.
 //
 
-#import <Foundation/Foundation.h>
-#import "MTIFilter.h"
-#import "MTIColor.h"
+#import <MTIFilter.h>
+#import <MTIColor.h>
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIChromaKeyBlendFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputImage;

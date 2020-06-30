@@ -11,6 +11,7 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRGBToneCurveFilter.h"
+#import "MTIVector.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 @interface MTIHighPassSkinSmoothingFilter ()

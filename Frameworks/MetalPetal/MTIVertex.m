@@ -33,6 +33,7 @@ BOOL MTIVertexEqualToVertex(MTIVertex v1, MTIVertex v2) {
 
 @end
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMallocDataBuffer : NSObject <MTIVertexBuffer> {
     void * _memory;
 }

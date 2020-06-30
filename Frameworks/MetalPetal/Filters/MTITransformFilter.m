@@ -11,7 +11,7 @@
 #import "MTIImage.h"
 #import "MTITransform.h"
 #import "MTIRenderPassOutputDescriptor.h"
-#import "MTIVector.h"
+#import "MTIVertex.h"
 
 static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fieldOfView, CATransform3D transform) {
     simd_float4x4 matrix;

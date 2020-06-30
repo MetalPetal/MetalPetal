@@ -26,6 +26,7 @@
 #import "MTICoreImageRendering.h"
 #import "MTIRenderTask.h"
 #import "MTIImageRenderingContext+Internal.h"
+#import "MTIPixelFormat.h"
 
 @implementation MTIContext (Rendering)
 

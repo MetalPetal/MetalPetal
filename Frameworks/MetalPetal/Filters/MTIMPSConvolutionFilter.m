@@ -11,6 +11,7 @@
 #import "MTIImage.h"
 #import "MTIHasher.h"
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMPSImageConvolutionSettings : NSObject <NSCopying>
 
 @property (nonatomic,readonly) NSUInteger kernelWidth;

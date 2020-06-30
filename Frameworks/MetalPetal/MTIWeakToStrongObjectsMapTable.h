@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Behaves like NSMapTable with key options: NSMapTableObjectPointerPersonality|NSMapTableWeakMemory, value options: NSMapTableStrongMemory. Entries are purged right away when the weak key is reclaimed.
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIWeakToStrongObjectsMapTable <KeyType, ObjectType> : NSObject
 
 - (nullable ObjectType)objectForKey:(KeyType)aKey;

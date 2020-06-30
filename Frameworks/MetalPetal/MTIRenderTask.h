@@ -5,7 +5,6 @@
 //  Created by Yu Ao on 2018/5/22.
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MTIImageRenderingContext;
 
 /// Represents a GPU render task - i.e., commands in a command buffer.
+__attribute__((objc_subclassing_restricted))
 @interface MTIRenderTask : NSObject
 
 /// Status of the underlaying command buffer.

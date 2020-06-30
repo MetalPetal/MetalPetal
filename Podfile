@@ -42,5 +42,7 @@ post_install do |installer|
         config.build_settings['CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE'] = 'YES'
         config.build_settings['CLANG_ANALYZER_GCD_PERFORMANCE'] = 'YES'
         config.build_settings['CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED'] = 'YES'
+        config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'YES'
+        config.build_settings['CLANG_WARN_FRAMEWORK_INCLUDE_PRIVATE_FROM_PUBLIC'] = 'YES'
     end
 end

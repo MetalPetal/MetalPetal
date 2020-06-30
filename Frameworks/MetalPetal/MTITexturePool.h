@@ -6,7 +6,6 @@
 //
 //
 
-#import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MTITextureDescriptor;
 
 /// A reusable texture from a texture pool.
+__attribute__((objc_subclassing_restricted))
 @interface MTIReusableTexture : NSObject
 
 /// Returns the underlaying texture. When a reusable texture's texture retain count reachs zero, this method will return nil.
@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /// Deivce allocated texture pool.
+__attribute__((objc_subclassing_restricted))
 @interface MTIDeviceTexturePool: NSObject <MTITexturePool>
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -62,6 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /// Heap texture pool. **May** have smaller memory footprint than `MTIDeviceTexturePool` depending on your use case. `MTIHeapTexturePool` uses `MTLHeap`s for texture allocations. Heaps are reused based on heap's size and resource options. For example, the heap for a 512x512 bgra8Unorm texture may then be reused to create a 256x256 rgba32Float texture.
+__attribute__((objc_subclassing_restricted))
 NS_AVAILABLE(10_15, 13_0)
 @interface MTIHeapTexturePool: NSObject <MTITexturePool>
 

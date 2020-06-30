@@ -31,6 +31,7 @@ FOUNDATION_EXPORT NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType);
 typedef MTIAlphaType (^MTIAlphaTypeHandlingOutputAlphaTypeRule)(NSArray<NSNumber *> *inputAlphaTypes);
 
 /// Describes how a image processing unit handles alpha type.
+__attribute__((objc_subclassing_restricted))
 @interface MTIAlphaTypeHandlingRule: NSObject <NSCopying>
 
 /// Acceptable alpha types.

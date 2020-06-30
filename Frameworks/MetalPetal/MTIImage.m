@@ -15,6 +15,7 @@
 #import "MTIImagePromiseDebug.h"
 #import "MTIImageProperties.h"
 #import "MTIDefer.h"
+#import "MTIVertex.h"
 
 @interface MTIImage ()
 

@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, MTICVPixelBufferRenderingAPI) {
     MTICVPixelBufferRenderingAPICoreImage = 2
 };
 
+__attribute__((objc_subclassing_restricted))
 @interface MTICVPixelBufferRenderingOptions: NSObject <NSCopying>
 
 @property (nonatomic, readonly) MTICVPixelBufferRenderingAPI renderingAPI;

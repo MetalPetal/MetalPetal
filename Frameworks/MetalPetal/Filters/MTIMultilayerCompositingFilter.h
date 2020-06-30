@@ -5,11 +5,13 @@
 //  Created by YuAo on 27/09/2017.
 //
 
-#import "MTIFilter.h"
-#import "MTILayer.h"
+#import <MTIFilter.h>
+
+@class MTILayer;
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositingFilter : NSObject <MTIFilter>
 
 @property (nonatomic, strong, nullable) MTIImage *inputBackgroundImage;

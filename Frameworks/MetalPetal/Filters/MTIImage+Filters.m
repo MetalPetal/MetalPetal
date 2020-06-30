@@ -8,6 +8,7 @@
 #import "MTIImage+Filters.h"
 #import "MTIAlphaPremultiplicationFilter.h"
 #import "MTIUnaryImageRenderingFilter.h"
+#import "MTIPixelFormat.h"
 
 @implementation MTIImage (Filters)
 

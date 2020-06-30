@@ -7,6 +7,7 @@
 
 #import "MTIRGBColorSpaceConversionFilter.h"
 #import "MTIFunctionDescriptor.h"
+#import "MTIPixelFormat.h"
 
 @implementation MTILinearToSRGBToneCurveFilter
 

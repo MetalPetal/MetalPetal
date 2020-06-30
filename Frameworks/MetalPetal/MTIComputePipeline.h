@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIComputePipeline : NSObject <NSCopying>
 
 @property (nonatomic,strong,readonly) id<MTLComputePipelineState> state;

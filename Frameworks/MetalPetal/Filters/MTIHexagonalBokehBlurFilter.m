@@ -11,6 +11,7 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIVector+SIMD.h"
 #import "MTIRenderPassOutputDescriptor.h"
+#import "MTIMask.h"
 
 @implementation MTIHexagonalBokehBlurFilter
 @synthesize outputPixelFormat = _outputPixelFormat;

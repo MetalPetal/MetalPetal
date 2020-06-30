@@ -6,10 +6,11 @@
 //
 
 #import <simd/simd.h>
-#import "MTIFilter.h"
+#import <MTIFilter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+__attribute__((objc_subclassing_restricted))
 @interface MTIRoundCornerFilter : NSObject <MTIUnaryFilter>
 
 @property (nonatomic) simd_float4 radius; //lt rt rb lb
