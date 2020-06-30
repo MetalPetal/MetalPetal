@@ -50,6 +50,8 @@
             _pixelWidth = CGImageGetWidth(image);
             _pixelHeight = CGImageGetHeight(image);
             
+            _bitsPerComponent = CGImageGetBitsPerComponent(image);
+            
             CGImageRelease(image);
             
             NSNumber *orientationValue = properties[(id)kCGImagePropertyOrientation];
@@ -102,6 +104,8 @@
         
         _pixelWidth = CGImageGetWidth(image);
         _pixelHeight = CGImageGetHeight(image);
+        
+        _bitsPerComponent = CGImageGetBitsPerComponent(image);
         
         _displayWidth = _pixelWidth;
         _displayHeight = _pixelHeight;

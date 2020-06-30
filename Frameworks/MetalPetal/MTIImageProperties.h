@@ -29,6 +29,8 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic, readonly) BOOL floatComponents;
 @property (nonatomic, readonly, nullable) CGColorSpaceRef colorSpace;
 
+@property (nonatomic, readonly) NSUInteger bitsPerComponent;
+
 @property (nonatomic, readonly) NSUInteger pixelWidth;
 @property (nonatomic, readonly) NSUInteger pixelHeight;
 
