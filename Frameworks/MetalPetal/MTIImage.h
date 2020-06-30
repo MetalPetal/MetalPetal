@@ -88,6 +88,8 @@ __attribute__((objc_subclassing_restricted))
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
 
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL size:(CGSize)size options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
+
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;
 

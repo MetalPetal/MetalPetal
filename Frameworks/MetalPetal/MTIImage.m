@@ -399,6 +399,14 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     return [self initWithPromise:urlPromise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
+- (instancetype)initWithContentsOfURL:(NSURL *)URL size:(CGSize)size options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType {
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL dimensions:(MTITextureDimensions){.width = size.width, .height = size.height, .depth = 1} options:options alphaType:alphaType];
+    if (!urlPromise) {
+        return nil;
+    }
+    return [self initWithPromise:urlPromise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size {
     MTLSamplerDescriptor *samplerDescriptor = [[MTLSamplerDescriptor alloc] init];
     samplerDescriptor.minFilter = MTLSamplerMinMagFilterNearest;
