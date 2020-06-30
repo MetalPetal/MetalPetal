@@ -47,6 +47,11 @@ __attribute__((objc_subclassing_restricted))
                                        options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                                      alphaType:(MTIAlphaType)alphaType;
 
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
+                                    dimensions:(MTITextureDimensions)dimensions
+                                       options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
+                                     alphaType:(MTIAlphaType)alphaType;
+
 @end
 
 __attribute__((objc_subclassing_restricted))
