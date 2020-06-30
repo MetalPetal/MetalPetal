@@ -37,8 +37,6 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
 
 @property (nonatomic, copy, readonly) NSDictionary<MTKTextureLoaderOption, id> *options;
 
-@property (nonatomic, copy, readonly) MTIImageProperties *properties;
-
 @end
 
 @implementation MTIImageURLPromise
@@ -53,8 +51,23 @@ BOOL MTIMTKTextureLoaderCanDecodeImage(CGImageRef image) {
         _URL = [URL copy];
         _options = [options copy];
         _alphaType = alphaType;
-        _properties = properties;
         _dimensions = (MTITextureDimensions){.width = properties.displayWidth, .height = properties.displayHeight, .depth = 1};
+        if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
+            return nil;
+        }
+    }
+    return self;
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL
+                           dimensions:(MTITextureDimensions)dimensions
+                              options:(NSDictionary<MTKTextureLoaderOption, id> *)options
+                            alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _URL = [URL copy];
+        _options = [options copy];
+        _alphaType = alphaType;
+        _dimensions = dimensions;
         if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
             return nil;
         }
