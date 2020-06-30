@@ -101,7 +101,7 @@ static Class _defaultTextureLoaderClass = nil;
 }
 
 + (Class<MTITextureLoader>)defaultTextureLoaderClass {
-    return _defaultTextureLoaderClass ?: MTKTextureLoader.class;
+    return _defaultTextureLoaderClass ?: MTIDefaultTextureLoader.class;
 }
 
 static Class _defaultCoreVideoMetalTextureBridgeClass = nil;
