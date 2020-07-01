@@ -26,7 +26,9 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,
     MTIErrorTextureDimensionsMismatch = 2002,
     MTIErrorTextureLoaderOptionNotSupported = 2003,
-    
+    MTIErrorTextureLoaderFailedToCreateCGContext = 2004,
+    MTIErrorTextureLoaderFailedToCreateCGImage = 2005,
+
     //Image errors
     MTIErrorUnsupportedImageCachePolicy = 3001,
     

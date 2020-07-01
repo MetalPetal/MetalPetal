@@ -188,8 +188,62 @@ final class ImageLoadingTests: XCTestCase {
             ]))
         }
     }
-
     
+    func testURLImageLoading_grayColorSpace_orientations_flip() throws {
+        guard let context = try makeContext() else { return }
+        for orientation in 1...8 {
+            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Fixture")
+                .appendingPathComponent("fgray\(orientation).png")
+                , options: [.SRGB: false, .origin: MTKTextureLoader.Origin.flippedVertically], alphaType: .alphaIsOne)
+            guard let inputImage = image else {
+                XCTFail()
+                return
+            }
+            let cgImage = try context.makeCGImage(from: inputImage)
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
+                [0, 255, 255],
+                [0, 255, 255],
+                [0, 0, 255],
+                [0, 0, 0],
+            ]))
+        }
+    }
+    
+    func testURLImageLoading_grayColorSpace_mtkfallback_orientations() throws {
+        guard let context = try makeContext() else { return }
+        for orientation in 1...8 {
+            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Fixture")
+                .appendingPathComponent("fgray\(orientation).png")
+                , options: [.SRGB: false, .generateMipmaps: true], alphaType: .alphaIsOne)
+            guard let inputImage = image else {
+                XCTFail()
+                return
+            }
+            let cgImage = try context.makeCGImage(from: inputImage)
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
+                [0, 0, 0],
+                [0, 0, 255],
+                [0, 255, 255],
+                [0, 255, 255],
+            ]))
+        }
+    }
+    
+    func testURLImageLoading_grayColorSpace_mtkfallback_mipmap() throws {
+        guard let context = try makeContext() else { return }
+        let url = URL(fileURLWithPath: #file)
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Fixture")
+            .appendingPathComponent("fgray1.png")
+        let textureLoader = MTIDefaultTextureLoader.makeTextureLoader(device: context.device)
+        let texture = try textureLoader.newTexture(withContentsOf: url, options: [.SRGB: false, .generateMipmaps: true])
+        XCTAssert(texture.mipmapLevelCount > 1)
+    }
+
     func testCVPixelBufferLoading_cvMetalTextureCache() throws {
         var buffer: CVPixelBuffer?
         let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)

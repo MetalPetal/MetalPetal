@@ -65,28 +65,6 @@
         }
         return nil;
     } else {
-        if ([options[MTKTextureLoaderOptionAllocateMipmaps] boolValue]) {
-            if (error) {
-                NSDictionary *userInfo = @{@"option": MTKTextureLoaderOptionAllocateMipmaps, @"value": @YES};
-                *error = MTIErrorCreate(MTIErrorTextureLoaderOptionNotSupported, userInfo);
-            }
-            return nil;
-        }
-        if ([options[MTKTextureLoaderOptionGenerateMipmaps] boolValue]) {
-            if (error) {
-                NSDictionary *userInfo = @{@"option": MTKTextureLoaderOptionGenerateMipmaps, @"value": @YES};
-                *error = MTIErrorCreate(MTIErrorTextureLoaderOptionNotSupported, userInfo);
-            }
-            return nil;
-        }
-        if (options[MTKTextureLoaderOptionCubeLayout]) {
-            if (error) {
-                NSDictionary *userInfo = @{@"option": MTKTextureLoaderOptionCubeLayout, @"value": options[MTKTextureLoaderOptionCubeLayout]};
-                *error = MTIErrorCreate(MTIErrorTextureLoaderOptionNotSupported, userInfo);
-            }
-            return nil;
-        }
-        
         CVPixelBufferRef pixelBuffer = nil;
         CVPixelBufferCreate(kCFAllocatorDefault,
                             properties.displayWidth,
@@ -100,12 +78,13 @@
             }
             return nil;
         }
+        
         @MTI_DEFER {
             CVPixelBufferRelease(pixelBuffer);
         };
         
-        CVPixelBufferLockBaseAddress(pixelBuffer, 0);
         CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+        CVPixelBufferLockBaseAddress(pixelBuffer, 0);
         CGContextRef cgContext = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer),
                                                        properties.displayWidth,
                                                        properties.displayHeight,
@@ -114,34 +93,65 @@
                                                        colorspace,
                                                        kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst);
         CGColorSpaceRelease(colorspace);
-        CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight)];
-        if (options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginBottomLeft || options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginFlippedVertically) {
-            CGContextConcatCTM(cgContext, CGAffineTransformMake(1, 0, 0, -1, 0, properties.displayHeight));
+        if (!cgContext) {
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+            if (error) {
+                *error = MTIErrorCreate(MTIErrorTextureLoaderFailedToCreateCGContext, nil);
+            }
+            return nil;
         }
-        CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:properties.orientation]);
-        CGContextDrawImage(cgContext, CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight), cgImage);
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-        CGContextRelease(cgContext);
         
-        BOOL useSRGBTexture = NO;
-        if (options[MTKTextureLoaderOptionSRGB] == nil) {
-            useSRGBTexture = YES;
+        if ([options[MTKTextureLoaderOptionAllocateMipmaps] boolValue] || [options[MTKTextureLoaderOptionGenerateMipmaps] boolValue] || options[MTKTextureLoaderOptionCubeLayout]) {
+            // We do not currently support these features, so fallback to `MTKTextureLoader`. This may degrade texture loading performance. (Loading a CVPixelBuffer is much faster)
+            CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight)];
+            CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:properties.orientation]);
+            CGContextDrawImage(cgContext, CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight), cgImage);
+            CGImageRef sanitizedCGImage = CGBitmapContextCreateImage(cgContext);
+            CGContextRelease(cgContext);
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+            
+            if (!sanitizedCGImage) {
+                if (error) {
+                    *error = MTIErrorCreate(MTIErrorTextureLoaderFailedToCreateCGImage, nil);
+                }
+                return nil;
+            }
+            
+            @MTI_DEFER {
+                CGImageRelease(sanitizedCGImage);
+            };
+            
+            return [_internalLoader newTextureWithCGImage:sanitizedCGImage options:options error:error];
         } else {
-            useSRGBTexture = [options[MTKTextureLoaderOptionSRGB] boolValue];
+            CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight)];
+            if (options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginBottomLeft || options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginFlippedVertically) {
+                CGContextConcatCTM(cgContext, CGAffineTransformMake(1, 0, 0, -1, 0, properties.displayHeight));
+            }
+            CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:properties.orientation]);
+            CGContextDrawImage(cgContext, CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight), cgImage);
+            CGContextRelease(cgContext);
+            CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+            
+            BOOL useSRGBTexture = NO;
+            if (options[MTKTextureLoaderOptionSRGB] == nil) {
+                useSRGBTexture = YES;
+            } else {
+                useSRGBTexture = [options[MTKTextureLoaderOptionSRGB] boolValue];
+            }
+            MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:useSRGBTexture ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
+            if (options[MTKTextureLoaderOptionTextureUsage]) {
+                textureDescriptor.usage = [options[MTKTextureLoaderOptionTextureUsage] unsignedIntegerValue];
+            } else {
+                textureDescriptor.usage = MTLTextureUsageShaderRead;
+            }
+            if (options[MTKTextureLoaderOptionTextureStorageMode]) {
+                textureDescriptor.storageMode = [options[MTKTextureLoaderOptionTextureStorageMode] unsignedIntegerValue];
+            }
+            if (options[MTKTextureLoaderOptionTextureCPUCacheMode]) {
+                textureDescriptor.cpuCacheMode = [options[MTKTextureLoaderOptionTextureCPUCacheMode] unsignedIntegerValue];
+            }
+            return [_cvMetalTextureBridging newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:error].texture;
         }
-        MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:useSRGBTexture ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
-        if (options[MTKTextureLoaderOptionTextureUsage]) {
-            textureDescriptor.usage = [options[MTKTextureLoaderOptionTextureUsage] unsignedIntegerValue];
-        } else {
-            textureDescriptor.usage = MTLTextureUsageShaderRead;
-        }
-        if (options[MTKTextureLoaderOptionTextureStorageMode]) {
-            textureDescriptor.storageMode = [options[MTKTextureLoaderOptionTextureStorageMode] unsignedIntegerValue];
-        }
-        if (options[MTKTextureLoaderOptionTextureCPUCacheMode]) {
-            textureDescriptor.cpuCacheMode = [options[MTKTextureLoaderOptionTextureCPUCacheMode] unsignedIntegerValue];
-        }
-        return [_cvMetalTextureBridging newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:error].texture;
     }
 }
 
