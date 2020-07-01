@@ -19,6 +19,7 @@
 
 #pragma mark - MTIDefaultTextureLoader
 
+#import <CoreImage/CoreImage.h>
 #import "MTICVMetalTextureCache.h"
 #import "MTICVMetalIOSurfaceBridge.h"
 #import "MTIImageProperties.h"
@@ -88,8 +89,8 @@
         
         CVPixelBufferRef pixelBuffer = nil;
         CVPixelBufferCreate(kCFAllocatorDefault,
-                            CGImageGetWidth(cgImage),
-                            CGImageGetHeight(cgImage),
+                            properties.displayWidth,
+                            properties.displayHeight,
                             kCVPixelFormatType_32BGRA,
                             (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}},
                             &pixelBuffer);
@@ -106,17 +107,19 @@
         CVPixelBufferLockBaseAddress(pixelBuffer, 0);
         CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
         CGContextRef cgContext = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer),
-                                                       CGImageGetWidth(cgImage),
-                                                       CGImageGetHeight(cgImage),
+                                                       properties.displayWidth,
+                                                       properties.displayHeight,
                                                        8,
                                                        CVPixelBufferGetBytesPerRow(pixelBuffer),
                                                        colorspace,
                                                        kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst);
         CGColorSpaceRelease(colorspace);
+        CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight)];
         if (options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginBottomLeft || options[MTKTextureLoaderOptionOrigin] == MTKTextureLoaderOriginFlippedVertically) {
-            CGContextConcatCTM(cgContext, CGAffineTransformMake(1, 0, 0, -1, 0, CGImageGetHeight(cgImage)));
+            CGContextConcatCTM(cgContext, CGAffineTransformMake(1, 0, 0, -1, 0, properties.displayHeight));
         }
-        CGContextDrawImage(cgContext, CGRectMake(0, 0, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage)), cgImage);
+        CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:properties.orientation]);
+        CGContextDrawImage(cgContext, CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight), cgImage);
         CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
         CGContextRelease(cgContext);
         
@@ -172,11 +175,11 @@
     if (source) {
         @MTI_DEFER { CFRelease(source); };
         if (CGImageSourceGetCount(source) > 0) {
-            CGImageRef cgImage = CGImageSourceCreateImageAtIndex(source, 0, (CFDictionaryRef)imageSourceOptions);
-            if (cgImage) {
-                @MTI_DEFER { CGImageRelease(cgImage); };
-                MTIImageProperties *properties = [[MTIImageProperties alloc] initWithCGImage:cgImage];
-                if ([self prefersCVPixelBufferLoaderForImageWithProperties:properties]) {
+            MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageSource:source index:0];
+            if ([self prefersCVPixelBufferLoaderForImageWithProperties:properties]) {
+                CGImageRef cgImage = CGImageSourceCreateImageAtIndex(source, 0, (CFDictionaryRef)imageSourceOptions);
+                if (cgImage) {
+                    @MTI_DEFER { CGImageRelease(cgImage); };
                     return [self newTextureWithCVPixelBufferFromCGImage:cgImage properties:properties options:options error:error];
                 }
             }
