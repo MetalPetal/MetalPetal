@@ -145,6 +145,51 @@ final class ImageLoadingTests: XCTestCase {
         }
     }
     
+    func testURLImageLoading_orientations() throws {
+        guard let context = try makeContext() else { return }
+        for orientation in 1...8 {
+            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Fixture")
+                .appendingPathComponent("f\(orientation).png")
+                , options: [.SRGB: false], alphaType: .alphaIsOne)
+            guard let inputImage = image else {
+                XCTFail()
+                return
+            }
+            let cgImage = try context.makeCGImage(from: inputImage)
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
+                [0, 0, 0],
+                [0, 0, 255],
+                [0, 255, 255],
+                [0, 255, 255],
+            ]))
+        }
+    }
+    
+    func testURLImageLoading_grayColorSpace_orientations() throws {
+        guard let context = try makeContext() else { return }
+        for orientation in 1...8 {
+            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Fixture")
+                .appendingPathComponent("fgray\(orientation).png")
+                , options: [.SRGB: false], alphaType: .alphaIsOne)
+            guard let inputImage = image else {
+                XCTFail()
+                return
+            }
+            let cgImage = try context.makeCGImage(from: inputImage)
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
+                [0, 0, 0],
+                [0, 0, 255],
+                [0, 255, 255],
+                [0, 255, 255],
+            ]))
+        }
+    }
+
+    
     func testCVPixelBufferLoading_cvMetalTextureCache() throws {
         var buffer: CVPixelBuffer?
         let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)
@@ -538,6 +583,34 @@ final class RenderTests: XCTestCase {
             [  0,   0, 255, 255],
             [  0,   0,   0,   0],
         ]))
+    }
+    
+    func testImageOrientations_fixture() throws {
+        guard let context = try makeContext() else { return }
+        for orientation in 1...8 {
+            let source = CGImageSourceCreateWithURL(URL(fileURLWithPath: #file)
+                .deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("Fixture")
+                .appendingPathComponent("f\(orientation).png") as CFURL, nil)
+            guard let imageSource = source,
+                CGImageSourceGetCount(imageSource) > 0,
+                let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
+                    XCTFail()
+                    return
+            }
+            guard let o = CGImagePropertyOrientation(rawValue: UInt32(orientation)) else {
+                XCTFail()
+                return
+            }
+            let image = MTIImage(cgImage: cgImage, options: [.SRGB: false], isOpaque: true)
+            let outputCGImage = try context.makeCGImage(from: image.oriented(o))
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+                [0, 0, 0],
+                [0, 0, 255],
+                [0, 255, 255],
+                [0, 255, 255],
+            ]))
+        }
     }
     
     func testCustomComputePipeline() throws {
