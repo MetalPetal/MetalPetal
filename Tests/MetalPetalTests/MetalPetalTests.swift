@@ -106,25 +106,66 @@ final class ImageLoadingTests: XCTestCase {
         }
     }
     
-    func testCGImageLoading_bigEndian() throws {
+    func testCGImageLoading_bigEndianAlphaLast() throws {
         guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImageWithBigEndian(), options: [.SRGB: false], isOpaque: true)
+        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaLast(), options: [.SRGB: false], isOpaque: true)
         let cgImage = try context.makeCGImage(from: image)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             if coordinates.x == 0 && coordinates.y == 0 {
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
             }
             if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
             }
             if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
             }
             if coordinates.x == 1 && coordinates.y == 1 {
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
             }
         }
     }
+    
+    func testCGImageLoading_bigEndianAlphaFirst() throws {
+        guard let context = try makeContext() else { return }
+        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaFirst(), options: [.SRGB: false], isOpaque: true)
+        let cgImage = try context.makeCGImage(from: image)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 0 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testCGImageLoading_defaultEndianAlphaFirst() throws {
+        guard let context = try makeContext() else { return }
+        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithDefaultEndianAlphaFirst(), options: [.SRGB: false], isOpaque: true)
+        let cgImage = try context.makeCGImage(from: image)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 0 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+        }
+    }
+
     
     func testCGImageLoading_sRGB() throws {
         guard let context = try makeContext() else { return }
