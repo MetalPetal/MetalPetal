@@ -8,10 +8,6 @@
 import Foundation
 import CoreGraphics
 
-#if canImport(UIKit)
-import UIKit
-#endif
-
 extension CGColor {
     static var mti_white: CGColor {
         var components: [CGFloat] = [1, 1, 1, 1]
