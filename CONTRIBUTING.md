@@ -24,6 +24,8 @@ topic), send a pull request.
 
 - Follow the `API Design Guidelines`
 
+- Run [`test.sh`](https://github.com/MetalPetal/MetalPetal/blob/master/test.sh) before sending a pull request.
+
 ### API Design Guidelines
 
 #### Objective-C
