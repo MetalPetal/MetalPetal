@@ -41,11 +41,6 @@ __attribute__((objc_subclassing_restricted))
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
-                                    properties:(MTIImageProperties *)properties
-                                       options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
-                                     alphaType:(MTIAlphaType)alphaType;
-
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
                                     dimensions:(MTITextureDimensions)dimensions
                                        options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
                                      alphaType:(MTIAlphaType)alphaType;

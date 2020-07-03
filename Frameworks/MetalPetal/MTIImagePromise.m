@@ -32,22 +32,6 @@
 @synthesize alphaType = _alphaType;
 
 - (instancetype)initWithContentsOfURL:(NSURL *)URL
-                           properties:(MTIImageProperties *)properties
-                              options:(NSDictionary<MTKTextureLoaderOption, id> *)options
-                            alphaType:(MTIAlphaType)alphaType {
-    if (self = [super init]) {
-        _URL = [URL copy];
-        _options = [options copy];
-        _alphaType = alphaType;
-        _dimensions = (MTITextureDimensions){.width = properties.displayWidth, .height = properties.displayHeight, .depth = 1};
-        if (_dimensions.depth * _dimensions.height * _dimensions.width == 0) {
-            return nil;
-        }
-    }
-    return self;
-}
-
-- (instancetype)initWithContentsOfURL:(NSURL *)URL
                            dimensions:(MTITextureDimensions)dimensions
                               options:(NSDictionary<MTKTextureLoaderOption, id> *)options
                             alphaType:(MTIAlphaType)alphaType {
@@ -75,6 +59,11 @@
     id<MTLTexture> texture = [renderingContext.context.textureLoader newTextureWithContentsOfURL:self.URL options:self.options error:error];
     if (!texture) {
         return nil;
+    }
+    if (@available(iOS 12.0, macOS 10.14, *)) {
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder optimizeContentsForGPUAccess:texture];
+        [blitCommandEncoder endEncoding];
     }
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }

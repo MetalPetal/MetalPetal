@@ -203,7 +203,8 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     if (!properties) {
         return nil;
     }
-    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL properties:properties options:options alphaType:MTIPreferredAlphaTypeForImageWithProperties(properties)];
+    MTITextureDimensions dimensions = (MTITextureDimensions){.width = properties.displayWidth, .height = properties.displayHeight, .depth = 1};
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL dimensions:dimensions options:options alphaType:MTIPreferredAlphaTypeForImageWithProperties(properties)];
     if (!urlPromise) {
         return nil;
     }
@@ -219,7 +220,8 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     if (preferredAlphaType == MTIAlphaTypePremultiplied) {
         NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info indicates the alpha type is `.premultiplied`.");
     }
-    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL properties:properties options:options alphaType:alphaType];
+    MTITextureDimensions dimensions = (MTITextureDimensions){.width = properties.displayWidth, .height = properties.displayHeight, .depth = 1};
+    id<MTIImagePromise> urlPromise = [[MTIImageURLPromise alloc] initWithContentsOfURL:URL dimensions:dimensions options:options alphaType:alphaType];
     if (!urlPromise) {
         return nil;
     }
