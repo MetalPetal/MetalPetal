@@ -34,10 +34,9 @@ public struct MTIVectorSIMDTypeSupportCodeGenerator {
         //  Created by Yu Ao on 2018/6/30.
         //
         //  Auto generated.
-
-        #import <Foundation/Foundation.h>
+        
         #import <simd/simd.h>
-        #import "MTIVector.h"
+        #import <MTIVector.h>
 
         NS_ASSUME_NONNULL_BEGIN
 
