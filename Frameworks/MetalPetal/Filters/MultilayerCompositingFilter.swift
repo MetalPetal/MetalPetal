@@ -125,6 +125,15 @@ public class MultilayerCompositingFilter: MTIFilter {
         }
     }
     
+    public var rasterSampleCount: Int {
+        set {
+            internalFilter.rasterSampleCount = UInt(newValue)
+        }
+        get {
+            return Int(internalFilter.rasterSampleCount)
+        }
+    }
+    
     private var internalFilter = MTIMultilayerCompositingFilter()
     
     public init() {
