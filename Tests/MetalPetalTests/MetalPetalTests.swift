@@ -708,6 +708,106 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    @available(iOS 11.0, macOS 10.13, *)
+    func testMSAA_multilayerCompositing() throws {
+        guard let context = try makeContext() else { return }
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
+            layer.position = CGPoint(x: 1.6/2, y: 0.5)
+            layer.size = CGSize(width: 1.6, height: 1)
+            layer.opacity = 1
+        })]
+        guard let outputImage = filter.outputImage else {
+            XCTFail()
+            return
+        }
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+        }
+        
+        filter.rasterSampleCount = 4
+        guard let outputImageMSAA = filter.outputImage else {
+            XCTFail()
+            return
+        }
+        let outputCGImageMSAA = try context.makeCGImage(from: outputImageMSAA)
+        PixelEnumerator.enumeratePixels(in: outputCGImageMSAA) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                let positions = context.device.getDefaultSamplePositions(sampleCount: 4)
+                var p: Double = 0
+                for position in positions {
+                    if position.x < 0.6 {
+                        p += 1.0/4.0
+                    }
+                }
+                let value = UInt8(round(p * 255))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
+            }
+        }
+    }
+    
+    @available(iOS 11.0, macOS 10.13, *)
+    func testMSAA_renderCommand() throws {
+        guard let context = try makeContext() else { return }
+        
+        let geometry = MTIVertices.squareVertices(for: CGRect(x: -1, y: -1, width: 1.6, height: 2))
+        let command = MTIRenderCommand(kernel: .passthrough, geometry: geometry, images: [MTIImage.white], parameters: [:])
+        let outputDescriptor = MTIRenderPassOutputDescriptor(dimensions: MTITextureDimensions(width: 2, height: 1, depth: 1), pixelFormat: .bgra8Unorm, clearColor: MTLClearColor(red: 0, green: 0, blue: 0, alpha: 1), loadAction: .clear, storeAction: .store)
+        let image = MTIRenderCommand.images(byPerforming: [command], rasterSampleCount: 1, outputDescriptors: [outputDescriptor]).first
+        guard let outputImage = image else {
+            XCTFail()
+            return
+        }
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+        }
+        
+        let imageMSAA = MTIRenderCommand.images(byPerforming: [command], rasterSampleCount: 4, outputDescriptors: [outputDescriptor]).first
+        guard let outputImageMSAA = imageMSAA else {
+            XCTFail()
+            return
+        }
+        let outputCGImageMSAA = try context.makeCGImage(from: outputImageMSAA)
+        PixelEnumerator.enumeratePixels(in: outputCGImageMSAA) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                let positions = context.device.getDefaultSamplePositions(sampleCount: 4)
+                var p: Double = 0
+                for position in positions {
+                    if position.x < 0.6 {
+                        p += 1.0/4.0
+                    }
+                }
+                let value = UInt8(round(p * 255))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
+            }
+        }
+    }
+    
     func testCustomComputePipeline() throws {
         let kernelSource = """
         #include <metal_stdlib>
