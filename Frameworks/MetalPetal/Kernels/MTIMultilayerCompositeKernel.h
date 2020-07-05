@@ -18,6 +18,7 @@ __attribute__((objc_subclassing_restricted))
 
 - (MTIImage *)applyToBackgroundImage:(MTIImage *)image
                               layers:(NSArray<MTILayer *> *)layers
+                   rasterSampleCount:(NSUInteger)rasterSampleCount
              outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
                    outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
 
