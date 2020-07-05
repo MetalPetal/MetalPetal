@@ -18,6 +18,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, copy) NSArray<MTILayer *> *layers;
 
+@property (nonatomic) NSUInteger rasterSampleCount;
+
 @end
 
 NS_ASSUME_NONNULL_END
