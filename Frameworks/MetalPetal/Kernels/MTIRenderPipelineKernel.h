@@ -28,6 +28,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) MTLPixelFormat stencilAttachmentPixelFormat;
 
+@property (nonatomic, readonly) NSUInteger rasterSampleCount;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -36,7 +38,7 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)initWithColorAttachmentPixelFormat:(MTLPixelFormat)colorAttachmentPixelFormat;
 
-- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat[_Nonnull])colorAttachmentPixelFormats count:(NSUInteger)count depthAttachmentPixelFormat:(MTLPixelFormat)depthAttachmentPixelFormat stencilAttachmentPixelFormat:(MTLPixelFormat)stencilAttachmentPixelFormat NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithColorAttachmentPixelFormats:(MTLPixelFormat[_Nonnull])colorAttachmentPixelFormats count:(NSUInteger)count depthAttachmentPixelFormat:(MTLPixelFormat)depthAttachmentPixelFormat stencilAttachmentPixelFormat:(MTLPixelFormat)stencilAttachmentPixelFormat rasterSampleCount:(NSUInteger)rasterSampleCount NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -90,6 +92,11 @@ __attribute__((objc_subclassing_restricted))
 @interface MTIRenderCommand (ImageCreation)
 
 + (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands
+                                        outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors;
+
+
++ (NSArray<MTIImage *> *)imagesByPerformingRenderCommands:(NSArray<MTIRenderCommand *> *)renderCommands
+                                        rasterSampleCount:(NSUInteger)rasterSampleCount
                                         outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors;
 
 @end
