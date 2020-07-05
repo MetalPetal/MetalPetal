@@ -174,7 +174,9 @@ final class ImageLoadingTests: XCTestCase {
         PixelEnumerator.enumeratePixels(in: linearImage) { (pixel, coordinates) in
             if coordinates.x == 0 && coordinates.y == 0 {
                 let c = 128.0/255.0
-                let linearValue = UInt8((c <= 0.04045) ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) * 255.0)
+                
+                // Should we use `round` here? https://developer.apple.com/documentation/metal/mtlrenderpipelinestate/3608177-texturewriteroundingmode
+                let linearValue = UInt8(round((c <= 0.04045) ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) * 255.0))
                 XCTAssert(pixel.r == linearValue && pixel.g == linearValue && pixel.b == linearValue && pixel.a == 255)
             }
         }
@@ -756,6 +758,8 @@ final class RenderTests: XCTestCase {
                         p += 1.0/4.0
                     }
                 }
+                
+                //Should we use `round` here? https://developer.apple.com/documentation/metal/mtlrenderpipelinestate/3608177-texturewriteroundingmode
                 let value = UInt8(round(p * 255))
                 XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
             }
@@ -802,6 +806,8 @@ final class RenderTests: XCTestCase {
                         p += 1.0/4.0
                     }
                 }
+                
+                //Should we use `round` here? https://developer.apple.com/documentation/metal/mtlrenderpipelinestate/3608177-texturewriteroundingmode
                 let value = UInt8(round(p * 255))
                 XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
             }
