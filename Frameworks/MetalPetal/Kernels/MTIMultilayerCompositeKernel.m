@@ -516,7 +516,6 @@ __attribute__((objc_subclassing_restricted))
         tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
         tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
         tempTextureDescriptor.sampleCount = _rasterSampleCount;
-        NSError *error = nil;
         MTIImagePromiseRenderTarget *msaaTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[tempTextureDescriptor newMTITextureDescriptor] error:&error];
         if (error) {
             if (inOutError) {
