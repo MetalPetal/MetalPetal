@@ -38,6 +38,8 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 - (nullable instancetype)initWithPixelBufferWidth:(size_t)width pixelBufferHeight:(size_t)height pixelFormatType:(OSType)pixelFormatType minimumBufferCount:(NSUInteger)minimumBufferCount error:(NSError **)error;
 
 - (nullable instancetype)initWithPoolAttributes:(NSDictionary *)poolAttributes pixelBufferAttributes:(NSDictionary *)pixelBufferAttributes error:(NSError **)error;

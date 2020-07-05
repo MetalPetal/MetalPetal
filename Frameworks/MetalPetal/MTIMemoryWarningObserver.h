@@ -20,6 +20,8 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
+
 + (void)addMemoryWarningHandler:(id<MTIMemoryWarningHandling>)memoryWarningHandler;
 
 + (void)removeMemoryWarningHandler:(id<MTIMemoryWarningHandling>)memoryWarningHandler;

@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((objc_subclassing_restricted))
 @interface MTIArgumentsEncoder : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 + (BOOL)encodeArguments:(NSArray<MTLArgument *>*)arguments
                  values:(NSDictionary<NSString *, id> *)parameters
            functionType:(MTLFunctionType)functionType

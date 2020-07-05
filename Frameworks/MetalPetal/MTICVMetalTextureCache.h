@@ -21,6 +21,10 @@ typedef NS_ERROR_ENUM(MTICVMetalTextureCacheErrorDomain, MTICVMetalTextureCacheE
 __attribute__((objc_subclassing_restricted))
 @interface MTICVMetalTextureCache : NSObject <MTICVMetalTextureBridging>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (nullable instancetype)initWithDevice:(id<MTLDevice>)device
                         cacheAttributes:(nullable NSDictionary *)cacheAttributes
                       textureAttributes:(nullable NSDictionary *)textureAttributes
