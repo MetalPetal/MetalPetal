@@ -22,6 +22,10 @@ __attribute__((objc_subclassing_restricted))
 NS_CLASS_AVAILABLE(10_11, 11_0)
 @interface MTICVMetalIOSurfaceBridge : NSObject <MTICVMetalTextureBridging>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithDevice:(id<MTLDevice>)device;
 
 @end

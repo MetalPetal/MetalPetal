@@ -51,6 +51,10 @@ FOUNDATION_EXPORT MTIBlendMode const MTIBlendModeColorLookup512x512;
 __attribute__((objc_subclassing_restricted))
 @interface MTIBlendFunctionDescriptors: NSObject <NSCopying>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForBlendFilter;
 
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForMultilayerCompositingFilter;
@@ -62,6 +66,10 @@ __attribute__((objc_subclassing_restricted))
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIBlendModes: NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 @property (nonatomic,copy,readonly,class) NSArray<MTIBlendMode> *allModes NS_SWIFT_NAME(all);
 

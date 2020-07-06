@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((objc_subclassing_restricted))
 @interface MTIImageURLPromise : NSObject <MTIImagePromise>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL
                                     dimensions:(MTITextureDimensions)dimensions
                                        options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
@@ -50,12 +54,20 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((objc_subclassing_restricted))
 @interface MTICGImagePromise : NSObject <MTIImagePromise>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 
 __attribute__((objc_subclassing_restricted))
 @interface MTITexturePromise : NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;
 
@@ -64,12 +76,20 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((objc_subclassing_restricted))
 @interface MTICIImagePromise : NSObject <MTIImagePromise>
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithCIImage:(CIImage *)ciImage bounds:(CGRect)bounds isOpaque:(BOOL)isOpaque options:(MTICIImageRenderingOptions *)options;
 
 @end
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIColorImagePromise: NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 @property (nonatomic, readonly) MTIColor color;
 
@@ -79,6 +99,10 @@ __attribute__((objc_subclassing_restricted))
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIBitmapDataImagePromise: NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithBitmapData:(NSData *)data width:(NSUInteger)width height:(NSUInteger)height bytesPerRow:(NSUInteger)bytesPerRow pixelFormat:(MTLPixelFormat)pixelFormat alphaType:(MTIAlphaType)alphaType;
 
@@ -92,6 +116,10 @@ NS_AVAILABLE(10_12, 10_0)
 @property (nonatomic, strong, readonly, nullable) NSBundle *bundle;
 @property (nonatomic, readonly) CGFloat scaleFactor;
 
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithName:(NSString *)name
                       bundle:(nullable NSBundle *)bundle
                         size:(CGSize)size
@@ -104,6 +132,10 @@ NS_AVAILABLE(10_12, 10_0)
 __attribute__((objc_subclassing_restricted))
 NS_AVAILABLE(10_12, 10_0)
 @interface MTIMDLTexturePromise: NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithMDLTexture:(MDLTexture *)texture
                            options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options

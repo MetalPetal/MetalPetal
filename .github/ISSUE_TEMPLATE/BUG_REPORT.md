@@ -17,6 +17,7 @@ about: Something isn't working as expected
 Replace this paragraph with a short description of the incorrect behavior.
 
 ### Checklist
+- [ ] I've read the [README](https://github.com/MetalPetal/MetalPetal/blob/master/README.md)
 - [ ] If possible, I've reproduced the issue using the `master` branch of this repo
 - [ ] I've searched for [existing GitHub issues](https://github.com/MetalPetal/MetalPetal/issues)
 
