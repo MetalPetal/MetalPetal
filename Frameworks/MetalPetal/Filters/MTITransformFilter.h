@@ -43,6 +43,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) MTITransformFilterViewport defaultViewport;
 
+@property (nonatomic) NSUInteger rasterSampleCount;
+
 @end
 
 NS_ASSUME_NONNULL_END
