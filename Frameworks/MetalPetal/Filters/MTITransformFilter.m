@@ -41,6 +41,7 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
 
 - (instancetype)init {
     if (self = [super init]) {
+        _rasterSampleCount = 1;
         _transform = CATransform3DIdentity;
         _fieldOfView = 0.0;
     }
@@ -127,6 +128,7 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
     MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(viewport.size) pixelFormat:self.outputPixelFormat loadAction:MTLLoadActionClear];
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:geomerty images:@[self.inputImage] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
+                                            rasterSampleCount:_rasterSampleCount
                                             outputDescriptors:@[outputDescriptor]].firstObject;
 }
 
