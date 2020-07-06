@@ -9,7 +9,11 @@
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
 #import <CoreVideo/CoreVideo.h>
-#import <MTIContext.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIContext.h>
+#else
+#import "MTIContext.h"
+#endif
 
 @class MTIImage;
 @protocol MTIKernelConfiguration, MTIKernel, MTIImagePromise;

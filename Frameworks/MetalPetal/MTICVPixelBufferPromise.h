@@ -6,8 +6,13 @@
 //
 //
 
-#import <MTIImagePromise.h>
-#import <MTICVPixelBufferRendering.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIImagePromise.h>
+#import <MetalPetal/MTICVPixelBufferRendering.h>
+#else
+#import "MTIImagePromise.h"
+#import "MTICVPixelBufferRendering.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

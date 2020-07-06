@@ -5,8 +5,13 @@
 //  Created by Yu Ao on 12/10/2017.
 //
 
-#import <MTIFilter.h>
-#import <MTIBlendModes.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#import <MetalPetal/MTIBlendModes.h>
+#else
+#import "MTIFilter.h"
+#import "MTIBlendModes.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

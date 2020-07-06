@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 07/01/2018.
 //
 
-#import <MTICVMetalTextureBridging.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTICVMetalTextureBridging.h>
+#else
+#import "MTICVMetalTextureBridging.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

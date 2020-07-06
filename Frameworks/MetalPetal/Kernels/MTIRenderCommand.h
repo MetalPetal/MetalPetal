@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 26/11/2017.
 //
 
-#import <MTIGeometry.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIGeometry.h>
+#else
+#import "MTIGeometry.h"
+#endif
 
 @class MTIRenderPipelineKernel, MTIImage, MTIRenderPassOutputDescriptor;
 

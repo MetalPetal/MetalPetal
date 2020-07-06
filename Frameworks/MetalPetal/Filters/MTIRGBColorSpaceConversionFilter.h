@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 2019/2/11.
 //
 
-#import <MTIUnaryImageRenderingFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIUnaryImageRenderingFilter.h>
+#else
+#import "MTIUnaryImageRenderingFilter.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

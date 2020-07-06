@@ -9,9 +9,15 @@
 #import <Accelerate/Accelerate.h>
 #import <simd/simd.h>
 #import <Metal/Metal.h>
-#import <MTIShaderLib.h>
-#import <MTIGeometry.h>
-#import <MTIBuffer.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIShaderLib.h>
+#import <MetalPetal/MTIGeometry.h>
+#import <MetalPetal/MTIBuffer.h>
+#else
+#import "MTIShaderLib.h"
+#import "MTIGeometry.h"
+#import "MTIBuffer.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

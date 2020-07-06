@@ -9,10 +9,17 @@
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
-#import <MTICVPixelBufferRendering.h>
-#import <MTIColor.h>
-#import <MTIAlphaType.h>
-#import <MTITextureDimensions.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTICVPixelBufferRendering.h>
+#import <MetalPetal/MTIColor.h>
+#import <MetalPetal/MTIAlphaType.h>
+#import <MetalPetal/MTITextureDimensions.h>
+#else
+#import "MTICVPixelBufferRendering.h"
+#import "MTIColor.h"
+#import "MTIAlphaType.h"
+#import "MTITextureDimensions.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

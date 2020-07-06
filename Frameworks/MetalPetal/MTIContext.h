@@ -10,7 +10,11 @@
 #import <MetalKit/MetalKit.h>
 #import <CoreImage/CoreImage.h>
 #import <CoreVideo/CoreVideo.h>
-#import <MTIMemoryWarningObserver.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIMemoryWarningObserver.h>
+#else
+#import "MTIMemoryWarningObserver.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

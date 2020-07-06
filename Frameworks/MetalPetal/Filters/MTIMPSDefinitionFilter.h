@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 2018/8/21.
 //
 
-#import <MTIFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#else
+#import "MTIFilter.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

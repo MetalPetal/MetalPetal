@@ -8,7 +8,11 @@
 #if __has_include(<UIKit/UIKit.h>)
 
 #import <UIKit/UIKit.h>
-#import <MTIDrawableRendering.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIDrawableRendering.h>
+#else
+#import "MTIDrawableRendering.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

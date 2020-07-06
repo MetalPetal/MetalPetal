@@ -11,9 +11,15 @@
 #import <simd/simd.h>
 #import <CoreImage/CoreImage.h>
 #import <ModelIO/ModelIO.h>
-#import <MTIColor.h>
-#import <MTITextureDimensions.h>
-#import <MTIAlphaType.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIColor.h>
+#import <MetalPetal/MTITextureDimensions.h>
+#import <MetalPetal/MTIAlphaType.h>
+#else
+#import "MTIColor.h"
+#import "MTITextureDimensions.h"
+#import "MTIAlphaType.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,7 +6,11 @@
 //
 
 #import <simd/simd.h>
-#import <MTIUnaryImageRenderingFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIUnaryImageRenderingFilter.h>
+#else
+#import "MTIUnaryImageRenderingFilter.h"
+#endif
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIDotScreenFilter : MTIUnaryImageRenderingFilter

@@ -33,7 +33,11 @@ __attribute__((objc_subclassing_restricted))
 
 NS_ASSUME_NONNULL_END
 
-#import <MTIContext.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIContext.h>
+#else
+#import "MTIContext.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

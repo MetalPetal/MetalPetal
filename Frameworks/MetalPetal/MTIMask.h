@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 14/11/2017.
 //
 
-#import <MTIColor.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIColor.h>
+#else
+#import "MTIColor.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

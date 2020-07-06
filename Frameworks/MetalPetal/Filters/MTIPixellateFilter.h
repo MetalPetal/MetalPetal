@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 08/01/2018.
 //
 
-#import <MTIUnaryImageRenderingFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIUnaryImageRenderingFilter.h>
+#else
+#import "MTIUnaryImageRenderingFilter.h"
+#endif
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIPixellateFilter : MTIUnaryImageRenderingFilter

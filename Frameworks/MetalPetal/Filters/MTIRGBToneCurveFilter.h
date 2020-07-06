@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 12/01/2018.
 //
 
-#import <MTIFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#else
+#import "MTIFilter.h"
+#endif
 
 @class MTIVector;
 

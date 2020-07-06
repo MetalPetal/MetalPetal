@@ -9,7 +9,11 @@
 
 #import <UIKit/UIKit.h>
 #import <MetalKit/MetalKit.h>
-#import <MTIDrawableRendering.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIDrawableRendering.h>
+#else
+#import "MTIDrawableRendering.h"
+#endif
 
 @class MTIImage,MTIContext;
 

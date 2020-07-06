@@ -6,7 +6,11 @@
 //
 //
 
-#import <MTIImage.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIImage.h>
+#else
+#import "MTIImage.h"
+#endif
 @protocol MTIImagePromise;
 
 NS_ASSUME_NONNULL_BEGIN

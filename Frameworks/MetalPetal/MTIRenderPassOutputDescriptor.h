@@ -6,7 +6,11 @@
 //
 
 #import <Metal/Metal.h>
-#import <MTITextureDimensions.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTITextureDimensions.h>
+#else
+#import "MTITextureDimensions.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

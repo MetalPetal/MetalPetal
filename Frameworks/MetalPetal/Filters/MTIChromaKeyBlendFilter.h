@@ -5,8 +5,13 @@
 //  Created by Yu Ao on 29/12/2017.
 //
 
-#import <MTIFilter.h>
-#import <MTIColor.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#import <MetalPetal/MTIColor.h>
+#else
+#import "MTIFilter.h"
+#import "MTIColor.h"
+#endif
 
 __attribute__((objc_subclassing_restricted))
 @interface MTIChromaKeyBlendFilter : NSObject <MTIFilter>

@@ -7,7 +7,11 @@
 
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import <MTIFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#else
+#import "MTIFilter.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

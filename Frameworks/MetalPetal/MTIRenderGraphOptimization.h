@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 20/11/2017.
 //
 
-#import <MTIImagePromise.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIImagePromise.h>
+#else
+#import "MTIImagePromise.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,8 +6,13 @@
 //
 
 #import <Metal/Metal.h>
-#import <MTIKernel.h>
-#import <MTITextureDimensions.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIKernel.h>
+#import <MetalPetal/MTITextureDimensions.h>
+#else
+#import "MTIKernel.h"
+#import "MTITextureDimensions.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

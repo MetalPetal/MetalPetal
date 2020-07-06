@@ -5,7 +5,11 @@
 //  Created by Yu Ao on 2020/1/20.
 //
 
-#import <MTIImageRenderingContext.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIImageRenderingContext.h>
+#else
+#import "MTIImageRenderingContext.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,7 +6,11 @@
 //
 
 #import <CoreGraphics/CoreGraphics.h>
-#import <MTIBlendModes.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIBlendModes.h>
+#else
+#import "MTIBlendModes.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

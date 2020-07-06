@@ -6,8 +6,13 @@
 //
 //
 
-#import <MTIUnaryImageRenderingFilter.h>
-#import <MTIColorMatrix.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIUnaryImageRenderingFilter.h>
+#import <MetalPetal/MTIColorMatrix.h>
+#else
+#import "MTIUnaryImageRenderingFilter.h"
+#import "MTIColorMatrix.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

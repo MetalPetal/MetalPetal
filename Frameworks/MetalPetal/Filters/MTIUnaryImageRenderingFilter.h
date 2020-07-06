@@ -6,9 +6,15 @@
 //
 
 #import <QuartzCore/QuartzCore.h>
-#import <MTIFilter.h>
-#import <MTIImageOrientation.h>
-#import <MTIAlphaType.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#import <MetalPetal/MTIImageOrientation.h>
+#import <MetalPetal/MTIAlphaType.h>
+#else
+#import "MTIFilter.h"
+#import "MTIImageOrientation.h"
+#import "MTIAlphaType.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 

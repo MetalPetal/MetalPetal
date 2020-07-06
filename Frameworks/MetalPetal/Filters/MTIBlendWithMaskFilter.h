@@ -5,7 +5,11 @@
 //  Created by 杨乃川 on 2017/10/26.
 //
 
-#import <MTIFilter.h>
+#if __has_include(<MetalPetal/MetalPetal.h>)
+#import <MetalPetal/MTIFilter.h>
+#else
+#import "MTIFilter.h"
+#endif
 
 @class MTIMask;
 
