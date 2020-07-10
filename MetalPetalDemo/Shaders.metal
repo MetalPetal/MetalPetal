@@ -6,6 +6,7 @@
 //  Copyright © 2019 MetalPetal. All rights reserved.
 //
 
+#include "MTIShaderLib.h"
 #include <metal_stdlib>
 using namespace metal;
 
@@ -25,4 +26,15 @@ vertex ColoredVertex demoColoredVertex (const device ColoredVertex * vertices [[
 fragment float4 demoColoredFragment(ColoredVertex vertexIn [[ stage_in ]]) {
     return vertexIn.color;
 }
+
+fragment float4 tintBrush(metalpetal::VertexOut vertexIn [[ stage_in ]],
+                          texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                          sampler colorSampler [[ sampler(0) ]],
+                          constant float4 &color [[ buffer(0) ]]) {
+    float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+    textureColor.rgb = color.rgb;
+    textureColor.a *= color.a;
+    return textureColor;
+}
+
 

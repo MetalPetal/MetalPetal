@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bFS-dw-d0K">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="bFS-dw-d0K">
     <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -129,6 +129,183 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FVb-Hn-9Bm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1342.5" y="0.0"/>
+        </scene>
+        <!--Sketch-->
+        <scene sceneID="Yj7-zU-ht7">
+            <objects>
+                <viewController id="ROS-6E-fCv" customClass="SketchViewController" customModule="MetalPetalDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7Fd-f6-1Yz"/>
+                        <viewControllerLayoutGuide type="bottom" id="WRk-SP-POg"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="FmO-kf-N3P">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OgB-Ie-wnY" customClass="MTIImageView">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tef-84-y4r">
+                                <rect key="frame" x="16" y="512" width="256" height="48"/>
+                                <subviews>
+                                    <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kAc-VP-n7F">
+                                        <rect key="frame" x="0.0" y="0.0" width="256" height="48"/>
+                                        <subviews>
+                                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="McK-dR-JI8">
+                                                <rect key="frame" x="0.0" y="0.0" width="256" height="48"/>
+                                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Lpt-h0-PfZ">
+                                                    <rect key="frame" x="0.0" y="0.0" width="256" height="48"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                </view>
+                                                <blurEffect style="extraLight"/>
+                                            </visualEffectView>
+                                            <stackView opaque="NO" contentMode="scaleToFill" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="SZ2-zm-0Of">
+                                                <rect key="frame" x="0.0" y="0.0" width="256" height="48"/>
+                                                <subviews>
+                                                    <button contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="85u-Fu-wcO" customClass="ColorButton" customModule="MetalPetalDemo" customModuleProvider="target">
+                                                        <rect key="frame" x="16" y="8" width="32" height="32"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="85u-Fu-wcO" secondAttribute="height" id="5Wb-07-nhN"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                                                <color key="value" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="colorButtonTapped:" destination="ROS-6E-fCv" eventType="touchUpInside" id="hb9-6T-Mcc"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hdz-zd-5b6" customClass="ColorButton" customModule="MetalPetalDemo" customModuleProvider="target">
+                                                        <rect key="frame" x="64" y="8" width="32" height="32"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="hdz-zd-5b6" secondAttribute="height" id="zZV-Mj-Rgm"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                                                <color key="value" systemColor="systemPinkColor" red="1" green="0.1764705882" blue="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="colorButtonTapped:" destination="ROS-6E-fCv" eventType="touchUpInside" id="62P-X5-v1u"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="phe-Al-LJQ" customClass="ColorButton" customModule="MetalPetalDemo" customModuleProvider="target">
+                                                        <rect key="frame" x="112" y="8" width="32" height="32"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="phe-Al-LJQ" secondAttribute="height" id="2YD-UG-GrS"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                                                <color key="value" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="colorButtonTapped:" destination="ROS-6E-fCv" eventType="touchUpInside" id="z3X-dn-WET"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pCS-mJ-ygh" customClass="ColorButton" customModule="MetalPetalDemo" customModuleProvider="target">
+                                                        <rect key="frame" x="160" y="8" width="32" height="32"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="pCS-mJ-ygh" secondAttribute="height" id="X29-qe-PQ2"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                                                <color key="value" systemColor="systemTealColor" red="0.35294117650000001" green="0.7843137255" blue="0.98039215690000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="colorButtonTapped:" destination="ROS-6E-fCv" eventType="touchUpInside" id="t15-OS-kBI"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tf1-WU-msW" customClass="ColorButton" customModule="MetalPetalDemo" customModuleProvider="target">
+                                                        <rect key="frame" x="208" y="8" width="32" height="32"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="tf1-WU-msW" secondAttribute="height" id="mlI-7A-bbP"/>
+                                                        </constraints>
+                                                        <userDefinedRuntimeAttributes>
+                                                            <userDefinedRuntimeAttribute type="color" keyPath="color">
+                                                                <color key="value" systemColor="systemYellowColor" red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            </userDefinedRuntimeAttribute>
+                                                        </userDefinedRuntimeAttributes>
+                                                        <connections>
+                                                            <action selector="colorButtonTapped:" destination="ROS-6E-fCv" eventType="touchUpInside" id="gSq-eg-86T"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstItem="hdz-zd-5b6" firstAttribute="width" secondItem="hdz-zd-5b6" secondAttribute="height" id="Nwu-zw-bj6"/>
+                                                    <constraint firstItem="pCS-mJ-ygh" firstAttribute="width" secondItem="pCS-mJ-ygh" secondAttribute="height" id="kDE-xa-ppn"/>
+                                                    <constraint firstItem="phe-Al-LJQ" firstAttribute="width" secondItem="phe-Al-LJQ" secondAttribute="height" id="nj9-Iv-rPz"/>
+                                                    <constraint firstItem="tf1-WU-msW" firstAttribute="width" secondItem="tf1-WU-msW" secondAttribute="height" id="zEU-bY-ZAf"/>
+                                                </constraints>
+                                                <edgeInsets key="layoutMargins" top="8" left="16" bottom="8" right="16"/>
+                                            </stackView>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="SZ2-zm-0Of" secondAttribute="trailing" id="4Gt-BJ-JY5"/>
+                                            <constraint firstItem="McK-dR-JI8" firstAttribute="leading" secondItem="kAc-VP-n7F" secondAttribute="leading" id="AEt-NS-phC"/>
+                                            <constraint firstItem="SZ2-zm-0Of" firstAttribute="leading" secondItem="kAc-VP-n7F" secondAttribute="leading" id="G7Q-O6-5Fj"/>
+                                            <constraint firstItem="SZ2-zm-0Of" firstAttribute="top" secondItem="kAc-VP-n7F" secondAttribute="top" id="Ibh-qK-dfm"/>
+                                            <constraint firstAttribute="trailing" secondItem="McK-dR-JI8" secondAttribute="trailing" id="X3o-tw-b0n"/>
+                                            <constraint firstItem="McK-dR-JI8" firstAttribute="top" secondItem="kAc-VP-n7F" secondAttribute="top" id="YQU-b7-zJA"/>
+                                            <constraint firstAttribute="bottom" secondItem="SZ2-zm-0Of" secondAttribute="bottom" id="pO1-oy-6tl"/>
+                                            <constraint firstAttribute="bottom" secondItem="McK-dR-JI8" secondAttribute="bottom" id="rVc-bq-niF"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="24"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="kAc-VP-n7F" firstAttribute="top" secondItem="tef-84-y4r" secondAttribute="top" id="TwZ-Xy-0Qm"/>
+                                    <constraint firstAttribute="bottom" secondItem="kAc-VP-n7F" secondAttribute="bottom" id="VRI-KB-CUZ"/>
+                                    <constraint firstAttribute="height" constant="48" id="eYJ-8v-EPh"/>
+                                    <constraint firstAttribute="trailing" secondItem="kAc-VP-n7F" secondAttribute="trailing" id="fT6-wk-RjP"/>
+                                    <constraint firstItem="kAc-VP-n7F" firstAttribute="leading" secondItem="tef-84-y4r" secondAttribute="leading" id="iRF-x0-RFz"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="OgB-Ie-wnY" secondAttribute="trailing" id="6hB-HJ-Q66"/>
+                            <constraint firstItem="tef-84-y4r" firstAttribute="leading" secondItem="FmO-kf-N3P" secondAttribute="leading" constant="16" id="FCo-W2-BFb"/>
+                            <constraint firstItem="OgB-Ie-wnY" firstAttribute="leading" secondItem="FmO-kf-N3P" secondAttribute="leading" id="IWX-qe-sd4"/>
+                            <constraint firstAttribute="bottom" secondItem="OgB-Ie-wnY" secondAttribute="bottom" id="Kcw-LX-cSE"/>
+                            <constraint firstItem="WRk-SP-POg" firstAttribute="top" secondItem="tef-84-y4r" secondAttribute="bottom" constant="8" id="Qf6-O2-HHK"/>
+                            <constraint firstItem="OgB-Ie-wnY" firstAttribute="top" secondItem="FmO-kf-N3P" secondAttribute="top" id="Tuh-oU-BXG"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Sketch" id="nDM-OS-PG3">
+                        <barButtonItem key="rightBarButtonItem" title="Clear" id="2D4-Hb-9MS">
+                            <connections>
+                                <action selector="clearButtonTapped:" destination="ROS-6E-fCv" id="2A8-lW-yFF"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="imageView" destination="OgB-Ie-wnY" id="bGT-7b-Nbb"/>
+                        <outlet property="toolsView" destination="tef-84-y4r" id="4cL-Df-PRB"/>
+                        <outletCollection property="colorButtons" destination="phe-Al-LJQ" collectionClass="NSMutableArray" id="JBU-SR-Ttl"/>
+                        <outletCollection property="colorButtons" destination="hdz-zd-5b6" collectionClass="NSMutableArray" id="nHn-01-1lc"/>
+                        <outletCollection property="colorButtons" destination="85u-Fu-wcO" collectionClass="NSMutableArray" id="scG-al-8C1"/>
+                        <outletCollection property="colorButtons" destination="pCS-mJ-ygh" collectionClass="NSMutableArray" id="7Ti-nY-6uU"/>
+                        <outletCollection property="colorButtons" destination="tf1-WU-msW" collectionClass="NSMutableArray" id="1As-5x-Zzu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="myn-KI-aPe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2100" y="-65.492957746478879"/>
         </scene>
         <!--Triple Buffering-->
         <scene sceneID="HAv-Ub-H1p">
@@ -465,6 +642,26 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <segue destination="Wzz-4g-pCW" kind="show" id="wlS-JN-Plj"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="XqK-Bs-hup" style="IBUITableViewCellStyleDefault" id="8op-Y8-cpK">
+                                        <rect key="frame" x="0.0" y="326" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8op-Y8-cpK" id="Gao-6S-4Qs">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Sketch" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="XqK-Bs-hup">
+                                                    <rect key="frame" x="16" y="0.0" width="288" height="44"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="ROS-6E-fCv" kind="show" id="soS-GN-lHD"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
