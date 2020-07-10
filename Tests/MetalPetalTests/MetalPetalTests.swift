@@ -814,6 +814,69 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testRenderedBuffer() throws {
+        guard let context = try makeContext() else { return }
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [255, 255],
+            [0, 255],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter1 = MTIColorInvertFilter()
+        filter1.inputImage = image
+        
+        let filter2 = MTITransformFilter()
+        filter2.transform = CATransform3DMakeRotation(.pi/2, 0, 0, 1)
+        filter2.inputImage = filter1.outputImage
+        
+        var renderedBuffer: MTIImage!
+        
+        try autoreleasepool {
+            let outputImage = try XCTUnwrap(filter2.outputImage?.withCachePolicy(.persistent))
+            
+            XCTAssert(context.renderedBuffer(for: outputImage) == nil)
+            
+            try context.startTask(toRender: outputImage, completion: nil)
+            
+            XCTAssert(context.renderedBuffer(for: outputImage) != nil)
+            
+            let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+            
+            renderedBuffer = buffer
+            
+            XCTAssert(context.idleResourceCount == 1)
+        }
+        
+        context.reclaimResources()
+        
+        XCTAssert(context.idleResourceCount == 0)
+        
+        let outputCGImage = try context.makeCGImage(from: renderedBuffer)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+            if coord.x == 0 && coord.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 1 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+        }
+        
+        XCTAssert(context.idleResourceCount == 0)
+        
+        renderedBuffer = nil
+        
+        XCTAssert(context.idleResourceCount == 1)
+        
+        context.reclaimResources()
+        
+        XCTAssert(context.idleResourceCount == 0)
+    }
+    
     func testCustomComputePipeline() throws {
         let kernelSource = """
         #include <metal_stdlib>
@@ -961,6 +1024,54 @@ final class RenderTests: XCTestCase {
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+}
+
+final class UtilitiesTests: XCTestCase {
+    
+    func testLock() throws {
+        var counter: Int = 0
+        let lock = MTILockCreate()
+        DispatchQueue.concurrentPerform(iterations: 1000_000) { _ in
+            lock.lock()
+            counter += 1
+            lock.unlock()
+        }
+        XCTAssert(counter == 1000_000)
+    }
+
+    func testWeakToStrongTable() throws {
+        class Key {}
+        class Value {}
+        let table = MTIWeakToStrongObjectsMapTable<Key,Value>()
+        
+        var key: Key? = Key()
+        var value: Value? = Value()
+        table.setObject(value!, forKey: key!)
+        
+        weak var weakValue = value
+        value = nil
+        
+        XCTAssert(weakValue != nil)
+        
+        XCTAssert(table.object(forKey: key!) === weakValue)
+        
+        key = nil
+        
+        XCTAssert(weakValue == nil)
+    }
+    
+    func testMTILayerModel() throws {
+        var propertyCount: UInt32 = 0
+        let list = try XCTUnwrap(class_copyPropertyList(MTILayer.self, &propertyCount))
+        let properties = [objc_property_t](UnsafeBufferPointer<objc_property_t>(start: list, count: Int(propertyCount)))
+        list.deallocate()
+        let swiftLayerMirror = Mirror(reflecting: MultilayerCompositingFilter.Layer(content: .white))
+        for property in properties {
+            XCTAssert(swiftLayerMirror.children.contains { label, value in
+                label == String(cString: property_getName(property))
+            })
         }
     }
 }
