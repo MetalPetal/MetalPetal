@@ -153,7 +153,7 @@ class SketchViewController: UIViewController {
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
         self.brushColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        let brush = BrushTinter.image(byProcessingImage: self.brushImage, withInputParameters: ["color": MTIVector(value: SIMD4<Float>(Float(red),Float(green),Float(blue),Float(alpha)))], outputPixelFormat: .unspecified)
+        let brush = BrushTinter.image(byProcessingImage: self.brushImage, withInputParameters: ["color": SIMD4<Float>(Float(red),Float(green),Float(blue),Float(alpha))], outputPixelFormat: .unspecified)
         
         let context = imageView.context
         let background: MTIImage = previousImageBuffer ?? backgroundImage
