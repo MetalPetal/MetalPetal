@@ -1276,4 +1276,43 @@ final class UtilitiesTests: XCTestCase {
             XCTAssert(pixel.r == 128 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
         }
     }
+    
+    func testMTIVector() throws {
+        let randomFloat = Float.random(in: 0...1)
+        XCTAssert(MTIVector(value: SIMD2<Float>(repeating: randomFloat)).float2Value == SIMD2<Float>(repeating: randomFloat))
+        XCTAssert(MTIVector(value: SIMD3<Float>(repeating: randomFloat)).float3Value == SIMD3<Float>(repeating: randomFloat))
+        XCTAssert(MTIVector(value: SIMD4<Float>(repeating: randomFloat)).float4Value == SIMD4<Float>(repeating: randomFloat))
+        
+        let randomInt32 = Int32.random(in: Int32.min...Int32.max)
+        XCTAssert(MTIVector(value: SIMD2<Int32>(repeating: randomInt32)).int2Value == SIMD2<Int32>(repeating: randomInt32))
+        XCTAssert(MTIVector(value: SIMD3<Int32>(repeating: randomInt32)).int3Value == SIMD3<Int32>(repeating: randomInt32))
+        XCTAssert(MTIVector(value: SIMD4<Int32>(repeating: randomInt32)).int4Value == SIMD4<Int32>(repeating: randomInt32))
+
+        let randomInt16 = Int16.random(in: Int16.min...Int16.max)
+        XCTAssert(MTIVector(value: SIMD2<Int16>(repeating: randomInt16)).short2Value == SIMD2<Int16>(repeating: randomInt16))
+        XCTAssert(MTIVector(value: SIMD3<Int16>(repeating: randomInt16)).short3Value == SIMD3<Int16>(repeating: randomInt16))
+        XCTAssert(MTIVector(value: SIMD4<Int16>(repeating: randomInt16)).short4Value == SIMD4<Int16>(repeating: randomInt16))
+
+        let randomInt8 = Int8.random(in: Int8.min...Int8.max)
+        XCTAssert(MTIVector(value: SIMD2<Int8>(repeating: randomInt8)).char2Value == SIMD2<Int8>(repeating: randomInt8))
+        XCTAssert(MTIVector(value: SIMD3<Int8>(repeating: randomInt8)).char3Value == SIMD3<Int8>(repeating: randomInt8))
+        XCTAssert(MTIVector(value: SIMD4<Int8>(repeating: randomInt8)).char4Value == SIMD4<Int8>(repeating: randomInt8))
+
+        let randomUInt32 = UInt32.random(in: UInt32.min...UInt32.max)
+        XCTAssert(MTIVector(value: SIMD2<UInt32>(repeating: randomUInt32)).uint2Value == SIMD2<UInt32>(repeating: randomUInt32))
+        XCTAssert(MTIVector(value: SIMD3<UInt32>(repeating: randomUInt32)).uint3Value == SIMD3<UInt32>(repeating: randomUInt32))
+        XCTAssert(MTIVector(value: SIMD4<UInt32>(repeating: randomUInt32)).uint4Value == SIMD4<UInt32>(repeating: randomUInt32))
+        
+        let randomUInt16 = UInt16.random(in: UInt16.min...UInt16.max)
+        XCTAssert(MTIVector(value: SIMD2<UInt16>(repeating: randomUInt16)).ushort2Value == SIMD2<UInt16>(repeating: randomUInt16))
+        XCTAssert(MTIVector(value: SIMD3<UInt16>(repeating: randomUInt16)).ushort3Value == SIMD3<UInt16>(repeating: randomUInt16))
+        XCTAssert(MTIVector(value: SIMD4<UInt16>(repeating: randomUInt16)).ushort4Value == SIMD4<UInt16>(repeating: randomUInt16))
+        
+        let randomUInt8 = UInt8.random(in: UInt8.min...UInt8.max)
+        XCTAssert(MTIVector(value: SIMD2<UInt8>(repeating: randomUInt8)).uchar2Value == SIMD2<UInt8>(repeating: randomUInt8))
+        XCTAssert(MTIVector(value: SIMD3<UInt8>(repeating: randomUInt8)).uchar3Value == SIMD3<UInt8>(repeating: randomUInt8))
+        XCTAssert(MTIVector(value: SIMD4<UInt8>(repeating: randomUInt8)).uchar4Value == SIMD4<UInt8>(repeating: randomUInt8))
+
+        XCTAssert(MTIVector(value: SIMD4<Float>(repeating: randomFloat)).float3Value == SIMD3<Float>(randomFloat, randomFloat, randomFloat))
+    }
 }
