@@ -1,5 +1,5 @@
 //
-//  MTISwiftShaderArgumentEncoder.swift
+//  MTISIMDArgumentEncoder.swift
 //  MetalPetal
 //
 //  Auto-generated.
@@ -11,16 +11,16 @@ import Foundation
 import MetalPetalObjectiveC.Core
 #endif
 
-@objc(MTISIMDShaderArgumentEncoder) final class MTISIMDShaderArgumentEncoder: NSObject, MTIFunctionArgumentEncoding {
+@objc(MTISIMDArgumentEncoder) public class MTISIMDArgumentEncoder: NSObject, MTIFunctionArgumentEncoding {
     
-    enum Error: String, Swift.Error, LocalizedError {
+    public enum Error: String, Swift.Error, LocalizedError {
         case argumentTypeMismatch
-        var errorDescription: String? {
+        public var errorDescription: String? {
             return self.rawValue
         }
     }
     
-    static func encodeValue(_ value: Any, argument: MTLArgument, proxy: MTIFunctionArgumentEncodingProxy) throws {
+    public static func encodeValue(_ value: Any, argument: MTLArgument, proxy: MTIFunctionArgumentEncodingProxy) throws {
         switch value {
         case let v as SIMD2<Float>:
             guard argument.bufferDataType == .float2 else {
@@ -82,32 +82,32 @@ import MetalPetalObjectiveC.Core
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD2<Int>:
+        case let v as SIMD2<Int32>:
             guard argument.bufferDataType == .int2 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD3<Int>:
+        case let v as SIMD3<Int32>:
             guard argument.bufferDataType == .int3 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD4<Int>:
+        case let v as SIMD4<Int32>:
             guard argument.bufferDataType == .int4 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD2<UInt>:
+        case let v as SIMD2<UInt32>:
             guard argument.bufferDataType == .uint2 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD3<UInt>:
+        case let v as SIMD3<UInt32>:
             guard argument.bufferDataType == .uint3 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-        case let v as SIMD4<UInt>:
+        case let v as SIMD4<UInt32>:
             guard argument.bufferDataType == .uint4 else {
                 throw Error.argumentTypeMismatch
             }

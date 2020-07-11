@@ -10,7 +10,7 @@ import SIMDType
 
 fileprivate let template: String = """
 //
-//  MTISwiftShaderArgumentEncoder.swift
+//  MTISIMDArgumentEncoder.swift
 //  MetalPetal
 //
 //  Auto-generated.
@@ -22,16 +22,16 @@ import Foundation
 import MetalPetalObjectiveC.Core
 #endif
 
-@objc(MTISIMDShaderArgumentEncoder) final class MTISIMDShaderArgumentEncoder: NSObject, MTIFunctionArgumentEncoding {
+@objc(MTISIMDArgumentEncoder) public class MTISIMDArgumentEncoder: NSObject, MTIFunctionArgumentEncoding {
     
-    enum Error: String, Swift.Error, LocalizedError {
+    public enum Error: String, Swift.Error, LocalizedError {
         case argumentTypeMismatch
-        var errorDescription: String? {
+        public var errorDescription: String? {
             return self.rawValue
         }
     }
     
-    static func encodeValue(_ value: Any, argument: MTLArgument, proxy: MTIFunctionArgumentEncodingProxy) throws {
+    public static func encodeValue(_ value: Any, argument: MTLArgument, proxy: MTIFunctionArgumentEncodingProxy) throws {
         switch value {
 {MTI_SIMD_SHADER_ARGUMENT_ENCODER_GENERATED}
         default:
@@ -75,6 +75,6 @@ public struct MTISIMDShaderArgumentEncoderGenerator {
                 """)
             }
         }
-        return ["MTISIMDShaderArgumentEncoder.swift": template.replacingOccurrences(of: "{MTI_SIMD_SHADER_ARGUMENT_ENCODER_GENERATED}", with: content)]
+        return ["MTISIMDArgumentEncoder.swift": template.replacingOccurrences(of: "{MTI_SIMD_SHADER_ARGUMENT_ENCODER_GENERATED}", with: content)]
     }
 }

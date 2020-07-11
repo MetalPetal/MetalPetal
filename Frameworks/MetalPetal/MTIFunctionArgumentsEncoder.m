@@ -149,7 +149,7 @@ __attribute__((objc_subclassing_restricted))
                 static Class<MTIFunctionArgumentEncoding> SIMDValueEncoder;
                 static dispatch_once_t onceToken;
                 dispatch_once(&onceToken, ^{
-                    Class encoder = NSClassFromString(@"MTISIMDShaderArgumentEncoder");
+                    Class encoder = NSClassFromString(@"MTISIMDArgumentEncoder");
                     if ([encoder conformsToProtocol:@protocol(MTIFunctionArgumentEncoding)]) {
                         SIMDValueEncoder = encoder;
                     }
