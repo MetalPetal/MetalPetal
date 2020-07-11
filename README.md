@@ -441,7 +441,7 @@ The shader function argument types and the coorresponding types to use in a para
 | int | Int32 | int |
 | uint | UInt32 | uint |
 | bool | Bool | bool |
-| simd (float2,float4,float4x4,int4, etc.) | MTIVector | MTIVector |
+| simd (float2,float4,float4x4,int4, etc.) | simd (with `MetalPetal/Swift`) / MTIVector | MTIVector |
 | struct | Data / MTIDataBuffer | NSData / MTIDataBuffer |
 | other (float *, struct *, etc.) immutable | Data / MTIDataBuffer | NSData / MTIDataBuffer |
 | other (float *, struct *, etc.) mutable | MTIDataBuffer | MTIDataBuffer |
