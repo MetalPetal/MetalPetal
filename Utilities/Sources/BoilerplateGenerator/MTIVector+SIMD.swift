@@ -36,7 +36,11 @@ public struct MTIVectorSIMDTypeSupportCodeGenerator {
         //  Auto generated.
         
         #import <simd/simd.h>
-        #import <MTIVector.h>
+        #if __has_include(<MetalPetal/MetalPetal.h>)
+        #import <MetalPetal/MTIVector.h>
+        #else
+        #import "MTIVector.h"
+        #endif
 
         NS_ASSUME_NONNULL_BEGIN
 
@@ -104,8 +108,8 @@ public struct MTIVectorSIMDTypeSupportCodeGenerator {
             let initializerIMP: String =
             """
                 NSParameterAssert(sizeof(value) == sizeof(\(type.description())));
-                const \(type.scalarType.description(capitalized: false)) * valuePtr = (void *)&value;
-                return [self vectorWith\(type.scalarType.description(capitalized: true))Values:valuePtr count:sizeof(value)/sizeof(\(type.scalarType.description(capitalized:false)))];
+                const \(type.scalarType.cTypeName) * valuePtr = (void *)&value;
+                return [[MTIVector alloc] initWith\(type.scalarType.description(capitalized: true))Values:valuePtr count:sizeof(value)/sizeof(\(type.scalarType.cTypeName))];
             """
 
             lines.append(

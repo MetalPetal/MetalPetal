@@ -26,159 +26,159 @@ import MetalPetalObjectiveC.Core
             guard argument.bufferDataType == .float2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<Float>:
             guard argument.bufferDataType == .float3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<Float>:
             guard argument.bufferDataType == .float4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float2x2:
             guard argument.bufferDataType == .float2x2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float2x3:
             guard argument.bufferDataType == .float2x3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float2x4:
             guard argument.bufferDataType == .float2x4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float3x2:
             guard argument.bufferDataType == .float3x2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float3x3:
             guard argument.bufferDataType == .float3x3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float3x4:
             guard argument.bufferDataType == .float3x4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float4x2:
             guard argument.bufferDataType == .float4x2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float4x3:
             guard argument.bufferDataType == .float4x3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as float4x4:
             guard argument.bufferDataType == .float4x4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<Int>:
             guard argument.bufferDataType == .int2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<Int>:
             guard argument.bufferDataType == .int3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<Int>:
             guard argument.bufferDataType == .int4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<UInt>:
             guard argument.bufferDataType == .uint2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<UInt>:
             guard argument.bufferDataType == .uint3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<UInt>:
             guard argument.bufferDataType == .uint4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<Int16>:
             guard argument.bufferDataType == .short2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<Int16>:
             guard argument.bufferDataType == .short3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<Int16>:
             guard argument.bufferDataType == .short4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<UInt16>:
             guard argument.bufferDataType == .ushort2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<UInt16>:
             guard argument.bufferDataType == .ushort3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<UInt16>:
             guard argument.bufferDataType == .ushort4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<Int8>:
             guard argument.bufferDataType == .char2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<Int8>:
             guard argument.bufferDataType == .char3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<Int8>:
             guard argument.bufferDataType == .char4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD2<UInt8>:
             guard argument.bufferDataType == .uchar2 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD3<UInt8>:
             guard argument.bufferDataType == .uchar3 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
         case let v as SIMD4<UInt8>:
             guard argument.bufferDataType == .uchar4 else {
                 throw Error.argumentTypeMismatch
             }
-            encode(value: v, proxy: proxy)
+            encode(v, proxy: proxy)
 
         default:
             break
         }
     }
 
-    private static func encode<T>(value: T, proxy: MTIFunctionArgumentEncodingProxy) {
+    private static func encode<T>(_ value: T, proxy: MTIFunctionArgumentEncodingProxy) {
         withUnsafePointer(to: value) { ptr in
             proxy.encodeBytes(ptr, length: UInt(MemoryLayout.size(ofValue: value)))
         }
