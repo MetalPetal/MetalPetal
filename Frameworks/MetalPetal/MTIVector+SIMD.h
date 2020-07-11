@@ -31,14 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) simd_float4 float4Value;
 
-+ (instancetype)vectorWithFloat8:(simd_float8)value NS_SWIFT_NAME(init(value:));
-
-@property (nonatomic, readonly) simd_float8 float8Value;
-
-+ (instancetype)vectorWithFloat16:(simd_float16)value NS_SWIFT_NAME(init(value:));
-
-@property (nonatomic, readonly) simd_float16 float16Value;
-
 + (instancetype)vectorWithFloat2x2:(simd_float2x2)value NS_SWIFT_NAME(init(value:));
 
 @property (nonatomic, readonly) simd_float2x2 float2x2Value;
@@ -87,14 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) simd_int4 int4Value;
 
-+ (instancetype)vectorWithInt8:(simd_int8)value NS_SWIFT_NAME(init(value:));
-
-@property (nonatomic, readonly) simd_int8 int8Value;
-
-+ (instancetype)vectorWithInt16:(simd_int16)value NS_SWIFT_NAME(init(value:));
-
-@property (nonatomic, readonly) simd_int16 int16Value;
-
 + (instancetype)vectorWithUInt2:(simd_uint2)value NS_SWIFT_NAME(init(value:));
 
 @property (nonatomic, readonly) simd_uint2 uint2Value;
@@ -107,13 +91,53 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) simd_uint4 uint4Value;
 
-+ (instancetype)vectorWithUInt8:(simd_uint8)value NS_SWIFT_NAME(init(value:));
++ (instancetype)vectorWithShort2:(simd_short2)value NS_SWIFT_NAME(init(value:));
 
-@property (nonatomic, readonly) simd_uint8 uint8Value;
+@property (nonatomic, readonly) simd_short2 short2Value;
 
-+ (instancetype)vectorWithUInt16:(simd_uint16)value NS_SWIFT_NAME(init(value:));
++ (instancetype)vectorWithShort3:(simd_short3)value NS_SWIFT_NAME(init(value:));
 
-@property (nonatomic, readonly) simd_uint16 uint16Value;
+@property (nonatomic, readonly) simd_short3 short3Value;
+
++ (instancetype)vectorWithShort4:(simd_short4)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_short4 short4Value;
+
++ (instancetype)vectorWithUShort2:(simd_ushort2)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_ushort2 ushort2Value;
+
++ (instancetype)vectorWithUShort3:(simd_ushort3)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_ushort3 ushort3Value;
+
++ (instancetype)vectorWithUShort4:(simd_ushort4)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_ushort4 ushort4Value;
+
++ (instancetype)vectorWithChar2:(simd_char2)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_char2 char2Value;
+
++ (instancetype)vectorWithChar3:(simd_char3)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_char3 char3Value;
+
++ (instancetype)vectorWithChar4:(simd_char4)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_char4 char4Value;
+
++ (instancetype)vectorWithUChar2:(simd_uchar2)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_uchar2 uchar2Value;
+
++ (instancetype)vectorWithUChar3:(simd_uchar3)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_uchar3 uchar3Value;
+
++ (instancetype)vectorWithUChar4:(simd_uchar4)value NS_SWIFT_NAME(init(value:));
+
+@property (nonatomic, readonly) simd_uchar4 uchar4Value;
 
 @end
 

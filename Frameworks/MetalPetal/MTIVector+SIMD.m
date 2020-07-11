@@ -13,7 +13,7 @@
 + (instancetype)vectorWithFloat2:(simd_float2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float2));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float2)float2Value {
@@ -29,7 +29,7 @@
 + (instancetype)vectorWithFloat3:(simd_float3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float3));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float3)float3Value {
@@ -45,7 +45,7 @@
 + (instancetype)vectorWithFloat4:(simd_float4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float4));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float4)float4Value {
@@ -58,42 +58,10 @@
     return value;
 }
 
-+ (instancetype)vectorWithFloat8:(simd_float8)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_float8));
-    const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
-}
-
-- (simd_float8)float8Value {
-    simd_float8 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float8)) {
-        memcpy(&value, self.bytes, sizeof(simd_float8));
-    } else {
-        NSAssert(NO, @"Cannot get a simd_float8 value from %@", self);
-    }
-    return value;
-}
-
-+ (instancetype)vectorWithFloat16:(simd_float16)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_float16));
-    const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
-}
-
-- (simd_float16)float16Value {
-    simd_float16 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeFloat && self.byteLength == sizeof(simd_float16)) {
-        memcpy(&value, self.bytes, sizeof(simd_float16));
-    } else {
-        NSAssert(NO, @"Cannot get a simd_float16 value from %@", self);
-    }
-    return value;
-}
-
 + (instancetype)vectorWithFloat2x2:(simd_float2x2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float2x2));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float2x2)float2x2Value {
@@ -109,7 +77,7 @@
 + (instancetype)vectorWithFloat2x3:(simd_float2x3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float2x3));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float2x3)float2x3Value {
@@ -125,7 +93,7 @@
 + (instancetype)vectorWithFloat2x4:(simd_float2x4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float2x4));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float2x4)float2x4Value {
@@ -141,7 +109,7 @@
 + (instancetype)vectorWithFloat3x2:(simd_float3x2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float3x2));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float3x2)float3x2Value {
@@ -157,7 +125,7 @@
 + (instancetype)vectorWithFloat3x3:(simd_float3x3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float3x3));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float3x3)float3x3Value {
@@ -173,7 +141,7 @@
 + (instancetype)vectorWithFloat3x4:(simd_float3x4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float3x4));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float3x4)float3x4Value {
@@ -189,7 +157,7 @@
 + (instancetype)vectorWithFloat4x2:(simd_float4x2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float4x2));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float4x2)float4x2Value {
@@ -205,7 +173,7 @@
 + (instancetype)vectorWithFloat4x3:(simd_float4x3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float4x3));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float4x3)float4x3Value {
@@ -221,7 +189,7 @@
 + (instancetype)vectorWithFloat4x4:(simd_float4x4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_float4x4));
     const float * valuePtr = (void *)&value;
-    return [self vectorWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
+    return [[MTIVector alloc] initWithFloatValues:valuePtr count:sizeof(value)/sizeof(float)];
 }
 
 - (simd_float4x4)float4x4Value {
@@ -237,7 +205,7 @@
 + (instancetype)vectorWithInt2:(simd_int2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_int2));
     const int * valuePtr = (void *)&value;
-    return [self vectorWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
+    return [[MTIVector alloc] initWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
 }
 
 - (simd_int2)int2Value {
@@ -253,7 +221,7 @@
 + (instancetype)vectorWithInt3:(simd_int3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_int3));
     const int * valuePtr = (void *)&value;
-    return [self vectorWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
+    return [[MTIVector alloc] initWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
 }
 
 - (simd_int3)int3Value {
@@ -269,7 +237,7 @@
 + (instancetype)vectorWithInt4:(simd_int4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_int4));
     const int * valuePtr = (void *)&value;
-    return [self vectorWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
+    return [[MTIVector alloc] initWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
 }
 
 - (simd_int4)int4Value {
@@ -282,42 +250,10 @@
     return value;
 }
 
-+ (instancetype)vectorWithInt8:(simd_int8)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_int8));
-    const int * valuePtr = (void *)&value;
-    return [self vectorWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
-}
-
-- (simd_int8)int8Value {
-    simd_int8 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int8)) {
-        memcpy(&value, self.bytes, sizeof(simd_int8));
-    } else {
-        NSAssert(NO, @"Cannot get a simd_int8 value from %@", self);
-    }
-    return value;
-}
-
-+ (instancetype)vectorWithInt16:(simd_int16)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_int16));
-    const int * valuePtr = (void *)&value;
-    return [self vectorWithIntValues:valuePtr count:sizeof(value)/sizeof(int)];
-}
-
-- (simd_int16)int16Value {
-    simd_int16 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeInt && self.byteLength == sizeof(simd_int16)) {
-        memcpy(&value, self.bytes, sizeof(simd_int16));
-    } else {
-        NSAssert(NO, @"Cannot get a simd_int16 value from %@", self);
-    }
-    return value;
-}
-
 + (instancetype)vectorWithUInt2:(simd_uint2)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_uint2));
     const uint * valuePtr = (void *)&value;
-    return [self vectorWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
+    return [[MTIVector alloc] initWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
 }
 
 - (simd_uint2)uint2Value {
@@ -333,7 +269,7 @@
 + (instancetype)vectorWithUInt3:(simd_uint3)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_uint3));
     const uint * valuePtr = (void *)&value;
-    return [self vectorWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
+    return [[MTIVector alloc] initWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
 }
 
 - (simd_uint3)uint3Value {
@@ -349,7 +285,7 @@
 + (instancetype)vectorWithUInt4:(simd_uint4)value {
     NSParameterAssert(sizeof(value) == sizeof(simd_uint4));
     const uint * valuePtr = (void *)&value;
-    return [self vectorWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
+    return [[MTIVector alloc] initWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
 }
 
 - (simd_uint4)uint4Value {
@@ -362,34 +298,194 @@
     return value;
 }
 
-+ (instancetype)vectorWithUInt8:(simd_uint8)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_uint8));
-    const uint * valuePtr = (void *)&value;
-    return [self vectorWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
++ (instancetype)vectorWithShort2:(simd_short2)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_short2));
+    const short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithShortValues:valuePtr count:sizeof(value)/sizeof(short)];
 }
 
-- (simd_uint8)uint8Value {
-    simd_uint8 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint8)) {
-        memcpy(&value, self.bytes, sizeof(simd_uint8));
+- (simd_short2)short2Value {
+    simd_short2 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeShort && self.byteLength == sizeof(simd_short2)) {
+        memcpy(&value, self.bytes, sizeof(simd_short2));
     } else {
-        NSAssert(NO, @"Cannot get a simd_uint8 value from %@", self);
+        NSAssert(NO, @"Cannot get a simd_short2 value from %@", self);
     }
     return value;
 }
 
-+ (instancetype)vectorWithUInt16:(simd_uint16)value {
-    NSParameterAssert(sizeof(value) == sizeof(simd_uint16));
-    const uint * valuePtr = (void *)&value;
-    return [self vectorWithUIntValues:valuePtr count:sizeof(value)/sizeof(uint)];
++ (instancetype)vectorWithShort3:(simd_short3)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_short3));
+    const short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithShortValues:valuePtr count:sizeof(value)/sizeof(short)];
 }
 
-- (simd_uint16)uint16Value {
-    simd_uint16 value = {0};
-    if (self.scalarType == MTIVectorScalarTypeUInt && self.byteLength == sizeof(simd_uint16)) {
-        memcpy(&value, self.bytes, sizeof(simd_uint16));
+- (simd_short3)short3Value {
+    simd_short3 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeShort && self.byteLength == sizeof(simd_short3)) {
+        memcpy(&value, self.bytes, sizeof(simd_short3));
     } else {
-        NSAssert(NO, @"Cannot get a simd_uint16 value from %@", self);
+        NSAssert(NO, @"Cannot get a simd_short3 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithShort4:(simd_short4)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_short4));
+    const short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithShortValues:valuePtr count:sizeof(value)/sizeof(short)];
+}
+
+- (simd_short4)short4Value {
+    simd_short4 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeShort && self.byteLength == sizeof(simd_short4)) {
+        memcpy(&value, self.bytes, sizeof(simd_short4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_short4 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUShort2:(simd_ushort2)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_ushort2));
+    const unsigned short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUShortValues:valuePtr count:sizeof(value)/sizeof(unsigned short)];
+}
+
+- (simd_ushort2)ushort2Value {
+    simd_ushort2 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUShort && self.byteLength == sizeof(simd_ushort2)) {
+        memcpy(&value, self.bytes, sizeof(simd_ushort2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_ushort2 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUShort3:(simd_ushort3)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_ushort3));
+    const unsigned short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUShortValues:valuePtr count:sizeof(value)/sizeof(unsigned short)];
+}
+
+- (simd_ushort3)ushort3Value {
+    simd_ushort3 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUShort && self.byteLength == sizeof(simd_ushort3)) {
+        memcpy(&value, self.bytes, sizeof(simd_ushort3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_ushort3 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUShort4:(simd_ushort4)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_ushort4));
+    const unsigned short * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUShortValues:valuePtr count:sizeof(value)/sizeof(unsigned short)];
+}
+
+- (simd_ushort4)ushort4Value {
+    simd_ushort4 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUShort && self.byteLength == sizeof(simd_ushort4)) {
+        memcpy(&value, self.bytes, sizeof(simd_ushort4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_ushort4 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithChar2:(simd_char2)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_char2));
+    const char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithCharValues:valuePtr count:sizeof(value)/sizeof(char)];
+}
+
+- (simd_char2)char2Value {
+    simd_char2 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeChar && self.byteLength == sizeof(simd_char2)) {
+        memcpy(&value, self.bytes, sizeof(simd_char2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_char2 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithChar3:(simd_char3)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_char3));
+    const char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithCharValues:valuePtr count:sizeof(value)/sizeof(char)];
+}
+
+- (simd_char3)char3Value {
+    simd_char3 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeChar && self.byteLength == sizeof(simd_char3)) {
+        memcpy(&value, self.bytes, sizeof(simd_char3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_char3 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithChar4:(simd_char4)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_char4));
+    const char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithCharValues:valuePtr count:sizeof(value)/sizeof(char)];
+}
+
+- (simd_char4)char4Value {
+    simd_char4 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeChar && self.byteLength == sizeof(simd_char4)) {
+        memcpy(&value, self.bytes, sizeof(simd_char4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_char4 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUChar2:(simd_uchar2)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_uchar2));
+    const unsigned char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUCharValues:valuePtr count:sizeof(value)/sizeof(unsigned char)];
+}
+
+- (simd_uchar2)uchar2Value {
+    simd_uchar2 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUChar && self.byteLength == sizeof(simd_uchar2)) {
+        memcpy(&value, self.bytes, sizeof(simd_uchar2));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uchar2 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUChar3:(simd_uchar3)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_uchar3));
+    const unsigned char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUCharValues:valuePtr count:sizeof(value)/sizeof(unsigned char)];
+}
+
+- (simd_uchar3)uchar3Value {
+    simd_uchar3 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUChar && self.byteLength == sizeof(simd_uchar3)) {
+        memcpy(&value, self.bytes, sizeof(simd_uchar3));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uchar3 value from %@", self);
+    }
+    return value;
+}
+
++ (instancetype)vectorWithUChar4:(simd_uchar4)value {
+    NSParameterAssert(sizeof(value) == sizeof(simd_uchar4));
+    const unsigned char * valuePtr = (void *)&value;
+    return [[MTIVector alloc] initWithUCharValues:valuePtr count:sizeof(value)/sizeof(unsigned char)];
+}
+
+- (simd_uchar4)uchar4Value {
+    simd_uchar4 value = {0};
+    if (self.scalarType == MTIVectorScalarTypeUChar && self.byteLength == sizeof(simd_uchar4)) {
+        memcpy(&value, self.bytes, sizeof(simd_uchar4));
+    } else {
+        NSAssert(NO, @"Cannot get a simd_uchar4 value from %@", self);
     }
     return value;
 }
