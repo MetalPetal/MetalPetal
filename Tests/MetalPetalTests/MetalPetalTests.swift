@@ -8,6 +8,7 @@
 import XCTest
 import MetalPetal
 import MetalPetalTestHelpers
+import MetalPetalObjectiveC.Extension
 
 fileprivate func listMetalDevices() {
     #if os(macOS)
@@ -1162,6 +1163,113 @@ final class UtilitiesTests: XCTestCase {
         let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
         let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<UInt8>(128, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 128 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
+    func testDirectSIMDVectorSupport_int64_4() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+        texture2d<float, access::read> inTexture [[texture(0)]],
+        texture2d<float, access::write> outTexture [[texture(1)]],
+        constant int4 &color [[buffer(0)]],
+        uint2 gid [[thread_position_in_grid]]
+        ) {
+            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
+                return;
+            }
+            outTexture.write(inTexture.read(uint2(0,0)), gid);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
+        
+        guard let context = try makeContext() else { return }
+        context.lockForRendering()
+        let state = try context.kernelState(for: computeKernel, configuration: nil) as! MTIComputePipeline
+        context.unlockForRendering()
+        let commandEncoder = context.commandQueue.makeCommandBuffer()?.makeComputeCommandEncoder()
+        defer {
+            commandEncoder?.endEncoding()
+        }
+        do {
+            try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": SIMD4<Int>(128, 0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
+        } catch {
+            let nsError = error as NSError
+            XCTAssert(nsError.domain == MTIErrorDomain)
+            XCTAssert(nsError.code == MTIError.Code.parameterDataTypeNotSupported.rawValue)
+        }
+    }
+    
+    func testDirectSIMDVectorSupport_typeMismatch() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+        texture2d<float, access::read> inTexture [[texture(0)]],
+        texture2d<float, access::write> outTexture [[texture(1)]],
+        constant int4 &color [[buffer(0)]],
+        uint2 gid [[thread_position_in_grid]]
+        ) {
+            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
+                return;
+            }
+            outTexture.write(inTexture.read(uint2(0,0)), gid);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
+        
+        guard let context = try makeContext() else { return }
+        context.lockForRendering()
+        let state = try context.kernelState(for: computeKernel, configuration: nil) as! MTIComputePipeline
+        context.unlockForRendering()
+        let commandEncoder = context.commandQueue.makeCommandBuffer()?.makeComputeCommandEncoder()
+        defer {
+            commandEncoder?.endEncoding()
+        }
+        do {
+            try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": SIMD4<Float>(128, 0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
+        } catch {
+            let encoderError = try XCTUnwrap(error as? MTISIMDArgumentEncoder.Error)
+            XCTAssert(encoderError == .argumentTypeMismatch)
+        }
+    }
+    
+    func testDirectSIMDVectorSupport_int32_4() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant int4 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            float r = color.r / 255.0;
+            float g = color.g / 255.0;
+            float b = color.b / 255.0;
+            float a = color.a / 255.0;
+            return textureColor + float4(r,g,b,a);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<Int32>(128, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
         guard let context = try makeContext() else { return }
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
