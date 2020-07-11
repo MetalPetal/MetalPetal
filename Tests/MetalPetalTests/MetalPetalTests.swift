@@ -1074,4 +1074,98 @@ final class UtilitiesTests: XCTestCase {
             })
         }
     }
+    
+    func testDirectSIMDVectorSupport_float4() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant float4 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            return textureColor + color;
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<Float>(1, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
+    func testDirectSIMDVectorSupport_float2x2() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant float2x2 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            return textureColor + float4(color[0][0],color[1][0],color[0][1],color[1][1]);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": float2x2(rows: [SIMD2<Float>(1,0),SIMD2<Float>(1,0)])], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+        }
+    }
+    
+    func testDirectSIMDVectorSupport_uchar4() throws {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant uchar4 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            float r = color.r / 255.0;
+            float g = color.g / 255.0;
+            float b = color.b / 255.0;
+            float a = color.a / 255.0;
+            return textureColor + float4(r,g,b,a);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<UInt8>(128, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 128 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
 }
