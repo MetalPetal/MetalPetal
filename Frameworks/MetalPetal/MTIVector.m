@@ -53,6 +53,50 @@
     return self;
 }
 
+- (instancetype)initWithShortValues:(const short *)values count:(NSUInteger)count {
+    if (self = [super init]) {
+        NSParameterAssert(values);
+        NSParameterAssert(count > 0);
+        _count = count;
+        _data = [NSData dataWithBytes:values length:count * sizeof(short)];
+        _scalarType = MTIVectorScalarTypeShort;
+    }
+    return self;
+}
+
+- (instancetype)initWithUShortValues:(const unsigned short *)values count:(NSUInteger)count {
+    if (self = [super init]) {
+        NSParameterAssert(values);
+        NSParameterAssert(count > 0);
+        _count = count;
+        _data = [NSData dataWithBytes:values length:count * sizeof(unsigned short)];
+        _scalarType = MTIVectorScalarTypeUShort;
+    }
+    return self;
+}
+
+- (instancetype)initWithCharValues:(const char *)values count:(NSUInteger)count {
+    if (self = [super init]) {
+        NSParameterAssert(values);
+        NSParameterAssert(count > 0);
+        _count = count;
+        _data = [NSData dataWithBytes:values length:count * sizeof(char)];
+        _scalarType = MTIVectorScalarTypeChar;
+    }
+    return self;
+}
+
+- (instancetype)initWithUCharValues:(const unsigned char *)values count:(NSUInteger)count {
+    if (self = [super init]) {
+        NSParameterAssert(values);
+        NSParameterAssert(count > 0);
+        _count = count;
+        _data = [NSData dataWithBytes:values length:count * sizeof(unsigned char)];
+        _scalarType = MTIVectorScalarTypeUChar;
+    }
+    return self;
+}
+
 + (instancetype)vectorWithFloatValues:(const float *)values count:(NSUInteger)count {
     return [[MTIVector alloc] initWithFloatValues:values count:count];
 }

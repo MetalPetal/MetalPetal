@@ -14,7 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, MTIVectorScalarType) {
     MTIVectorScalarTypeFloat,
     MTIVectorScalarTypeInt,
-    MTIVectorScalarTypeUInt NS_SWIFT_NAME(uint)
+    MTIVectorScalarTypeUInt NS_SWIFT_NAME(uint),
+    MTIVectorScalarTypeShort,
+    MTIVectorScalarTypeUShort NS_SWIFT_NAME(ushort),
+    MTIVectorScalarTypeChar,
+    MTIVectorScalarTypeUChar NS_SWIFT_NAME(uchar)
 } NS_SWIFT_NAME(MTIVector.ScalarType);
 
 __attribute__((objc_subclassing_restricted))
@@ -26,6 +30,10 @@ __attribute__((objc_subclassing_restricted))
 - (instancetype)initWithFloatValues:(const float *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithIntValues:(const int *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUIntValues:(const uint *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(uintValues:count:));
+- (instancetype)initWithShortValues:(const short *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUShortValues:(const unsigned short *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(ushortValues:count:));
+- (instancetype)initWithCharValues:(const char *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUCharValues:(const unsigned char *)values count:(NSUInteger)count NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(ucharValues:count:));
 
 + (instancetype)vectorWithFloatValues:(const float *)values count:(NSUInteger)count;
 + (instancetype)vectorWithIntValues:(const int *)values count:(NSUInteger)count;
