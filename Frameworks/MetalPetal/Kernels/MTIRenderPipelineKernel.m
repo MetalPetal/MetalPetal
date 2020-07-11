@@ -25,6 +25,7 @@
 #import "MTIHasher.h"
 #import "MTIError.h"
 #import "MTIPixelFormat.h"
+#import "MTIFunctionArgumentsEncoder.h"
 
 #define MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
 
@@ -369,7 +370,7 @@ __attribute__((objc_subclassing_restricted))
                 
         //encode parameters
         if (command.parameters.count > 0) {
-            [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:command.parameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
+            [MTIFunctionArgumentsEncoder encodeArguments:renderPipeline.reflection.vertexArguments values:command.parameters functionType:MTLFunctionTypeVertex encoder:commandEncoder error:&error];
             if (error) {
                 NSAssert(NO, @"Cannot encode vertex arguments: %@", error);
                 if (inOutError) {
@@ -379,7 +380,7 @@ __attribute__((objc_subclassing_restricted))
                 return nil;
             }
             
-            [MTIArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:command.parameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
+            [MTIFunctionArgumentsEncoder encodeArguments:renderPipeline.reflection.fragmentArguments values:command.parameters functionType:MTLFunctionTypeFragment encoder:commandEncoder error:&error];
             if (error) {
                 NSAssert(NO, @"Cannot encode fragment arguments: %@", error);
                 if (inOutError) {

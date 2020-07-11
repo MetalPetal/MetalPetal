@@ -19,6 +19,7 @@
 #import "MTIContext+Internal.h"
 #import "MTIError.h"
 #import "MTIPixelFormat.h"
+#import "MTIFunctionArgumentsEncoder.h"
 
 @interface MTIComputeFunctionDispatchOptions ()
 
@@ -129,7 +130,7 @@ __attribute__((objc_subclassing_restricted))
     }
     [commandEncoder setTexture:renderTarget.texture atIndex:index];
     
-    [MTIArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
+    [MTIFunctionArgumentsEncoder encodeArguments:computePipeline.reflection.arguments values:self.functionParameters functionType:MTLFunctionTypeKernel encoder:commandEncoder error:&error];
     
     if (error) {
         [commandEncoder endEncoding];
