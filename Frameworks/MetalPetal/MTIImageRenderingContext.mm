@@ -336,9 +336,9 @@ __attribute__((objc_subclassing_restricted))
     return @[];
 }
 
-- (instancetype)initWithPersistImageResolutionHolder:(MTIPersistImageResolutionHolder *)holder alphaType:(MTIAlphaType)alphaType context:(MTIContext *)context {
+- (instancetype)initWithPersistImageResolutionHolder:(MTIPersistImageResolutionHolder *)holder dimensions:(MTITextureDimensions)dimensions alphaType:(MTIAlphaType)alphaType context:(MTIContext *)context {
     if (self = [super init]) {
-        _dimensions = (MTITextureDimensions){holder.renderTarget.texture.width,holder.renderTarget.texture.height,holder.renderTarget.texture.depth};
+        _dimensions = dimensions;
         _alphaType = alphaType;
         _resolution = holder;
         _context = context;
@@ -380,7 +380,7 @@ __attribute__((objc_subclassing_restricted))
     if (!persistResolution) {
         return nil;
     }
-    return [[MTIImage alloc] initWithPromise:[[MTIImageBufferPromise alloc] initWithPersistImageResolutionHolder:persistResolution alphaType:targetImage.alphaType context:self] samplerDescriptor:targetImage.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [[MTIImage alloc] initWithPromise:[[MTIImageBufferPromise alloc] initWithPersistImageResolutionHolder:persistResolution dimensions:targetImage.dimensions alphaType:targetImage.alphaType context:self] samplerDescriptor:targetImage.samplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 @end
