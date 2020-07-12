@@ -90,6 +90,10 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 if (parameters.contentHasPremultipliedAlpha) {
                     textureColor = unpremultiply(textureColor);
                 }
+                if (parameters.tintColor.a != 0) {
+                    textureColor.rgb = parameters.tintColor.rgb;
+                    textureColor.a *= parameters.tintColor.a;
+                }
                 if (parameters.hasCompositingMask) {
                     float maskValue = maskColor[parameters.compositingMaskComponent];
                     textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
@@ -115,6 +119,10 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
                 if (parameters.contentHasPremultipliedAlpha) {
                     textureColor = unpremultiply(textureColor);
+                }
+                if (parameters.tintColor.a != 0) {
+                    textureColor.rgb = parameters.tintColor.rgb;
+                    textureColor.a *= parameters.tintColor.a;
                 }
                 if (parameters.hasCompositingMask) {
                     float4 maskColor = maskTexture.sample(s, location);

@@ -50,6 +50,7 @@ struct MTIMultilayerCompositingLayerShadingParameters {
     bool hasCompositingMask;
     int compositingMaskComponent;
     bool usesOneMinusMaskValue;
+    vector_float4 tintColor;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 
@@ -1559,6 +1560,10 @@ fragment float4 multilayerCompositeNormalBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
         textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
@@ -1585,6 +1590,10 @@ fragment float4 multilayerCompositeNormalBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1609,6 +1618,10 @@ fragment float4 multilayerCompositeDarkenBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1636,6 +1649,10 @@ fragment float4 multilayerCompositeDarkenBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1660,6 +1677,10 @@ fragment float4 multilayerCompositeMultiplyBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1687,6 +1708,10 @@ fragment float4 multilayerCompositeMultiplyBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1711,6 +1736,10 @@ fragment float4 multilayerCompositeColorBurnBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1738,6 +1767,10 @@ fragment float4 multilayerCompositeColorBurnBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1762,6 +1795,10 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1789,6 +1826,10 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1813,6 +1854,10 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1840,6 +1885,10 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1864,6 +1913,10 @@ fragment float4 multilayerCompositeLightenBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1891,6 +1944,10 @@ fragment float4 multilayerCompositeLightenBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1915,6 +1972,10 @@ fragment float4 multilayerCompositeScreenBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1942,6 +2003,10 @@ fragment float4 multilayerCompositeScreenBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1966,6 +2031,10 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -1993,6 +2062,10 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2017,6 +2090,10 @@ fragment float4 multilayerCompositeAddBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2044,6 +2121,10 @@ fragment float4 multilayerCompositeAddBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2068,6 +2149,10 @@ fragment float4 multilayerCompositeLighterColorBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2095,6 +2180,10 @@ fragment float4 multilayerCompositeLighterColorBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2119,6 +2208,10 @@ fragment float4 multilayerCompositeOverlayBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2146,6 +2239,10 @@ fragment float4 multilayerCompositeOverlayBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2170,6 +2267,10 @@ fragment float4 multilayerCompositeSoftLightBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2197,6 +2298,10 @@ fragment float4 multilayerCompositeSoftLightBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2221,6 +2326,10 @@ fragment float4 multilayerCompositeHardLightBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2248,6 +2357,10 @@ fragment float4 multilayerCompositeHardLightBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2272,6 +2385,10 @@ fragment float4 multilayerCompositeVividLightBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2299,6 +2416,10 @@ fragment float4 multilayerCompositeVividLightBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2323,6 +2444,10 @@ fragment float4 multilayerCompositeLinearLightBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2350,6 +2475,10 @@ fragment float4 multilayerCompositeLinearLightBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2374,6 +2503,10 @@ fragment float4 multilayerCompositePinLightBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2401,6 +2534,10 @@ fragment float4 multilayerCompositePinLightBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2425,6 +2562,10 @@ fragment float4 multilayerCompositeHardMixBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2452,6 +2593,10 @@ fragment float4 multilayerCompositeHardMixBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2476,6 +2621,10 @@ fragment float4 multilayerCompositeDifferenceBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2503,6 +2652,10 @@ fragment float4 multilayerCompositeDifferenceBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2527,6 +2680,10 @@ fragment float4 multilayerCompositeExclusionBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2554,6 +2711,10 @@ fragment float4 multilayerCompositeExclusionBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2578,6 +2739,10 @@ fragment float4 multilayerCompositeSubtractBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2605,6 +2770,10 @@ fragment float4 multilayerCompositeSubtractBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2629,6 +2798,10 @@ fragment float4 multilayerCompositeDivideBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2656,6 +2829,10 @@ fragment float4 multilayerCompositeDivideBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2680,6 +2857,10 @@ fragment float4 multilayerCompositeHueBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2707,6 +2888,10 @@ fragment float4 multilayerCompositeHueBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2731,6 +2916,10 @@ fragment float4 multilayerCompositeSaturationBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2758,6 +2947,10 @@ fragment float4 multilayerCompositeSaturationBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2782,6 +2975,10 @@ fragment float4 multilayerCompositeColorBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2809,6 +3006,10 @@ fragment float4 multilayerCompositeColorBlend(
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
     }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
+    }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2833,6 +3034,10 @@ fragment float4 multilayerCompositeLuminosityBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float maskValue = maskColor[parameters.compositingMaskComponent];
@@ -2859,6 +3064,10 @@ fragment float4 multilayerCompositeLuminosityBlend(
     float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
     if (parameters.contentHasPremultipliedAlpha) {
         textureColor = unpremultiply(textureColor);
+    }
+    if (parameters.tintColor.a != 0) {
+        textureColor.rgb = parameters.tintColor.rgb;
+        textureColor.a *= parameters.tintColor.a;
     }
     if (parameters.hasCompositingMask) {
         float4 maskColor = maskTexture.sample(s, location);

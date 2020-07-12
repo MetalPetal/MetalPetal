@@ -45,6 +45,7 @@ struct MTIMultilayerCompositingLayerShadingParameters {
     bool hasCompositingMask;
     int compositingMaskComponent;
     bool usesOneMinusMaskValue;
+    vector_float4 tintColor;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 

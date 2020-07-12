@@ -62,6 +62,8 @@ public class MultilayerCompositingFilter: MTIFilter {
         
         public var opacity: Float = 0
         
+        public var tintColor: MTIColor = .clear
+        
         public var blendMode: MTIBlendMode = .normal
         
         public init(content: MTIImage) {
@@ -87,6 +89,7 @@ public class MultilayerCompositingFilter: MTIFilter {
             hasher.combine(size.height)
             hasher.combine(rotation)
             hasher.combine(opacity)
+            hasher.combine(tintColor)
             hasher.combine(blendMode)
         }
     }
@@ -151,7 +154,7 @@ extension MultilayerCompositingFilter {
 
 extension MultilayerCompositingFilter.Layer {
     fileprivate func bridgeToObjectiveC() -> MTILayer {
-        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, blendMode: self.blendMode)
+        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, tintColor: self.tintColor, blendMode: self.blendMode)
     }
 }
 

@@ -473,6 +473,7 @@ __attribute__((objc_subclassing_restricted))
         parameters.hasCompositingMask = !(layer.compositingMask == nil);
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
+        parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
@@ -651,6 +652,7 @@ __attribute__((objc_subclassing_restricted))
         parameters.hasCompositingMask = !(layer.compositingMask == nil);
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.usesOneMinusMaskValue = (layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue);
+        parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         simd_float2 viewportSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);

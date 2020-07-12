@@ -50,6 +50,20 @@
 }
 
 - (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content
+                   contentRegion:contentRegion
+              contentFlipOptions:contentFlipOptions
+                 compositingMask:compositingMask
+                      layoutUnit:layoutUnit
+                        position:position
+                            size:size
+                        rotation:rotation
+                         opacity:opacity
+                       tintColor:MTIColorClear
+                       blendMode:blendMode];
+}
+
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity tintColor:(MTIColor)tintColor blendMode:(MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
         _contentRegion = contentRegion;
@@ -60,6 +74,7 @@
         _size = size;
         _rotation = rotation;
         _opacity = opacity;
+        _tintColor = tintColor;
         _blendMode = blendMode;
     }
     return self;
