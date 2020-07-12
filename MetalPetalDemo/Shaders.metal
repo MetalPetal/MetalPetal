@@ -37,4 +37,6 @@ fragment float4 tintBrush(metalpetal::VertexOut vertexIn [[ stage_in ]],
     return textureColor;
 }
 
-
+fragment float4 magicTintBrushIconGenerator(metalpetal::VertexOut vertexIn [[ stage_in ]]) {
+    return float4(vertexIn.textureCoordinate.x, vertexIn.textureCoordinate.y, 1, 1);
+}
