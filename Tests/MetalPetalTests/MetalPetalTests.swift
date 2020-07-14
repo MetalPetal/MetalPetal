@@ -531,6 +531,57 @@ final class RenderTests: XCTestCase {
     }
     
     @available(iOS 11.0, *)
+    func testCoreImageFilter_lanczosScaleTransform() throws {
+        let ciFilter = CIFilter(name: "CILanczosScaleTransform")
+        ciFilter?.setValue(2, forKey: "inputScale")
+        
+        let inputImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 1],
+            [1, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MTICoreImageUnaryFilter()
+        filter.filter = ciFilter
+        filter.inputImage = inputImage
+        let output = filter.outputImage!
+        
+        guard let context = try makeContext() else { return }
+        let outputCGImage = try context.makeCGImage(from: output)
+        XCTAssert(outputCGImage.width == Int(inputImage.size.width) * 2)
+        XCTAssert(outputCGImage.height == Int(inputImage.size.height) * 2)
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+            [0, 0, 1, 1],
+            [0, 0, 1, 1],
+            [1, 1, 0, 0],
+            [1, 1, 0, 0],
+        ]))
+    }
+    
+    func testMPSFilter_lanczosScale() throws {
+        let kernel = MTIMPSKernel { device in
+            return MPSImageLanczosScale(device: device)
+        }
+        let inputImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 1],
+            [1, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        let scaledDimensions = MTITextureDimensions(cgSize: CGSize(width: inputImage.size.width * 2, height: inputImage.size.height * 2))
+        let outputImage = kernel.apply(toInputImages: [inputImage], parameters: [:], outputTextureDimensions: scaledDimensions, outputPixelFormat: .unspecified)
+        guard let context = try makeContext() else { return }
+        if MTIContext.defaultMetalDeviceSupportsMPS {
+            let outputCGImage = try context.makeCGImage(from: outputImage)
+            XCTAssert(outputCGImage.width == Int(inputImage.size.width) * 2)
+            XCTAssert(outputCGImage.height == Int(inputImage.size.height) * 2)
+            XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [1, 1, 0, 0],
+                [1, 1, 0, 0],
+            ]))
+        }
+    }
+    
+    @available(iOS 11.0, *)
     func testCoreImageGenerator() throws {
         let filter: CIFilter = CIFilter(name: "CICheckerboardGenerator")!
         filter.setValue(CIVector(x: 0, y: 0), forKey: "inputCenter")
