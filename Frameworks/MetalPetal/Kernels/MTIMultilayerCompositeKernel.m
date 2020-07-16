@@ -124,7 +124,11 @@ __attribute__((objc_subclassing_restricted))
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     
-    renderPipelineDescriptor.rasterSampleCount = rasterSampleCount;
+    if (@available(iOS 11.0, macOS 10.13, *)) {
+        renderPipelineDescriptor.rasterSampleCount = rasterSampleCount;
+    } else {
+        renderPipelineDescriptor.sampleCount = rasterSampleCount;
+    }
 
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }
@@ -200,7 +204,11 @@ __attribute__((objc_subclassing_restricted))
             renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
             renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
             
-            renderPipelineDescriptor.rasterSampleCount = rasterSampleCount;
+            if (@available(iOS 11.0, macOS 10.13, *)) {
+                renderPipelineDescriptor.rasterSampleCount = rasterSampleCount;
+            } else {
+                renderPipelineDescriptor.sampleCount = rasterSampleCount;
+            }
             
             MTIRenderPipeline *pipeline = [context renderPipelineWithDescriptor:renderPipelineDescriptor error:&error];
             if (error) {
