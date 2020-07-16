@@ -32,6 +32,7 @@
 @property (nonatomic, strong) MTKTextureLoader *internalLoader;
 @property (nonatomic, strong) id<MTICVMetalTextureBridging> cvMetalTextureBridging;
 @property (nonatomic, strong) NSError *error;
+@property (nonatomic, strong) id<MTLDevice> device;
 
 @end
 
@@ -39,6 +40,7 @@
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device {
     if (self = [super init]) {
+        _device = device;
         _internalLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         NSError *error = nil;
         if (@available(iOS 11.0, *)) {
@@ -101,7 +103,19 @@
             return nil;
         }
         
+        BOOL shouldFallbackToMTKTextureLoader = NO;
         if ([options[MTKTextureLoaderOptionAllocateMipmaps] boolValue] || [options[MTKTextureLoaderOptionGenerateMipmaps] boolValue] || options[MTKTextureLoaderOptionCubeLayout]) {
+            shouldFallbackToMTKTextureLoader = YES;
+        }
+        
+        #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
+        //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
+        if (![_device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
+            shouldFallbackToMTKTextureLoader = YES;
+        }
+        #endif
+        
+        if (shouldFallbackToMTKTextureLoader) {
             // We do not currently support these features, so fallback to `MTKTextureLoader`. This may degrade texture loading performance. (Loading a CVPixelBuffer is much faster)
             CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, properties.pixelWidth, properties.pixelHeight)];
             CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:properties.orientation]);
