@@ -34,7 +34,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (atomic) MTLClearColor clearColor;
 
-/// This property aliases the olorspace property of the view's CAMetalLayer
+/// This property aliases the colorspace property of the view's CAMetalLayer
 @property (atomic) CGColorSpaceRef colorspace;
 
 @property (atomic) MTIDrawableRenderingResizingMode resizingMode;
