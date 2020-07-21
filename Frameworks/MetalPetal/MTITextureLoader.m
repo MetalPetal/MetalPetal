@@ -176,7 +176,9 @@
     if (properties.byteOrderInfo == kCGImageByteOrder32Little &&
         CGColorSpaceGetNumberOfComponents(properties.colorSpace) == 3 &&
         CGColorSpaceGetModel(properties.colorSpace) == kCGColorSpaceModelRGB &&
-        properties.bitsPerComponent == 8) {
+        properties.bitsPerComponent == 8 &&
+        [CFBridgingRelease(CGColorSpaceCopyPropertyList(properties.colorSpace)) isEqual:(id)kCGColorSpaceSRGB]
+        ) {
         return NO;
     }
     return YES;
