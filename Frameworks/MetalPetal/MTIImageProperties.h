@@ -20,7 +20,9 @@ __attribute__((objc_subclassing_restricted))
 
 - (nullable instancetype)initWithImageSource:(CGImageSourceRef)imageSource index:(NSUInteger)index NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithCGImage:(CGImageRef)image NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCGImage:(CGImageRef)image orientation:(CGImagePropertyOrientation)orientation NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCGImage:(CGImageRef)image;
 
 - (nullable instancetype)initWithImageAtURL:(NSURL *)URL;
 
