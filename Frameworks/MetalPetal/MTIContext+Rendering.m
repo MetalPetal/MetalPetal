@@ -107,12 +107,18 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
 }
 
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError * __autoreleasing *)inOutError {
-    return [self createCGImageFromImage:image sRGB:NO error:inOutError];
+    return [self createCGImageFromImage:image colorspace:nil error:inOutError];
 }
 
 - (CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError * __autoreleasing *)inOutError {
     CGImageRef outImage = NULL;
     __unused MTIRenderTask *renderTask = [self startTaskToCreateCGImage:&outImage fromImage:image sRGB:sRGB error:inOutError];
+    return outImage;
+}
+
+- (CGImageRef)createCGImageFromImage:(MTIImage *)image colorspace:(CGColorSpaceRef)colorspace error:(NSError * __autoreleasing *)inOutError {
+    CGImageRef outImage = NULL;
+    __unused MTIRenderTask *renderTask = [self startTaskToCreateCGImage:&outImage fromImage:image colorspace:colorspace error:inOutError];
     return outImage;
 }
 
@@ -320,6 +326,46 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     if (errorCode == kCVReturnSuccess && pixelBuffer) {
         NSError *error;
         MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:sRGB error:&error completion:completion];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        OSStatus returnCode = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, NULL, outImage);
+        CVPixelBufferRelease(pixelBuffer);
+        if (returnCode != noErr) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCGImageFromCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:returnCode userInfo:nil]});
+            }
+            return nil;
+        }
+        return renderTask;
+    } else {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCVPixelBuffer, @{NSUnderlyingErrorKey: [NSError errorWithDomain:NSOSStatusErrorDomain code:errorCode userInfo:nil]});
+        }
+        return nil;
+    }
+}
+
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image colorspace:(CGColorSpaceRef)colorspace error:(NSError * __autoreleasing *)inOutError {
+    return [self startTaskToCreateCGImage:outImage fromImage:image colorspace:colorspace error:inOutError completion:nil];
+}
+
+- (MTIRenderTask *)startTaskToCreateCGImage:(CGImageRef *)outImage fromImage:(MTIImage *)image colorspace:(CGColorSpaceRef)colorspace error:(NSError * __autoreleasing *)inOutError completion:(void (^)(MTIRenderTask *))completion {
+    CVPixelBufferRef pixelBuffer = NULL;
+    CVReturn errorCode = CVPixelBufferCreate(kCFAllocatorDefault, image.size.width, image.size.height, kCVPixelFormatType_32BGRA, (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}, (id)kCVPixelBufferCGImageCompatibilityKey: @YES}, &pixelBuffer);
+    if (errorCode == kCVReturnSuccess && pixelBuffer) {
+        if (!colorspace) {
+            CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+            CVBufferSetAttachment(pixelBuffer, kCVImageBufferCGColorSpaceKey, colorspace, kCVAttachmentMode_ShouldPropagate);
+            CGColorSpaceRelease(colorspace);
+        } else {
+            CVBufferSetAttachment(pixelBuffer, kCVImageBufferCGColorSpaceKey, colorspace, kCVAttachmentMode_ShouldPropagate);
+        }
+        NSError *error;
+        MTIRenderTask *renderTask = [self startTaskToRenderImage:image toCVPixelBuffer:pixelBuffer sRGB:NO error:&error completion:completion];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
