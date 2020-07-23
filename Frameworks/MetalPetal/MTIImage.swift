@@ -207,6 +207,7 @@ extension MTIImage {
 import AppKit
 
 extension MTIImage {
+    @available(macCatalyst, unavailable)
     public convenience init?(image: NSImage, colorSpace: CGColorSpace? = nil, isOpaque: Bool = false) {
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             return nil
