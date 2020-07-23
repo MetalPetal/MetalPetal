@@ -616,7 +616,7 @@ use_frameworks!
 
 pod 'MetalPetal'
 
-# If you are using Swift
+# Required if you are using Swift.
 pod 'MetalPetal/Swift'
 
 ```
