@@ -14,6 +14,37 @@ import MetalPetalObjectiveC.Core
 
 extension MTIImage {
     
+    public convenience init(cgImage: CGImage, orientation: CGImagePropertyOrientation = .up, options: MTICGImageLoadingOptions = .default, isOpaque: Bool = false) {
+        self.init(__cgImage: cgImage, orientation: orientation, loadingOptions: options, isOpaque: isOpaque)
+    }
+    
+    public convenience init?(contentsOf url: URL, options: MTICGImageLoadingOptions = .default, alphaType: MTIAlphaType? = nil) {
+        if let alphaType = alphaType {
+            self.init(__contentsOf: url, loadingOptions: options, alphaType: alphaType)
+        } else {
+            self.init(__contentsOf: url, loadingOptions: options)
+        }
+    }
+    
+    public convenience init(cgImage: CGImage, options: [MTKTextureLoader.Option: Any], isOpaque: Bool = false) {
+        self.init(__cgImage: cgImage, options: options, isOpaque: isOpaque)
+    }
+    
+    public convenience init?(contentsOf url: URL, options: [MTKTextureLoader.Option: Any], alphaType: MTIAlphaType? = nil) {
+        if let alphaType = alphaType {
+            self.init(__contentsOf: url, options: options, alphaType: alphaType)
+        } else {
+            self.init(__contentsOf: url, options: options)
+        }
+    }
+    
+    public convenience init?(contentsOf url: URL, size: CGSize, options: [MTKTextureLoader.Option: Any], alphaType: MTIAlphaType) {
+        self.init(__contentsOf: url, size: size, options: options, alphaType: alphaType)
+    }
+}
+
+extension MTIImage {
+    
     public func adjusting(saturation: Float, outputPixelFormat: MTLPixelFormat = .unspecified) -> MTIImage {
         let filter = MTISaturationFilter()
         filter.saturation = saturation
@@ -165,7 +196,7 @@ extension MTIImage {
             orientation = .up
         }
         let options = MTICGImageLoadingOptions(colorSpace: colorSpace)
-        self.init(cgImage: cgImage, orientation: orientation, loadingOptions: options, isOpaque: isOpaque)
+        self.init(cgImage: cgImage, orientation: orientation, options: options, isOpaque: isOpaque)
     }
 }
 
@@ -181,8 +212,9 @@ extension MTIImage {
             return nil
         }
         let options = MTICGImageLoadingOptions(colorSpace: colorSpace)
-        self.init(cgImage: cgImage, orientation: .up, loadingOptions: options, isOpaque: isOpaque)
+        self.init(cgImage: cgImage, orientation: .up, options: options, isOpaque: isOpaque)
     }
 }
 
 #endif
+
