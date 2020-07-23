@@ -88,6 +88,7 @@ __attribute__((objc_subclassing_restricted))
 - (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace
                    flipsVertically:(BOOL)flipsVertically;
 
+/// Create a `MTICGImageLoadingOptions` object. If `colorSpace` is nil, the "Device RGB" color space will be used. The image's color values will be transfered to `colorSpace` when the image is loaded.
 - (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace
                    flipsVertically:(BOOL)flipsVertically
                        storageMode:(MTLStorageMode)storageMode
