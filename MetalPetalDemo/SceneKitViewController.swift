@@ -75,7 +75,7 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
     let blendFilter = MTIBlendFilter(blendMode: .normal)
     let colorLookupFilter: MTIColorLookupFilter = {
         let filter = MTIColorLookupFilter()
-        filter.inputColorLookupTable = MTIImage(cgImage: UIImage(named: "ColorLookup512")!.cgImage!, options: [.SRGB: false], isOpaque: true)
+        filter.inputColorLookupTable = MTIImage(image: UIImage(named: "ColorLookup512")!, isOpaque: true)
         return filter
     }()
     

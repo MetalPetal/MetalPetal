@@ -34,7 +34,7 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
     
     private let colorLookupFilter: MTIColorLookupFilter = {
         let filter = MTIColorLookupFilter()
-        filter.inputColorLookupTable = MTIImage(cgImage: UIImage(named: "ColorLookup512")!.cgImage!, options: [.SRGB: false], isOpaque: true)
+        filter.inputColorLookupTable = MTIImage(image: UIImage(named: "ColorLookup512")!, isOpaque: true)
         return filter
     }()
     
