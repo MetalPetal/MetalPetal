@@ -41,9 +41,9 @@
     static MTICIImageRenderingOptions *defaultOptions;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-        defaultOptions = [[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm colorSpace:colorspace flipped:YES];
-        CGColorSpaceRelease(colorspace);
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        defaultOptions = [[MTICIImageRenderingOptions alloc] initWithDestinationPixelFormat:MTLPixelFormatBGRA8Unorm colorSpace:colorSpace flipped:YES];
+        CGColorSpaceRelease(colorSpace);
     });
     return defaultOptions;
 }
@@ -72,9 +72,9 @@
     static MTICIImageCreationOptions *defaultOptions;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-        defaultOptions = [[MTICIImageCreationOptions alloc] initWithColorSpace:colorspace flipped:YES];
-        CGColorSpaceRelease(colorspace);
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        defaultOptions = [[MTICIImageCreationOptions alloc] initWithColorSpace:colorSpace flipped:YES];
+        CGColorSpaceRelease(colorSpace);
     });
     return defaultOptions;
 }

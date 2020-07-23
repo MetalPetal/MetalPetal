@@ -34,24 +34,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image error:(NSError **)error CF_RETURNS_RETAINED NS_SWIFT_NAME(makeCGImage(from:));
 
-// Deprecated, use `makeCGImage(from:colorspace:)` instead.
+// Deprecated, use `makeCGImage(from:colorSpace:)` instead.
 - (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error CF_RETURNS_RETAINED NS_SWIFT_NAME(makeCGImage(from:sRGB:));
 
-- (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image colorspace:(nullable CGColorSpaceRef)colorspace error:(NSError **)error CF_RETURNS_RETAINED NS_SWIFT_NAME(makeCGImage(from:colorspace:));
+- (nullable CGImageRef)createCGImageFromImage:(MTIImage *)image colorSpace:(nullable CGColorSpaceRef)colorSpace error:(NSError **)error CF_RETURNS_RETAINED NS_SWIFT_NAME(makeCGImage(from:colorSpace:));
 
 - (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError **)error NS_SWIFT_NAME(startTask(toRender:to:sRGB:));
 
-// Deprecated, use `startTask(toCreate:from:colorspace:)` instead.
+// Deprecated, use `startTask(toCreate:from:colorSpace:)` instead.
 - (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error NS_SWIFT_NAME(startTask(toCreate:from:sRGB:));
 
-- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image colorspace:(nullable CGColorSpaceRef)colorspace error:(NSError **)error NS_SWIFT_NAME(startTask(toCreate:from:colorspace:));
+- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image colorSpace:(nullable CGColorSpaceRef)colorSpace error:(NSError **)error NS_SWIFT_NAME(startTask(toCreate:from:colorSpace:));
 
 - (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toDrawableWithRequest:(MTIDrawableRenderingRequest *)request error:(NSError **)error NS_SWIFT_NAME(startTask(toRender:toDrawableWithRequest:));
 
-// Deprecated, use `startTask(toCreate:from:colorspace:completion:)` instead.
+// Deprecated, use `startTask(toCreate:from:colorSpace:completion:)` instead.
 - (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image sRGB:(BOOL)sRGB error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toCreate:from:sRGB:completion:));
 
-- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image colorspace:(nullable CGColorSpaceRef)colorspace error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toCreate:from:colorspace:completion:));
+- (nullable MTIRenderTask *)startTaskToCreateCGImage:(CF_RETURNS_RETAINED __nullable CGImageRef * __nonnull)outImage fromImage:(MTIImage *)image colorSpace:(nullable CGColorSpaceRef)colorSpace error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toCreate:from:colorSpace:completion:));
 
 - (nullable MTIRenderTask *)startTaskToRenderImage:(MTIImage *)image toCVPixelBuffer:(CVPixelBufferRef)pixelBuffer sRGB:(BOOL)sRGB error:(NSError **)error completion:(nullable void (^)(MTIRenderTask *task))completion NS_SWIFT_NAME(startTask(toRender:to:sRGB:completion:));
 

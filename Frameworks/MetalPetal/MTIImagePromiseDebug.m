@@ -43,7 +43,7 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
 }
 
 - (CALayer *)layerRepresentation {
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
     const CGFloat contentPadding = 10;
     
@@ -60,15 +60,15 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     
     CGColorRef backgroundColor;
     CGColorRef borderColor;
-    CGColorRef foregroundColor = CGColorCreate(colorspace, foregroundColorValues);
+    CGColorRef foregroundColor = CGColorCreate(colorSpace, foregroundColorValues);
     switch (self.type) {
         case MTIImagePromiseTypeSource:
-            backgroundColor = CGColorCreate(colorspace, sourceBackgroundColorValues);
-            borderColor = CGColorCreate(colorspace, sourceBorderColorValues);
+            backgroundColor = CGColorCreate(colorSpace, sourceBackgroundColorValues);
+            borderColor = CGColorCreate(colorSpace, sourceBorderColorValues);
             break;
         case MTIImagePromiseTypeProcessor:
-            backgroundColor = CGColorCreate(colorspace, processorBackgroundColorValues);
-            borderColor = CGColorCreate(colorspace, processorBorderColorValues);
+            backgroundColor = CGColorCreate(colorSpace, processorBackgroundColorValues);
+            borderColor = CGColorCreate(colorSpace, processorBorderColorValues);
             break;
         default:
             break;
@@ -114,7 +114,7 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     CGColorRelease(foregroundColor);
     CGColorRelease(backgroundColor);
     CGColorRelease(borderColor);
-    CGColorSpaceRelease(colorspace);
+    CGColorSpaceRelease(colorSpace);
     
     return baseLayer;
 }
@@ -227,9 +227,9 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     
     [self makeConnectionForPromise:promise path:path container:container promiseLayerTable:promiseLayerTable];
     
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     const CGFloat foregroundColorValues[] = {0.20, 0.29, 0.37, 0.75};
-    CGColorRef foregroundColor = CGColorCreate(colorspace, foregroundColorValues);
+    CGColorRef foregroundColor = CGColorCreate(colorSpace, foregroundColorValues);
     
     linkLayer.frame = container.bounds;
     linkLayer.path = path;
@@ -242,7 +242,7 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     
     CGPathRelease(path);
     CGColorRelease(foregroundColor);
-    CGColorSpaceRelease(colorspace);
+    CGColorSpaceRelease(colorSpace);
     
     return container;
 }
