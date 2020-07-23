@@ -78,19 +78,15 @@
     
     self.maskBlendFilter = [[MTIBlendWithMaskFilter alloc] init];
     
-    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage options:@{MTKTextureLoaderOptionSRGB: @NO}] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
+    self.maskBlendFilter.inputMask = [[MTIMask alloc] initWithContent:[[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"metal_mask_blend_mask"].CGImage loadingOptions:nil] imageByUnpremultiplyingAlpha] component:MTIColorComponentAlpha mode:MTIMaskModeOneMinusMaskValue];
     
-    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)}] imageByUnpremultiplyingAlpha];
-    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
+    self.maskBlendFilter.inputImage = [[[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage loadingOptions:nil] imageByUnpremultiplyingAlpha];
+    self.maskBlendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage loadingOptions:nil isOpaque:YES];
     
     self.vibranceFilter = [[MTIVibranceFilter alloc] init];
     self.vibranceFilter.avoidsSaturatingSkinTones = YES;
     
-    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
-    self.blendFilter = [[MTIBlendFilter alloc] initWithBlendMode:MTIBlendModeLighterColor];
-        
-    self.blendFilter.inputImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_source"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:NO];
-    self.blendFilter.inputBackgroundImage = [[MTIImage alloc] initWithCGImage:[UIImage imageNamed:@"blend_mode_background"].CGImage options:@{MTKTextureLoaderOptionSRGB: @(NO)} isOpaque:YES];
+    self.inputImage = [[MTIImage alloc] initWithCGImage:image.CGImage loadingOptions:nil isOpaque:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -99,7 +95,7 @@
 }
 
 - (MTIImage *)maskBlendTestOutputImage {
-    MTIImage *outputImage =  self.maskBlendFilter.outputImage;
+    MTIImage *outputImage = self.maskBlendFilter.outputImage;
     return outputImage;
 }
 

@@ -274,13 +274,13 @@ You can custom this behavior by implementing the `MTITextureLoader` protocol. Th
 ### Create a `MTIImage`
 
 ```Swift
-let imageFromCGImage = MTIImage(cgImage: cgImage, options: [.SRGB: false])
+let imageFromCGImage = MTIImage(cgImage: cgImage)
 
 let imageFromCIImage = MTIImage(ciImage: ciImage)
 
 let imageFromCoreVideoPixelBuffer = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
 
-let imageFromContentsOfURL = MTIImage(contentsOf: url, options: [.SRGB: false])
+let imageFromContentsOfURL = MTIImage(contentsOf: url)
 
 // unpremultiply alpha if needed
 let unpremultipliedAlphaImage = image.unpremultiplyingAlpha()
