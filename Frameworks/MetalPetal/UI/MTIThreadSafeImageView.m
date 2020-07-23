@@ -196,16 +196,16 @@ __attribute__((objc_subclassing_restricted))
     return format;
 }
 
-- (void)setColorspace:(CGColorSpaceRef)colorspace {
+- (void)setColorSpace:(CGColorSpaceRef)colorSpace {
     [_lock lock];
-    if (_renderLayer.colorspace != colorspace) {
-        _renderLayer.colorspace = colorspace;
+    if (_renderLayer.colorspace != colorSpace) {
+        _renderLayer.colorspace = colorSpace;
         [self renderImage:_image completion:nil];
     }
     [_lock unlock];
 }
 
-- (CGColorSpaceRef)colorspace {
+- (CGColorSpaceRef)colorSpace {
     [_lock lock];
     CGColorSpaceRef colorspace = _renderLayer.colorspace;
     [_lock unlock];

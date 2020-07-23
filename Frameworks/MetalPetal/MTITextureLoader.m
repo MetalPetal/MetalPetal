@@ -85,16 +85,16 @@
             CVPixelBufferRelease(pixelBuffer);
         };
         
-        CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
         CVPixelBufferLockBaseAddress(pixelBuffer, 0);
         CGContextRef cgContext = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer),
                                                        properties.displayWidth,
                                                        properties.displayHeight,
                                                        8,
                                                        CVPixelBufferGetBytesPerRow(pixelBuffer),
-                                                       colorspace,
+                                                       colorSpace,
                                                        kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst);
-        CGColorSpaceRelease(colorspace);
+        CGColorSpaceRelease(colorSpace);
         if (!cgContext) {
             CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
             if (error) {
