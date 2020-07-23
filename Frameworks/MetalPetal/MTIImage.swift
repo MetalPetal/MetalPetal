@@ -170,3 +170,19 @@ extension MTIImage {
 }
 
 #endif
+
+#if canImport(AppKit)
+
+import AppKit
+
+extension MTIImage {
+    public convenience init?(image: NSImage, colorSpace: CGColorSpace? = nil, isOpaque: Bool = false) {
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+        let options = MTICGImageLoadingOptions(colorSpace: colorSpace)
+        self.init(cgImage: cgImage, orientation: .up, loadingOptions: options, isOpaque: isOpaque)
+    }
+}
+
+#endif
