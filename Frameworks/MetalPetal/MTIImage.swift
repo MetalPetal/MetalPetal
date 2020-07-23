@@ -151,8 +151,12 @@ extension MTIImage {
             cgImage = cg
             orientation = image.imageOrientation.cgImagePropertyOrientation
         } else {
-            let format = UIGraphicsImageRendererFormat()
-            format.prefersExtendedRange = false
+            let format: UIGraphicsImageRendererFormat
+            if #available(iOS 11.0, *) {
+                format = UIGraphicsImageRendererFormat.preferred()
+            } else {
+                format = UIGraphicsImageRendererFormat()
+            }
             format.opaque = isOpaque
             format.scale = image.scale
             cgImage = UIGraphicsImageRenderer(size: image.size).image { _ in
