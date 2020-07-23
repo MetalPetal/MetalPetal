@@ -18,6 +18,7 @@
 #import "MTICoreImageRendering.h"
 #import "MTIImageProperties.h"
 #import "MTITextureLoader.h"
+#import "MTIDefer.h"
 
 @interface MTIImageURLPromise ()
 
@@ -79,7 +80,7 @@
 
 @end
 
-@interface MTICGImagePromise ()
+@interface MTILegacyCGImagePromise ()
 
 @property (nonatomic, readonly) CGImageRef image;
 
@@ -87,7 +88,7 @@
 
 @end
 
-@implementation MTICGImagePromise
+@implementation MTILegacyCGImagePromise
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
@@ -123,6 +124,220 @@
         [blitCommandEncoder optimizeContentsForGPUAccess:texture];
         [blitCommandEncoder endEncoding];
     }
+    return [renderingContext.context newRenderTargetWithTexture:texture];
+}
+
+- (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
+    NSParameterAssert(dependencies.count == 0);
+    return self;
+}
+
+- (MTIImagePromiseDebugInfo *)debugInfo {
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:(id)self.image];
+}
+
+@end
+
+@implementation MTICGImageLoadingOptions
+
++ (MTICGImageLoadingOptions *)defaultOptions {
+    static MTICGImageLoadingOptions *options;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        options = [[MTICGImageLoadingOptions alloc] init];
+    });
+    return options;
+}
+
++ (MTLTextureDescriptor *)defaultTextureDescriptor {
+    static MTLTextureDescriptor *textureDescriptor;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        textureDescriptor = [[MTLTextureDescriptor alloc] init];
+    });
+    return textureDescriptor;
+}
+
+- (instancetype)init {
+    return [self initWithColorSpace:nil flipsVertically:NO storageMode:MTICGImageLoadingOptions.defaultTextureDescriptor.storageMode cpuCacheMode:MTICGImageLoadingOptions.defaultTextureDescriptor.cpuCacheMode];
+}
+
+- (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace {
+    return [self initWithColorSpace:colorSpace flipsVertically:NO storageMode:MTICGImageLoadingOptions.defaultTextureDescriptor.storageMode cpuCacheMode:MTICGImageLoadingOptions.defaultTextureDescriptor.cpuCacheMode];
+}
+
+- (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace flipsVertically:(BOOL)flipsVertically {
+    return [self initWithColorSpace:colorSpace flipsVertically:flipsVertically storageMode:MTICGImageLoadingOptions.defaultTextureDescriptor.storageMode cpuCacheMode:MTICGImageLoadingOptions.defaultTextureDescriptor.cpuCacheMode];
+}
+
+- (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace flipsVertically:(BOOL)flipsVertically storageMode:(MTLStorageMode)storageMode cpuCacheMode:(MTLCPUCacheMode)cpuCacheMode {
+    if (self = [super init]) {
+        _colorSpace = colorSpace ? CGColorSpaceRetain(colorSpace) : CGColorSpaceCreateDeviceRGB();
+        _flipsVertically = flipsVertically;
+        _storageMode = storageMode;
+        _cpuCacheMode = cpuCacheMode;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    CGColorSpaceRelease(_colorSpace);
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+@end
+
+@interface MTICGImagePromise ()
+
+@property (nonatomic, readonly) CGImageRef image;
+
+@property (nonatomic, copy, readonly) MTICGImageLoadingOptions *options;
+
+@property (nonatomic, copy, readonly) MTIImageProperties *properties;
+
+@end
+
+@implementation MTICGImagePromise
+@synthesize dimensions = _dimensions;
+@synthesize alphaType = _alphaType;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType {
+    if (self = [super init]) {
+        _properties = [[MTIImageProperties alloc] initWithCGImage:cgImage orientation:orientation];
+        _image = CGImageRetain(cgImage);
+        _dimensions = (MTITextureDimensions){_properties.displayWidth, _properties.displayHeight, 1};
+        _options = [options copy] ?: MTICGImageLoadingOptions.defaultOptions;
+        _alphaType = alphaType;
+    }
+    return self;
+}
+
+- (void)dealloc {
+    CGImageRelease(_image);
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (NSArray<MTIImage *> *)dependencies {
+    return @[];
+}
+
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
+    size_t pixelWidth = _properties.pixelWidth;
+    size_t pixelHeight = _properties.pixelHeight;
+    size_t displayWidth = _properties.displayWidth;
+    size_t displayHeight = _properties.displayHeight;
+    CVPixelBufferRef pixelBuffer = nil;
+    CVPixelBufferCreate(kCFAllocatorDefault,
+                        displayWidth,
+                        displayHeight,
+                        kCVPixelFormatType_32BGRA,
+                        (__bridge CFDictionaryRef)@{(id)kCVPixelBufferIOSurfacePropertiesKey: @{}},
+                        &pixelBuffer);
+    if (!pixelBuffer) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCVPixelBuffer, nil);
+        }
+        return nil;
+    }
+    
+    @MTI_DEFER {
+        CVPixelBufferRelease(pixelBuffer);
+    };
+    
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    CGContextRef cgContext = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer),
+                                                   displayWidth,
+                                                   displayHeight,
+                                                   8,
+                                                   CVPixelBufferGetBytesPerRow(pixelBuffer),
+                                                   _options.colorSpace,
+                                                   kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    if (!cgContext) {
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorTextureLoaderFailedToCreateCGContext, nil);
+        }
+        return nil;
+    }
+    
+    CIImage *placeholder = [[CIImage imageWithColor:CIColor.blackColor] imageByCroppingToRect:CGRectMake(0, 0, pixelWidth, pixelHeight)];
+    if (_options.flipsVertically) {
+        CGContextConcatCTM(cgContext, CGAffineTransformMake(1, 0, 0, -1, 0, displayHeight));
+    }
+    CGContextConcatCTM(cgContext, [placeholder imageTransformForOrientation:_properties.orientation]);
+    CGContextDrawImage(cgContext, CGRectMake(0, 0, pixelWidth, pixelHeight), _image);
+    CGContextRelease(cgContext);
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    
+    IOSurfaceRef iosurface = CVPixelBufferGetIOSurface(pixelBuffer);
+    if (!iosurface) {
+        NSAssert(NO, @"CVPixelBuffer is not backed by an IOSurface, please file a bug report.");
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        }
+        return nil;
+    }
+    
+    MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageShaderRead;
+    textureDescriptor.storageMode = _options.storageMode;
+    textureDescriptor.cpuCacheMode = _options.cpuCacheMode;
+    
+    id<MTLTexture> texture;
+    if (@available(iOS 11.0, macOS 10.11, *)) {
+        texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor iosurface:CVPixelBufferGetIOSurface(pixelBuffer) plane:0];
+    } else {
+        // newTextureWithDescriptor:iosurface:plane: is actually available on iOS 10.
+        // https://github.com/nst/iOS-Runtime-Headers/blob/10.0/PrivateFrameworks/MetalTools.framework/MTLDebugDevice.h#L65
+        #pragma clang diagnostic push
+        #pragma clang diagnostic ignored "-Wunguarded-availability-new"
+        texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor iosurface:CVPixelBufferGetIOSurface(pixelBuffer) plane:0];
+        #pragma clang diagnostic pop
+    }
+    
+    if (!texture) {
+        if (inOutError) {
+            *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        }
+        return nil;
+    }
+    
+    #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
+    //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
+    if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
+        NSError *error;
+        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
+        if (error) {
+            if (inOutError) {
+                *inOutError = error;
+            }
+            return nil;
+        }
+        id<MTLBlitCommandEncoder> commandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        if (!commandEncoder) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+            }
+            return nil;
+        }
+        [commandEncoder copyFromTexture:texture sourceSlice:0 sourceLevel:0 sourceOrigin:MTLOriginMake(0, 0, 0) sourceSize:MTLSizeMake(texture.width, texture.height, texture.depth) toTexture:renderTarget.texture destinationSlice:0 destinationLevel:0 destinationOrigin:MTLOriginMake(0, 0, 0)];
+        [commandEncoder endEncoding];
+        return renderTarget;
+    }
+    #endif
+    
+    if (@available(iOS 12.0, macOS 10.14, *)) {
+        id<MTLBlitCommandEncoder> blitCommandEncoder = [renderingContext.commandBuffer blitCommandEncoder];
+        [blitCommandEncoder optimizeContentsForGPUAccess:texture];
+        [blitCommandEncoder endEncoding];
+    }
+    
     return [renderingContext.context newRenderTargetWithTexture:texture];
 }
 

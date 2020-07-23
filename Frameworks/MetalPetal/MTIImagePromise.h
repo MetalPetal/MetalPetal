@@ -58,13 +58,52 @@ __attribute__((objc_subclassing_restricted))
 @end
 
 __attribute__((objc_subclassing_restricted))
-@interface MTICGImagePromise : NSObject <MTIImagePromise>
+@interface MTILegacyCGImagePromise : NSObject <MTIImagePromise>
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options alphaType:(MTIAlphaType)alphaType;
+
+@end
+
+
+__attribute__((objc_subclassing_restricted))
+@interface MTICGImageLoadingOptions : NSObject <NSCopying>
+
+@property (nonatomic, readonly) CGColorSpaceRef colorSpace;
+
+@property (nonatomic, readonly) BOOL flipsVertically;
+
+@property (nonatomic, readonly) MTLStorageMode storageMode;
+@property (nonatomic, readonly) MTLCPUCacheMode cpuCacheMode;
+
+@property (nonatomic, class, readonly) MTICGImageLoadingOptions *defaultOptions;
+
+- (instancetype)init;
+
+- (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace;
+
+- (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace
+                   flipsVertically:(BOOL)flipsVertically;
+
+- (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace
+                   flipsVertically:(BOOL)flipsVertically
+                       storageMode:(MTLStorageMode)storageMode
+                      cpuCacheMode:(MTLCPUCacheMode)cpuCacheMode NS_DESIGNATED_INITIALIZER;
+
+@end
+
+
+__attribute__((objc_subclassing_restricted))
+@interface MTICGImagePromise : NSObject <MTIImagePromise>
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(nullable MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType;
 
 @end
 

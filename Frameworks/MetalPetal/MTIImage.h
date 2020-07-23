@@ -23,7 +23,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MTISamplerDescriptor, MTICIImageRenderingOptions, MTICVPixelBufferRenderingOptions;
+@class MTISamplerDescriptor, MTICIImageRenderingOptions, MTICVPixelBufferRenderingOptions, MTICGImageLoadingOptions;
 
 typedef NS_ENUM(NSInteger, MTIImageCachePolicy) {
     MTIImageCachePolicyTransient,
@@ -78,6 +78,12 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque;
 
+- (instancetype)initWithCGImage:(CGImageRef)cgImage loadingOptions:(nullable MTICGImageLoadingOptions *)options;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage loadingOptions:(nullable MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque;
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation loadingOptions:(nullable MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque;
+
 
 - (instancetype)initWithTexture:(id<MTLTexture>)texture alphaType:(MTIAlphaType)alphaType;
 
@@ -96,6 +102,11 @@ __attribute__((objc_subclassing_restricted))
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL size:(CGSize)size options:(nullable NSDictionary<MTKTextureLoaderOption,id> *)options alphaType:(MTIAlphaType)alphaType;
+
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(nullable MTICGImageLoadingOptions *)options;
+
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(nullable MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType;
+
 
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;

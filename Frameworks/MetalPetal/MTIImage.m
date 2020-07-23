@@ -174,7 +174,21 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 - (instancetype)initWithCGImage:(CGImageRef)cgImage options:(NSDictionary<MTKTextureLoaderOption,id> *)options isOpaque:(BOOL)isOpaque {
     NSParameterAssert(cgImage);
     MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTILegacyCGImagePromise alloc] initWithCGImage:cgImage options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage loadingOptions:(MTICGImageLoadingOptions *)options {
+    return [self initWithCGImage:cgImage orientation:kCGImagePropertyOrientationUp loadingOptions:options isOpaque:NO];
+}
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage loadingOptions:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
+    MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:kCGImagePropertyOrientationUp options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation loadingOptions:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
+    MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:orientation options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
@@ -234,6 +248,50 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
         return nil;
     }
     return [self initWithPromise:urlPromise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(MTICGImageLoadingOptions *)options {
+    MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageAtURL:URL];
+    if (!properties) {
+        return nil;
+    }
+    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)URL, nil);
+    if (!imageSource || CGImageSourceGetCount(imageSource) == 0) {
+        return nil;
+    }
+    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil);
+    CFRelease(imageSource);
+    if (!cgImage) {
+        return nil;
+    }
+    @MTI_DEFER {
+        CGImageRelease(cgImage);
+    };
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options alphaType:MTIPreferredAlphaTypeForImageWithProperties(properties)] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+}
+
+- (instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType {
+    MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageAtURL:URL];
+    if (!properties) {
+        return nil;
+    }
+    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForImageWithProperties(properties);
+    if (preferredAlphaType == MTIAlphaTypePremultiplied) {
+        NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info indicates the alpha type is `.premultiplied`.");
+    }
+    CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)URL, nil);
+    if (!imageSource || CGImageSourceGetCount(imageSource) == 0) {
+        return nil;
+    }
+    CGImageRef cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil);
+    CFRelease(imageSource);
+    if (!cgImage) {
+        return nil;
+    }
+    @MTI_DEFER {
+        CGImageRelease(cgImage);
+    };
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options alphaType:alphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size {
