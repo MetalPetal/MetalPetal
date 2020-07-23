@@ -96,13 +96,10 @@ extension MTIImage {
 
 import UIKit
 
-extension MTIImage {
-    public func oriented(_ orientation: UIImage.Orientation, outputPixelFormat pixelFormat: MTLPixelFormat = .unspecified) -> MTIImage {
-        if orientation == .up {
-            return self
-        }
+extension UIImage.Orientation {
+    fileprivate var cgImagePropertyOrientation: CGImagePropertyOrientation {
         let cgImagePropertyOrientation: CGImagePropertyOrientation
-        switch orientation {
+        switch self {
         case .up:
             cgImagePropertyOrientation = .up
         case .upMirrored:
@@ -120,18 +117,51 @@ extension MTIImage {
         case .downMirrored:
             cgImagePropertyOrientation = .downMirrored
         @unknown default:
-            fatalError("Unknown UIImage.Orientation: \(orientation.rawValue)")
+            fatalError("Unknown UIImage.Orientation: \(self.rawValue)")
         }
-        return self.oriented(cgImagePropertyOrientation, outputPixelFormat: pixelFormat)
+        return cgImagePropertyOrientation
+    }
+}
+
+extension MTIImage {
+    @available(*, deprecated, message: "Use `MTIImage(image:colorSpace:isOpaque:)` instead")
+    public func oriented(_ orientation: UIImage.Orientation, outputPixelFormat pixelFormat: MTLPixelFormat = .unspecified) -> MTIImage {
+        if orientation == .up {
+            return self
+        }
+        return self.oriented(orientation.cgImagePropertyOrientation, outputPixelFormat: pixelFormat)
     }
 }
 
 extension UIImage {
+    @available(*, deprecated, message: "Use `MTIImage(image:colorSpace:isOpaque:)` instead")
     public func makeMTIImage(sRGB: Bool = false, isOpaque: Bool = false) -> MTIImage? {
         guard let cgImage = self.cgImage else {
             return nil
         }
         return MTIImage(cgImage: cgImage, options: [.SRGB: sRGB], isOpaque: isOpaque).oriented(self.imageOrientation)
+    }
+}
+
+extension MTIImage {
+    public convenience init(image: UIImage, colorSpace: CGColorSpace? = nil, isOpaque: Bool = false) {
+        let cgImage: CGImage
+        let orientation: CGImagePropertyOrientation
+        if let cg = image.cgImage {
+            cgImage = cg
+            orientation = image.imageOrientation.cgImagePropertyOrientation
+        } else {
+            let format = UIGraphicsImageRendererFormat()
+            format.prefersExtendedRange = false
+            format.opaque = isOpaque
+            format.scale = image.scale
+            cgImage = UIGraphicsImageRenderer(size: image.size).image { _ in
+                image.draw(at: .zero)
+            }.cgImage!
+            orientation = .up
+        }
+        let options = MTICGImageLoadingOptions(colorSpace: colorSpace)
+        self.init(cgImage: cgImage, orientation: orientation, loadingOptions: options, isOpaque: isOpaque)
     }
 }
 

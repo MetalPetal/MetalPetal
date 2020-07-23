@@ -83,7 +83,7 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)init;
 
-- (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace;
+- (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace;
 
 - (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace
                    flipsVertically:(BOOL)flipsVertically;

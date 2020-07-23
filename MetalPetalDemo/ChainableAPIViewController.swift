@@ -23,7 +23,7 @@ class ChainableAPIViewController: UIViewController, AVCaptureVideoDataOutputSamp
         self.imageView.clearColor = MTLClearColorMake(0, 0, 0, 0)
         self.imageView.isOpaque = false
         
-        guard let inputImage = UIImage(named: "P1040808.jpg")?.makeMTIImage() else {
+        guard let inputImage = UIImage(named: "P1040808.jpg").map({ MTIImage(image: $0, isOpaque: true) }) else {
             fatalError()
         }
         
@@ -58,7 +58,7 @@ class ChainableAPIViewController: UIViewController, AVCaptureVideoDataOutputSamp
     @IBAction func driveWithCameraFeedButtonTapped(_ sender: UIButton) {
         sender.isHidden = true
         
-        let colorLookupTable = UIImage(named: "ColorLookup512")?.makeMTIImage(sRGB: false, isOpaque: true)
+        let colorLookupTable = UIImage(named: "ColorLookup512").map({ MTIImage(image: $0, isOpaque: true) })
         try? self.camera.enableVideoDataOutput(delegate: self)
         
         let colorLookupFilter = MTIColorLookupFilter()
