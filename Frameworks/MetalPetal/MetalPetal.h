@@ -71,6 +71,7 @@
 #import "MTICVPixelBufferPromise.h"
 #import "MTIVector+SIMD.h"
 #import "MTITexturePool.h"
+#import "MTISKSceneRenderer.h"
 #import "MTIImagePromiseDebug.h"
 #import "MTIImagePromise.h"
 #import "MTITextureDimensions.h"

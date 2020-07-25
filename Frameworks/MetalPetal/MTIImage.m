@@ -40,6 +40,10 @@
     return self;
 }
 
+- (instancetype)initWithPromise:(id<MTIImagePromise>)promise cachePolicy:(MTIImageCachePolicy)cachePolicy {
+    return [self initWithPromise:promise samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:cachePolicy];
+}
+
 - (instancetype)initWithPromise:(id<MTIImagePromise>)promise samplerDescriptor:(MTISamplerDescriptor *)samplerDescriptor {
     return [self initWithPromise:promise samplerDescriptor:samplerDescriptor cachePolicy:MTIImageCachePolicyTransient];
 }

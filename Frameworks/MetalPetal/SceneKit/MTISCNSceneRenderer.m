@@ -131,8 +131,11 @@ __attribute__((objc_subclassing_restricted))
 }
 
 - (void)setScene:(SCNScene *)scene {
-    _scene = scene;
     _renderer.scene = scene;
+}
+
+- (SCNScene *)scene {
+    return _renderer.scene;
 }
 
 - (SCNRenderer *)scnRenderer {
@@ -148,6 +151,7 @@ __attribute__((objc_subclassing_restricted))
 @implementation MTISCNSceneRenderer (MTIImage)
 
 - (MTIImage *)snapshotAtTime:(CFTimeInterval)time viewport:(CGRect)viewport pixelFormat:(MTLPixelFormat)pixelFormat isOpaque:(BOOL)isOpaque {
+    NSAssert(_renderer.scene != nil, @"");
     MTISCNSceneImagePromise *promise = [[MTISCNSceneImagePromise alloc] initWithRenderer:_renderer viewport:viewport frameTime:time pixelFormat:pixelFormat isOpaque:isOpaque];
     MTIImage *image = [[MTIImage alloc] initWithPromise:promise];
     return image;

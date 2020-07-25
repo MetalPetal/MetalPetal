@@ -1441,6 +1441,74 @@ final class RenderTests: XCTestCase {
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
         }
     }
+    
+    @available(iOS 11.0, macOS 10.13, *)
+    func testSKSceneRender() throws {
+        let scene = SKScene(size: CGSize(width: 32, height: 32))
+        
+        let node1 = SKShapeNode(circleOfRadius: 16)
+        node1.fillColor = .red
+        node1.lineWidth = 1
+        node1.strokeColor = .white
+        scene.addChild(node1)
+        
+        let node2 = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 32, height: 32))
+        node2.fillColor = .blue
+        node2.lineWidth = 0
+        scene.addChild(node2)
+        
+        let node3 = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 32, height: 16))
+        node3.fillColor = .green
+        node3.lineWidth = 0
+        scene.addChild(node3)
+        
+        let image = MTIImage(skScene: scene)
+        guard let context = try makeContext() else { return }
+        let output = try context.makeCGImage(from: image)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
+            if coord.y < 16 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 255 && pixel.a == 255)
+            } else {
+                XCTAssert(pixel.r == 0 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testSCNSceneRender() throws {
+        let scene = SCNScene()
+        
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        scene.rootNode.addChildNode(cameraNode)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
+
+        let cubeNode = SCNNode()
+        cubeNode.geometry = SCNBox(width: 20, height: 20, length: 20, chamferRadius: 0)
+        cubeNode.geometry?.firstMaterial?.lightingModel = .constant
+        var color: [CGFloat] = [0,0,0.5,1]
+        cubeNode.geometry?.firstMaterial?.diffuse.contents = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &color)!
+        cubeNode.position = SCNVector3(x: 0, y: 0, z: 0)
+        scene.rootNode.addChildNode(cubeNode)
+        
+        // create and add an ambient light to the scene
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        var whiteColor: [CGFloat] = [1,1,1,1]
+        ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
+        scene.rootNode.addChildNode(ambientLightNode)
+        
+        guard let context = try makeContext() else { return }
+        let renderer = MTISCNSceneRenderer(device: context.device)
+        renderer.scene = scene
+        renderer.scnRenderer.pointOfView = cameraNode
+        let image = renderer.snapshot(atTime: CFAbsoluteTimeGetCurrent(), viewport: CGRect(x: 0, y: 0, width: 32, height: 32), pixelFormat: .unspecified, isOpaque: true)
+        let sRGBImage = MTILinearToSRGBToneCurveFilter.image(byProcessingImage: image)
+        let output = try context.makeCGImage(from: sRGBImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
+            XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 128 && pixel.a == 255)
+        }
+    }
 }
 
 final class UtilitiesTests: XCTestCase {

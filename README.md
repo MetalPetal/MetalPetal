@@ -21,6 +21,7 @@ An image processing framework based on Metal.
     - [Advantages over Core Image](#advantages-over-core-image)
     - [Extensions](#extensions)
         - [Working with SceneKit](#working-with-scenekit)
+        - [Working with SpriteKit](#working-with-spritekit)
         - [Working with Core Image](#working-with-core-image)
         - [Working with JavaScript](#working-with-javascript)
         - [Texture Loader](#texture-loader)
@@ -152,6 +153,10 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 #### Working with SceneKit
 
 You can use `MTISCNSceneRenderer` to generate `MTIImage`s from a `SCNScene`. You may want to handle the SceneKit renderer's linear RGB color space, see issue [#76 The image from SceneKit is darker than normal](https://github.com/MetalPetal/MetalPetal/issues/76).
+
+#### Working with SpriteKit
+
+You can use `MTISKSceneRenderer` to generate `MTIImage`s from a `SKScene`.
 
 #### Working with Core Image
 
