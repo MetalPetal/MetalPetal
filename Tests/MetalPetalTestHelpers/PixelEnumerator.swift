@@ -10,16 +10,26 @@ import CoreGraphics
 
 public struct PixelEnumerator {
 
-    public struct Coordinates {
+    public struct Coordinates: Hashable {
         public var x: Int
         public var y: Int
+        public init(x: Int, y: Int) {
+            self.x = x
+            self.y = y
+        }
     }
     
-    public struct Pixel {
+    public struct Pixel: Hashable {
         public var b: UInt8
         public var g: UInt8
         public var r: UInt8
         public var a: UInt8
+        public init(b: UInt8, g: UInt8, r: UInt8, a: UInt8) {
+            self.b = b
+            self.g = g
+            self.r = r
+            self.a = a
+        }
     }
 
     public static func enumeratePixels(in cgImage: CGImage, with block:(Pixel, Coordinates) -> Void) {

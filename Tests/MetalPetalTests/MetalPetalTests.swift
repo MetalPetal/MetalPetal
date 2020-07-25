@@ -9,6 +9,7 @@ import XCTest
 import MetalPetal
 import MetalPetalTestHelpers
 import MetalPetalObjectiveC.Extension
+import VideoToolbox
 
 fileprivate func listMetalDevices() {
     #if os(macOS)
@@ -1081,7 +1082,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    
     func testMultilayerCompositing_rotation() throws {
         guard let context = try makeContext() else { return }
         
@@ -1507,6 +1507,195 @@ final class RenderTests: XCTestCase {
         let output = try context.makeCGImage(from: sRGBImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
             XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 128 && pixel.a == 255)
+        }
+    }
+    
+    func testSCNSceneRender_msaa() throws {
+        let scene = SCNScene()
+        
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        scene.rootNode.addChildNode(cameraNode)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 16)
+        
+        let cubeNode = SCNNode()
+        cubeNode.geometry = SCNBox(width: 8, height: 8, length: 8, chamferRadius: 0)
+        cubeNode.geometry?.firstMaterial?.lightingModel = .constant
+        var color: [CGFloat] = [1,1,1,1]
+        cubeNode.geometry?.firstMaterial?.diffuse.contents = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &color)!
+        cubeNode.position = SCNVector3(x: 0, y: 0, z: 0)
+        cubeNode.rotation = SCNVector4(x: 0, y: 0, z: 1, w: .pi/4)
+        scene.rootNode.addChildNode(cubeNode)
+        
+        // create and add an ambient light to the scene
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        var whiteColor: [CGFloat] = [1,1,1,1]
+        ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
+        scene.rootNode.addChildNode(ambientLightNode)
+        
+        guard let context = try makeContext() else { return }
+        
+        let renderer = MTISCNSceneRenderer(device: context.device)
+        renderer.scene = scene
+        renderer.scnRenderer.pointOfView = cameraNode
+        do {
+            // With MSAA
+            renderer.antialiasingMode = .multisampling4X
+            let image = renderer.snapshot(atTime: 0, viewport: CGRect(x: 0, y: 0, width: 4, height: 4), pixelFormat: .unspecified, isOpaque: false).unpremultiplyingAlpha()
+            let sRGBImage = MTILinearToSRGBToneCurveFilter.image(byProcessingImage: image)
+            let output = try context.makeCGImage(from: sRGBImage)
+            let result: [PixelEnumerator.Coordinates: PixelEnumerator.Pixel] = [
+                PixelEnumerator.Coordinates(x: 0, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 3, y: 2): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 0, y: 2): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 2, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 1, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 3, y: 1): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 2, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 0, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 2, y: 3): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 3, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 1, y: 3): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 1, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 1, y: 0): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 2, y: 0): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 0, y: 1): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                PixelEnumerator.Coordinates(x: 3, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0)]
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
+                XCTAssert(result[coord] == pixel)
+            }
+        } catch {
+            throw error
+        }
+        
+        do {
+            // Without MSAA
+            renderer.antialiasingMode = .none
+            let image = renderer.snapshot(atTime: 0, viewport: CGRect(x: 0, y: 0, width: 4, height: 4), pixelFormat: .unspecified, isOpaque: false).unpremultiplyingAlpha()
+            let sRGBImage = MTILinearToSRGBToneCurveFilter.image(byProcessingImage: image)
+            let output = try context.makeCGImage(from: sRGBImage)
+            let result: [PixelEnumerator.Coordinates: PixelEnumerator.Pixel] = [
+                PixelEnumerator.Coordinates(x: 0, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 3, y: 2): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 0, y: 2): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 2, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 1, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 3, y: 1): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 2, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 0, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 2, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 3, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 1, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 1, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                PixelEnumerator.Coordinates(x: 1, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 2, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 0, y: 1): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                PixelEnumerator.Coordinates(x: 3, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0)]
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
+                XCTAssert(result[coord] == pixel)
+            }
+        } catch {
+            throw error
+        }
+    }
+    
+    func testSCNSceneRender_msaa_pixelbuffer() throws {
+        let scene = SCNScene()
+        
+        let cameraNode = SCNNode()
+        cameraNode.camera = SCNCamera()
+        scene.rootNode.addChildNode(cameraNode)
+        cameraNode.position = SCNVector3(x: 0, y: 0, z: 16)
+        
+        let cubeNode = SCNNode()
+        cubeNode.geometry = SCNBox(width: 8, height: 8, length: 8, chamferRadius: 0)
+        cubeNode.geometry?.firstMaterial?.lightingModel = .constant
+        var color: [CGFloat] = [1,1,1,1]
+        cubeNode.geometry?.firstMaterial?.diffuse.contents = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &color)!
+        cubeNode.position = SCNVector3(x: 0, y: 0, z: 0)
+        cubeNode.rotation = SCNVector4(x: 0, y: 0, z: 1, w: .pi/4)
+        scene.rootNode.addChildNode(cubeNode)
+        
+        // create and add an ambient light to the scene
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = SCNLight()
+        ambientLightNode.light!.type = .ambient
+        var whiteColor: [CGFloat] = [1,1,1,1]
+        ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
+        scene.rootNode.addChildNode(ambientLightNode)
+        
+        guard let context = try makeContext() else { return }
+        
+        let renderer = MTISCNSceneRenderer(device: context.device)
+        renderer.scene = scene
+        renderer.scnRenderer.pointOfView = cameraNode
+        do {
+            // With MSAA
+            let expection = XCTestExpectation()
+            renderer.antialiasingMode = .multisampling4X
+            try renderer.render(atTime: 0, viewport: CGRect(x: 0, y: 0, width: 4, height: 4), sRGB: true) { pixelBuffer in
+                var cgImage: CGImage!
+                VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
+                let result: [PixelEnumerator.Coordinates: PixelEnumerator.Pixel] = [
+                    PixelEnumerator.Coordinates(x: 0, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 3, y: 2): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 0, y: 2): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 2, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 1, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 3, y: 1): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 2, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 0, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 2, y: 3): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 3, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 1, y: 3): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 1, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 1, y: 0): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 2, y: 0): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 0, y: 1): PixelEnumerator.Pixel(b: 64, g: 64, r: 64, a: 64),
+                    PixelEnumerator.Coordinates(x: 3, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0)]
+                PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coord) in
+                    XCTAssert(result[coord] == pixel)
+                }
+                expection.fulfill()
+            }
+            wait(for: [expection], timeout: 1)
+        } catch {
+            throw error
+        }
+        
+        do {
+            let expection = XCTestExpectation()
+            renderer.antialiasingMode = .none
+            try renderer.render(atTime: 0, viewport: CGRect(x: 0, y: 0, width: 4, height: 4), sRGB: true) { pixelBuffer in
+                var cgImage: CGImage!
+                VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
+                let result: [PixelEnumerator.Coordinates: PixelEnumerator.Pixel] = [
+                    PixelEnumerator.Coordinates(x: 0, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 3, y: 2): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 0, y: 2): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 2, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 1, y: 2): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 3, y: 1): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 2, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 0, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 2, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 3, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 1, y: 3): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 1, y: 1): PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255),
+                    PixelEnumerator.Coordinates(x: 1, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 2, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 0, y: 1): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0),
+                    PixelEnumerator.Coordinates(x: 3, y: 0): PixelEnumerator.Pixel(b: 0, g: 0, r: 0, a: 0)]
+                PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coord) in
+                    XCTAssert(result[coord] == pixel)
+                }
+                expection.fulfill()
+            }
+            wait(for: [expection], timeout: 1)
+        } catch {
+            throw error
         }
     }
 }

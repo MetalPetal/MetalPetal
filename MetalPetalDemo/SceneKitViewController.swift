@@ -53,6 +53,7 @@ class SceneKitViewController: UIViewController, AVCaptureVideoDataOutputSampleBu
         // animate the 3d object
         ship.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
         
+        self.sceneRenderer.antialiasingMode = .multisampling4X
         self.sceneRenderer.scene = scene
         
         let renderView = MTIImageView(frame: self.view.bounds)
