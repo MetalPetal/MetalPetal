@@ -540,7 +540,7 @@ namespace metalpetal {
                                 texture2d<float, access::sample> blurTexture [[texture(1)]],
                                 sampler sourceSampler [[sampler(0)]],
                                 sampler blurSampler [[sampler(1)]],
-                                constant float &intensity) {
+                                constant float &intensity [[buffer(0)]]) {
             float4 s = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
             
             float4 b = blurTexture.sample(blurSampler, vertexIn.textureCoordinate);
