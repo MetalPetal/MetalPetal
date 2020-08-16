@@ -20,6 +20,7 @@
 		9D3928B91EFF678800BA6B09 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928B81EFF678800BA6B09 /* Assets.xcassets */; };
 		9D3928BC1EFF678800BA6B09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D3928BA1EFF678800BA6B09 /* LaunchScreen.storyboard */; };
 		9D7933A61F07A50B00135D46 /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D7933A51F07A50B00135D46 /* P1040808.jpg */; };
+		9D9011D524E90A2A0013980D /* BouncingBallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D9011D424E90A2A0013980D /* BouncingBallViewController.swift */; };
 		9DC86E1B24265F0A009C598C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC86E1A24265F0A009C598C /* AppDelegate.swift */; };
 		9DC9C29524B8248900A08AB9 /* SketchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC9C29424B8248900A08AB9 /* SketchViewController.swift */; };
 		E05B8C8B23B0745B0040C1DF /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */; };
@@ -47,6 +48,9 @@
 		9D3928BB1EFF678800BA6B09 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9D3928BD1EFF678800BA6B09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D7933A51F07A50B00135D46 /* P1040808.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040808.jpg; sourceTree = "<group>"; };
+		9D9011D424E90A2A0013980D /* BouncingBallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BouncingBallViewController.swift; sourceTree = "<group>"; };
+		9D9011D624E924CE0013980D /* BouncingBallTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BouncingBallTypes.h; sourceTree = "<group>"; };
+		9D9011D724E925A80013980D /* BridgingHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BridgingHeader.h; sourceTree = "<group>"; };
 		9DC86E1A24265F0A009C598C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9DC9C29424B8248900A08AB9 /* SketchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SketchViewController.swift; sourceTree = "<group>"; };
 		B229668FC69FBAADA2694A4C /* Pods-MetalPetalDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.release.xcconfig"; sourceTree = "<group>"; };
@@ -73,6 +77,7 @@
 			children = (
 				06A3200D23AB8AD600A5EA59 /* Alert.swift */,
 				9DC86E1A24265F0A009C598C /* AppDelegate.swift */,
+				9D9011D724E925A80013980D /* BridgingHeader.h */,
 			);
 			name = DemoSupport;
 			sourceTree = "<group>";
@@ -118,6 +123,8 @@
 				06BC557923AB43350098C308 /* VideoProcessorViewController.swift */,
 				E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */,
 				9DC9C29424B8248900A08AB9 /* SketchViewController.swift */,
+				9D9011D624E924CE0013980D /* BouncingBallTypes.h */,
+				9D9011D424E90A2A0013980D /* BouncingBallViewController.swift */,
 				06F9F6CD21FC3A4800AD9955 /* Shaders.metal */,
 				9D7933A51F07A50B00135D46 /* P1040808.jpg */,
 				06D7F6C922228C0400B02D3D /* art.scnassets */,
@@ -275,6 +282,7 @@
 				06A3200E23AB8AD600A5EA59 /* Alert.swift in Sources */,
 				06F9F6CE21FC3A4800AD9955 /* Shaders.metal in Sources */,
 				06BC557A23AB43350098C308 /* VideoProcessorViewController.swift in Sources */,
+				9D9011D524E90A2A0013980D /* BouncingBallViewController.swift in Sources */,
 				9DC9C29524B8248900A08AB9 /* SketchViewController.swift in Sources */,
 				EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */,
 				06F9F6CC21FC389B00AD9955 /* TripleBufferingViewController.swift in Sources */,
@@ -454,6 +462,7 @@
 				MTL_HEADER_SEARCH_PATHS = "${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPetalDemo/BridgingHeader.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -474,6 +483,7 @@
 				MTL_HEADER_SEARCH_PATHS = "${PODS_CONFIGURATION_BUILD_DIR}/MetalPetal/MetalPetal.framework/Headers";
 				PRODUCT_BUNDLE_IDENTIFIER = com.metalpetal.MetalPetalDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = MetalPetalDemo/BridgingHeader.h;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
