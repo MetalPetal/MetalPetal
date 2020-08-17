@@ -12,8 +12,8 @@
 #include <simd/simd.h>
 
 struct ParticleData {
-    simd_float2 position;
-    simd_float2 speed;
+    vector_float2 position;
+    vector_float2 speed;
     float size;
 };
 
