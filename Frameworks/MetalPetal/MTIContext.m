@@ -63,7 +63,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
         _workingPixelFormat = MTLPixelFormatBGRA8Unorm;
         _enablesRenderGraphOptimization = NO;
         _enablesYCbCrPixelFormatSupport = YES;
-        _automaticallyReclaimResources = YES;
+        _automaticallyReclaimsResources = YES;
         _label = MTIContextDefaultLabel;
         
         // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
@@ -85,7 +85,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
     options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
-    options.automaticallyReclaimResources = _automaticallyReclaimResources;
+    options.automaticallyReclaimsResources = _automaticallyReclaimsResources;
     options.label = _label;
     options.defaultLibraryURL = _defaultLibraryURL;
     options.textureLoaderClass = _textureLoaderClass;
@@ -297,7 +297,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
             return nil;
         }
         
-        if (options.automaticallyReclaimResources) {
+        if (options.automaticallyReclaimsResources) {
             [MTIMemoryWarningObserver addMemoryWarningHandler:self];
         }
         

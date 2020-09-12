@@ -35,8 +35,8 @@ __attribute__((objc_subclassing_restricted))
 /// Whether the render graph optimization is enabled. The default value for this property is NO.
 @property (nonatomic) BOOL enablesRenderGraphOptimization;
 
-/// Automatically reclaim resources on memory warning.
-@property (nonatomic) BOOL automaticallyReclaimResources;
+/// Automatically reclaims resources on memory warning.
+@property (nonatomic) BOOL automaticallyReclaimsResources;
 
 /// Whether to enable native support for YCbCr textures. The default value for this property is YES. YCbCr textures can be used when this property is set to YES, and the device supports this feature.
 @property (nonatomic) BOOL enablesYCbCrPixelFormatSupport;
