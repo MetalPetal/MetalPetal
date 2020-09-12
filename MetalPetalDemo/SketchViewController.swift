@@ -41,7 +41,7 @@ class SketchViewController: UIViewController {
             let background = MTIImage(color: .white, sRGB: false, size: self.brushImage.size)
             compositingFilter.inputBackgroundImage = background
             compositingFilter.layers = [MultilayerCompositingFilter.Layer(content: self.brushImage)]
-            let _ = try? self.imageView.context.startTask(toRender: compositingFilter.outputImage!)
+            let _ = try? self.imageView.context!.startTask(toRender: compositingFilter.outputImage!)
         }
     }
     
@@ -120,7 +120,7 @@ class SketchViewController: UIViewController {
             enableTint = false
         }
         
-        let context = imageView.context
+        let context: MTIContext = imageView.context!
         let background: MTIImage = previousImageBuffer ?? backgroundImage
         
         var brushLayers = [MultilayerCompositingFilter.Layer]()

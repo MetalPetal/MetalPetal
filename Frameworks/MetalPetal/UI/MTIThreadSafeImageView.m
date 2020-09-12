@@ -93,6 +93,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic) CGSize currentDrawableSize;
 
+@property (nonatomic, strong) NSError *contextCreationError;
+
 @end
 
 @implementation MTIThreadSafeImageView
@@ -130,14 +132,8 @@ __attribute__((objc_subclassing_restricted))
 - (void)setupImageView {
     _renderLayer = (id)self.layer;
     _resizingMode = MTIDrawableRenderingResizingModeAspect;
-
-    id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-    NSError *error;
-    _context = [[MTIContext alloc] initWithDevice:device error:&error];
-    if (error) {
-        NSLog(@"%@: Failed to create MTIContext - %@",self,error);
-    }
-    _renderLayer.device = device;
+    _automaticallyCreatesContext = YES;
+    _renderLayer.device = nil;
     _currentDrawableSize = _renderLayer.drawableSize;
     _lock = MTILockCreate();
     self.opaque = YES;
@@ -175,9 +171,22 @@ __attribute__((objc_subclassing_restricted))
 
 - (MTIContext *)context {
     [_lock lock];
+    [self setupContextIfNeeded];
     MTIContext *c = _context;
     [_lock unlock];
     return c;
+}
+
+- (void)setupContextIfNeeded {
+    NSAssert([_lock tryLock] == NO, @"");
+    if (!_context && !_contextCreationError && _automaticallyCreatesContext) {
+        NSError *error;
+        _context = [[MTIContext alloc] initWithDevice:MTLCreateSystemDefaultDevice() error:&error];
+        if (error) {
+            _contextCreationError = error;
+        }
+        _renderLayer.device = _context.device;
+    }
 }
 
 - (void)setColorPixelFormat:(MTLPixelFormat)colorPixelFormat {
@@ -281,8 +290,10 @@ __attribute__((objc_subclassing_restricted))
     [super layoutSubviews];
     
     [_lock lock];
-    _backgroundAccessingBounds = self.bounds;
-    [self renderImage:_image completion:nil];
+    if (!CGRectEqualToRect(_backgroundAccessingBounds, self.bounds)) {
+        _backgroundAccessingBounds = self.bounds;
+        [self renderImage:_image completion:nil];
+    }
     [_lock unlock];
 }
 
@@ -291,10 +302,12 @@ __attribute__((objc_subclassing_restricted))
 - (void)renderImage:(MTIImage *)image completion:(void (^)(NSError *))completion {
     NSAssert([_lock tryLock] == NO, @"");
     
+    [self setupContextIfNeeded];
+    
     MTIContext *context = self -> _context;
     if (!context) {
         if (completion) {
-            completion([NSError errorWithDomain:MTIImageViewErrorDomain code:MTIImageViewErrorContextNotFound userInfo:nil]);
+            completion(_contextCreationError ?: [NSError errorWithDomain:MTIImageViewErrorDomain code:MTIImageViewErrorContextNotFound userInfo:nil]);
         }
         return;
     }

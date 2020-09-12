@@ -30,6 +30,8 @@ typedef NS_ERROR_ENUM(MTIImageViewErrorDomain, MTIImageViewError) {
 __attribute__((objc_subclassing_restricted))
 @interface MTIThreadSafeImageView : UIView <MTIDrawableProvider>
 
+@property (nonatomic) BOOL automaticallyCreatesContext;
+
 @property (atomic) MTLPixelFormat colorPixelFormat;
 
 @property (atomic) MTLClearColor clearColor;
@@ -39,7 +41,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (atomic) MTIDrawableRenderingResizingMode resizingMode;
 
-@property (atomic, strong) MTIContext *context;
+@property (atomic, strong, nullable) MTIContext *context;
 
 @property (atomic, nullable, strong) MTIImage *image;
 
