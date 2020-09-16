@@ -273,6 +273,7 @@ __attribute__((objc_subclassing_restricted))
     }
     
     MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:writesToSRGBTexture ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm  width:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer) mipmapped:NO];
+    textureDescriptor.usage = MTLTextureUsageRenderTarget;
     id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (error) {
         if (inOutError) {
