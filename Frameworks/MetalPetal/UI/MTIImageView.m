@@ -213,7 +213,6 @@
             [self setupContextIfNeeded];
             
             MTIContext *context = _context;
-            NSAssert(context != nil, @"Context is nil.");
             if (!context) {
                 return;
             }
