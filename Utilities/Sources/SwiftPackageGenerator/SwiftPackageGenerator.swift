@@ -51,8 +51,62 @@ public struct SwiftPackageGenerator: ParsableCommand {
         ]
         
         try processSources(in: sourcesDirectory, fileHandlers: fileHandlers)
-                
+        
+        //TODO: remove this in swift 5.3
+        try generateBuiltinMetalLibrarySupportCode(directory: objectiveCTargetDirectory)
+        
         try objectiveCModuleMapContents.write(to: objectiveCHeaderDirectory.appendingPathComponent("module.modulemap"), atomically: true, encoding: .utf8)
+    }
+    
+    public func generateBuiltinMetalLibrarySupportCode(directory: URL) throws {
+        try """
+        // Auto generated.
+        #import <Foundation/Foundation.h>
+
+        FOUNDATION_EXPORT NSURL * _MTISwiftPMBuiltinLibrarySourceURL(void);
+        
+        """.write(to: directory.appendingPathComponent("MTISwiftPMBuiltinLibrarySupport.h"), atomically: true, encoding: .utf8)
+        
+        try """
+        #import "MTISwiftPMBuiltinLibrarySupport.h"
+        #import "MTILibrarySource.h"
+        #import <Metal/Metal.h>
+
+        static const char *MTIBuiltinLibrarySource = R"mtirawstring(
+        \(try collectBuiltinMetalLibrarySource())
+        )mtirawstring";
+
+        NSURL * _MTISwiftPMBuiltinLibrarySourceURL(void) {
+            static NSURL *url;
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                NSString *targetConditionals = [NSString stringWithFormat:@"#ifndef TARGET_OS_SIMULATOR\\n#define TARGET_OS_SIMULATOR %@\\n#endif",@(TARGET_OS_SIMULATOR)];
+                NSString *librarySource = [targetConditionals stringByAppendingString:[NSString stringWithCString:MTIBuiltinLibrarySource encoding:NSUTF8StringEncoding]];
+                MTLCompileOptions *options = [[MTLCompileOptions alloc] init];
+                options.fastMathEnabled = YES;
+                options.languageVersion = MTLLanguageVersion1_2;
+                url = [MTILibrarySourceRegistration.sharedRegistration registerLibraryWithSource:librarySource compileOptions:options];
+            });
+            return url;
+        }
+        """.write(to: directory.appendingPathComponent("MTISwiftPMBuiltinLibrarySupport.mm"), atomically: true, encoding: .utf8)
+    }
+    
+    public func collectBuiltinMetalLibrarySource() throws -> String {
+        var librarySource = ""
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        librarySource += try String(contentsOf: headerURL)
+        let fileManager = FileManager()
+        for source in try fileManager.contentsOfDirectory(at: sourceFileDirectory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            if source.pathExtension == "metal" {
+                librarySource += "\n"
+                librarySource += try String(contentsOf: source)
+                    .replacingOccurrences(of: "#include \"MTIShaderLib.h\"", with: "\n")
+                    .replacingOccurrences(of: "#include <TargetConditionals.h>", with: "\n")
+            }
+        }
+        return librarySource
     }
     
     private func processSources(in directory: URL, fileHandlers: [SourceFileHandler]) throws {

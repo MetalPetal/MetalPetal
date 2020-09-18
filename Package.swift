@@ -1,4 +1,6 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.1
+
+// requires SE-0271
 
 import PackageDescription
 
