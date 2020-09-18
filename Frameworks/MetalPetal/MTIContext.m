@@ -26,11 +26,6 @@
 #import "MTITextureLoader.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
-// TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
-#if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
-#import "MTISwiftPMBuiltinLibrarySupport.h"
-#endif
-
 NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @implementation MTIContextOptions
@@ -45,12 +40,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
             #if METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE
             bundle = [NSBundle bundleWithURL:[[NSBundle bundleForClass:MTIContext.class] URLForResource:@"MetalPetal" withExtension:@"bundle"]];
             #else
-                // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
-                #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
-                bundle = nil;
-                #else
-                bundle = [NSBundle bundleForClass:MTIContext.class];
-                #endif
+            bundle = [NSBundle bundleForClass:MTIContext.class];
             #endif
         #endif
     });
@@ -65,14 +55,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
         _enablesYCbCrPixelFormatSupport = YES;
         _automaticallyReclaimsResources = YES;
         _label = MTIContextDefaultLabel;
-        
-        // TODO: Remove this in swift 5.3. https://github.com/apple/swift-evolution/blob/master/proposals/0271-package-manager-resources.md
-        #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
-        _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
-        #else
         _defaultLibraryURL = MTIDefaultLibraryURLForBundle(MTIDefaultBuiltinLibraryBundle());
-        #endif
-        
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
         _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
         _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;
