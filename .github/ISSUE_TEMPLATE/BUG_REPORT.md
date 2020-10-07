@@ -21,6 +21,15 @@ Replace this paragraph with a short description of the incorrect behavior.
 - [ ] If possible, I've reproduced the issue using the `master` branch of this repo
 - [ ] I've searched for [existing GitHub issues](https://github.com/MetalPetal/MetalPetal/issues)
 
+### Environment
+
+ Info                    | Value                               |
+-------------------------|-------------------------------------|
+ MetalPetal Version      | e.g. 1.13.0
+ Integration Method      | e.g. CocoaPods / SwiftPM
+ Platform & Version      | e.g. iOS 14.0 / macOS 10.15
+ Device                  | e.g. MacBook Pro 16' / iPhone X
+
 ### Steps to Reproduce
 Replace this paragraph with an explanation of how to reproduce the incorrect behavior.
 
