@@ -89,7 +89,7 @@ NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         passthroughAlphaTypeHandlingRule = [[MTIAlphaTypeHandlingRule alloc] initWithAcceptableAlphaTypes:@[@(MTIAlphaTypeNonPremultiplied),@(MTIAlphaTypeAlphaIsOne),@(MTIAlphaTypePremultiplied)] outputAlphaTypeHandler:^MTIAlphaType(NSArray<NSNumber *> * _Nonnull inputAlphaTypes) {
-            NSAssert(inputAlphaTypes.count == 1, @"");
+            NSAssert([NSSet setWithArray:inputAlphaTypes].count == 1, @"");
             return [inputAlphaTypes.firstObject integerValue];
         }];
     });
