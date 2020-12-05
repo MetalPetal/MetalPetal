@@ -42,12 +42,12 @@
 		22FD1ADF0A71A5EB4028B5644BD6A32A /* MTISKSceneRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9F8627371DE578B05D9067A2D5457970 /* MTISKSceneRenderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		27D8D5C286E2A7D2FA6B658820642394 /* MTIMPSBoxBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = ECD9608D2C99A279B7BD5273F8B09AD2 /* MTIMPSBoxBlurFilter.m */; };
 		27FBE27905B64B4358360376F7099773 /* MTIRenderGraphOptimization.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3F5DE90469704DEA44F3B33FD38AB4 /* MTIRenderGraphOptimization.m */; };
-		282C54C33FF0EBF163ADF2924B5200B2 /* Pods-MetalPetalDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE04A67933AF897CCE4BA65DF272949 /* Pods-MetalPetalDemo-dummy.m */; };
 		2901202A67803715F27D470B239B10A3 /* MTIBulgeDistortionFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = C4C8F58791479CABC7C5E9F847050FF4 /* MTIBulgeDistortionFilter.m */; };
 		2C596BD148E442483A66429624FD3082 /* MTITransformFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 81A2444764AF23C2556716BF5C04393B /* MTITransformFilter.m */; };
 		2CE7CAE5C30B31305C8B8A5DDC9C29E8 /* MetalPetal-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 39135C76DA45FFF19819E6FC625F2160 /* MetalPetal-dummy.m */; };
 		2DF8DACBB0AE9AADBBDDE02B2B15CC19 /* MTIRGBColorSpaceConversionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2DA7F785E1CD6D480CAF4DBC8B34637B /* MTIRGBColorSpaceConversionFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		2F930ACEA0A7445BBAC4B173DB7EBFE9 /* MTICVMetalTextureCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD979E57C04ACDD90AA6CC79586F39B /* MTICVMetalTextureCache.m */; };
+		2FECB838516D662C0CD7F11AC82E38ED /* Pods-MetalPetalDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EE04A67933AF897CCE4BA65DF272949 /* Pods-MetalPetalDemo-dummy.m */; };
 		342760CE8E660A8027F72263683820B7 /* MTIGeometry.h in Headers */ = {isa = PBXBuildFile; fileRef = 8453C15221B3D1A2C176814550199197 /* MTIGeometry.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		366CCE517E2C6EE33B24BBCB34734802 /* MTIThreadSafeImageView.h in Headers */ = {isa = PBXBuildFile; fileRef = 712FA3646FE3361D0E74B0FD202BCC7D /* MTIThreadSafeImageView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3AE00AF2AF7BD3955F4C3ABB4474B15E /* MTIWeakToStrongObjectsMapTable.m in Sources */ = {isa = PBXBuildFile; fileRef = 16E40F80433B713B9B8A5BD6A819FF1E /* MTIWeakToStrongObjectsMapTable.m */; };
@@ -80,6 +80,7 @@
 		5746029044D70C90E67BC833E2D5E999 /* MTIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 02150E3120B000340033DA230B62D084 /* MTIColor.m */; };
 		5C8D05D1D822EB17058B11F77014EEFF /* MTIError.m in Sources */ = {isa = PBXBuildFile; fileRef = 1071ECF6F97DCE5F3E2E5561906571B3 /* MTIError.m */; };
 		5CBB1F5A68C430EAFD42DF8C531A764B /* MTIVector.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F9469201772540571EEA9501C05D221 /* MTIVector.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5CD034723FD6B5AF7F76DC47B1A75BA2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		5D1788B46AB9D272642749DCA78A3167 /* MTISCNSceneRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D291A092BF221EFD0BBF7B9C431774E /* MTISCNSceneRenderer.m */; };
 		5DCBC0C42D4E8538766F7844A556B884 /* MTIMPSDefinitionFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3362A9B23F0C77F9B5D5B2E6C1F76550 /* MTIMPSDefinitionFilter.m */; };
 		5E3A483A27FA83B3468774FB723EB477 /* MTISKSceneRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 417D8D4DEE4AF55EB71DCC35A219B9BF /* MTISKSceneRenderer.m */; };
@@ -131,6 +132,7 @@
 		93508089EC0923C8F93C0FC4809808D9 /* MTIFunctionArgumentsEncoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 91C5208F49CD609948AF1A09604A4758 /* MTIFunctionArgumentsEncoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9635931A517B4FECFE27633778A7C779 /* MTIAlphaType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 137A5667843CF160271E3F12CE1FD0D9 /* MTIAlphaType.swift */; };
 		9735A757583060D3AF1B57C6C560CB10 /* MTILock.m in Sources */ = {isa = PBXBuildFile; fileRef = 55A51CD5DAF6EC171E70482F698232C2 /* MTILock.m */; };
+		97687726F27AFD8C8BF2090F9F774856 /* Pods-MetalPetalDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1F38A5141FF45F6DFB2B3925DB311442 /* Pods-MetalPetalDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		99D4D48B4A2E154A7BA50199600E9330 /* MTITransform.m in Sources */ = {isa = PBXBuildFile; fileRef = 2953FDB275230C6072E38DE7E2E581BD /* MTITransform.m */; };
 		9BB83FFC2216BA4F1A79F3D9F0414E3C /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 43205F3778347F814554B4B494CCBF8B /* Shaders.metal */; };
 		9D21CB953AD30CD7B42065DC09163C40 /* MTIMPSHistogramFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 43FBA1AFB89155143078485B74E270D7 /* MTIMPSHistogramFilter.m */; };
@@ -171,7 +173,6 @@
 		C18F57F4B134B3FA3B6B594929956EDF /* MTIBulgeDistortionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = A65816F2A301CF5CE8CBCC1D8FBDF2B8 /* MTIBulgeDistortionFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C1C120C2E5AC33B914E59E888BB073B8 /* MTIColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 1F545727C95F3AFB1FCB711FDAD90D06 /* MTIColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C1C98A62820F4282B17881701400345F /* CLAHE.metal in Sources */ = {isa = PBXBuildFile; fileRef = 695D652567CA3344304864A4FC22FF54 /* CLAHE.metal */; };
-		C24395B390A955134E2F8C004C5A0A41 /* Pods-MetalPetalDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1F38A5141FF45F6DFB2B3925DB311442 /* Pods-MetalPetalDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C349FB2ACA04F48C24DE56B1C6651CEF /* MTIDotScreenFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0AD07B751E68674C934875A48D00D096 /* MTIDotScreenFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C366862A371BD9E7EAF69722B37B63E0 /* MTIMPSGaussianBlurFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7064195648BE26B933D9F2D824D25A /* MTIMPSGaussianBlurFilter.m */; };
 		C4AD4FD6770947C62EB0CC6F06514AAC /* MTIGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = B57C9B869990DEF9F57C2CE153AAB600 /* MTIGeometry.m */; };
@@ -192,7 +193,6 @@
 		D5270DB417DF0AF5471D2A2DB15561C1 /* MTIMultilayerCompositeKernel.h in Headers */ = {isa = PBXBuildFile; fileRef = 860729C1190C55C5FB227B66F48C600E /* MTIMultilayerCompositeKernel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D5C73110338E749801D92D13A90EF6F5 /* Filter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B8ABB1F79021E2AB3B93BFB9D394825 /* Filter.swift */; };
 		D6E35E54AF9748AD20434676C76A4B89 /* MTILayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FFB8E4EA76C8F44E3DD90F8FB87F057 /* MTILayer.m */; };
-		DB587F32308CDAB0AB71390DBC4A956A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		DCD9B0A2150DF050A4E10CE603EBFE92 /* MTITextureDimensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BFCE79F6249E2441265E87ECED7D6DE /* MTITextureDimensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DD800FA939A768042F8287BD38F973B5 /* MTIMPSSobelFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A52A9CF6B5DF47FCFDCE44AA59A57D5 /* MTIMPSSobelFilter.m */; };
 		DF251D3C5F7B6DDAFA2190F252153047 /* MTIGeometryUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 90B2BBB8DCD8F85ED4B9E5BE8FD9539A /* MTIGeometryUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -225,7 +225,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		07C552918239037BC457955615F32445 /* PBXContainerItemProxy */ = {
+		88CABC17B5162E77625EB808D03CBB16 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
@@ -468,19 +468,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		23DC9F82AC4088CE0F763C5330F48909 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DB587F32308CDAB0AB71390DBC4A956A /* Foundation.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		56FBB4A24FC6AB91B53FCABDD459C864 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				EA2EFBE28C4B76564C10BBA8000D6C33 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		602910E1BF5DC404506452B0A7E7E66A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5CD034723FD6B5AF7F76DC47B1A75BA2 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -898,6 +898,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2BAC9F2673A15B647B006404D6B0C22E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				97687726F27AFD8C8BF2090F9F774856 /* Pods-MetalPetalDemo-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4E1CBABAB8311E62CAFBA3BF5D0DA311 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1000,14 +1008,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A990F18ABD1AC8ED8A9AFD89CA281C73 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C24395B390A955134E2F8C004C5A0A41 /* Pods-MetalPetalDemo-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1031,17 +1031,17 @@
 		};
 		F4B4AE4038EED75B5C84BC2DB2064D0D /* Pods-MetalPetalDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 279DFCCFA0C1AC3E582FD0F343E69A64 /* Build configuration list for PBXNativeTarget "Pods-MetalPetalDemo" */;
+			buildConfigurationList = F709027B00D732728AF2B69F07309F71 /* Build configuration list for PBXNativeTarget "Pods-MetalPetalDemo" */;
 			buildPhases = (
-				A990F18ABD1AC8ED8A9AFD89CA281C73 /* Headers */,
-				73C1B9350DBB60D2C3999D6E23FBD172 /* Sources */,
-				23DC9F82AC4088CE0F763C5330F48909 /* Frameworks */,
-				2E2E5DF3A481FFF4AF72F7B594AE42B0 /* Resources */,
+				2BAC9F2673A15B647B006404D6B0C22E /* Headers */,
+				72889293C68038DD0C14563594A10923 /* Sources */,
+				602910E1BF5DC404506452B0A7E7E66A /* Frameworks */,
+				61AEF1BE6AF6329D3403EA2397C7411A /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				38594EE1D903B0A1FB1DD6689F30E08A /* PBXTargetDependency */,
+				71C156BD27E415EF59ED32686DC9CBBE /* PBXTargetDependency */,
 			);
 			name = "Pods-MetalPetalDemo";
 			productName = "Pods-MetalPetalDemo";
@@ -1077,7 +1077,7 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		2E2E5DF3A481FFF4AF72F7B594AE42B0 /* Resources */ = {
+		61AEF1BE6AF6329D3403EA2397C7411A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1217,64 +1217,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		73C1B9350DBB60D2C3999D6E23FBD172 /* Sources */ = {
+		72889293C68038DD0C14563594A10923 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				282C54C33FF0EBF163ADF2924B5200B2 /* Pods-MetalPetalDemo-dummy.m in Sources */,
+				2FECB838516D662C0CD7F11AC82E38ED /* Pods-MetalPetalDemo-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		38594EE1D903B0A1FB1DD6689F30E08A /* PBXTargetDependency */ = {
+		71C156BD27E415EF59ED32686DC9CBBE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MetalPetal;
 			target = D69B1B24A11703A325845EB4C86EBF64 /* MetalPetal */;
-			targetProxy = 07C552918239037BC457955615F32445 /* PBXContainerItemProxy */;
+			targetProxy = 88CABC17B5162E77625EB808D03CBB16 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		023B2B9E73256E7AD36B5364A5C9BCF5 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC90562A0EF7B2FE5B145FC20965C80E /* Pods-MetalPetalDemo.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
 		196DFA3E4A09A28224918543529A1885 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1357,45 +1319,6 @@
 				SYMROOT = "${SRCROOT}/../build";
 			};
 			name = Debug;
-		};
-		73A82486266DB689C0634486A442C621 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D754A56E11FAB79A75735BBB37A1D41 /* Pods-MetalPetalDemo.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
 		};
 		82D18B177E314FACB68265475FD685E4 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1512,6 +1435,83 @@
 			};
 			name = Release;
 		};
+		D8B5B6ABDD9D7139BA43C9F38A807826 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AC90562A0EF7B2FE5B145FC20965C80E /* Pods-MetalPetalDemo.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		DC23C28FB924DCDBB6960207ED04C0CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5D754A56E11FAB79A75735BBB37A1D41 /* Pods-MetalPetalDemo.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		ED2BFBA9D51EAA45A9D699CB931F558E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5BF4F6F768BCC207BF0B4CAB958865EA /* MetalPetal.debug.xcconfig */;
@@ -1559,20 +1559,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		279DFCCFA0C1AC3E582FD0F343E69A64 /* Build configuration list for PBXNativeTarget "Pods-MetalPetalDemo" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				023B2B9E73256E7AD36B5364A5C9BCF5 /* Debug */,
-				73A82486266DB689C0634486A442C621 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				196DFA3E4A09A28224918543529A1885 /* Debug */,
 				B01D14FDC83DCF9D4BE53066BEA96D05 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F709027B00D732728AF2B69F07309F71 /* Build configuration list for PBXNativeTarget "Pods-MetalPetalDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D8B5B6ABDD9D7139BA43C9F38A807826 /* Debug */,
+				DC23C28FB924DCDBB6960207ED04C0CC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

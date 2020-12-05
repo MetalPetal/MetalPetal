@@ -10,6 +10,7 @@ s.requires_arc = true
 
 s.ios.deployment_target = '10.0'
 s.macos.deployment_target = '10.13'
+s.tvos.deployment_target = '13.0'
 
 s.module_map = 'MetalPetal.modulemap'
 s.prefix_header_file = false

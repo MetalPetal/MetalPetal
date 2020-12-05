@@ -308,7 +308,7 @@
         return nil;
     }
     
-    #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
+    #if TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST && !TARGET_OS_TV
     //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
     if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
         NSError *error;

@@ -36,6 +36,18 @@ else
 fi
 
 echo "------------------"
+echo "Somke Test (tvOS Simulator)"
+echo "------------------"
+
+if hash xcpretty 2>/dev/null; then
+    xcodebuild build -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace . | xcpretty
+    xcodebuild test -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace . | xcpretty
+else
+    xcodebuild build -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace .
+    xcodebuild test -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace .
+fi
+
+echo "------------------"
 echo "Build (Generic iOS Device)"
 echo "------------------"
 
