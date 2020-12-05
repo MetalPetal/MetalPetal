@@ -15,4 +15,6 @@ extension MTLPixelFormat {
     public static let unspecified = MTLPixelFormat.invalid
     public static let yCbCr8_420_2p = __MTIPixelFormatYCBCR8_420_2P
     public static let yCbCr8_420_2p_srgb = __MTIPixelFormatYCBCR8_420_2P_sRGB
+    public static let yCbCr10_420_2p = __MTIPixelFormatYCBCR10_420_2P
+    public static let yCbCr10_420_2p_srgb = __MTIPixelFormatYCBCR10_420_2P_sRGB
 }

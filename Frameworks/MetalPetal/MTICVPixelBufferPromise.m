@@ -83,6 +83,10 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
             return sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
             
+        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange:
+            return sRGB ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
+
         case kCVPixelFormatType_32RGBA:
             return sRGB ? MTLPixelFormatRGBA8Unorm_sRGB : MTLPixelFormatRGBA8Unorm;
             
@@ -244,6 +248,31 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
 - (MTIImagePromiseRenderTarget *)resolveWithContext_MTI:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     OSType pixelFormatType = CVPixelBufferGetPixelFormatType(self.pixelBuffer);
     switch (pixelFormatType) {
+        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange: {
+            if (renderingContext.context.isYCbCrPixelFormatSupported) {
+                MTLPixelFormat pixelFormat = self.sRGB ? MTIPixelFormatYCBCR10_420_2P_sRGB : MTIPixelFormatYCBCR10_420_2P;
+                NSError *error = nil;
+                MTLTextureDescriptor *textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO];
+                textureDescriptor.usage = MTLTextureUsageShaderRead;
+                id<MTICVMetalTexture> cvMetalTexture = [renderingContext.context.coreVideoTextureBridge newTextureWithCVImageBuffer:_pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
+                if (cvMetalTexture) {
+                    [renderingContext.context setValue:cvMetalTexture forPromise:self inTable:MTIContextCVPixelBufferPromiseCVMetalTextureHolderTable];
+                } else {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
+                return [renderingContext.context newRenderTargetWithTexture:cvMetalTexture.texture];
+            } else {
+                NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+        } break;
         case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
         case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange: {
             if (renderingContext.context.isYCbCrPixelFormatSupported) {

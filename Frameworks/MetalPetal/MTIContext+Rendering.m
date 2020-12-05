@@ -181,6 +181,18 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
                 return nil;
             }
         } break;
+        case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+        case kCVPixelFormatType_420YpCbCr10BiPlanarFullRange: {
+            if (renderingContext.context.isYCbCrPixelFormatSupported) {
+                targetPixelFormat = sRGB ? MTIPixelFormatYCBCR10_420_2P_sRGB : MTIPixelFormatYCBCR10_420_2P;
+            } else {
+                NSError *error = MTIErrorCreate(MTIErrorUnsupportedCVPixelBufferFormat, nil);
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+        } break;
         case kCVPixelFormatType_64RGBAHalf: {
             targetPixelFormat = MTLPixelFormatRGBA16Float;
         } break;

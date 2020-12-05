@@ -13,6 +13,9 @@ MTLPixelFormat const MTIPixelFormatUnspecified = MTLPixelFormatInvalid;
 MTLPixelFormat const MTIPixelFormatYCBCR8_420_2P = 500;
 MTLPixelFormat const MTIPixelFormatYCBCR8_420_2P_sRGB = 520;
 
+MTLPixelFormat const MTIPixelFormatYCBCR10_420_2P = 505;
+MTLPixelFormat const MTIPixelFormatYCBCR10_420_2P_sRGB = 525;
+
 BOOL MTIDeviceSupportsYCBCRPixelFormat(id<MTLDevice> device) {
     #if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
     return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1];
