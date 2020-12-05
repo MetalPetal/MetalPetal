@@ -17,7 +17,7 @@ MTLPixelFormat const MTIPixelFormatYCBCR10_420_2P = 505;
 MTLPixelFormat const MTIPixelFormatYCBCR10_420_2P_sRGB = 525;
 
 BOOL MTIDeviceSupportsYCBCRPixelFormat(id<MTLDevice> device) {
-    #if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST
+    #if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST && !TARGET_OS_TV
     return [device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily3_v1];
     #else
     return NO;

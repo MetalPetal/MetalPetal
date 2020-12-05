@@ -467,7 +467,7 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
         }
         
         NSString *functionName = descriptor.name;
-        #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+        #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST || TARGET_OS_TV
         for (NSString *name in library.functionNames) {
             if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
                 functionName = name;

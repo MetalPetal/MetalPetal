@@ -45,3 +45,4 @@ build_framework() {
 build_framework "iOS"
 build_framework "iOS-Swift"
 build_framework "macOS-Swift"
+build_framework "tvOS-Swift"
