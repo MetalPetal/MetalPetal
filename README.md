@@ -1,6 +1,6 @@
 # MetalPetal
 
-[![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
+[![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B%20%7C%20tvOS%2013.0%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
 [![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg)](#)
 [![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](#)
 
