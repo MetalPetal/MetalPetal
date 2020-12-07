@@ -156,6 +156,9 @@ __attribute__((objc_subclassing_restricted))
         }
     }
     
+    #if TARGET_OS_TV
+        [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
+    #else
     if (@available(iOS 11.0, macOS 10.13, *)) {
         BOOL supportsNonUniformThreadgroupSize = NO;
         #if TARGET_OS_IPHONE
@@ -175,7 +178,8 @@ __attribute__((objc_subclassing_restricted))
     } else {
         [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
     }
-    
+    #endif
+
     [commandEncoder endEncoding];
     
     return renderTarget;

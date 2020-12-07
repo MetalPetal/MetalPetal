@@ -37,6 +37,21 @@ jobs:
     - name: Run tests
       run: xcodebuild test -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
 
+  target_tvOS:
+
+    name: Smoke Test (tvOS Simulator)
+    
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
+    - name: Build
+      run: xcodebuild build -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace .
+    - name: Run tests
+      run: xcodebuild test -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace .
+
   target_iOS:
 
     name: Build (Generic iOS Device)
