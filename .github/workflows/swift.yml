@@ -22,7 +22,7 @@ jobs:
     - name: Run tests
       run: swift test -v
 
-  target_simulator:
+  target_iOS_simulator:
 
     name: Smoke Test (iOS Simulator)
     
@@ -37,7 +37,7 @@ jobs:
     - name: Run tests
       run: xcodebuild test -scheme MetalPetal -destination 'platform=iOS Simulator,name=iPhone 11' -workspace .
 
-  target_tvOS:
+  target_tvOS_simulator:
 
     name: Smoke Test (tvOS Simulator)
     
@@ -52,9 +52,9 @@ jobs:
     - name: Run tests
       run: xcodebuild test -scheme MetalPetal -destination 'platform=tvOS Simulator,name=Apple TV' -workspace .
 
-  target_iOS:
+  target_iOS_device:
 
-    name: Build (Generic iOS Device)
+    name: Build (iOS Device)
     
     runs-on: macos-latest
 
@@ -64,6 +64,19 @@ jobs:
       run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
     - name: Build
       run: xcodebuild build -scheme MetalPetal -destination generic/platform=iOS -workspace .
+
+  target_tvOS_device:
+
+    name: Build (tvOS Device)
+    
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Select Xcode
+      run: sudo xcode-select --switch "$(find /Applications -mindepth 1 -maxdepth 1 ! -type l | grep "Xcode_[\.0-9]*app" | sort -V | tail -1)/Contents/Developer"
+    - name: Build
+      run: xcodebuild build -scheme MetalPetal -destination generic/platform=tvOS -workspace .
 
   target_macCatalyst:
 

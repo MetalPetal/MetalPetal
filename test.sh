@@ -48,11 +48,21 @@ else
 fi
 
 echo "------------------"
-echo "Build (Generic iOS Device)"
+echo "Build (iOS Device)"
 echo "------------------"
 
 if hash xcpretty 2>/dev/null; then
     xcodebuild build -scheme MetalPetal -destination generic/platform=iOS -workspace . | xcpretty
 else
     xcodebuild build -scheme MetalPetal -destination generic/platform=iOS -workspace .
+fi
+
+echo "------------------"
+echo "Build (tvOS Device)"
+echo "------------------"
+
+if hash xcpretty 2>/dev/null; then
+    xcodebuild build -scheme MetalPetal -destination generic/platform=tvOS -workspace . | xcpretty
+else
+    xcodebuild build -scheme MetalPetal -destination generic/platform=tvOS -workspace .
 fi
