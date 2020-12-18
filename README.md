@@ -122,6 +122,8 @@ You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage
 
 For performance reasons, alpha type validation only happens in debug build.
 
+For more about alpha types and alpha compositing, please refer to [this amazing interactive article](https://ciechanow.ski/alpha-compositing/) by Bartosz Ciechanowski.
+
 ### Optimizations
 
 MetalPetal does a lot of optimizations for you under the hood.
