@@ -41,6 +41,14 @@ extension MTIImage {
     public convenience init?(contentsOf url: URL, size: CGSize, options: [MTKTextureLoader.Option: Any], alphaType: MTIAlphaType) {
         self.init(__contentsOf: url, size: size, options: options, alphaType: alphaType)
     }
+    
+    public convenience init(bitmapData data: Data, width: Int, height: Int, bytesPerRow: Int, pixelFormat: MTLPixelFormat, alphaType: MTIAlphaType) {
+        self.init(bitmapData: data, width: UInt(width), height: UInt(height), bytesPerRow: UInt(bytesPerRow), pixelFormat: pixelFormat, alphaType: alphaType)
+    }
+    
+    public convenience init(cvPixelBuffer pixelBuffer: CVPixelBuffer, planeIndex: Int, textureDescriptor: MTLTextureDescriptor, alphaType: MTIAlphaType) {
+        self.init(cvPixelBuffer: pixelBuffer, planeIndex: UInt(planeIndex), textureDescriptor: textureDescriptor, alphaType: alphaType)
+    }
 }
 
 extension MTIImage {

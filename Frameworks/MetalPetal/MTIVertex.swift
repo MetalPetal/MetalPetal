@@ -31,6 +31,10 @@ extension MTIVertices {
     public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType) {
         self.init(__vertices: vertices, count: UInt(vertices.count), primitiveType: primitiveType)
     }
+    
+    public convenience init(vertexBuffer: MTIDataBuffer, vertexCount: Int, indexBuffer: MTIDataBuffer?, indexCount: Int?, primitiveType: MTLPrimitiveType) {
+        self.init(vertexBuffer: vertexBuffer, vertexCount: UInt(vertexCount), indexBuffer: indexBuffer, indexCount: UInt(indexCount ?? 0), primitiveType: primitiveType)
+    }
 }
 
 extension MTIDataBuffer {
