@@ -24,7 +24,7 @@
 		9DC86E1B24265F0A009C598C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC86E1A24265F0A009C598C /* AppDelegate.swift */; };
 		9DC9C29524B8248900A08AB9 /* SketchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DC9C29424B8248900A08AB9 /* SketchViewController.swift */; };
 		E05B8C8B23B0745B0040C1DF /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E05B8C8A23B0745B0040C1DF /* CameraViewController.swift */; };
-		E05B8C8F23B0BD390040C1DF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = E05B8C8E23B0BD390040C1DF /* VideoIO */; };
+		E05B8C8F23B0BD390040C1DF /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = E05B8C8E23B0BD390040C1DF /* SwiftPackageProductDependency */; };
 		EE4A930421523A5100B3006A /* BlendModeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4A930321523A5100B3006A /* BlendModeViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -64,7 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E05B8C8F23B0BD390040C1DF /* VideoIO in Frameworks */,
+				E05B8C8F23B0BD390040C1DF /* BuildFile in Frameworks */,
 				7A35DF9C9E924BD93DCE1706 /* Pods_MetalPetalDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -173,7 +173,7 @@
 			);
 			name = MetalPetalDemo;
 			packageProductDependencies = (
-				E05B8C8E23B0BD390040C1DF /* VideoIO */,
+				E05B8C8E23B0BD390040C1DF /* SwiftPackageProductDependency */,
 			);
 			productName = MetalPetalDemo;
 			productReference = 9D3928A91EFF678800BA6B09 /* MetalPetalDemo.app */;
@@ -205,7 +205,7 @@
 			);
 			mainGroup = 9D3928A01EFF678800BA6B09;
 			packageReferences = (
-				E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */,
+				E05B8C8D23B0BD390040C1DF /* RemoteSwiftPackageReference */,
 			);
 			productRefGroup = 9D3928AA1EFF678800BA6B09 /* Products */;
 			projectDirPath = "";
@@ -237,12 +237,13 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/MetalPetal/MetalPetal.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalDemo/Pods-MetalPetalDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MetalPetal.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -512,7 +513,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */ = {
+		E05B8C8D23B0BD390040C1DF /* RemoteSwiftPackageReference */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/MetalPetal/VideoIO.git";
 			requirement = {
@@ -523,9 +524,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		E05B8C8E23B0BD390040C1DF /* VideoIO */ = {
+		E05B8C8E23B0BD390040C1DF /* SwiftPackageProductDependency */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = E05B8C8D23B0BD390040C1DF /* XCRemoteSwiftPackageReference "VideoIO" */;
+			package = E05B8C8D23B0BD390040C1DF /* RemoteSwiftPackageReference */;
 			productName = VideoIO;
 		};
 /* End XCSwiftPackageProductDependency section */

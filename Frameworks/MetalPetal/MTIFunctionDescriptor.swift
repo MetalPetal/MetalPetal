@@ -17,6 +17,12 @@ extension MTIFunctionDescriptor {
     public static let passthroughVertex: MTIFunctionDescriptor = MTIFunctionDescriptor(name: MTIFilterPassthroughVertexFunctionName)
 }
 
+extension MTIFunctionDescriptor {
+    public convenience init(name: String, constantValues: MTLFunctionConstantValues? = nil, in bundle: Bundle) {
+        self.init(name: name, constantValues: constantValues, libraryURL: MTIDefaultLibraryURLForBundle(bundle))
+    }
+}
+
 extension URL {
     public static func defaultMetalLibraryURL(for bundleForClass: AnyClass) -> URL! {
         return MTIDefaultLibraryURLForBundle(Bundle(for: bundleForClass))

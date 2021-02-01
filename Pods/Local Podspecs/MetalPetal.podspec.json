@@ -79,6 +79,11 @@
           "METAL_LIBRARY_OUTPUT_DIR": "${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources"
         }
       },
+      "tvos": {
+        "pod_target_xcconfig": {
+          "METAL_LIBRARY_OUTPUT_DIR": "${TARGET_BUILD_DIR}/MetalPetal.bundle/"
+        }
+      },
       "resource_bundles": {
         "MetalPetal": [
           "CocoaPodsBundledResourcePlaceholder"
