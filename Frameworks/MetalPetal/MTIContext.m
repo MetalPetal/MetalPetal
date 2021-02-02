@@ -138,7 +138,11 @@ NSURL * MTIDefaultLibraryURLForBundle(NSBundle *bundle) {
 
 static BOOL MTIMPSSupportsMTLDevice(id<MTLDevice> device) {
 #if TARGET_OS_SIMULATOR
-    return NO;
+    if (@available(iOS 14.0, tvOS 14.0, *)) {
+        return MPSSupportsMTLDevice(device);
+    } else {
+        return NO;
+    }
 #else
     return MPSSupportsMTLDevice(device);
 #endif
