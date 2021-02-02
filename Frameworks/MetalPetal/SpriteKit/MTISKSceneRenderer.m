@@ -14,8 +14,6 @@
 #import "MTIError.h"
 #import "MTIImagePromise.h"
 
-#define MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
-
 __attribute__((objc_subclassing_restricted))
 NS_CLASS_AVAILABLE(10_13, 11_0)
 @interface MTISKSceneImagePromise: NSObject <MTIImagePromise>
@@ -130,11 +128,15 @@ NS_CLASS_AVAILABLE(10_13, 11_0)
     depthStencilTextureDescriptor.pixelFormat = MTLPixelFormatDepth32Float_Stencil8;
     depthStencilTextureDescriptor.usage = MTLTextureUsageRenderTarget;
     
-    #if MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE
-    depthStencilTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-    #else
-    depthStencilTextureDescriptor.storageMode = MTLStorageModePrivate;
-    #endif
+    if (renderingContext.context.isMemorylessTextureSupported) {
+        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+            depthStencilTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        } else {
+            NSAssert(NO, @"");
+        }
+    } else {
+        depthStencilTextureDescriptor.storageMode = MTLStorageModePrivate;
+    }
     
     id<MTLTexture> depthStencilTexture = [renderingContext.context.device newTextureWithDescriptor:depthStencilTextureDescriptor];
     if (!depthStencilTexture) {

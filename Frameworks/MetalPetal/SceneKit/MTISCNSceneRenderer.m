@@ -17,9 +17,6 @@
 #import "MTIError.h"
 #import "MTIImagePromise.h"
 
-//TODO: fix the condition for Apple silicon.
-#define MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
-
 NSString * const MTISCNSceneRendererErrorDomain = @"MTISCNSceneRendererErrorDomain";
 
 __attribute__((objc_subclassing_restricted))
@@ -130,23 +127,28 @@ __attribute__((objc_subclassing_restricted))
         multisampleTextureDescriptor.usage = MTLTextureUsageRenderTarget;
         multisampleTextureDescriptor.pixelFormat = pixelFormat;
         multisampleTextureDescriptor.sampleCount = sampleCount;
-        #if MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE
-        multisampleTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-        id<MTLTexture> multisampleTexture = [renderingContext.context.device newTextureWithDescriptor:multisampleTextureDescriptor];
-        if (!multisampleTexture) {
-            if (error) {
-                *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+        id<MTLTexture> multisampleTexture;
+        if (renderingContext.context.isMemorylessTextureSupported) {
+            if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+                multisampleTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+            } else {
+                NSAssert(NO, @"");
             }
-            return nil;
+            multisampleTexture = [renderingContext.context.device newTextureWithDescriptor:multisampleTextureDescriptor];
+            if (!multisampleTexture) {
+                if (error) {
+                    *error = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+                }
+                return nil;
+            }
+        } else {
+            multisampleTextureDescriptor.storageMode = MTLStorageModePrivate;
+            multisampleRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:multisampleTextureDescriptor.newMTITextureDescriptor error:error];
+            if (!multisampleRenderTarget) {
+                return nil;
+            }
+            multisampleTexture = multisampleRenderTarget.texture;
         }
-        #else
-        multisampleTextureDescriptor.storageMode = MTLStorageModePrivate;
-        multisampleRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:multisampleTextureDescriptor.newMTITextureDescriptor error:error];
-        if (!multisampleRenderTarget) {
-            return nil;
-        }
-        id<MTLTexture> multisampleTexture = multisampleRenderTarget.texture;
-        #endif
         renderPassDescriptor.colorAttachments[0].texture = multisampleTexture;
         renderPassDescriptor.colorAttachments[0].resolveTexture = renderTarget.texture;
         renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionMultisampleResolve;
@@ -320,11 +322,15 @@ __attribute__((objc_subclassing_restricted))
         multisampleTextureDescriptor.textureType = MTLTextureType2DMultisample;
         multisampleTextureDescriptor.usage = MTLTextureUsageRenderTarget;
         multisampleTextureDescriptor.sampleCount = sampleCount;
-        #if MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE
-        multisampleTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-        #else
-        multisampleTextureDescriptor.storageMode = MTLStorageModePrivate;
-        #endif
+        if ([MTIContext deviceSupportsMemorylessTexture:_device]) {
+            if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+                multisampleTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+            } else {
+                NSAssert(NO, @"");
+            }
+        } else {
+            multisampleTextureDescriptor.storageMode = MTLStorageModePrivate;
+        }
         id<MTLTexture> multisampleTexture = [_device newTextureWithDescriptor:multisampleTextureDescriptor];
         if (!multisampleTexture) {
             if (inOutError) {

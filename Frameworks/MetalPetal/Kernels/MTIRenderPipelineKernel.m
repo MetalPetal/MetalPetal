@@ -27,8 +27,6 @@
 #import "MTIPixelFormat.h"
 #import "MTIFunctionArgumentsEncoder.h"
 
-#define MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
-
 NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
 
 @interface MTIRenderPipelineKernelConfiguration () {
@@ -233,54 +231,57 @@ __attribute__((objc_subclassing_restricted))
         }
         
         if (_rasterSampleCount > 1) {
-            //TODO: fix the memoryless condition for Apple silicon.
-            #if MTI_TARGET_SUPPORT_MEMORYLESS_TEXTURE
-            MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-            tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
-            tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-            tempTextureDescriptor.sampleCount = _rasterSampleCount;
-            id<MTLTexture> msaaTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
-            if (!msaaTexture) {
-                if (inOutError) {
-                    *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+            if (renderingContext.context.isMemorylessTextureSupported) {
+                MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
+                tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
+                tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
+                if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+                    tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+                } else {
+                    NSAssert(NO, @"");
                 }
-                return nil;
-            }
-            renderPassDescriptor.colorAttachments[index].texture = msaaTexture;
-            renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
-            if (outputDescriptor.loadAction == MTLLoadActionLoad) {
-                NSAssert(NO, @"Cannot use `MTLLoadActionLoad` for memoryless render target. Fallback to `MTLLoadActionClear`.");
-                renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionClear;
-            } else {
-                renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
-            }
-            renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionMultisampleResolve;
-            renderPassDescriptor.colorAttachments[index].resolveTexture = renderTarget.texture;
-            #else
-            MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-            tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
-            tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-            tempTextureDescriptor.sampleCount = _rasterSampleCount;
-            MTIImagePromiseRenderTarget *msaaTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[tempTextureDescriptor newMTITextureDescriptor] error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
+                tempTextureDescriptor.sampleCount = _rasterSampleCount;
+                id<MTLTexture> msaaTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
+                if (!msaaTexture) {
+                    if (inOutError) {
+                        *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
+                    }
+                    return nil;
                 }
-                return nil;
-            }
-            renderPassDescriptor.colorAttachments[index].texture = msaaTarget.texture;
-            renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
-            if (outputDescriptor.loadAction == MTLLoadActionLoad) {
-                NSAssert(NO, @"Cannot use `MTLLoadActionLoad` for memoryless render target. Fallback to `MTLLoadActionClear`.");
-                renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionClear;
+                renderPassDescriptor.colorAttachments[index].texture = msaaTexture;
+                renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
+                if (outputDescriptor.loadAction == MTLLoadActionLoad) {
+                    NSAssert(NO, @"Cannot use `MTLLoadActionLoad` for memoryless render target. Fallback to `MTLLoadActionClear`.");
+                    renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionClear;
+                } else {
+                    renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
+                }
+                renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionMultisampleResolve;
+                renderPassDescriptor.colorAttachments[index].resolveTexture = renderTarget.texture;
             } else {
-                renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
+                MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
+                tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
+                tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
+                tempTextureDescriptor.sampleCount = _rasterSampleCount;
+                MTIImagePromiseRenderTarget *msaaTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[tempTextureDescriptor newMTITextureDescriptor] error:&error];
+                if (error) {
+                    if (inOutError) {
+                        *inOutError = error;
+                    }
+                    return nil;
+                }
+                renderPassDescriptor.colorAttachments[index].texture = msaaTarget.texture;
+                renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
+                if (outputDescriptor.loadAction == MTLLoadActionLoad) {
+                    NSAssert(NO, @"Cannot use `MTLLoadActionLoad` for memoryless render target. Fallback to `MTLLoadActionClear`.");
+                    renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionClear;
+                } else {
+                    renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
+                }
+                renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionMultisampleResolve;
+                renderPassDescriptor.colorAttachments[index].resolveTexture = renderTarget.texture;
+                [msaaTarget releaseTexture];
             }
-            renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionMultisampleResolve;
-            renderPassDescriptor.colorAttachments[index].resolveTexture = renderTarget.texture;
-            [msaaTarget releaseTexture];
-            #endif
         } else {
             renderPassDescriptor.colorAttachments[index].texture = renderTarget.texture;
             renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
