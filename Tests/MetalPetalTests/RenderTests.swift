@@ -2,7 +2,7 @@
 //  File.swift
 //  
 //
-//  Created by YuAo on 2020/3/17.
+//  Created by YuAo on 2021/2/2.
 //
 
 import XCTest
@@ -11,606 +11,11 @@ import MetalPetalTestHelpers
 import MetalPetalObjectiveC.Extension
 import VideoToolbox
 
-fileprivate func listMetalDevices() {
-    #if os(macOS)
-    let devices = MTLCopyAllDevices()
-    for device in devices {
-        print(device)
-    }
-    #else
-    if let device = MTLCreateSystemDefaultDevice() {
-        print(device)
-    }
-    #endif
-}
-
-fileprivate func makeContext(options: MTIContextOptions? = nil) throws -> MTIContext? {
-    if let device = MTLCreateSystemDefaultDevice() {
-        return try MTIContext(device: device)
-    }
-    return nil
-}
-
-final class ContextTests: XCTestCase {
-    
-    static override func setUp() {
-        super.setUp()
-        
-        print("----- Metal Devices -----")
-        listMetalDevices()
-        print("-------------------------")
-    }
-    
-    func testContextCreation() throws {
-        let _ = try makeContext()
-    }
-}
-
-final class CGImageLoadingTests: XCTestCase {
-    
-    func testCGImageLoading_normal() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImage(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_monochrome() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImageWithMonochromeColorSpace(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_5bpc() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImageWith5BitPerComponent(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_bigEndianAlphaLast() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaLast(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_bigEndianAlphaFirst() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaFirst(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_defaultEndianAlphaFirst() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithDefaultEndianAlphaFirst(), options: .default, isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    
-    func testCGImageLoading_sRGB() throws {
-        guard let context = try makeContext() else { return }
-        
-        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([[128]]), options: MTICGImageLoadingOptions(colorSpace: CGColorSpace(name: CGColorSpace.linearSRGB)!), isOpaque: true)
-        let linearImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: linearImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                let c = 128.0/255.0
-                
-                // Should we use `round` here? https://developer.apple.com/documentation/metal/mtlrenderpipelinestate/3608177-texturewriteroundingmode
-                let linearValue = UInt8(round((c <= 0.04045) ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) * 255.0))
-                XCTAssert(pixel.r == linearValue && pixel.g == linearValue && pixel.b == linearValue && pixel.a == 255)
-            }
-        }
-        let sRGBImage = try context.makeCGImage(from: image, sRGB: true)
-        PixelEnumerator.enumeratePixels(in: sRGBImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 128 && pixel.g == 128 && pixel.b == 128 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testURLImageLoading_orientations() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("f\(orientation).png")
-                                 , options: .default, alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 0, 0],
-                [0, 0, 255],
-                [0, 255, 255],
-                [0, 255, 255],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_orientations() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: .default, alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 0, 0],
-                [0, 0, 255],
-                [0, 255, 255],
-                [0, 255, 255],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_orientations_flip() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: MTICGImageLoadingOptions(colorSpace: nil, flipsVertically: true), alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 255, 255],
-                [0, 255, 255],
-                [0, 0, 255],
-                [0, 0, 0],
-            ]))
-        }
-    }
-}
-
-final class TextureLoaderImageLoadingTests: XCTestCase {
-    
-    func testCGImageLoading_normal() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImage(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_monochrome() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImageWithMonochromeColorSpace(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_5bpc() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeCheckboardImageWith5BitPerComponent(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_bigEndianAlphaLast() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaLast(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_bigEndianAlphaFirst() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithBigEndianAlphaFirst(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testCGImageLoading_defaultEndianAlphaFirst() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeR0G128B255CheckboardImageWithDefaultEndianAlphaFirst(), options: [.SRGB: false], isOpaque: true)
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 128 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-        }
-    }
-    
-    
-    func testCGImageLoading_sRGB() throws {
-        guard let context = try makeContext() else { return }
-        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([[128]]), options: [.SRGB: true], isOpaque: true)
-        let linearImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: linearImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                let c = 128.0/255.0
-                
-                // Should we use `round` here? https://developer.apple.com/documentation/metal/mtlrenderpipelinestate/3608177-texturewriteroundingmode
-                let linearValue = UInt8(round((c <= 0.04045) ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) * 255.0))
-                XCTAssert(pixel.r == linearValue && pixel.g == linearValue && pixel.b == linearValue && pixel.a == 255)
-            }
-        }
-        let sRGBImage = try context.makeCGImage(from: image, sRGB: true)
-        PixelEnumerator.enumeratePixels(in: sRGBImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 128 && pixel.g == 128 && pixel.b == 128 && pixel.a == 255)
-            }
-        }
-    }
-    
-    func testURLImageLoading_orientations() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("f\(orientation).png")
-                                 , options: [.SRGB: false], alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 0, 0],
-                [0, 0, 255],
-                [0, 255, 255],
-                [0, 255, 255],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_orientations() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false], alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 0, 0],
-                [0, 0, 255],
-                [0, 255, 255],
-                [0, 255, 255],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_orientations_flip() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false, .origin: MTKTextureLoader.Origin.flippedVertically], alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 255, 255],
-                [0, 255, 255],
-                [0, 0, 255],
-                [0, 0, 0],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_mtkfallback_orientations() throws {
-        guard let context = try makeContext() else { return }
-        for orientation in 1...8 {
-            let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
-                                    .deletingLastPathComponent().deletingLastPathComponent()
-                                    .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false, .generateMipmaps: true], alphaType: .alphaIsOne)
-            guard let inputImage = image else {
-                XCTFail()
-                return
-            }
-            let cgImage = try context.makeCGImage(from: inputImage)
-            XCTAssert(PixelEnumerator.monochromeImageEqual(image: cgImage, target: [
-                [0, 0, 0],
-                [0, 0, 255],
-                [0, 255, 255],
-                [0, 255, 255],
-            ]))
-        }
-    }
-    
-    func testURLImageLoading_grayColorSpace_mtkfallback_mipmap() throws {
-        guard let context = try makeContext() else { return }
-        let url = URL(fileURLWithPath: #file)
-            .deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("Fixture")
-            .appendingPathComponent("fgray1.png")
-        let textureLoader = MTIDefaultTextureLoader.makeTextureLoader(device: context.device)
-        let texture = try textureLoader.newTexture(withContentsOf: url, options: [.SRGB: false, .generateMipmaps: true])
-        XCTAssert(texture.mipmapLevelCount > 1)
-    }
-}
-
-final class ImageLoadingTests: XCTestCase {
-    
-    func testCVPixelBufferLoading_cvMetalTextureCache() throws {
-        var buffer: CVPixelBuffer?
-        let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)
-        guard let pixelBuffer = buffer, r == kCVReturnSuccess else {
-            XCTFail("Cannot create pixel buffer.")
-            return
-        }
-        CVPixelBufferLockBaseAddress(pixelBuffer, [])
-        if let pixels = CVPixelBufferGetBaseAddress(pixelBuffer)?.assumingMemoryBound(to: UInt8.self) {
-            pixels.advanced(by: 0).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 1).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 2).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 3).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 0 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 1 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 2 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 3 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
-        }
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, [])
-        
-        let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .nonPremultiplied)
-        let options = MTIContextOptions()
-        options.coreVideoMetalTextureBridgeClass = MTICVMetalTextureCache.self
-        guard let context = try makeContext(options: options) else { return }
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
-            }
-        }
-    }
-    
-    @available(iOS 11.0, macOS 10.13, *)
-    func testCVPixelBufferLoading_ioSurface() throws {
-        var buffer: CVPixelBuffer?
-        let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)
-        guard let pixelBuffer = buffer, r == kCVReturnSuccess else {
-            XCTFail("Cannot create pixel buffer.")
-            return
-        }
-        CVPixelBufferLockBaseAddress(pixelBuffer, [])
-        if let pixels = CVPixelBufferGetBaseAddress(pixelBuffer)?.assumingMemoryBound(to: UInt8.self) {
-            pixels.advanced(by: 0).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 1).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 2).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 3).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 0 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 1 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
-            pixels.advanced(by: 2 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 0, count: 1)
-            pixels.advanced(by: 3 + CVPixelBufferGetBytesPerRow(pixelBuffer)).assign(repeating: 255, count: 1)
-        }
-        CVPixelBufferUnlockBaseAddress(pixelBuffer, [])
-        
-        let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .nonPremultiplied)
-        let options = MTIContextOptions()
-        options.coreVideoMetalTextureBridgeClass = MTICVMetalIOSurfaceBridge.self
-        guard let context = try makeContext(options: options) else { return }
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 0)
-            }
-        }
-    }
-
-    func testBitmapDataLoading() throws {
-        let bitmapData: [UInt8] = [
-            255, 255, 255, 255,
-            255, 255, 0, 255,
-        ]
-        let image = MTIImage(bitmapData: Data(bytes: bitmapData, count: bitmapData.count), width: 2, height: 1, bytesPerRow: 8, pixelFormat: .rgba8Unorm, alphaType: .alphaIsOne)
-        guard let context = try makeContext() else { return }
-        let cgImage = try context.makeCGImage(from: image)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-            }
-        }
-    }
-}
-
 final class RenderTests: XCTestCase {
     
     func testSolidColorImageRendering() throws {
         let image = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 2, height: 2))
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let cgImage = try context.makeCGImage(from: image)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             XCTAssert(pixel.r == 255 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
@@ -622,7 +27,7 @@ final class RenderTests: XCTestCase {
         let filter = MTIColorInvertFilter()
         filter.inputImage = image
         let output = filter.outputImage
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let cgImage = try context.makeCGImage(from: output!)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             XCTAssert(pixel.r == 0 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
@@ -637,7 +42,7 @@ final class RenderTests: XCTestCase {
         filter.inputImage = image
         filter.inputMask = MTIMask(content: MTIImage(cgImage: try ImageGenerator.makeCheckboardImage(), options: [.SRGB: false], isOpaque: true), component: .red, mode: .normal)
         let output = filter.outputImage
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let cgImage = try context.makeCGImage(from: output!)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             if coordinates.x == 0 && coordinates.y == 0 {
@@ -661,7 +66,7 @@ final class RenderTests: XCTestCase {
         filter.inputImage = image
         filter.saturation = 0
         let output = filter.outputImage
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let cgImage = try context.makeCGImage(from: output!)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             XCTAssert(pixel.r == pixel.g && pixel.g == pixel.b && pixel.a == 255)
@@ -681,7 +86,7 @@ final class RenderTests: XCTestCase {
             image => invertFilter => blendFilter.inputPorts.inputImage
             blendFilter => saturationFilter => output
         }
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         XCTAssert(context.idleResourceCount == 0)
         let _ = try context.makeCGImage(from: outputImage!)
         XCTAssert(context.idleResourceCount == 3)
@@ -702,7 +107,7 @@ final class RenderTests: XCTestCase {
         filter.inputImage = image
         let output = filter.outputImage!
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let outputCGImage = try context.makeCGImage(from: output)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coordinates) in
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
@@ -725,7 +130,7 @@ final class RenderTests: XCTestCase {
             
             XCTAssert(context.idleResourceCount == 0)
         }
-      
+        
         XCTAssert(context.idleResourceCount == 1)
         context.reclaimResources()
         XCTAssert(context.idleResourceCount == 0)
@@ -739,7 +144,7 @@ final class RenderTests: XCTestCase {
         filter.inputImage = image
         let output = filter.outputImage!
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let outputCGImage = try context.makeCGImage(from: output)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coordinates) in
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
@@ -761,7 +166,7 @@ final class RenderTests: XCTestCase {
         filter.inputImage = inputImage
         let output = filter.outputImage!
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let outputCGImage = try context.makeCGImage(from: output)
         XCTAssert(outputCGImage.width == Int(inputImage.size.width) * 2)
         XCTAssert(outputCGImage.height == Int(inputImage.size.height) * 2)
@@ -783,7 +188,7 @@ final class RenderTests: XCTestCase {
         ]), options: [.SRGB: false], isOpaque: true)
         let scaledDimensions = MTITextureDimensions(cgSize: CGSize(width: inputImage.size.width * 2, height: inputImage.size.height * 2))
         let outputImage = kernel.apply(toInputImages: [inputImage], parameters: [:], outputTextureDimensions: scaledDimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         if MTIContext.defaultMetalDeviceSupportsMPS {
             let outputCGImage = try context.makeCGImage(from: outputImage)
             XCTAssert(outputCGImage.width == Int(inputImage.size.width) * 2)
@@ -809,7 +214,7 @@ final class RenderTests: XCTestCase {
             return ciImage
         }, outputDimensions: MTITextureDimensions(cgSize: CGSize(width: 2, height: 2)))
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let cgImage = try context.makeCGImage(from: mtiImage)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
             if coordinates.x == 0 && coordinates.y == 0 {
@@ -852,7 +257,7 @@ final class RenderTests: XCTestCase {
             [0, 255, 255],
         ]), options: [.SRGB: false], isOpaque: true)
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let renderResult = try context.makeCGImage(from: image)
         XCTAssert(PixelEnumerator.monochromeImageEqual(image: renderResult, target: [
             [0, 0, 0],
@@ -951,17 +356,17 @@ final class RenderTests: XCTestCase {
     }
     
     func testImageOrientations_fixture() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         for orientation in 1...8 {
             let source = CGImageSourceCreateWithURL(URL(fileURLWithPath: #file)
-                .deletingLastPathComponent().deletingLastPathComponent()
-                .appendingPathComponent("Fixture")
-                .appendingPathComponent("f\(orientation).png") as CFURL, nil)
+                                                        .deletingLastPathComponent().deletingLastPathComponent()
+                                                        .appendingPathComponent("Fixture")
+                                                        .appendingPathComponent("f\(orientation).png") as CFURL, nil)
             guard let imageSource = source,
-                CGImageSourceGetCount(imageSource) > 0,
-                let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
-                    XCTFail()
-                    return
+                  CGImageSourceGetCount(imageSource) > 0,
+                  let cgImage = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
+                XCTFail()
+                return
             }
             guard let o = CGImagePropertyOrientation(rawValue: UInt32(orientation)) else {
                 XCTFail()
@@ -979,7 +384,7 @@ final class RenderTests: XCTestCase {
     }
     
     func testMultilayerCompositing() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
@@ -1006,7 +411,7 @@ final class RenderTests: XCTestCase {
     }
     
     func testMultilayerCompositing_tint() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
@@ -1034,7 +439,7 @@ final class RenderTests: XCTestCase {
     }
     
     func testMultilayerCompositing_tintWithAlpha() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
@@ -1083,7 +488,7 @@ final class RenderTests: XCTestCase {
     }
     
     func testMultilayerCompositing_rotation() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
@@ -1127,7 +532,7 @@ final class RenderTests: XCTestCase {
     
     @available(iOS 11.0, macOS 10.13, *)
     func testMSAA_multilayerCompositing() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
@@ -1183,7 +588,7 @@ final class RenderTests: XCTestCase {
     
     @available(iOS 11.0, macOS 10.13, *)
     func testMSAA_renderCommand() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let geometry = MTIVertices.squareVertices(for: CGRect(x: -1, y: -1, width: 1.6, height: 2))
         let command = MTIRenderCommand(kernel: .passthrough, geometry: geometry, images: [MTIImage.white], parameters: [:])
@@ -1230,7 +635,7 @@ final class RenderTests: XCTestCase {
     }
     
     func testRenderedBuffer() throws {
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [255, 255],
             [0, 255],
@@ -1315,7 +720,7 @@ final class RenderTests: XCTestCase {
         try autoreleasepool {
             let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 32, height: 32))
             let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-            guard let context = try makeContext() else { return }
+            let context = try makeContext()
             let output = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1325,7 +730,7 @@ final class RenderTests: XCTestCase {
         try autoreleasepool {
             let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
             let outputImage = computeKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-            guard let context = try makeContext() else { return }
+            let context = try makeContext()
             let output = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1360,7 +765,7 @@ final class RenderTests: XCTestCase {
         try autoreleasepool {
             let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 32, height: 32))
             let outputImage = computeKernel.apply(toInputImages: [image], parameters: [:], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-            guard let context = try makeContext() else { return }
+            let context = try makeContext()
             let output = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1370,7 +775,7 @@ final class RenderTests: XCTestCase {
         try autoreleasepool {
             let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
             let outputImage = computeKernel.apply(toInputImages: [image], parameters: [:], dispatchOptions: nil, outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-            guard let context = try makeContext() else { return }
+            let context = try makeContext()
             let output = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
                 XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1401,7 +806,7 @@ final class RenderTests: XCTestCase {
         let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
         let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1435,7 +840,7 @@ final class RenderTests: XCTestCase {
         let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", constantValues: constantValues, libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
         let outputImage = renderKernel.apply(toInputImages: [image], parameters: [:], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
             XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
@@ -1463,7 +868,7 @@ final class RenderTests: XCTestCase {
         scene.addChild(node3)
         
         let image = MTIImage(skScene: scene)
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let output = try context.makeCGImage(from: image)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
             if coord.y < 16 {
@@ -1481,7 +886,7 @@ final class RenderTests: XCTestCase {
         cameraNode.camera = SCNCamera()
         scene.rootNode.addChildNode(cameraNode)
         cameraNode.position = SCNVector3(x: 0, y: 0, z: 15)
-
+        
         let cubeNode = SCNNode()
         cubeNode.geometry = SCNBox(width: 20, height: 20, length: 20, chamferRadius: 0)
         cubeNode.geometry?.firstMaterial?.lightingModel = .constant
@@ -1498,7 +903,7 @@ final class RenderTests: XCTestCase {
         ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
         scene.rootNode.addChildNode(ambientLightNode)
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         let renderer = MTISCNSceneRenderer(device: context.device)
         renderer.scene = scene
         renderer.scnRenderer.pointOfView = cameraNode
@@ -1535,7 +940,7 @@ final class RenderTests: XCTestCase {
         ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
         scene.rootNode.addChildNode(ambientLightNode)
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let renderer = MTISCNSceneRenderer(device: context.device)
         renderer.scene = scene
@@ -1626,7 +1031,7 @@ final class RenderTests: XCTestCase {
         ambientLightNode.light!.color = CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &whiteColor)!
         scene.rootNode.addChildNode(ambientLightNode)
         
-        guard let context = try makeContext() else { return }
+        let context = try makeContext()
         
         let renderer = MTISCNSceneRenderer(device: context.device)
         renderer.scene = scene
@@ -1697,293 +1102,5 @@ final class RenderTests: XCTestCase {
         } catch {
             throw error
         }
-    }
-}
-
-final class UtilitiesTests: XCTestCase {
-    
-    func testLock() throws {
-        var counter: Int = 0
-        let lock = MTILockCreate()
-        DispatchQueue.concurrentPerform(iterations: 1000_000) { _ in
-            lock.lock()
-            counter += 1
-            lock.unlock()
-        }
-        XCTAssert(counter == 1000_000)
-    }
-
-    func testWeakToStrongTable() throws {
-        class Key {}
-        class Value {}
-        let table = MTIWeakToStrongObjectsMapTable<Key,Value>()
-        
-        var key: Key? = Key()
-        var value: Value? = Value()
-        table.setObject(value!, forKey: key!)
-        
-        weak var weakValue = value
-        value = nil
-        
-        XCTAssert(weakValue != nil)
-        
-        XCTAssert(table.object(forKey: key!) === weakValue)
-        
-        key = nil
-        
-        XCTAssert(weakValue == nil)
-    }
-    
-    func testMTILayerModel() throws {
-        var propertyCount: UInt32 = 0
-        let list = try XCTUnwrap(class_copyPropertyList(MTILayer.self, &propertyCount))
-        let properties = [objc_property_t](UnsafeBufferPointer<objc_property_t>(start: list, count: Int(propertyCount)))
-        list.deallocate()
-        let swiftLayerMirror = Mirror(reflecting: MultilayerCompositingFilter.Layer(content: .white))
-        for property in properties {
-            XCTAssert(swiftLayerMirror.children.contains { label, value in
-                label == String(cString: property_getName(property))
-            })
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_float4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
-        librarySource += """
-        
-        using namespace metalpetal;
-        
-        fragment float4 testRender(
-                                VertexOut vertexIn [[stage_in]],
-                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                sampler sourceSampler [[sampler(0)]],
-                                constant float4 &color [[buffer(0)]]
-                                ) {
-            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-            return textureColor + color;
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
-        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
-        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<Float>(1, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
-        let output = try context.makeCGImage(from: outputImage)
-        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
-            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_float2x2() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
-        librarySource += """
-        
-        using namespace metalpetal;
-        
-        fragment float4 testRender(
-                                VertexOut vertexIn [[stage_in]],
-                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                sampler sourceSampler [[sampler(0)]],
-                                constant float2x2 &color [[buffer(0)]]
-                                ) {
-            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-            return textureColor + float4(color[0][0],color[1][0],color[0][1],color[1][1]);
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
-        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
-        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": float2x2(rows: [SIMD2<Float>(1,0),SIMD2<Float>(1,0)])], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
-        let output = try context.makeCGImage(from: outputImage)
-        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
-            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_uchar4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
-        librarySource += """
-        
-        using namespace metalpetal;
-        
-        fragment float4 testRender(
-                                VertexOut vertexIn [[stage_in]],
-                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                sampler sourceSampler [[sampler(0)]],
-                                constant uchar4 &color [[buffer(0)]]
-                                ) {
-            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-            float r = color.r / 255.0;
-            float g = color.g / 255.0;
-            float b = color.b / 255.0;
-            float a = color.a / 255.0;
-            return textureColor + float4(r,g,b,a);
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
-        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
-        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<UInt8>(128, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
-        let output = try context.makeCGImage(from: outputImage)
-        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
-            XCTAssert(pixel.r == 128 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_int64_4() throws {
-        let kernelSource = """
-        #include <metal_stdlib>
-        using namespace metal;
-        
-        kernel void testCompute(
-        texture2d<float, access::read> inTexture [[texture(0)]],
-        texture2d<float, access::write> outTexture [[texture(1)]],
-        constant int4 &color [[buffer(0)]],
-        uint2 gid [[thread_position_in_grid]]
-        ) {
-            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
-                return;
-            }
-            outTexture.write(inTexture.read(uint2(0,0)), gid);
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
-        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
-        
-        guard let context = try makeContext() else { return }
-        context.lockForRendering()
-        let state = try context.kernelState(for: computeKernel, configuration: nil) as! MTIComputePipeline
-        context.unlockForRendering()
-        let commandEncoder = context.commandQueue.makeCommandBuffer()?.makeComputeCommandEncoder()
-        defer {
-            commandEncoder?.endEncoding()
-        }
-        do {
-            try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": SIMD4<Int>(128, 0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
-        } catch {
-            let nsError = error as NSError
-            XCTAssert(nsError.domain == MTIErrorDomain)
-            XCTAssert(nsError.code == MTIError.Code.parameterDataTypeNotSupported.rawValue)
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_typeMismatch() throws {
-        let kernelSource = """
-        #include <metal_stdlib>
-        using namespace metal;
-        
-        kernel void testCompute(
-        texture2d<float, access::read> inTexture [[texture(0)]],
-        texture2d<float, access::write> outTexture [[texture(1)]],
-        constant int4 &color [[buffer(0)]],
-        uint2 gid [[thread_position_in_grid]]
-        ) {
-            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
-                return;
-            }
-            outTexture.write(inTexture.read(uint2(0,0)), gid);
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
-        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
-        
-        guard let context = try makeContext() else { return }
-        context.lockForRendering()
-        let state = try context.kernelState(for: computeKernel, configuration: nil) as! MTIComputePipeline
-        context.unlockForRendering()
-        let commandEncoder = context.commandQueue.makeCommandBuffer()?.makeComputeCommandEncoder()
-        defer {
-            commandEncoder?.endEncoding()
-        }
-        do {
-            try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": SIMD4<Float>(128, 0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
-        } catch {
-            let encoderError = try XCTUnwrap(error as? MTISIMDArgumentEncoder.Error)
-            XCTAssert(encoderError == .argumentTypeMismatch)
-        }
-    }
-    
-    func testDirectSIMDVectorSupport_int32_4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
-        librarySource += """
-        
-        using namespace metalpetal;
-        
-        fragment float4 testRender(
-                                VertexOut vertexIn [[stage_in]],
-                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
-                                sampler sourceSampler [[sampler(0)]],
-                                constant int4 &color [[buffer(0)]]
-                                ) {
-            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-            float r = color.r / 255.0;
-            float g = color.g / 255.0;
-            float b = color.b / 255.0;
-            float a = color.a / 255.0;
-            return textureColor + float4(r,g,b,a);
-        }
-        """
-        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
-        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
-        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": SIMD4<Int32>(128, 0, 0, 0)], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
-        guard let context = try makeContext() else { return }
-        let output = try context.makeCGImage(from: outputImage)
-        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
-            XCTAssert(pixel.r == 128 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
-        }
-    }
-    
-    func testMTIVector() throws {
-        let randomFloat = Float.random(in: 0...1)
-        XCTAssert(MTIVector(value: SIMD2<Float>(repeating: randomFloat)).float2Value == SIMD2<Float>(repeating: randomFloat))
-        XCTAssert(MTIVector(value: SIMD3<Float>(repeating: randomFloat)).float3Value == SIMD3<Float>(repeating: randomFloat))
-        XCTAssert(MTIVector(value: SIMD4<Float>(repeating: randomFloat)).float4Value == SIMD4<Float>(repeating: randomFloat))
-        
-        let randomInt32 = Int32.random(in: Int32.min...Int32.max)
-        XCTAssert(MTIVector(value: SIMD2<Int32>(repeating: randomInt32)).int2Value == SIMD2<Int32>(repeating: randomInt32))
-        XCTAssert(MTIVector(value: SIMD3<Int32>(repeating: randomInt32)).int3Value == SIMD3<Int32>(repeating: randomInt32))
-        XCTAssert(MTIVector(value: SIMD4<Int32>(repeating: randomInt32)).int4Value == SIMD4<Int32>(repeating: randomInt32))
-
-        let randomInt16 = Int16.random(in: Int16.min...Int16.max)
-        XCTAssert(MTIVector(value: SIMD2<Int16>(repeating: randomInt16)).short2Value == SIMD2<Int16>(repeating: randomInt16))
-        XCTAssert(MTIVector(value: SIMD3<Int16>(repeating: randomInt16)).short3Value == SIMD3<Int16>(repeating: randomInt16))
-        XCTAssert(MTIVector(value: SIMD4<Int16>(repeating: randomInt16)).short4Value == SIMD4<Int16>(repeating: randomInt16))
-
-        let randomInt8 = Int8.random(in: Int8.min...Int8.max)
-        XCTAssert(MTIVector(value: SIMD2<Int8>(repeating: randomInt8)).char2Value == SIMD2<Int8>(repeating: randomInt8))
-        XCTAssert(MTIVector(value: SIMD3<Int8>(repeating: randomInt8)).char3Value == SIMD3<Int8>(repeating: randomInt8))
-        XCTAssert(MTIVector(value: SIMD4<Int8>(repeating: randomInt8)).char4Value == SIMD4<Int8>(repeating: randomInt8))
-
-        let randomUInt32 = UInt32.random(in: UInt32.min...UInt32.max)
-        XCTAssert(MTIVector(value: SIMD2<UInt32>(repeating: randomUInt32)).uint2Value == SIMD2<UInt32>(repeating: randomUInt32))
-        XCTAssert(MTIVector(value: SIMD3<UInt32>(repeating: randomUInt32)).uint3Value == SIMD3<UInt32>(repeating: randomUInt32))
-        XCTAssert(MTIVector(value: SIMD4<UInt32>(repeating: randomUInt32)).uint4Value == SIMD4<UInt32>(repeating: randomUInt32))
-        
-        let randomUInt16 = UInt16.random(in: UInt16.min...UInt16.max)
-        XCTAssert(MTIVector(value: SIMD2<UInt16>(repeating: randomUInt16)).ushort2Value == SIMD2<UInt16>(repeating: randomUInt16))
-        XCTAssert(MTIVector(value: SIMD3<UInt16>(repeating: randomUInt16)).ushort3Value == SIMD3<UInt16>(repeating: randomUInt16))
-        XCTAssert(MTIVector(value: SIMD4<UInt16>(repeating: randomUInt16)).ushort4Value == SIMD4<UInt16>(repeating: randomUInt16))
-        
-        let randomUInt8 = UInt8.random(in: UInt8.min...UInt8.max)
-        XCTAssert(MTIVector(value: SIMD2<UInt8>(repeating: randomUInt8)).uchar2Value == SIMD2<UInt8>(repeating: randomUInt8))
-        XCTAssert(MTIVector(value: SIMD3<UInt8>(repeating: randomUInt8)).uchar3Value == SIMD3<UInt8>(repeating: randomUInt8))
-        XCTAssert(MTIVector(value: SIMD4<UInt8>(repeating: randomUInt8)).uchar4Value == SIMD4<UInt8>(repeating: randomUInt8))
-
-        XCTAssert(MTIVector(value: SIMD4<Float>(repeating: randomFloat)).float3Value == SIMD3<Float>(randomFloat, randomFloat, randomFloat))
     }
 }
