@@ -1103,4 +1103,28 @@ final class RenderTests: XCTestCase {
             throw error
         }
     }
+    
+    func testYCbCrTextureSupport() throws {
+        let context = try makeContext()
+        if context.isYCbCrPixelFormatSupported {
+            let blueImage = MTIImage(color: MTIColor(red: 0, green: 0, blue: 1, alpha: 1), sRGB: false, size: CGSize(width: 4, height: 4))
+            var pixelBuffer: CVPixelBuffer!
+            CVPixelBufferCreate(kCFAllocatorDefault, 4, 4, kCVPixelFormatType_420YpCbCr10BiPlanarFullRange, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &pixelBuffer)
+            CVBufferSetAttachment(pixelBuffer, kCVImageBufferCGColorSpaceKey, CGColorSpace(name: CGColorSpace.sRGB)!, .shouldPropagate)
+            try context.render(blueImage, to: pixelBuffer)
+            var cgImage: CGImage!
+            VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
+            var pixels: [UInt8] = [UInt8](repeating: 0, count: 4 * 4 * 4)
+            let cgContext = CGContext(data: &pixels, width: 4, height: 4, bitsPerComponent: 8, bytesPerRow: 4 * 4, space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue)
+            cgContext?.draw(cgImage, in: CGRect(x: 0, y: 0, width: 4, height: 4))
+            for i in 0..<pixels.count {
+                if i % 4 == 0 {
+                    XCTAssert(pixels[i] == 254) //b
+                    XCTAssert(pixels[i + 1] == 0) //g
+                    XCTAssert(pixels[i + 2] == 0) //r
+                    XCTAssert(pixels[i + 3] == 255) //a
+                }
+            }
+        }
+    }
 }
