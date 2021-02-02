@@ -91,6 +91,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) BOOL isYCbCrPixelFormatSupported;
 
+@property (nonatomic, readonly) BOOL isMemorylessTextureSupported;
+
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
 @property (nonatomic, strong, readonly) id<MTLLibrary> defaultLibrary;
@@ -112,6 +114,10 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic, readonly) NSUInteger idleResourceCount;
 
 + (void)enumerateAllInstances:(void (^)(MTIContext *context))enumerator;
+
++ (BOOL)deviceSupportsMemorylessTexture:(id<MTLDevice>)device;
+
++ (BOOL)deviceSupportsYCbCrPixelFormat:(id<MTLDevice>)device;
 
 @end
 

@@ -264,6 +264,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _isMetalPerformanceShadersSupported = MTIMPSSupportsMTLDevice(device);
         _isYCbCrPixelFormatSupported = options.enablesYCbCrPixelFormatSupport && MTIDeviceSupportsYCBCRPixelFormat(device);
+        _isMemorylessTextureSupported = [MTIContext deviceSupportsMemorylessTexture:device];
         
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
@@ -350,6 +351,22 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 + (void)enumerateAllInstances:(void (^)(MTIContext * _Nonnull))enumerator {
     MTIContextEnumerateAllInstances(enumerator);
+}
+
++ (BOOL)deviceSupportsMemorylessTexture:(id<MTLDevice>)device {
+    if (@available(iOS 13.0, macOS 11.0, tvOS 13.0, macCatalyst 14.0, *)) {
+        if ([device supportsFamily:MTLGPUFamilyApple1]) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } else {
+        return (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST);
+    }
+}
+
++ (BOOL)deviceSupportsYCbCrPixelFormat:(id<MTLDevice>)device {
+    return MTIDeviceSupportsYCBCRPixelFormat(device);
 }
 
 @end
