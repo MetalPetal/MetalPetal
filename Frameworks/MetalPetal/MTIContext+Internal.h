@@ -52,8 +52,6 @@ typedef NSString * MTIContextImageAssociatedValueTableName NS_EXTENSIBLE_STRING_
 
 #pragma mark - Cache
 
-- (nullable id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError **)error;
-
 - (nullable id<MTLFunction>)functionWithDescriptor:(MTIFunctionDescriptor *)descriptor error:(NSError **)error;
 
 - (nullable id<MTLSamplerState>)samplerStateWithDescriptor:(MTISamplerDescriptor *)descriptor error:(NSError **)error;
