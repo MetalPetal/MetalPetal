@@ -206,6 +206,8 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 @property (nonatomic, strong, readonly) id<MTILocking> renderingLock;
 
+@property (nonatomic, copy) NSDictionary<NSString *, NSString *> *defaultLibraryFunctionShort2FullNames;
+
 @end
 
 @implementation MTIContext
@@ -256,6 +258,17 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
             }
             return nil;
         }
+        
+        NSMutableDictionary *defaultLibraryFunctionShort2FullNames = [NSMutableDictionary dictionary];
+        for (NSString *name in defaultLibrary.functionNames) {
+            NSArray<NSString *> *nameComponents = [name componentsSeparatedByString:@"::"];
+            if (nameComponents.count > 1) {
+                NSString *shortName = nameComponents.lastObject;
+                NSAssert(defaultLibraryFunctionShort2FullNames[shortName] == nil, @"Duplicated function short name in default library: %@", shortName);
+                defaultLibraryFunctionShort2FullNames[shortName] = name;
+            }
+        }
+        _defaultLibraryFunctionShort2FullNames = [defaultLibraryFunctionShort2FullNames copy];
         
         _label = options.label;
         _workingPixelFormat = options.workingPixelFormat;
@@ -488,14 +501,10 @@ static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Con
         }
         
         NSString *functionName = descriptor.name;
-        #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST || TARGET_OS_TV
-        for (NSString *name in library.functionNames) {
-            if ([name hasSuffix:[@"::" stringByAppendingString:descriptor.name]]) {
-                functionName = name;
-                break;
-            }
+        if (library == self.defaultLibrary) {
+            NSString *fullname = self.defaultLibraryFunctionShort2FullNames[descriptor.name];
+            functionName = fullname ?: functionName;
         }
-        #endif
         
         if (descriptor.constantValues) {
             NSError *error = nil;
