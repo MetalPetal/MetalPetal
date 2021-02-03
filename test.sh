@@ -4,6 +4,21 @@ set -e
 set -u
 set -o pipefail
 
+BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
+echo "------------------"
+echo "Preparing..."
+echo "------------------"
+
+echo "Running boilerplate-generator..."
+swift run --package-path "$BASEDIR/Utilities" main boilerplate-generator "$BASEDIR"
+
+echo "Running umbrella-header-generator..."
+swift run --package-path "$BASEDIR/Utilities" main umbrella-header-generator "$BASEDIR"
+
+echo "Running swift-package-generator..."
+swift run --package-path "$BASEDIR/Utilities" main swift-package-generator "$BASEDIR"
+
 echo "------------------"
 echo "Somke Test (macOS)"
 echo "------------------"
