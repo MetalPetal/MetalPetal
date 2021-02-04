@@ -363,43 +363,6 @@ __attribute__((objc_subclassing_restricted))
         renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
     }
     
-    id<MTLSamplerState> backgroundSamplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    id<MTLSamplerState> compositingMaskSamplerStates[self.layers.count];
-    id<MTLSamplerState> layerSamplerStates[self.layers.count];
-    
-    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
-        MTILayer *layer = self.layers[index];
-        {
-            if (layer.compositingMask) {
-                id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor error:&error];
-                if (error) {
-                    if (inOutError) {
-                        *inOutError = error;
-                    }
-                    return nil;
-                }
-                compositingMaskSamplerStates[index] = samplerState;
-            }
-        }
-        {
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
-                }
-                return nil;
-            }
-            layerSamplerStates[index] = samplerState;
-        }
-    }
-    
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
@@ -423,7 +386,7 @@ __attribute__((objc_subclassing_restricted))
     [commandEncoder setRenderPipelineState:renderPipeline.state];
 
     [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:self.backgroundImage] atIndex:0];
-    [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
+    [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:self.backgroundImage] atIndex:0];
     
     [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
@@ -443,7 +406,7 @@ __attribute__((objc_subclassing_restricted))
             [commandEncoder setRenderPipelineState:renderPipeline.state];
             
             [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:0];
-            [commandEncoder setFragmentSamplerState:compositingMaskSamplerStates[index] atIndex:0];
+            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:0];
             
             [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
         }
@@ -472,7 +435,7 @@ __attribute__((objc_subclassing_restricted))
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
-        [commandEncoder setFragmentSamplerState:layerSamplerStates[index] atIndex:0];
+        [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.content] atIndex:0];
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;
@@ -543,43 +506,6 @@ __attribute__((objc_subclassing_restricted))
         renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     }
     
-    id<MTLSamplerState> backgroundSamplerState = [renderingContext.context samplerStateWithDescriptor:self.backgroundImage.samplerDescriptor error:&error];
-    if (error) {
-        if (inOutError) {
-            *inOutError = error;
-        }
-        return nil;
-    }
-    
-    id<MTLSamplerState> compositingMaskSamplerStates[self.layers.count];
-    id<MTLSamplerState> layerSamplerStates[self.layers.count];
-    
-    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
-        MTILayer *layer = self.layers[index];
-        {
-            if (layer.compositingMask) {
-                id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.compositingMask.content.samplerDescriptor error:&error];
-                if (error) {
-                    if (inOutError) {
-                        *inOutError = error;
-                    }
-                    return nil;
-                }
-                compositingMaskSamplerStates[index] = samplerState;
-            }
-        }
-        {
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:layer.content.samplerDescriptor error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
-                }
-                return nil;
-            }
-            layerSamplerStates[index] = samplerState;
-        }
-    }
-    
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
@@ -601,7 +527,7 @@ __attribute__((objc_subclassing_restricted))
     }
     [commandEncoder setRenderPipelineState:renderPipeline.state];
     [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:self.backgroundImage] atIndex:0];
-    [commandEncoder setFragmentSamplerState:backgroundSamplerState atIndex:0];
+    [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:self.backgroundImage] atIndex:0];
     [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
     //render layers
@@ -623,6 +549,7 @@ __attribute__((objc_subclassing_restricted))
             //Configuration not supported on macOS currently.
             NSParameterAssert(!(layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied && layer.compositingMask.component != MTIColorComponentAlpha));
             [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:2];
+            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:2];
         }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
@@ -649,7 +576,7 @@ __attribute__((objc_subclassing_restricted))
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
-        [commandEncoder setFragmentSamplerState:layerSamplerStates[index] atIndex:0];
+        [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.content] atIndex:0];
         
         [commandEncoder setFragmentTexture:renderTarget.texture atIndex:1];
         
