@@ -314,26 +314,14 @@ __attribute__((objc_subclassing_restricted))
         
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
-        id<MTLSamplerState> samplerStates[command.images.count];
-        for (NSUInteger index = 0; index < command.images.count; index += 1) {
-            MTIImage *image = command.images[index];
-            id<MTLSamplerState> samplerState = [renderingContext.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
-            if (error) {
-                if (inOutError) {
-                    *inOutError = error;
-                }
-                return nil;
-            }
-            samplerStates[index] = samplerState;
-        }
-        
         for (MTLArgument *argument in renderPipeline.reflection.vertexArguments) {
             if (argument.type == MTLArgumentTypeTexture) {
                 NSUInteger index = argument.index;
                 if (index < command.images.count) {
                     id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
+                    id<MTLSamplerState> samplerState = [renderingContext resolvedSamplerStateForImage:command.images[index]];
                     [commandEncoder setVertexTexture:texture atIndex:index];
-                    [commandEncoder setVertexSamplerState:samplerStates[index] atIndex:index];
+                    [commandEncoder setVertexSamplerState:samplerState atIndex:index];
                 } else {
                     NSAssert(NO, @"Failed to set vertex textures.");
                     if (inOutError) {
@@ -355,8 +343,9 @@ __attribute__((objc_subclassing_restricted))
                 NSUInteger index = argument.index;
                 if (index < command.images.count) {
                     id<MTLTexture> texture = [renderingContext resolvedTextureForImage:command.images[index]];
+                    id<MTLSamplerState> samplerState = [renderingContext resolvedSamplerStateForImage:command.images[index]];
                     [commandEncoder setFragmentTexture:texture atIndex:index];
-                    [commandEncoder setFragmentSamplerState:samplerStates[index] atIndex:index];
+                    [commandEncoder setFragmentSamplerState:samplerState atIndex:index];
                 } else {
                     NSAssert(NO, @"Failed to set fragment textures.");
                     if (inOutError) {
