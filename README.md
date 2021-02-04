@@ -2,6 +2,8 @@
 
 [![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B%20%7C%20tvOS%2013.0%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
 [![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg)](#)
+[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-blue)](#)
+
 [![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](#)
 
 An image processing framework based on Metal.
