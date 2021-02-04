@@ -497,7 +497,7 @@ __attribute__((objc_subclassing_restricted))
         }
         renderPassDescriptor.colorAttachments[0].texture = msaaTarget.texture;
         renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
-        renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionMultisampleResolve;
+        renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStoreAndMultisampleResolve;
         renderPassDescriptor.colorAttachments[0].resolveTexture = renderTarget.texture;
         [msaaTarget releaseTexture];
     } else {
@@ -536,6 +536,7 @@ __attribute__((objc_subclassing_restricted))
         #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
         //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
         [commandEncoder endEncoding];
+        renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
         commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         #else
         //we are on macOS, use textureBarrier.
