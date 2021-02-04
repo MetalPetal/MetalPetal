@@ -282,6 +282,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _isMetalPerformanceShadersSupported = MTIMPSSupportsMTLDevice(device);
         _isYCbCrPixelFormatSupported = options.enablesYCbCrPixelFormatSupport && MTIDeviceSupportsYCBCRPixelFormat(device);
         _isMemorylessTextureSupported = [MTIContext deviceSupportsMemorylessTexture:device];
+        _isProgrammableBlendingSupported = [MTIContext deviceSupportsProgrammableBlending:device];
         
         _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
@@ -372,11 +373,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 + (BOOL)deviceSupportsMemorylessTexture:(id<MTLDevice>)device {
     if (@available(iOS 13.0, macOS 11.0, tvOS 13.0, macCatalyst 14.0, *)) {
-        if ([device supportsFamily:MTLGPUFamilyApple1]) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return [device supportsFamily:MTLGPUFamilyApple1];
     } else {
         return (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST);
     }
@@ -384,6 +381,26 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 + (BOOL)deviceSupportsYCbCrPixelFormat:(id<MTLDevice>)device {
     return MTIDeviceSupportsYCBCRPixelFormat(device);
+}
+
++ (BOOL)deviceSupportsProgrammableBlending:(id<MTLDevice>)device {
+    // - Simulator does not support Programmable Blending. (Intel & Apple Silicon)
+    // - MacCatalyst supports Programmable Blending on Apple Silicon:
+    //      Apple Silicon: MTLGPUFamilyApple1 - Yes
+    //      Intel: MTLGPUFamilyApple1 - No
+    // - Mac supports Programmable Blending on Apple Silicon:
+    //      Apple Silicon: MTLGPUFamilyApple1 - Yes
+    //      Intel: MTLGPUFamilyApple1 - No
+    // - iOS/tvOS support Programmable Blending.
+#if TARGET_OS_SIMULATOR
+    return NO;
+#else
+    if (@available(iOS 13.0, macOS 11.0, tvOS 13.0, macCatalyst 14.0, *)) {
+        return [device supportsFamily:MTLGPUFamilyApple1];
+    } else {
+        return (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST);
+    }
+#endif
 }
 
 @end

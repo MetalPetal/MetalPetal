@@ -93,6 +93,8 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) BOOL isMemorylessTextureSupported;
 
+@property (nonatomic, readonly) BOOL isProgrammableBlendingSupported;
+
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
 @property (nonatomic, strong, readonly) id<MTLLibrary> defaultLibrary;
@@ -115,9 +117,15 @@ __attribute__((objc_subclassing_restricted))
 
 + (void)enumerateAllInstances:(void (^)(MTIContext *context))enumerator;
 
+/// Whether a device supports memoryless render targets.
 + (BOOL)deviceSupportsMemorylessTexture:(id<MTLDevice>)device;
 
+/// Whether a device supports YUV formats.
 + (BOOL)deviceSupportsYCbCrPixelFormat:(id<MTLDevice>)device;
+
+/// Whether a device supports programmable blending.
+/// @discussion This only indicates whether the device supports programmable blending. To use programmable blending you need to make sure the metal library is compiled with the supported metal language version. For Mac and MacCatalyst, `MTLLanguageVersion2_3` is required.
++ (BOOL)deviceSupportsProgrammableBlending:(id<MTLDevice>)device;
 
 @end
 
