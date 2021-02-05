@@ -410,6 +410,61 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testMultilayerCompositing_alpha() throws {
+        let context = try makeContext()
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
+            layer.position = CGPoint(x: 0.5, y: 0.5)
+            layer.size = CGSize(width: 1, height: 1)
+            layer.opacity = 0.5
+        })]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 128 && pixel.g == 128 && pixel.b == 128 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
+    
+    func testMultilayerCompositing_alphaMSAA() throws {
+        let context = try makeContext()
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 4
+        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
+            layer.position = CGPoint(x: 0.5, y: 0.5)
+            layer.size = CGSize(width: 1, height: 1)
+            layer.opacity = 0.5
+        })]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 128 && pixel.g == 128 && pixel.b == 128 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
     func testMultilayerCompositing_tint() throws {
         let context = try makeContext()
         
