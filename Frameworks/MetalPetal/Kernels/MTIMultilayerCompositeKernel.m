@@ -533,15 +533,22 @@ __attribute__((objc_subclassing_restricted))
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         
-        #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-        //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
-        [commandEncoder endEncoding];
-        renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
-        commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-        #else
-        //we are on macOS, use textureBarrier.
-        [commandEncoder textureBarrier];
-        #endif
+        if (_rasterSampleCount > 1) {
+            //end current commend encoder then create a new one.
+            [commandEncoder endEncoding];
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+            commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+        } else {
+            #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
+            //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
+            [commandEncoder endEncoding];
+            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+            commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+            #else
+            //we are on macOS, use textureBarrier.
+            [commandEncoder textureBarrier];
+            #endif
+        }
         
         MTILayer *layer = self.layers[index];
         
