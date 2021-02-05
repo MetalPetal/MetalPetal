@@ -12,6 +12,10 @@
     #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
 #endif
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+kernel void mti_haveColorArguments() {}
+#endif
+
 using namespace metal;
 
 namespace metalpetal {
