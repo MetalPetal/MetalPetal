@@ -87,13 +87,20 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, copy, readonly) NSString *label;
 
+/// Whether the device supports MetalPerformanceShaders.
 @property (nonatomic, readonly) BOOL isMetalPerformanceShadersSupported;
 
+/// Whether the device supports YCbCr pixel formats.
 @property (nonatomic, readonly) BOOL isYCbCrPixelFormatSupported;
 
+/// Whether the device supports memoryless texture.
 @property (nonatomic, readonly) BOOL isMemorylessTextureSupported;
 
+/// Whether the device supports programmable blending.
 @property (nonatomic, readonly) BOOL isProgrammableBlendingSupported;
+
+/// Whether the default library is compiled with programmable blending support.
+@property (nonatomic, readonly) BOOL defaultLibrarySupportsProgrammableBlending;
 
 @property (nonatomic, strong, readonly) id<MTLDevice> device;
 
@@ -120,7 +127,7 @@ __attribute__((objc_subclassing_restricted))
 /// Whether a device supports memoryless render targets.
 + (BOOL)deviceSupportsMemorylessTexture:(id<MTLDevice>)device;
 
-/// Whether a device supports YUV formats.
+/// Whether a device supports YCbCr pixel formats.
 + (BOOL)deviceSupportsYCbCrPixelFormat:(id<MTLDevice>)device;
 
 /// Whether a device supports programmable blending.

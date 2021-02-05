@@ -269,6 +269,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
             }
         }
         _defaultLibraryFunctionShort2FullNames = [defaultLibraryFunctionShort2FullNames copy];
+        _defaultLibrarySupportsProgrammableBlending = [defaultLibrary.functionNames containsObject:@"mti_haveColorArguments"];
         
         _label = options.label;
         _workingPixelFormat = options.workingPixelFormat;
