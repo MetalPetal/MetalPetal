@@ -161,7 +161,7 @@ namespace metalpetal {
 
     #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
     
-    fragment float4 multilayerCompositeColorLookup512x512Blend(
+    fragment float4 multilayerCompositeColorLookup512x512Blend_programmableBlending(
                                                        VertexOut vertexIn [[ stage_in ]],
                                                        float4 currentColor [[color(0)]],
                                                        float4 maskColor [[color(1)]],
@@ -177,8 +177,8 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
     }
     
-    #else
-    
+    #endif
+
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                                VertexOut vertexIn [[ stage_in ]],
                                                                texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
@@ -200,9 +200,7 @@ namespace metalpetal {
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(backgroundColor,64,intensity,colorTexture,colorSampler);
     }
-    
-    #endif
-    
+        
     fragment float4 colorLookup2DHorizontalStrip(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> sourceTexture [[texture(0)]],
@@ -563,9 +561,10 @@ namespace metalpetal {
         }
     }
     
+    /*
     #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-    fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
+    fragment float4 roundCorner_programmableBlending(VertexOut vertexIn [[stage_in]],
                                          constant float & radius [[buffer(0)]],
                                          constant float2 & center [[buffer(1)]],
                                          float4 currentColor [[ color(0) ]]) {
@@ -584,7 +583,8 @@ namespace metalpetal {
         return result;
     }
     
-    #else
+    #endif
+    */
     
     fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
                                 constant float4 & radius [[buffer(0)]],
@@ -629,6 +629,4 @@ namespace metalpetal {
         result.a *= f;
         return result;
     }
-    
-    #endif
 }

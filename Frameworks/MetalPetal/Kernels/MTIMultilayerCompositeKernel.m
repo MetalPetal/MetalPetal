@@ -26,9 +26,6 @@
 #import "MTIPixelFormat.h"
 #import "MTIHasher.h"
 
-//TODO: fix the condition for Apple silicon.
-#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
-
 __attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositeKernelConfiguration: NSObject <MTIKernelConfiguration>
 
@@ -96,6 +93,8 @@ __attribute__((objc_subclassing_restricted))
 + (MTIRenderPipeline *)renderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor rasterSampleCount:(NSUInteger)rasterSampleCount context:(MTIContext *)context error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
     
+    BOOL useProgrammableBlending = context.defaultLibrarySupportsProgrammableBlending && context.isProgrammableBlendingSupported;
+
     NSError *error;
     id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
     if (error) {
@@ -117,10 +116,9 @@ __attribute__((objc_subclassing_restricted))
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
     renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-    #if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
-    // on macOS colorAttachments 1 is not used.
-    renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
-    #endif
+    if (useProgrammableBlending) {
+        renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
+    }
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     
@@ -172,6 +170,8 @@ __attribute__((objc_subclassing_restricted))
             return nil;
         }
         
+        BOOL useProgrammableBlending = context.defaultLibrarySupportsProgrammableBlending && context.isProgrammableBlendingSupported;
+        
         NSMutableDictionary *pipelines = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in MTIBlendModes.allModes) {
             MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
@@ -185,7 +185,22 @@ __attribute__((objc_subclassing_restricted))
                 return nil;
             }
             
-            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:[MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilter error:&error];
+            MTIFunctionDescriptor *fragmentFunctionDescriptorForBlending;
+            if (useProgrammableBlending) {
+                fragmentFunctionDescriptorForBlending = [MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
+            } else {
+                fragmentFunctionDescriptorForBlending = [MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilter;
+            }
+            
+            if (fragmentFunctionDescriptorForBlending == nil) {
+                if (inOutError) {
+                    NSDictionary *info = @{@"blendMode": mode, @"programmableBlending": @(useProgrammableBlending)};
+                    *inOutError = MTIErrorCreate(MTIErrorBlendFunctionNotFound, info);
+                }
+                return nil;
+            }
+            
+            id<MTLFunction> fragmentFunction = [context functionWithDescriptor:fragmentFunctionDescriptorForBlending error:&error];
             if (error) {
                 if (inOutError) {
                     *inOutError = error;
@@ -197,10 +212,9 @@ __attribute__((objc_subclassing_restricted))
             renderPipelineDescriptor.fragmentFunction = fragmentFunction;
             
             renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-            #if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
-            // on macOS colorAttachments 1 is not used.
-            renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
-            #endif
+            if (useProgrammableBlending) {
+                renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
+            }
             renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
             renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
             
@@ -279,10 +293,16 @@ __attribute__((objc_subclassing_restricted))
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
 }
 
-#if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
+- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError *__autoreleasing  _Nullable *)error {
+    BOOL useProgrammableBlending = renderingContext.context.defaultLibrarySupportsProgrammableBlending && renderingContext.context.isProgrammableBlendingSupported;
+    if (useProgrammableBlending) {
+        return [self resolveWithContext_programmableBlending:renderingContext error:error];
+    } else {
+        return [self resolveWithContext_no_programmableBlending:renderingContext error:error];
+    }
+}
 
-// iOS
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext_programmableBlending:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     
     NSError *error = nil;
     
@@ -310,7 +330,11 @@ __attribute__((objc_subclassing_restricted))
         MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
         tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
         tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-        tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        } else {
+            NSAssert(NO, @"");
+        }
         tempTextureDescriptor.sampleCount = _rasterSampleCount;
         id<MTLTexture> msaaTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
         if (!msaaTexture) {
@@ -329,13 +353,16 @@ __attribute__((objc_subclassing_restricted))
         renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     }
     
-
     //Set up color attachment 1 for compositing mask
     if (_rasterSampleCount > 1) {
         MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
         tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
         tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-        tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        } else {
+            NSAssert(NO, @"");
+        }
         tempTextureDescriptor.sampleCount = _rasterSampleCount;
         id<MTLTexture> compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
         if (!compositingMaskTexture) {
@@ -349,7 +376,11 @@ __attribute__((objc_subclassing_restricted))
         renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
     } else {
         MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-        tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
+            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
+        } else {
+            NSAssert(NO, @"");
+        }
         tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
         id<MTLTexture> compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
         if (!compositingMaskTexture) {
@@ -456,10 +487,7 @@ __attribute__((objc_subclassing_restricted))
     return renderTarget;
 }
 
-#else
-
-// macOS || Simulator
-- (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
+- (MTIImagePromiseRenderTarget *)resolveWithContext_no_programmableBlending:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     
     NSError *error = nil;
     
@@ -539,14 +567,18 @@ __attribute__((objc_subclassing_restricted))
             renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
             commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         } else {
-            #if TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST
-            //we are on simulator, no texture barrier available, end current commend encoder then create a new one.
+            #if TARGET_OS_IOS || TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST || TARGET_OS_TV
+            //we are on simulator/ios/macCatalyst, no texture barrier available, end current commend encoder then create a new one.
             [commandEncoder endEncoding];
             renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
             commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
             #else
-            //we are on macOS, use textureBarrier.
-            [commandEncoder textureBarrier];
+                //we are on macOS, use textureBarrier.
+                #if TARGET_OS_OSX
+                    [commandEncoder textureBarrier];
+                #else
+                    #error Unsupported OS
+                #endif
             #endif
         }
         
@@ -609,8 +641,6 @@ __attribute__((objc_subclassing_restricted))
     
     return renderTarget;
 }
-
-#endif
 
 - (id)copyWithZone:(NSZone *)zone {
     return self;

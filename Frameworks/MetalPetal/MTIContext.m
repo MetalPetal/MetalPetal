@@ -321,6 +321,11 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
             [MTIMemoryWarningObserver addMemoryWarningHandler:self];
         }
         
+        if (_isProgrammableBlendingSupported) {
+            //We assume that on a device which supports programmable blending, memoryless textures are also supported.
+            NSAssert(self.isMemorylessTextureSupported, @"");
+        }
+        
         MTIContextMarkInstanceCreation(self);
     }
     return self;

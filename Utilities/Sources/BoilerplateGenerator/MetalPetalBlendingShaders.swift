@@ -78,7 +78,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             content: """
             #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
             
-            fragment float4 multilayerComposite%BlendModeName%Blend(
+            fragment float4 multilayerComposite%BlendModeName%Blend_programmableBlending(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 float4 currentColor [[color(0)]],
                                                                 float4 maskColor [[color(1)]],
@@ -102,8 +102,8 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 return %blendModeName%Blend(currentColor,textureColor);
             }
             
-            #else
-            
+            #endif
+
             fragment float4 multilayerComposite%BlendModeName%Blend(
                                                                 VertexOut vertexIn [[ stage_in ]],
                                                                 texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
@@ -133,8 +133,6 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 return %blendModeName%Blend(backgroundColor,textureColor);
             }
             
-            #endif
-
             
             """,
             footer: "}")
