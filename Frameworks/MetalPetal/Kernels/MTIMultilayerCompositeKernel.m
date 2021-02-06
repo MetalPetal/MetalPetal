@@ -189,7 +189,7 @@ __attribute__((objc_subclassing_restricted))
             if (useProgrammableBlending) {
                 fragmentFunctionDescriptorForBlending = [MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
             } else {
-                fragmentFunctionDescriptorForBlending = [MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilter;
+                fragmentFunctionDescriptorForBlending = [MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending;
             }
             
             if (fragmentFunctionDescriptorForBlending == nil) {
