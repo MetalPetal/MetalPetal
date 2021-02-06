@@ -902,6 +902,80 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testMultilayerCompositing_customBlending() throws {
+        let name = "customBlend" + String(#line)
+        let blendMode = MTIBlendMode(rawValue: name)
+        MTIBlendModes.registerBlendMode(blendMode, with: MTIBlendFunctionDescriptors(blendFormula: """
+        float4 blend(float4 background, float4 foreground) {
+            return background + foreground;
+        }
+        """))
+        let context = try makeContext()
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [64, 64],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1)), configurator: { layer in
+            layer.position = CGPoint(x: 0.5, y: 0.5)
+            layer.size = CGSize(width: 1, height: 1)
+            layer.opacity = 1
+            layer.blendMode = blendMode
+        })]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 128 && pixel.g == 64 && pixel.b == 64 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 64 && pixel.g == 64 && pixel.b == 64 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testCustomBlending() throws {
+        let name = "customBlend" + String(#line)
+        let blendMode = MTIBlendMode(rawValue: name)
+        MTIBlendModes.registerBlendMode(blendMode, with: MTIBlendFunctionDescriptors(blendFormula: """
+        float4 blend(float4 background, float4 foreground) {
+            return background + foreground;
+        }
+        """))
+        let context = try makeContext()
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [64],
+        ]), options: [.SRGB: false], isOpaque: true)
+        let overlay = MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1))
+        let blendFilter = MTIBlendFilter(blendMode: blendMode)
+        blendFilter.inputBackgroundImage = image
+        blendFilter.inputImage = overlay
+        
+        do {
+            let outputImage = try XCTUnwrap(blendFilter.outputImage)
+            let outputCGImage = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+                if coord.x == 0 && coord.y == 0 {
+                    XCTAssert(pixel.r == 128 && pixel.g == 64 && pixel.b == 64 && pixel.a == 255)
+                }
+            }
+        }
+        
+        do {
+            blendFilter.intensity = 0.5
+            let outputImage = try XCTUnwrap(blendFilter.outputImage)
+            let outputCGImage = try context.makeCGImage(from: outputImage)
+            PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+                if coord.x == 0 && coord.y == 0 {
+                    XCTAssert(pixel.r == 64 + 32 && pixel.g == 64 && pixel.b == 64 && pixel.a == 255)
+                }
+            }
+        }
+    }
+    
     @available(iOS 11.0, macOS 10.13, *)
     func testSKSceneRender() throws {
         let scene = SKScene(size: CGSize(width: 32, height: 32))

@@ -24,7 +24,8 @@ s.subspec 'Core' do |ss|
     'MTIPrint.h',
     'MTIDefer.h',
     'MTIHasher.h',
-    'MTIImageRenderingContext+Internal.h'
+    'MTIImageRenderingContext+Internal.h',
+    'MTIBlendFormulaSupport.h'
     ]
     ss.library = 'c++'
     ss.pod_target_xcconfig = {

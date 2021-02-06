@@ -65,6 +65,16 @@ __attribute__((objc_subclassing_restricted))
 fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending
 fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending;
 
+/// Create a `MTIBlendFunctionDescriptors` using a metal shader function, the name of the function must be `blend`. Functions defined in "MTIShaderLib.h" can also be used here.
+///
+/// Example:
+///
+/// float4 blend(float4 backdropColor, float4 sourceColor) {
+///     return float4(backdropColor.rgb + sourceColor.rgb, 1.0);
+/// }
+///
+- (instancetype)initWithBlendFormula:(NSString *)formula;
+
 @end
 
 __attribute__((objc_subclassing_restricted))

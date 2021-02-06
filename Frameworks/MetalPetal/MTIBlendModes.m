@@ -6,6 +6,9 @@
 //
 
 #import "MTIBlendModes.h"
+#import "MTILibrarySource.h"
+#import "MTIBlendFormulaSupport.h"
+#import "MTIFunctionDescriptor.h"
 
 MTIBlendMode const MTIBlendModeNormal = @"Normal";
 
@@ -51,6 +54,24 @@ fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlend
         _fragmentFunctionDescriptorForBlendFilter = fragmentFunctionDescriptorForBlendFilter;
         _fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending = fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
         _fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending = fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending;
+    }
+    return self;
+}
+
+- (instancetype)initWithBlendFormula:(NSString *)formula {
+    if (self = [super init]) {
+        MTLCompileOptions *compileOptions = [[MTLCompileOptions alloc] init];
+        compileOptions.fastMathEnabled = NO;
+        compileOptions.preprocessorMacros = @{};
+        if (@available(iOS 14.0, macOS 11.0, tvOS 14.0, macCatalyst 14.0, *)) {
+            compileOptions.languageVersion = MTLLanguageVersion2_3;
+        } else {
+            compileOptions.languageVersion = MTLLanguageVersion1_2;
+        }
+        NSURL *shaderLibraryURL = [MTILibrarySourceRegistration.sharedRegistration registerLibraryWithSource:MTIBuildBlendFormulaShaderSource(formula) compileOptions:compileOptions];
+        _fragmentFunctionDescriptorForBlendFilter = [[MTIFunctionDescriptor alloc] initWithName:@"customBlend" libraryURL:shaderLibraryURL];
+        _fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend_programmableBlending" libraryURL:shaderLibraryURL];;
+        _fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend" libraryURL:shaderLibraryURL];;
     }
     return self;
 }

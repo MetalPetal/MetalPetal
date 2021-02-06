@@ -1041,7 +1041,9 @@ fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
     return mix(uCb,blendedColor,intensity);
 }
 
+
 }
+
 //
 //  CLAHE.metal
 //  MetalPetal
@@ -1546,8 +1548,9 @@ vertex VertexOut multilayerCompositeVertexShader(
     return outVertex;
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeNormalBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1575,14 +1578,14 @@ fragment float4 multilayerCompositeNormalBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeNormalBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1603,8 +1606,9 @@ fragment float4 multilayerCompositeNormalBlend(
     return normalBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeDarkenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1632,14 +1636,14 @@ fragment float4 multilayerCompositeDarkenBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeDarkenBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1660,8 +1664,9 @@ fragment float4 multilayerCompositeDarkenBlend(
     return darkenBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeMultiplyBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1689,14 +1694,14 @@ fragment float4 multilayerCompositeMultiplyBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeMultiplyBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1717,8 +1722,9 @@ fragment float4 multilayerCompositeMultiplyBlend(
     return multiplyBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeColorBurnBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1746,14 +1752,14 @@ fragment float4 multilayerCompositeColorBurnBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeColorBurnBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1774,8 +1780,9 @@ fragment float4 multilayerCompositeColorBurnBlend(
     return colorBurnBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeLinearBurnBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1803,14 +1810,14 @@ fragment float4 multilayerCompositeLinearBurnBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeLinearBurnBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1831,8 +1838,9 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     return linearBurnBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeDarkerColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1860,14 +1868,14 @@ fragment float4 multilayerCompositeDarkerColorBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeDarkerColorBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1888,8 +1896,9 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     return darkerColorBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeLightenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1917,14 +1926,14 @@ fragment float4 multilayerCompositeLightenBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeLightenBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -1945,8 +1954,9 @@ fragment float4 multilayerCompositeLightenBlend(
     return lightenBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeScreenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -1974,14 +1984,14 @@ fragment float4 multilayerCompositeScreenBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeScreenBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2002,8 +2012,9 @@ fragment float4 multilayerCompositeScreenBlend(
     return screenBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeColorDodgeBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2031,14 +2042,14 @@ fragment float4 multilayerCompositeColorDodgeBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeColorDodgeBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2059,8 +2070,9 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     return colorDodgeBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeAddBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2088,14 +2100,14 @@ fragment float4 multilayerCompositeAddBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeAddBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2116,8 +2128,9 @@ fragment float4 multilayerCompositeAddBlend(
     return addBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeLighterColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2145,14 +2158,14 @@ fragment float4 multilayerCompositeLighterColorBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeLighterColorBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2173,8 +2186,9 @@ fragment float4 multilayerCompositeLighterColorBlend(
     return lighterColorBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeOverlayBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2202,14 +2216,14 @@ fragment float4 multilayerCompositeOverlayBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeOverlayBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2230,8 +2244,9 @@ fragment float4 multilayerCompositeOverlayBlend(
     return overlayBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeSoftLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2259,14 +2274,14 @@ fragment float4 multilayerCompositeSoftLightBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeSoftLightBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2287,8 +2302,9 @@ fragment float4 multilayerCompositeSoftLightBlend(
     return softLightBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeHardLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2316,14 +2332,14 @@ fragment float4 multilayerCompositeHardLightBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeHardLightBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2344,8 +2360,9 @@ fragment float4 multilayerCompositeHardLightBlend(
     return hardLightBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeVividLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2373,14 +2390,14 @@ fragment float4 multilayerCompositeVividLightBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeVividLightBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2401,8 +2418,9 @@ fragment float4 multilayerCompositeVividLightBlend(
     return vividLightBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeLinearLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2430,14 +2448,14 @@ fragment float4 multilayerCompositeLinearLightBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeLinearLightBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2458,8 +2476,9 @@ fragment float4 multilayerCompositeLinearLightBlend(
     return linearLightBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositePinLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2487,14 +2506,14 @@ fragment float4 multilayerCompositePinLightBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositePinLightBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2515,8 +2534,9 @@ fragment float4 multilayerCompositePinLightBlend(
     return pinLightBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeHardMixBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2544,14 +2564,14 @@ fragment float4 multilayerCompositeHardMixBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeHardMixBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2572,8 +2592,9 @@ fragment float4 multilayerCompositeHardMixBlend(
     return hardMixBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeDifferenceBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2601,14 +2622,14 @@ fragment float4 multilayerCompositeDifferenceBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeDifferenceBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2629,8 +2650,9 @@ fragment float4 multilayerCompositeDifferenceBlend(
     return differenceBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeExclusionBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2658,14 +2680,14 @@ fragment float4 multilayerCompositeExclusionBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeExclusionBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2686,8 +2708,9 @@ fragment float4 multilayerCompositeExclusionBlend(
     return exclusionBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeSubtractBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2715,14 +2738,14 @@ fragment float4 multilayerCompositeSubtractBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeSubtractBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2743,8 +2766,9 @@ fragment float4 multilayerCompositeSubtractBlend(
     return subtractBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeDivideBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2772,14 +2796,14 @@ fragment float4 multilayerCompositeDivideBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeDivideBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2800,8 +2824,9 @@ fragment float4 multilayerCompositeDivideBlend(
     return divideBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeHueBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2829,14 +2854,14 @@ fragment float4 multilayerCompositeHueBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeHueBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2857,8 +2882,9 @@ fragment float4 multilayerCompositeHueBlend(
     return hueBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeSaturationBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2886,14 +2912,14 @@ fragment float4 multilayerCompositeSaturationBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeSaturationBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2914,8 +2940,9 @@ fragment float4 multilayerCompositeSaturationBlend(
     return saturationBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -2943,14 +2970,14 @@ fragment float4 multilayerCompositeColorBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeColorBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -2971,8 +2998,9 @@ fragment float4 multilayerCompositeColorBlend(
     return colorBlend(backgroundColor,textureColor);
 }
 
-#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
+#if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
 fragment float4 multilayerCompositeLuminosityBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
@@ -3000,14 +3028,14 @@ fragment float4 multilayerCompositeLuminosityBlend_programmableBlending(
 #endif
 
 fragment float4 multilayerCompositeLuminosityBlend(
-                                                    VertexOut vertexIn [[ stage_in ]],
-                                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
-                                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
-                                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                    sampler colorSampler [[ sampler(0) ]],
-                                                    constant float2 & viewportSize [[buffer(1)]]
-                                                ) {
+                                    VertexOut vertexIn [[ stage_in ]],
+                                    texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
+                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                    constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
+                                    texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                    sampler colorSampler [[ sampler(0) ]],
+                                    constant float2 & viewportSize [[buffer(1)]]
+                                ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
     float2 location = vertexIn.position.xy / viewportSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
@@ -3028,7 +3056,9 @@ fragment float4 multilayerCompositeLuminosityBlend(
     return luminosityBlend(backgroundColor,textureColor);
 }
 
+
 }
+
 //
 //  Shaders.metal
 //  MetalPetal
