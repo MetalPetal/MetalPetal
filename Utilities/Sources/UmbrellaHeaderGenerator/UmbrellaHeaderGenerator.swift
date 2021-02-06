@@ -71,7 +71,7 @@ public struct UmbrellaHeaderGenerator: ParsableCommand {
     private func headerFileNames(in directory: URL) -> [String] {
         var fileNames: [String] = []
         if let contents = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil, options: []) {
-            for url in contents {
+            for url in contents.sorted(by: { $0.path < $1.path }) {
                 if url.pathExtension == "h" {
                     fileNames.append(url.lastPathComponent)
                 } else {

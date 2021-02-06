@@ -40,5 +40,9 @@ public struct BoilerplateGenerator: ParsableCommand {
             let url = sourceDirectory.appendingPathComponent(file)
             try! content.write(to: url, atomically: true, encoding: .utf8)
         }
+        for (file, content) in BlendFormulaSupport.generateBlendFormulaSupportFiles(sourceDirectory: sourceDirectory) {
+            let url = sourceDirectory.appendingPathComponent(file)
+            try! content.write(to: url, atomically: true, encoding: .utf8)
+        }
     }
 }

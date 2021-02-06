@@ -373,4 +373,5 @@ fragment float4 luminosityBlend(VertexOut vertexIn [[ stage_in ]],
     return mix(uCb,blendedColor,intensity);
 }
 
+
 }
