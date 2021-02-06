@@ -57,10 +57,13 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForBlendFilter;
 
-@property (nonatomic,copy,readonly) MTIFunctionDescriptor *fragmentFunctionDescriptorForMultilayerCompositingFilter;
+@property (nonatomic,copy,readonly,nullable) MTIFunctionDescriptor *fragmentFunctionDescriptorForMultilayerCompositingFilter;
+
+@property (nonatomic,copy,readonly,nullable) MTIFunctionDescriptor *fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
 
 - (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
-        fragmentFunctionDescriptorForMultilayerCompositingFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilter;
+        fragmentFunctionDescriptorForMultilayerCompositingFilter:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilter
+fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
 
 @end
 

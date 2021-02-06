@@ -52,42 +52,7 @@
         return self.inputImage;
     }
     
-#define MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS (TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_MACCATALYST)
-
-#if MTI_TARGET_SUPPORT_READ_FROM_COLOR_ATTACHMENTS
-    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel: MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:MTIVertices.fullViewportSquareVertices images:@[self.inputImage] parameters:@{}];
-    NSMutableArray<MTIRenderCommand *> *commands = [NSMutableArray array];
-    [commands addObject:command];
-    
-    if (radius[3] > 0) {
-        [commands addObject:[[MTIRenderCommand alloc] initWithKernel:MTIRoundCornerFilter.kernel geometry:[self verticesForRect:CGRectMake(0, 0, radius[3], radius[3]) radius:radius[3]] images:@[] parameters:@{
-            @"center": [MTIVector vectorWithX:radius[3] Y:0],
-            @"radius": @(radius[3])
-        }]];
-    }
-    if (radius[2] > 0) {
-        [commands addObject:[[MTIRenderCommand alloc] initWithKernel:MTIRoundCornerFilter.kernel geometry:[self verticesForRect:CGRectMake(self.inputImage.size.width - radius[2], 0, radius[2], radius[2]) radius:radius[2]] images:@[] parameters:@{
-            @"center": [MTIVector vectorWithX:0 Y:0],
-            @"radius": @(radius[2])
-        }]];
-    }
-    if (radius[1] > 0) {
-        [commands addObject:[[MTIRenderCommand alloc] initWithKernel:MTIRoundCornerFilter.kernel geometry:[self verticesForRect:CGRectMake(self.inputImage.size.width - radius[1], self.inputImage.size.height - radius[1], radius[1], radius[1]) radius:radius[1]] images:@[] parameters:@{
-            @"center": [MTIVector vectorWithX:0 Y:radius[1]],
-            @"radius": @(radius[1])
-        }]];
-    }
-    if (radius[0] > 0) {
-        [commands addObject:[[MTIRenderCommand alloc] initWithKernel:MTIRoundCornerFilter.kernel geometry:[self verticesForRect:CGRectMake(0, self.inputImage.size.height - radius[0], radius[0], radius[0]) radius:radius[0]] images:@[] parameters:@{
-            @"center": [MTIVector vectorWithX:radius[0] Y:radius[0]],
-            @"radius": @(radius[0])
-        }]];
-    }
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:self.inputImage.dimensions pixelFormat:self.outputPixelFormat];
-    return [MTIRenderCommand imagesByPerformingRenderCommands:commands outputDescriptors:@[outputDescriptor]].firstObject;
-#else
     return [MTIRoundCornerFilter.kernel applyToInputImages:@[_inputImage] parameters:@{@"radius": [MTIVector vectorWithFloat4:_radius]} outputTextureDimensions:_inputImage.dimensions outputPixelFormat:_outputPixelFormat];
-#endif
 }
 
 @end

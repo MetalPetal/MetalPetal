@@ -21,6 +21,7 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorFailedToCreateCommandEncoder = 1005,
     MTIErrorFailedToCreateHeap = 1006,
     MTIErrorDefaultLibraryNotFound = 1007,
+    MTIErrorBlendFunctionNotFound = 1008,
     
     //Texture loading errors
     MTIErrorUnsupportedCVPixelBufferFormat = 2001,

@@ -1548,7 +1548,7 @@ vertex VertexOut multilayerCompositeVertexShader(
 
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeNormalBlend(
+fragment float4 multilayerCompositeNormalBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1572,7 +1572,7 @@ fragment float4 multilayerCompositeNormalBlend(
     return normalBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeNormalBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1603,11 +1603,9 @@ fragment float4 multilayerCompositeNormalBlend(
     return normalBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeDarkenBlend(
+fragment float4 multilayerCompositeDarkenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1631,7 +1629,7 @@ fragment float4 multilayerCompositeDarkenBlend(
     return darkenBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeDarkenBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1662,11 +1660,9 @@ fragment float4 multilayerCompositeDarkenBlend(
     return darkenBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeMultiplyBlend(
+fragment float4 multilayerCompositeMultiplyBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1690,7 +1686,7 @@ fragment float4 multilayerCompositeMultiplyBlend(
     return multiplyBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeMultiplyBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1721,11 +1717,9 @@ fragment float4 multilayerCompositeMultiplyBlend(
     return multiplyBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeColorBurnBlend(
+fragment float4 multilayerCompositeColorBurnBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1749,7 +1743,7 @@ fragment float4 multilayerCompositeColorBurnBlend(
     return colorBurnBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeColorBurnBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1780,11 +1774,9 @@ fragment float4 multilayerCompositeColorBurnBlend(
     return colorBurnBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeLinearBurnBlend(
+fragment float4 multilayerCompositeLinearBurnBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1808,7 +1800,7 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     return linearBurnBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeLinearBurnBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1839,11 +1831,9 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     return linearBurnBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeDarkerColorBlend(
+fragment float4 multilayerCompositeDarkerColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1867,7 +1857,7 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     return darkerColorBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeDarkerColorBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1898,11 +1888,9 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     return darkerColorBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeLightenBlend(
+fragment float4 multilayerCompositeLightenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1926,7 +1914,7 @@ fragment float4 multilayerCompositeLightenBlend(
     return lightenBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeLightenBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -1957,11 +1945,9 @@ fragment float4 multilayerCompositeLightenBlend(
     return lightenBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeScreenBlend(
+fragment float4 multilayerCompositeScreenBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -1985,7 +1971,7 @@ fragment float4 multilayerCompositeScreenBlend(
     return screenBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeScreenBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2016,11 +2002,9 @@ fragment float4 multilayerCompositeScreenBlend(
     return screenBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeColorDodgeBlend(
+fragment float4 multilayerCompositeColorDodgeBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2044,7 +2028,7 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     return colorDodgeBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeColorDodgeBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2075,11 +2059,9 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     return colorDodgeBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeAddBlend(
+fragment float4 multilayerCompositeAddBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2103,7 +2085,7 @@ fragment float4 multilayerCompositeAddBlend(
     return addBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeAddBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2134,11 +2116,9 @@ fragment float4 multilayerCompositeAddBlend(
     return addBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeLighterColorBlend(
+fragment float4 multilayerCompositeLighterColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2162,7 +2142,7 @@ fragment float4 multilayerCompositeLighterColorBlend(
     return lighterColorBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeLighterColorBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2193,11 +2173,9 @@ fragment float4 multilayerCompositeLighterColorBlend(
     return lighterColorBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeOverlayBlend(
+fragment float4 multilayerCompositeOverlayBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2221,7 +2199,7 @@ fragment float4 multilayerCompositeOverlayBlend(
     return overlayBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeOverlayBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2252,11 +2230,9 @@ fragment float4 multilayerCompositeOverlayBlend(
     return overlayBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeSoftLightBlend(
+fragment float4 multilayerCompositeSoftLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2280,7 +2256,7 @@ fragment float4 multilayerCompositeSoftLightBlend(
     return softLightBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeSoftLightBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2311,11 +2287,9 @@ fragment float4 multilayerCompositeSoftLightBlend(
     return softLightBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeHardLightBlend(
+fragment float4 multilayerCompositeHardLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2339,7 +2313,7 @@ fragment float4 multilayerCompositeHardLightBlend(
     return hardLightBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeHardLightBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2370,11 +2344,9 @@ fragment float4 multilayerCompositeHardLightBlend(
     return hardLightBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeVividLightBlend(
+fragment float4 multilayerCompositeVividLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2398,7 +2370,7 @@ fragment float4 multilayerCompositeVividLightBlend(
     return vividLightBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeVividLightBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2429,11 +2401,9 @@ fragment float4 multilayerCompositeVividLightBlend(
     return vividLightBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeLinearLightBlend(
+fragment float4 multilayerCompositeLinearLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2457,7 +2427,7 @@ fragment float4 multilayerCompositeLinearLightBlend(
     return linearLightBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeLinearLightBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2488,11 +2458,9 @@ fragment float4 multilayerCompositeLinearLightBlend(
     return linearLightBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositePinLightBlend(
+fragment float4 multilayerCompositePinLightBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2516,7 +2484,7 @@ fragment float4 multilayerCompositePinLightBlend(
     return pinLightBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositePinLightBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2547,11 +2515,9 @@ fragment float4 multilayerCompositePinLightBlend(
     return pinLightBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeHardMixBlend(
+fragment float4 multilayerCompositeHardMixBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2575,7 +2541,7 @@ fragment float4 multilayerCompositeHardMixBlend(
     return hardMixBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeHardMixBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2606,11 +2572,9 @@ fragment float4 multilayerCompositeHardMixBlend(
     return hardMixBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeDifferenceBlend(
+fragment float4 multilayerCompositeDifferenceBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2634,7 +2598,7 @@ fragment float4 multilayerCompositeDifferenceBlend(
     return differenceBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeDifferenceBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2665,11 +2629,9 @@ fragment float4 multilayerCompositeDifferenceBlend(
     return differenceBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeExclusionBlend(
+fragment float4 multilayerCompositeExclusionBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2693,7 +2655,7 @@ fragment float4 multilayerCompositeExclusionBlend(
     return exclusionBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeExclusionBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2724,11 +2686,9 @@ fragment float4 multilayerCompositeExclusionBlend(
     return exclusionBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeSubtractBlend(
+fragment float4 multilayerCompositeSubtractBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2752,7 +2712,7 @@ fragment float4 multilayerCompositeSubtractBlend(
     return subtractBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeSubtractBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2783,11 +2743,9 @@ fragment float4 multilayerCompositeSubtractBlend(
     return subtractBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeDivideBlend(
+fragment float4 multilayerCompositeDivideBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2811,7 +2769,7 @@ fragment float4 multilayerCompositeDivideBlend(
     return divideBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeDivideBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2842,11 +2800,9 @@ fragment float4 multilayerCompositeDivideBlend(
     return divideBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeHueBlend(
+fragment float4 multilayerCompositeHueBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2870,7 +2826,7 @@ fragment float4 multilayerCompositeHueBlend(
     return hueBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeHueBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2901,11 +2857,9 @@ fragment float4 multilayerCompositeHueBlend(
     return hueBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeSaturationBlend(
+fragment float4 multilayerCompositeSaturationBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2929,7 +2883,7 @@ fragment float4 multilayerCompositeSaturationBlend(
     return saturationBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeSaturationBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -2960,11 +2914,9 @@ fragment float4 multilayerCompositeSaturationBlend(
     return saturationBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeColorBlend(
+fragment float4 multilayerCompositeColorBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -2988,7 +2940,7 @@ fragment float4 multilayerCompositeColorBlend(
     return colorBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeColorBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -3019,11 +2971,9 @@ fragment float4 multilayerCompositeColorBlend(
     return colorBlend(backgroundColor,textureColor);
 }
 
-#endif
-
 #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-fragment float4 multilayerCompositeLuminosityBlend(
+fragment float4 multilayerCompositeLuminosityBlend_programmableBlending(
                                                     VertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
                                                     float4 maskColor [[color(1)]],
@@ -3047,7 +2997,7 @@ fragment float4 multilayerCompositeLuminosityBlend(
     return luminosityBlend(currentColor,textureColor);
 }
 
-#else
+#endif
 
 fragment float4 multilayerCompositeLuminosityBlend(
                                                     VertexOut vertexIn [[ stage_in ]],
@@ -3077,8 +3027,6 @@ fragment float4 multilayerCompositeLuminosityBlend(
     textureColor.a *= parameters.opacity;
     return luminosityBlend(backgroundColor,textureColor);
 }
-
-#endif
 
 }
 //
@@ -3246,7 +3194,7 @@ namespace metalpetal {
 
     #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
     
-    fragment float4 multilayerCompositeColorLookup512x512Blend(
+    fragment float4 multilayerCompositeColorLookup512x512Blend_programmableBlending(
                                                        VertexOut vertexIn [[ stage_in ]],
                                                        float4 currentColor [[color(0)]],
                                                        float4 maskColor [[color(1)]],
@@ -3262,8 +3210,8 @@ namespace metalpetal {
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
     }
     
-    #else
-    
+    #endif
+
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                                VertexOut vertexIn [[ stage_in ]],
                                                                texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
@@ -3285,9 +3233,7 @@ namespace metalpetal {
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(backgroundColor,64,intensity,colorTexture,colorSampler);
     }
-    
-    #endif
-    
+        
     fragment float4 colorLookup2DHorizontalStrip(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> sourceTexture [[texture(0)]],
@@ -3648,9 +3594,10 @@ namespace metalpetal {
         }
     }
     
+    /*
     #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
 
-    fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
+    fragment float4 roundCorner_programmableBlending(VertexOut vertexIn [[stage_in]],
                                          constant float & radius [[buffer(0)]],
                                          constant float2 & center [[buffer(1)]],
                                          float4 currentColor [[ color(0) ]]) {
@@ -3669,7 +3616,8 @@ namespace metalpetal {
         return result;
     }
     
-    #else
+    #endif
+    */
     
     fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
                                 constant float4 & radius [[buffer(0)]],
@@ -3714,8 +3662,6 @@ namespace metalpetal {
         result.a *= f;
         return result;
     }
-    
-    #endif
 }
 
 )mtirawstring";
