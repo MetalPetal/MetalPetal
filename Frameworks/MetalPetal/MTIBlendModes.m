@@ -45,12 +45,12 @@ MTIBlendMode const MTIBlendModeColorLookup512x512 = @"ColorLookup512x512";
 @implementation MTIBlendFunctionDescriptors
 
 - (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
-        fragmentFunctionDescriptorForMultilayerCompositingFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilter
-        fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending{
+fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending
+fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending {
     if (self = [super init]) {
         _fragmentFunctionDescriptorForBlendFilter = fragmentFunctionDescriptorForBlendFilter;
-        _fragmentFunctionDescriptorForMultilayerCompositingFilter = fragmentFunctionDescriptorForMultilayerCompositingFilter;
         _fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending = fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending;
+        _fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending = fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending;
     }
     return self;
 }
@@ -103,12 +103,12 @@ static id<NSLocking> _registeredBlendModesLock;
         NSMutableDictionary *modes = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in builtinModes) {
             NSString *fragmentFunctionNameForBlendFilter = [[mode stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:[mode substringWithRange:NSMakeRange(0, 1)].lowercaseString] stringByAppendingString:@"Blend"];
-            NSString *fragmentFunctionNameForMultilayerCompositingFilter = [NSString stringWithFormat:@"multilayerComposite%@Blend",mode];
+            NSString *fragmentFunctionNameForMultilayerCompositingFilterWithoutPB = [NSString stringWithFormat:@"multilayerComposite%@Blend",mode];
             NSString *fragmentFunctionNameForMultilayerCompositingFilterWithPB = [NSString stringWithFormat:@"multilayerComposite%@Blend_programmableBlending",mode];
             MTIBlendFunctionDescriptors *descriptors = [[MTIBlendFunctionDescriptors alloc]
                                                         initWithFragmentFunctionDescriptorForBlendFilter:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForBlendFilter]
-                                                        fragmentFunctionDescriptorForMultilayerCompositingFilter:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForMultilayerCompositingFilter]
-                                                        fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForMultilayerCompositingFilterWithPB]];
+                                                        fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForMultilayerCompositingFilterWithPB]
+                                                        fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:[[MTIFunctionDescriptor alloc] initWithName:fragmentFunctionNameForMultilayerCompositingFilterWithoutPB]];
             modes[mode] = descriptors;
         }
         _registeredBlendModes = [modes copy];
