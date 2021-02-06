@@ -1,23 +1,7 @@
 {
-  "swift_versions" : "5.0",
-  "default_subspecs" : "Core",
-  "requires_arc" : true,
-  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
-  "source" : {
-    "tag" : "1.11.1",
-    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git"
-  },
-  "version" : "1.11.1",
-  "platforms" : {
-    "ios" : "10.0",
-    "osx" : "10.13",
-    "tvos" : "13.0"
-  },
-  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
   "summary" : "GPU-accelerated image and video processing framework based on Metal.",
-  "license" : {
-    "type" : "MIT"
-  },
+  "module_map" : "Frameworks\/MetalPetal\/MetalPetal.modulemap",
+  "requires_arc" : true,
   "subspecs" : [
     {
       "weak_frameworks" : [
@@ -25,40 +9,47 @@
         "MetalKit"
       ],
       "prefix_header_file" : false,
-      "name" : "Core",
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}",
       "private_header_files" : [
         "Frameworks\/MetalPetal\/MTIPrint.h",
         "Frameworks\/MetalPetal\/MTIDefer.h",
         "Frameworks\/MetalPetal\/MTIHasher.h",
-        "Frameworks\/MetalPetal\/MTIImageRenderingContext+Internal.h"
+        "Frameworks\/MetalPetal\/MTIImageRenderingContext+Internal.h",
+        "Frameworks\/MetalPetal\/MTIBlendFormulaSupport.h"
       ],
       "pod_target_xcconfig" : {
         "CLANG_CXX_LANGUAGE_STANDARD" : "c++14"
       },
-      "libraries" : "c++"
+      "libraries" : "c++",
+      "name" : "Core",
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{h,m,c,mm,metal}"
     },
     {
+      "name" : "Swift",
       "prefix_header_file" : false,
-      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}",
+      "weak_frameworks" : [
+        "MetalPerformanceShaders",
+        "MetalKit"
+      ],
       "dependencies" : {
         "MetalPetal\/Core" : [
 
         ]
       },
+      "source_files" : "Frameworks\/MetalPetal\/**\/*.{swift}"
+    },
+    {
+      "ios" : {
+        "pod_target_xcconfig" : {
+          "METAL_LIBRARY_OUTPUT_DIR" : "${TARGET_BUILD_DIR}\/MetalPetal.bundle\/"
+        }
+      },
       "weak_frameworks" : [
         "MetalPerformanceShaders",
         "MetalKit"
       ],
-      "name" : "Swift"
-    },
-    {
-      "pod_target_xcconfig" : {
-        "GCC_PREPROCESSOR_DEFINITIONS" : "METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1"
-      },
-      "osx" : {
+      "tvos" : {
         "pod_target_xcconfig" : {
-          "METAL_LIBRARY_OUTPUT_DIR" : "${TARGET_BUILD_DIR}\/MetalPetal.bundle\/Contents\/Resources"
+          "METAL_LIBRARY_OUTPUT_DIR" : "${TARGET_BUILD_DIR}\/MetalPetal.bundle\/"
         }
       },
       "resource_bundles" : {
@@ -66,28 +57,43 @@
           "Frameworks\/MetalPetal\/CocoaPodsBundledResourcePlaceholder"
         ]
       },
+      "osx" : {
+        "pod_target_xcconfig" : {
+          "METAL_LIBRARY_OUTPUT_DIR" : "${TARGET_BUILD_DIR}\/MetalPetal.bundle\/Contents\/Resources"
+        }
+      },
+      "pod_target_xcconfig" : {
+        "GCC_PREPROCESSOR_DEFINITIONS" : "METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1"
+      },
       "dependencies" : {
         "MetalPetal\/Core" : [
 
         ]
       },
-      "prefix_header_file" : false,
-      "weak_frameworks" : [
-        "MetalPerformanceShaders",
-        "MetalKit"
-      ],
-      "ios" : {
-        "pod_target_xcconfig" : {
-          "METAL_LIBRARY_OUTPUT_DIR" : "${TARGET_BUILD_DIR}\/MetalPetal.bundle\/"
-        }
-      },
-      "name" : "Static"
+      "name" : "Static",
+      "prefix_header_file" : false
     }
   ],
+  "prefix_header_file" : false,
+  "default_subspecs" : "Core",
+  "version" : "1.15.0",
+  "name" : "MetalPetal",
+  "platforms" : {
+    "ios" : "10.0",
+    "osx" : "10.13",
+    "tvos" : "13.0"
+  },
   "swift_version" : "5.0",
+  "homepage" : "https:\/\/github.com\/MetalPetal\/MetalPetal",
+  "license" : {
+    "type" : "MIT"
+  },
+  "source" : {
+    "git" : "https:\/\/github.com\/MetalPetal\/MetalPetal.git",
+    "tag" : "1.15.0"
+  },
   "authors" : {
     "YuAo" : "me@imyuao.com"
   },
-  "name" : "MetalPetal",
-  "prefix_header_file" : false
+  "swift_versions" : "5.0"
 }
