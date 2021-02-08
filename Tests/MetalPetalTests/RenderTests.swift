@@ -976,6 +976,130 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testWriteToDataBuffer() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(device uint *outBuffer [[buffer(0)]], constant uint &count [[buffer(1)]], uint gid [[thread_position_in_grid]]) {
+            if (gid < count) {
+                outBuffer[gid] = gid;
+            }
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", constantValues: nil, libraryURL: libraryURL))
+        do {
+            let dataCount: Int = 8
+            let dataBuffer = try XCTUnwrap(MTIDataBuffer(values: [UInt32](repeating: 0, count: dataCount)))
+            let outputImage = computeKernel.apply(toInputImages: [], parameters: ["outBuffer": dataBuffer, "count": MTIVector(values: [UInt32(dataCount)])], dispatchOptions: nil, outputTextureDimensions: MTITextureDimensions(width: dataCount, height: 1), outputPixelFormat: .unspecified)
+            let context = try makeContext()
+            let task = try context.startTask(toRender: outputImage, completion: { task in
+                
+            })
+            task.waitUntilCompleted()
+            dataBuffer.unsafeAccess({ (buffer: UnsafeMutableBufferPointer<UInt32>) -> Void in
+                let output = Array(buffer)
+                for item in output.enumerated() {
+                    XCTAssert(item.element == UInt32(item.offset))
+                }
+            })
+        }
+    }
+    
+    func testArgumentsEncoding_basic() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+            constant int &intValue [[buffer(0)]],
+            constant uint &uintValue [[buffer(1)]],
+            constant char &charValue [[buffer(2)]],
+            constant uchar &ucharValue [[buffer(3)]],
+            constant short &shortValue [[buffer(4)]],
+            constant ushort &ushortValue [[buffer(5)]],
+            constant float &floatValue [[buffer(6)]],
+            constant half &halfValue [[buffer(7)]],
+            constant bool &boolValue [[buffer(8)]],
+            
+            constant float2 &float2Value [[buffer(10)]],
+            constant float4x4 &float4x4Value [[buffer(11)]],
+            constant int2 &int2Value [[buffer(12)]],
+            constant uchar2 &uchar2Value [[buffer(13)]]
+        ) {}
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", constantValues: nil, libraryURL: libraryURL))
+        let parameters: [String: Any] = [
+            "intValue": -1,
+            "uintValue": 1,
+            "charValue": 64,
+            "ucharValue": 128,
+            "shortValue": -1,
+            "ushortValue": 1,
+            "floatValue": 1.0,
+            "halfValue": 1.0,
+            "boolValue": true,
+            
+            "float2Value": SIMD2<Float>(x: 1, y: 1),
+            "float4x4Value": simd_float4x4(1),
+            "int2Value": SIMD2<Int32>(x: 1, y: 1),
+            "uchar2Value": SIMD2<UInt8>(x: 1, y: 1)
+        ]
+        let outputImage = computeKernel.apply(toInputImages: [], parameters: parameters, dispatchOptions: nil, outputTextureDimensions: MTITextureDimensions(width: 1, height: 1), outputPixelFormat: .unspecified)
+        let context = try makeContext()
+        let _ = try context.makeCGImage(from: outputImage)
+    }
+    
+    func testArgumentsEncoding_typeMismatch() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+            constant int &intValue [[buffer(0)]]
+        ) {}
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", constantValues: nil, libraryURL: libraryURL))
+        let parameters: [String: Any] = [
+            "intValue": SIMD2<Float>(x: 0, y: 0),
+        ]
+        let outputImage = computeKernel.apply(toInputImages: [], parameters: parameters, dispatchOptions: nil, outputTextureDimensions: MTITextureDimensions(width: 1, height: 1), outputPixelFormat: .unspecified)
+        let context = try makeContext()
+        do {
+            let _ = try context.makeCGImage(from: outputImage)
+            XCTFail()
+        } catch {
+            XCTAssert((error as? MTISIMDArgumentEncoder.Error) == .argumentTypeMismatch)
+        }
+    }
+    
+    func testArgumentsEncoding_unsupportedType() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+            constant float2 &float2Value [[buffer(0)]]
+        ) {}
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", constantValues: nil, libraryURL: libraryURL))
+        let parameters: [String: Any] = [
+            "float2Value": 2,
+        ]
+        let outputImage = computeKernel.apply(toInputImages: [], parameters: parameters, dispatchOptions: nil, outputTextureDimensions: MTITextureDimensions(width: 1, height: 1), outputPixelFormat: .unspecified)
+        let context = try makeContext()
+        do {
+            let _ = try context.makeCGImage(from: outputImage)
+            XCTFail()
+        } catch let error as MTIError {
+            XCTAssert(error.code == .parameterDataTypeNotSupported)
+        }
+    }
+    
     @available(iOS 11.0, macOS 10.13, *)
     func testSKSceneRender() throws {
         let scene = SKScene(size: CGSize(width: 32, height: 32))
