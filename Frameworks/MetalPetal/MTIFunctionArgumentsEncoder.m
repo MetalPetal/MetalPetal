@@ -91,7 +91,7 @@ __attribute__((objc_subclassing_restricted))
     NSAssert(_encoder != nil, @"An encoding proxy can only encode/reportError once.");
     if (_encoder) {
         if (length != _argument.bufferDataSize) {
-            _error = MTIErrorCreate(MTIErrorDataBufferSizeMismatch, (@{@"Argument": _argument}));
+            _error = MTIErrorCreate(MTIErrorParameterDataSizeMismatch, (@{@"Argument": _argument}));
             _used = YES;
         } else {
             MTIArgumentsEncoderEncodeBytes(_functionType, _encoder, bytes, length, _argument.index);
@@ -172,7 +172,7 @@ __attribute__((objc_subclassing_restricted))
                 } break;
                 default: {
                     if (inOutError != nil) {
-                        *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));
+                        *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeMismatch, (@{@"Argument": argument, @"Value": value}));
                     }
                     return NO;
                 } break;
@@ -188,7 +188,7 @@ __attribute__((objc_subclassing_restricted))
             };
             if (argument.bufferDataSize != size) {
                 if (inOutError != nil) {
-                    *inOutError = MTIErrorCreate(MTIErrorDataBufferSizeMismatch, (@{@"Argument": argument, @"Value": value}));
+                    *inOutError = MTIErrorCreate(MTIErrorParameterDataSizeMismatch, (@{@"Argument": argument, @"Value": value}));
                 }
                 return NO;
             }
@@ -226,13 +226,13 @@ __attribute__((objc_subclassing_restricted))
                 if (!proxy.used) {
                     [proxy invalidate];
                     if (inOutError != nil) {
-                        *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));
+                        *inOutError = MTIErrorCreate(MTIErrorUnsupportedParameterType, (@{@"Argument": argument, @"Value": value}));
                     }
                     return NO;
                 }
             } else {
                 if (inOutError != nil) {
-                    *inOutError = MTIErrorCreate(MTIErrorParameterDataTypeNotSupported, (@{@"Argument": argument, @"Value": value}));
+                    *inOutError = MTIErrorCreate(MTIErrorUnsupportedParameterType, (@{@"Argument": argument, @"Value": value}));
                 }
                 return NO;
             }
