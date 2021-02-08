@@ -3704,7 +3704,6 @@ NSURL * _MTISwiftPMBuiltinLibrarySourceURL(void) {
         NSString *librarySource = [targetConditionals stringByAppendingString:[NSString stringWithCString:MTIBuiltinLibrarySource encoding:NSUTF8StringEncoding]];
         MTLCompileOptions *options = [[MTLCompileOptions alloc] init];
         options.fastMathEnabled = YES;
-        options.languageVersion = MTLLanguageVersion1_2;
         url = [MTILibrarySourceRegistration.sharedRegistration registerLibraryWithSource:librarySource compileOptions:options];
     });
     return url;
