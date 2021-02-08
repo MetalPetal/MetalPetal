@@ -10,15 +10,15 @@ import MetalPetal
 import MetalPetalTestHelpers
 import MetalPetalObjectiveC.Extension
 
-fileprivate func listMetalDevices() {
+fileprivate func listMetalDevices() -> String {
     #if os(macOS)
     let devices = MTLCopyAllDevices()
-    for device in devices {
-        print(device)
-    }
+    return devices.map(\.description).joined(separator: "\n")
     #else
     if let device = MTLCreateSystemDefaultDevice() {
-        print(device)
+        return device.description
+    } else {
+        return ""
     }
     #endif
 }
@@ -38,14 +38,24 @@ final class ContextTests: XCTestCase {
     
     static override func setUp() {
         super.setUp()
-        
-        print("----- Metal Devices -----")
-        listMetalDevices()
-        print("-------------------------")
+        print("""
+        ----- Metal Devices -----
+        \(listMetalDevices())
+        -------------------------
+        """)
     }
     
     func testContextCreation() throws {
-        let _ = try makeContext()
+        let context = try makeContext()
+        print("""
+        ----- Context -----
+        isProgrammableBlendingSupported - \(context.isProgrammableBlendingSupported)
+        defaultLibrarySupportsProgrammableBlending - \(context.defaultLibrarySupportsProgrammableBlending)
+        isMemorylessTextureSupported - \(context.isMemorylessTextureSupported)
+        isMetalPerformanceShadersSupported - \(context.isMetalPerformanceShadersSupported)
+        isYCbCrPixelFormatSupported - \(context.isYCbCrPixelFormatSupported)
+        -------------------
+        """)
     }
 }
 
