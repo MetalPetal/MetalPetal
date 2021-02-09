@@ -41,12 +41,20 @@ s.subspec 'Swift' do |ss|
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
 end
 
+s.subspec 'AppleSilicon' do |ss|
+    ss.dependency 'MetalPetal/Core'
+    ss.prefix_header_file = false
+    ss.ios.script_phase = { :name => 'Build Metal Library - MSL 2.3', :script => 'xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" "${PODS_TARGET_SRCROOT}/Shaders/"*.metal', :execution_position => :after_compile }
+    ss.tvos.script_phase = { :name => 'Build Metal Library - MSL 2.3', :script => 'xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" "${PODS_TARGET_SRCROOT}/Shaders/"*.metal', :execution_position => :after_compile }
+    ss.macos.script_phase = { :name => 'Build Metal Library - MSL 2.3', :script => 'xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=macos-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" "${PODS_TARGET_SRCROOT}/Shaders/"*.metal', :execution_position => :after_compile }
+end
+
 s.subspec 'Static' do |ss|
     ss.prefix_header_file = false
     ss.dependency 'MetalPetal/Core'
     ss.weak_frameworks = 'MetalPerformanceShaders', 'MetalKit'
     ss.ios.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
-    ss.osx.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources' }
+    ss.macos.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources' }
     ss.tvos.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
     ss.resource_bundle = { 'MetalPetal' => ['CocoaPodsBundledResourcePlaceholder'] }
     ss.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1'}

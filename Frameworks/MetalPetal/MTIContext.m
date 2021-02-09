@@ -35,6 +35,16 @@ NSString * const MTIContextDefaultLabel = @"MetalPetal";
 
 @implementation MTIContextOptions
 
+static NSURL * MTIDefaultBuiltinLibraryURLForBundle(NSBundle *bundle) {
+    if (@available(iOS 14.0, tvOS 14.0, macOS 11.0, macCatalyst 14.0, *)) {
+        return
+        [bundle URLForResource:@"default.msl23" withExtension:@"metallib"] ?:
+        [bundle URLForResource:@"default" withExtension:@"metallib"];
+    } else {
+        return [bundle URLForResource:@"default" withExtension:@"metallib"];
+    }
+}
+
 static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
     static NSBundle *bundle = nil;
     static dispatch_once_t onceToken;
@@ -70,7 +80,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
         #if __has_include("MTISwiftPMBuiltinLibrarySupport.h")
         _defaultLibraryURL = _MTISwiftPMBuiltinLibrarySourceURL();
         #else
-        _defaultLibraryURL = MTIDefaultLibraryURLForBundle(MTIDefaultBuiltinLibraryBundle());
+        _defaultLibraryURL = MTIDefaultBuiltinLibraryURLForBundle(MTIDefaultBuiltinLibraryBundle());
         #endif
         
         _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
