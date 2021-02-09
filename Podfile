@@ -6,6 +6,7 @@ target 'MetalPetalDemo' do
 
   pod 'MetalPetal', :path => 'Frameworks/MetalPetal'
   pod 'MetalPetal/Swift', :path => 'Frameworks/MetalPetal'
+  pod 'MetalPetal/AppleSilicon', :path => 'Frameworks/MetalPetal'
 end
 
 post_install do |installer|
