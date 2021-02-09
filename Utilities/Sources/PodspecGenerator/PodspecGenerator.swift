@@ -80,6 +80,18 @@ public struct PodspecGenerator: ParsableCommand {
                             }
                         }
                     }
+                    
+                    for p in ["ios", "osx", "tvos"] {
+                        if var platform = podJSON[p] as? [String: Any],
+                           var scriptPhase = platform["script_phases"] as? [String: Any],
+                           let script = scriptPhase["script"] as? String {
+                            let newContent = script.replacingOccurrences(of: "${PODS_TARGET_SRCROOT}/Shaders/", with: "${PODS_TARGET_SRCROOT}/\(pathPrefix)Shaders/")
+                            scriptPhase["script"] = newContent
+                            platform["script_phases"] = scriptPhase
+                            podJSON[p] = platform
+                        }
+                    }
+                    
                     return podJSON
                 }
                 
