@@ -628,9 +628,18 @@ pod 'MetalPetal'
 # Required if you are using Swift.
 pod 'MetalPetal/Swift'
 
+# Recommended if you'd like to run MetalPetal on Apple Silicon Macs.
+pod 'MetalPetal/AppleSilicon'
+
 ```
 
-We also provide a script to generate dynamic `.framework`s for you. You need to first install [CocoaPods/Rome](https://github.com/CocoaPods/Rome), then run [Rome/build_frameworks.sh](Rome/build_frameworks.sh)
+#### Sub-pod `Swift`
+
+Provides Swift-specific additions and modifications to the Objective-C APIs to improve their mapping into Swift. Highly recommended if you are using Swift.
+
+#### Sub-pod `AppleSilicon`
+
+Provides the default shader library compiled in Metal Shading Language v2.3, highly recommended if you'd like to run MetalPetal on Apple Silicon Macs.
 
 ### Swift Package Manager
 
