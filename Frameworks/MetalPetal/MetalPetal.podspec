@@ -51,7 +51,7 @@ s.subspec 'AppleSilicon' do |ss|
         set -u
         set -o pipefail
         cd "${PODS_TARGET_SRCROOT}/Shaders/"
-        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
+        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX:-""}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
         SCRIPTCONTENT
       :execution_position => :after_compile
     }
@@ -62,7 +62,7 @@ s.subspec 'AppleSilicon' do |ss|
         set -u
         set -o pipefail
         cd "${PODS_TARGET_SRCROOT}/Shaders/"
-        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
+        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX:-""}" -ffast-math -std=ios-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
         SCRIPTCONTENT
       :execution_position => :after_compile
     }
@@ -73,7 +73,7 @@ s.subspec 'AppleSilicon' do |ss|
         set -u
         set -o pipefail
         cd "${PODS_TARGET_SRCROOT}/Shaders/"
-        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX}" -ffast-math -std=macos-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
+        xcrun metal -target "air64-${LLVM_TARGET_TRIPLE_VENDOR}-${LLVM_TARGET_TRIPLE_OS_VERSION}${LLVM_TARGET_TRIPLE_SUFFIX:-""}" -ffast-math -std=macos-metal2.3 -o "${METAL_LIBRARY_OUTPUT_DIR}/default.msl23.metallib" *.metal
         SCRIPTCONTENT
       :execution_position => :after_compile
     }
