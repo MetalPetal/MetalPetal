@@ -1,10 +1,11 @@
 # MetalPetal
 
-[![Platform](https://img.shields.io/badge/platform-iOS%2010.0%2B%20%7C%20tvOS%2013.0%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
-[![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg)](#)
-[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-blue)](#)
-
 [![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](#)
+[![Platform](https://img.shields.io/badge/Platform-iOS%2010.0%2B%20%7C%20tvOS%2013.0%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
+[![Version](https://img.shields.io/github/v/release/MetalPetal/MetalPetal?label=Release)](#)
+[![CocoaPods](https://img.shields.io/badge/CocoaPods-%E2%80%8B%20%E2%9C%94-blue)](#)
+[![SPM](https://img.shields.io/badge/SPM-%E2%80%8B%20%E2%9C%94-blue)](#)
+[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-blue)](#)
 
 An image processing framework based on Metal.
 
@@ -628,7 +629,7 @@ pod 'MetalPetal'
 # Required if you are using Swift.
 pod 'MetalPetal/Swift'
 
-# Recommended if you'd like to run MetalPetal on Apple Silicon Macs.
+# Recommended if you'd like to run MetalPetal on Apple silicon Macs.
 pod 'MetalPetal/AppleSilicon'
 
 ```
@@ -639,7 +640,7 @@ Provides Swift-specific additions and modifications to the Objective-C APIs to i
 
 #### Sub-pod `AppleSilicon`
 
-Provides the default shader library compiled in Metal Shading Language v2.3, highly recommended if you'd like to run MetalPetal on Apple Silicon Macs.
+Provides the default shader library compiled in Metal Shading Language v2.3 which is required for enabling programmable blending support on Apple silicon Macs.
 
 ### Swift Package Manager
 
