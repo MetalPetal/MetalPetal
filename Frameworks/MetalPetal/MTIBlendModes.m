@@ -59,14 +59,12 @@ fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlend
 }
 
 - (instancetype)initWithBlendFormula:(NSString *)formula {
-    if (self = [super init]) {
-        MTLCompileOptions *compileOptions = [[MTLCompileOptions alloc] init];
-        NSURL *shaderLibraryURL = [MTILibrarySourceRegistration.sharedRegistration registerLibraryWithSource:MTIBuildBlendFormulaShaderSource(formula) compileOptions:compileOptions];
-        _fragmentFunctionDescriptorForBlendFilter = [[MTIFunctionDescriptor alloc] initWithName:@"customBlend" libraryURL:shaderLibraryURL];
-        _fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend_programmableBlending" libraryURL:shaderLibraryURL];;
-        _fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend" libraryURL:shaderLibraryURL];;
-    }
-    return self;
+    MTLCompileOptions *compileOptions = [[MTLCompileOptions alloc] init];
+    NSURL *shaderLibraryURL = [MTILibrarySourceRegistration.sharedRegistration registerLibraryWithSource:MTIBuildBlendFormulaShaderSource(formula) compileOptions:compileOptions];
+    MTIFunctionDescriptor *blend = [[MTIFunctionDescriptor alloc] initWithName:@"customBlend" libraryURL:shaderLibraryURL];
+    MTIFunctionDescriptor *multilayerPB = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend_programmableBlending" libraryURL:shaderLibraryURL];
+    MTIFunctionDescriptor *multilayer = [[MTIFunctionDescriptor alloc] initWithName:@"multilayerCompositeCustomBlend" libraryURL:shaderLibraryURL];
+    return [self initWithFragmentFunctionDescriptorForBlendFilter:blend fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:multilayerPB fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:multilayer];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
@@ -145,6 +143,16 @@ static id<NSLocking> _registeredBlendModesLock;
     NSParameterAssert(_registeredBlendModes[blendMode] == nil);
     NSMutableDictionary *modes = [NSMutableDictionary dictionaryWithDictionary:_registeredBlendModes];
     modes[blendMode] = functionDescriptors;
+    _registeredBlendModes = [modes copy];
+    [_registeredBlendModesLock unlock];
+}
+
++ (void)unregisterBlendMode:(MTIBlendMode)blendMode {
+    NSParameterAssert(blendMode);
+    [_registeredBlendModesLock lock];
+    NSParameterAssert(_registeredBlendModes[blendMode] != nil);
+    NSMutableDictionary *modes = [NSMutableDictionary dictionaryWithDictionary:_registeredBlendModes];
+    [modes removeObjectForKey:blendMode];
     _registeredBlendModes = [modes copy];
     [_registeredBlendModesLock unlock];
 }

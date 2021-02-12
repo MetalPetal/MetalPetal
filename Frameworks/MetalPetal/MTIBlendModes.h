@@ -63,16 +63,35 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)initWithFragmentFunctionDescriptorForBlendFilter:(MTIFunctionDescriptor *)fragmentFunctionDescriptorForBlendFilter
 fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithProgrammableBlending
-fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending;
+fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending:(nullable MTIFunctionDescriptor *)fragmentFunctionDescriptorForMultilayerCompositingFilterWithoutProgrammableBlending NS_DESIGNATED_INITIALIZER;
 
-/// Create a `MTIBlendFunctionDescriptors` using a metal shader function, the name of the function must be `blend`. Functions defined in "MTIShaderLib.h" can also be used here.
+/// Creates a `MTIBlendFunctionDescriptors` using a metal shader function.
+///
+/// @discussion
+/// The name of the function must be `blend`. The function must have exactly two arguments of type `float4`. The first argument represents the value of the backdrop pixel and the second represents the source pixel. The value returned by the function will be the new destination color. All colors should have unpremultiplied alpha component.
 ///
 /// Example:
 ///
-/// float4 blend(float4 backdropColor, float4 sourceColor) {
-///     return float4(backdropColor.rgb + sourceColor.rgb, 1.0);
+/// @textblock
+/// float4 blend(float4 backdrop, float4 source) {
+///     return float4(backdrop.rgb + source.rgb, 1.0);
+/// }
+/// @/textblock
+///
+/// You can optionally provide a `modify_source_texture_coordinates` function. This function is used to modify the sample coordinates of the source texture. It must have three arguments. The first argument represents the value of the backdrop pixel, the second represents the normalized sample coordinates for the source texture and the third position represents the pixel size of the source texture. The value returned by the function will be the new sample coordinates.
+///
+/// Example:
+///
+/// @textblock
+/// float2 modify_source_texture_coordinates(float4 backdrop, float2 coordinates, uint2 source_texture_size) {
+///     return coordinates;
 /// }
 ///
+/// float4 blend(float4 backdrop, float4 source) {
+///     return float4(backdrop.rgb + source.rgb, 1.0);
+/// }
+/// @/textblock
+
 - (instancetype)initWithBlendFormula:(NSString *)formula;
 
 @end
@@ -87,6 +106,8 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic,copy,readonly,class) NSArray<MTIBlendMode> *allModes NS_SWIFT_NAME(all);
 
 + (void)registerBlendMode:(MTIBlendMode)blendMode withFunctionDescriptors:(MTIBlendFunctionDescriptors *)functionDescriptors;
+
++ (void)unregisterBlendMode:(MTIBlendMode)blendMode;
 
 + (nullable MTIBlendFunctionDescriptors *)functionDescriptorsForBlendMode:(MTIBlendMode)blendMode NS_SWIFT_NAME(functionDescriptors(for:));
 

@@ -452,6 +452,14 @@ __attribute__((objc_subclassing_restricted))
                                           flipOptions:layer.contentFlipOptions];
         
         MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
+        if (!renderPipeline) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToFetchBlendRenderPipelineForMultilayerCompositing, nil);
+            }
+            [commandEncoder endEncoding];
+            return nil;
+        }
+        
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix
@@ -602,6 +610,13 @@ __attribute__((objc_subclassing_restricted))
                                           flipOptions:layer.contentFlipOptions];
         
         MTIRenderPipeline *renderPipeline = [kernelState pipelineWithBlendMode:layer.blendMode];
+        if (!renderPipeline) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToFetchBlendRenderPipelineForMultilayerCompositing, nil);
+            }
+            [commandEncoder endEncoding];
+            return nil;
+        }
         [commandEncoder setRenderPipelineState:renderPipeline.state];
         
         //transformMatrix

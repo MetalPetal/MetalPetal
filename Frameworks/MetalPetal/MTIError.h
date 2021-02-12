@@ -52,6 +52,8 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     MTIErrorCrossDeviceRendering = 5006,
     MTIErrorCrossContextRendering = 5007,
     
+    MTIErrorFailedToFetchBlendRenderPipelineForMultilayerCompositing = 5008,
+    
     //For features not available on iOS simulator.
     MTIErrorFeatureNotAvailableOnSimulator = 6001
 };
