@@ -390,4 +390,17 @@ final class UtilitiesTests: XCTestCase {
             XCTAssert(error.code == .parameterDataTypeMismatch)
         }
     }
+    
+    func testGeometryUtilities() throws {
+        let aspectRatio = CGSize(width: 3, height: 4)
+        let rect1 = CGRect(x: 100, y: 50, width: 300, height: 600)
+        let rect2 = CGRect(x: 100, y: 50, width: 600, height: 300)
+        let rect3 = CGRect(x: 100, y: 50, width: 300, height: 300)
+        XCTAssert(AVMakeRect(aspectRatio: aspectRatio, insideRect: rect1) == MTIMakeRect(aspectRatio: aspectRatio, insideRect: rect1))
+        XCTAssert(AVMakeRect(aspectRatio: aspectRatio, insideRect: rect2) == MTIMakeRect(aspectRatio: aspectRatio, insideRect: rect2))
+        XCTAssert(AVMakeRect(aspectRatio: aspectRatio, insideRect: rect3) == MTIMakeRect(aspectRatio: aspectRatio, insideRect: rect3))
+        XCTAssert(MTIMakeRect(aspectRatio: aspectRatio, fillRect: rect1) == CGRect(x: 25, y: 50, width: 450, height: 600))
+        XCTAssert(MTIMakeRect(aspectRatio: aspectRatio, fillRect: rect2) == CGRect(x: 100, y: -200, width: 600, height: 800))
+        XCTAssert(MTIMakeRect(aspectRatio: aspectRatio, fillRect: rect3) == CGRect(x: 100, y: 0, width: 300, height: 400))
+    }
 }

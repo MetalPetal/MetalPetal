@@ -1184,6 +1184,35 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testCropFilter() throws {
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [1,2,3,4],
+            [5,6,7,8],
+            [9,10,11,12],
+            [13,14,15,16],
+        ]), isOpaque: true)
+        do {
+            let croppedImage = image.cropped(to: .pixel(CGRect(x: 0, y: 0, width: 0, height: 0)))
+            XCTAssertNil(croppedImage)
+        }
+        do {
+            let croppedImage = image.cropped(to: .fractional(CGRect(x: 0, y: 0, width: 0, height: 0)))
+            XCTAssertNil(croppedImage)
+        }
+        do {
+            let croppedImage = try XCTUnwrap(image.cropped(to: .pixel(CGRect(x: 1, y: 1, width: 1, height: 1))))
+            let context = try makeContext()
+            let output = try context.makeCGImage(from: croppedImage)
+            PixelEnumerator.enumeratePixels(in: output) { (pixel, coord) in
+                XCTAssert(pixel.r == 6 && pixel.g == 6 && pixel.b == 6 && pixel.a == 255)
+            }
+        }
+        do {
+            let croppedImage = try XCTUnwrap(image.cropped(to: .pixel(CGRect(x: 1, y: 1, width: 100, height: 100))))
+            XCTAssert(croppedImage.size.width == 100 && croppedImage.size.height == 100)
+        }
+    }
+    
     func testWriteToDataBuffer() throws {
         let kernelSource = """
         #include <metal_stdlib>
