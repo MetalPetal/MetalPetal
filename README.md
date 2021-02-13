@@ -179,9 +179,9 @@ With MetalPetalJS you can create render pipelines and filters using JavaScript, 
 
 #### Texture Loader
 
-MetalPetal, by default, uses `MTKTextureLoader` to load `CGImage`s, images from `URL`, and named images.
+It is recommanded that you use APIs that accept `MTICGImageLoadingOptions` to load `CGImage`s and images from `URL`, instead of using APIs that accept `MTKTextureLoaderOption`.
 
-You can custom this behavior by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
+When you use APIs that accpet `MTKTextureLoaderOption`, MetalPetal, by default, uses `MTIDefaultTextureLoader` to load `CGImage`s, images from `URL`, and named images. `MTIDefaultTextureLoader` uses `MTKTextureLoader` internally and has some workarounds for `MTKTextureLoader`'s inconsistencies and bugs at a small performance cost. You can also create your own texture loader by implementing the `MTITextureLoader` protocol. Then assign your texture loader class to `MTIContextOptions.textureLoaderClass` when creating a `MTIContext`.
 
 ## Builtin Filters
 
