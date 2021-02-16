@@ -40,8 +40,8 @@ An image processing framework based on Metal.
     - [Render a `MTIImage`](#render-a-mtiimage)
     - [Display a `MTIImage`](#display-a-mtiimage)
     - [Connect Filters (Swift)](#connect-filters-swift)
-    - [Process Video Files (with [VideoIO](https://github.com/MetalPetal/VideoIO))](#process-video-files-with-videoiohttpsgithubcommetalpetalvideoio)
-    - [Process Live Video (with [VideoIO](https://github.com/MetalPetal/VideoIO))](#process-live-video-with-videoiohttpsgithubcommetalpetalvideoio)
+    - [Process Video Files (with VideoIO)](#process-video-files-with-videoio)
+    - [Process Live Video (with VideoIO)](#process-live-video-with-videoio)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
@@ -393,7 +393,9 @@ let image = try? FilterGraph.makeImage { output in
 
 - One and only one filter's output can be connected to `output`.
 
-### Process Video Files (with [VideoIO](https://github.com/MetalPetal/VideoIO))
+### Process Video Files (with VideoIO)
+
+_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for the following examples._
 
 Working with `AVPlayer`:
 
@@ -429,7 +431,9 @@ exporter.export(progress: { progress in
 })
 ```
 
-### Process Live Video (with [VideoIO](https://github.com/MetalPetal/VideoIO))
+### Process Live Video (with VideoIO)
+
+_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for this example._
 
 ```Swift
 import VideoIO
