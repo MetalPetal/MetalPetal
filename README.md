@@ -1,11 +1,16 @@
 # MetalPetal
 
-[![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](#)
-[![Platform](https://img.shields.io/badge/Platform-iOS%2010%2B%20%7C%20tvOS%2013%2B%20%7C%20macOS%2010.13%2B%20%7C%20macCatalyst-blue.svg)](#)
-[![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?label=Release)](#)
-[![CocoaPods](https://img.shields.io/badge/CocoaPods-%E2%80%8B%20%E2%9C%94-blue)](#)
-[![SPM](https://img.shields.io/badge/SPM-%E2%80%8B%20%E2%9C%94-blue)](#)
-[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-blue)](#)
+[![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](https://github.com/MetalPetal/MetalPetal/actions?query=workflow%3ASwift)
+<br/>
+[![Platforms](https://img.shields.io/badge/Platforms-iOS%2010%2B%20%7C%20tvOS%2013%2B%20%7C%20macOS%2010.13%2B-blue.svg)](#)
+[![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?label=Release)](https://github.com/MetalPetal/MetalPetal/releases)
+<br/>
+[![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-eee)](#)
+[![Mac Catalyst](https://img.shields.io/badge/Mac%20Catalyst-%E2%80%8B%20%E2%9C%94-eee)](#)
+[![Simulator](https://img.shields.io/badge/Simulator-%E2%80%8B%20%E2%9C%94-eee)](#)
+<br/>
+[![CocoaPods](https://img.shields.io/static/v1?label=CocoaPods&message=%E2%80%8B%20%E2%9C%94&color=eee&logo=CocoaPods&logoColor=white)](#cocoapods)
+[![Swift PM](https://img.shields.io/static/v1?label=Swift%20PM&message=%E2%80%8B%20%E2%9C%94&color=eee&logo=Swift&logoColor=white)](#swift-package-manager)
 
 An image processing framework based on Metal.
 
