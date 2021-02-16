@@ -30,6 +30,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic) MTIDrawableRenderingResizingMode resizingMode;
 
+/// The `MTIContext` used to render the image. If no context is assigned and `automaticallyCreatesContext` is set to `true` (the default value), a `MTIContext` is created automatically when the image view renders its content.
 @property (nonatomic, strong, nullable) MTIContext *context;
 
 @property (nonatomic, strong, nullable) MTIImage *image;

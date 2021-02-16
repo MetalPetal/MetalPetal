@@ -36,9 +36,12 @@ An image processing framework based on Metal.
 - [Builtin Filters](#builtin-filters)
 - [Example Code](#example-code)
     - [Create a `MTIImage`](#create-a-mtiimage)
-    - [Create a Filtered Image](#create-a-filtered-image)
+    - [Apply a Filter](#apply-a-filter)
     - [Render a `MTIImage`](#render-a-mtiimage)
-    - [Connecting Filters (Swift)](#connecting-filters-swift)
+    - [Display a `MTIImage`](#display-a-mtiimage)
+    - [Connect Filters (Swift)](#connect-filters-swift)
+    - [Process Video Files (with [VideoIO](https://github.com/MetalPetal/VideoIO))](#process-video-files-with-videoiohttpsgithubcommetalpetalvideoio)
+    - [Process Live Video (with [VideoIO](https://github.com/MetalPetal/VideoIO))](#process-live-video-with-videoiohttpsgithubcommetalpetalvideoio)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
 - [Build Custom Filter](#build-custom-filter)
@@ -50,6 +53,8 @@ An image processing framework based on Metal.
     - [Custom Processing Module](#custom-processing-module)
 - [Install](#install)
     - [CocoaPods](#cocoapods)
+        - [Sub-pod `Swift`](#sub-pod-swift)
+        - [Sub-pod `AppleSilicon`](#sub-pod-applesilicon)
     - [Swift Package Manager](#swift-package-manager)
 - [iOS Simulator Support](#ios-simulator-support)
 - [Trivia](#trivia)
@@ -243,6 +248,7 @@ When you use APIs that accpet `MTKTextureLoaderOption`, MetalPetal, by default, 
     - Color
     - Luminosity
     - ColorLookup512x512
+    - Custom
 
 - Blend with Mask
 
@@ -282,14 +288,25 @@ When you use APIs that accpet `MTKTextureLoaderOption`, MetalPetal, by default, 
 
 - Dot Screen
 
-- All Core Image Filters
+- [All Core Image Filters](#working-with-core-image)
 
 ## Example Code
 
 ### Create a `MTIImage`
 
+You can create a `MTIImage` object from nearly any source of image data, including:
+
+- `URL`s referencing image files to be loaded
+- Metal textures
+- CoreVideo image or pixel buffers (`CVImageBufferRef` or `CVPixelBufferRef`)
+- Image bitmap data in memory
+- Texture data from a given texture or image asset name
+- Core Image `CIImage` objects
+- `MDLTexture` objects
+- SceneKit and SpriteKit scenes
+
 ```Swift
-let imageFromCGImage = MTIImage(cgImage: cgImage)
+let imageFromCGImage = MTIImage(cgImage: cgImage, isOpaque: true)
 
 let imageFromCIImage = MTIImage(ciImage: ciImage)
 
@@ -301,7 +318,7 @@ let imageFromContentsOfURL = MTIImage(contentsOf: url)
 let unpremultipliedAlphaImage = image.unpremultiplyingAlpha()
 ```
 
-### Create a Filtered Image
+### Apply a Filter
 
 ```Swift
 let inputImage = ...
@@ -335,7 +352,20 @@ do {
 }
 ```
 
-### Connecting Filters (Swift)
+### Display a `MTIImage`
+
+```Swift
+let imageView = MTIImageView(frame: self.view.bounds)
+
+// You can optionally assign a `MTIContext` to the image view. If no context is assigned and `automaticallyCreatesContext` is set to `true` (the default value), a `MTIContext` is created automatically when the image view renders its content.
+imageView.context = ...
+
+imageView.image = image
+```
+
+If you'd like to move the GPU command encoding process out of the main thread, you can use a `MTIThreadSafeImageView`. You may assign a `MTIImage` to a `MTIThreadSafeImageView` in any thread.
+
+### Connect Filters (Swift)
 
 MetalPetal has a type-safe Swift API for connecting filters. You can use `=>` operator in `FilterGraph.makeImage` function to connect filters and get the output image.
 
@@ -362,6 +392,73 @@ let image = try? FilterGraph.makeImage { output in
 - `=>` operator only works in `FilterGraph.makeImage` method.
 
 - One and only one filter's output can be connected to `output`.
+
+### Process Video Files (with [VideoIO](https://github.com/MetalPetal/VideoIO))
+
+Working with `AVPlayer`:
+
+```Swift
+import VideoIO
+
+let context = try MTIContext(device: device)
+let asset = AVAsset(url: videoURL)
+let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) {   request in
+    return FilterGraph.makeImage { output in
+        request.anySourceImage => filterA => filterB => output
+    }!
+}
+let composition = VideoComposition(propertiesOf: asset, compositionRequestHandler: handler.handle(request:))
+let playerItem = AVPlayerItem(asset: asset)
+playerItem.videoComposition = composition.makeAVVideoComposition()
+player.replaceCurrentItem(with: playerItem)
+player.play()
+```
+
+Export a video:
+
+```Swift
+import VideoIO
+
+let configuration = AssetExportSession.Configuration(fileType: .mp4, videoSettings: .h264(videoSize: composition.renderSize), audioSettings: .aac(channels: 2, sampleRate: 44100, bitRate: 128 * 1000))
+configuration.videoComposition = composition.makeAVVideoComposition()
+self.exporter = try! AssetExportSession(asset: asset, outputURL: outputURL, configuration: configuration)
+exporter.export(progress: { progress in
+    
+}, completion: { error in
+    
+})
+```
+
+### Process Live Video (with [VideoIO](https://github.com/MetalPetal/VideoIO))
+
+```Swift
+import VideoIO
+
+// Setup Image View
+let imageView = MTIImageView(frame: self.view.bounds)
+...
+
+// Setup Camera
+let camera = Camera(captureSessionPreset: .hd1920x1080, configurator: .portraitFrontMirroredVideoOutput)
+try camera.enableVideoDataOutput(on: DispatchQueue.main, delegate: self)
+camera.videoDataOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
+
+...
+
+// AVCaptureVideoDataOutputSampleBufferDelegate
+
+let filter = MTIColorInvertFilter()
+
+func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+    guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+        return
+    }
+    let inputImage = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+    filter.inputImage = inputImage
+    self.imageView.image = filter.outputImage
+}
+
+```
 
 ## Quick Look Debug Support
 

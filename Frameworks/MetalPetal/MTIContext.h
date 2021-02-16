@@ -47,7 +47,7 @@ __attribute__((objc_subclassing_restricted))
 /// The built-in metal library URL.
 @property (nonatomic, copy) NSURL *defaultLibraryURL;
 
-/// The texture loader to use. Possible values are MTKTextureLoader.class, MTITextureLoaderForiOS9WithImageOrientationFix.class
+/// The texture loader to use.
 @property (nonatomic) Class<MTITextureLoader> textureLoaderClass;
 
 /// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture).
@@ -56,7 +56,7 @@ __attribute__((objc_subclassing_restricted))
 /// The texture pool class to use.
 @property (nonatomic) Class<MTITexturePool> texturePoolClass;
 
-/// The default value for this property is MTKTextureLoader.class
+/// The default value for this property is MTIDefaultTextureLoader.class
 @property (nonatomic, class) Class<MTITextureLoader> defaultTextureLoaderClass;
 
 /// On iOS 11/macOS 10.11 or later, the default value is MTICVMetalIOSurfaceBridge.class. Before iOS 11/macOS 10.11, the defualt value is MTICVMetalTextureCache.class.
