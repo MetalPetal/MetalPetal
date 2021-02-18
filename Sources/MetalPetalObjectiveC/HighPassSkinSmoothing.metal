@@ -1,1 +1,0 @@
-../../Frameworks/MetalPetal/Shaders/HighPassSkinSmoothing.metal

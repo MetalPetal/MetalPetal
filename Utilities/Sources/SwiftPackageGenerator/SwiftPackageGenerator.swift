@@ -45,20 +45,19 @@ public struct SwiftPackageGenerator: ParsableCommand {
         
         let fileHandlers = [
             SourceFileHandler(fileTypes: ["h"], projectRoot: projectRoot, targetURL: objectiveCHeaderDirectory, fileManager: fileManager),
-            SourceFileHandler(fileTypes: ["m", "mm", "metal"], projectRoot: projectRoot, targetURL: objectiveCTargetDirectory, fileManager: fileManager),
-            SourceFileHandler(fileTypes: ["swift"], projectRoot: projectRoot, targetURL: swiftTargetDirectory, fileManager: fileManager),
-            SourceFileHandler(fileTypes: ["MTIShaderLib.h"], projectRoot: projectRoot, targetURL: objectiveCTargetDirectory, fileManager: fileManager)
+            SourceFileHandler(fileTypes: ["m", "mm"], projectRoot: projectRoot, targetURL: objectiveCTargetDirectory, fileManager: fileManager),
+            SourceFileHandler(fileTypes: ["swift"], projectRoot: projectRoot, targetURL: swiftTargetDirectory, fileManager: fileManager)
         ]
         
         try processSources(in: sourcesDirectory, fileHandlers: fileHandlers)
         
         //TODO: remove this in swift 5.3
-        try generateBuiltinMetalLibrarySupportCode(directory: objectiveCTargetDirectory)
+        try generateBuiltinMetalLibrarySupportCode(directory: objectiveCTargetDirectory, shadersDirectory: sourcesDirectory.appendingPathComponent("Shaders"))
         
         try objectiveCModuleMapContents.write(to: objectiveCHeaderDirectory.appendingPathComponent("module.modulemap"), atomically: true, encoding: .utf8)
     }
     
-    public func generateBuiltinMetalLibrarySupportCode(directory: URL) throws {
+    public func generateBuiltinMetalLibrarySupportCode(directory: URL, shadersDirectory: URL) throws {
         try """
         // Auto generated.
         #import <Foundation/Foundation.h>
@@ -73,7 +72,7 @@ public struct SwiftPackageGenerator: ParsableCommand {
         #import <Metal/Metal.h>
 
         static const char *MTIBuiltinLibrarySource = R"mtirawstring(
-        \(try collectBuiltinMetalLibrarySource())
+        \(try collectBuiltinMetalLibrarySource(shadersDirectory: shadersDirectory))
         )mtirawstring";
 
         NSURL * _MTISwiftPMBuiltinLibrarySourceURL(void) {
@@ -91,10 +90,10 @@ public struct SwiftPackageGenerator: ParsableCommand {
         """.write(to: directory.appendingPathComponent("MTISwiftPMBuiltinLibrarySupport.mm"), atomically: true, encoding: .utf8)
     }
     
-    public func collectBuiltinMetalLibrarySource() throws -> String {
+    public func collectBuiltinMetalLibrarySource(shadersDirectory: URL) throws -> String {
         var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        let sourceFileDirectory = shadersDirectory
+        let headerURL = sourceFileDirectory.appendingPathComponent("MTIShaderLib.h")
         librarySource += try String(contentsOf: headerURL)
         let fileManager = FileManager()
         for source in try fileManager.contentsOfDirectory(at: sourceFileDirectory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
