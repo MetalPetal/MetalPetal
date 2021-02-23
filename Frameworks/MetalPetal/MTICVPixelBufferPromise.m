@@ -211,7 +211,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         return nil;
     }
     NSError *error;
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.coreImageRendererDefaultTextureDescriptor error:&error];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:self.coreImageRendererDefaultTextureDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;
@@ -342,7 +342,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
                 // Render Pipeline
                 MTLPixelFormat pixelFormat = MTLPixelFormatBGRA8Unorm;
                 MTITextureDescriptor *textureDescriptor = [MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:CVPixelBufferGetWidth(_pixelBuffer) height:CVPixelBufferGetHeight(_pixelBuffer) mipmapped:NO usage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget resourceOptions:MTLResourceStorageModePrivate];
-                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor error:&error];
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:textureDescriptor error:&error];
                 if (error) {
                     if (inOutError) {
                         *inOutError = error;
@@ -403,7 +403,7 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
             //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
             if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
                 NSError *error;
-                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
+                MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
                 if (error) {
                     if (inOutError) {
                         *inOutError = error;

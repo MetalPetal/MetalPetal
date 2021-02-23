@@ -93,7 +93,7 @@ public struct MTICoreImageKernel {
                     return try ciImage(for: $0, from: texture)
                 }
             })
-            let renderTarget = try renderingContext.context.makeRenderTarget(resuableTextureDescriptor: MTITextureDescriptor(pixelFormat: pixelFormat == .invalid ? renderingContext.context.workingPixelFormat : pixelFormat, width: dimensions.width, height: dimensions.height, mipmapped: false, usage: [.shaderRead,.shaderWrite], resourceOptions: .storageModePrivate))
+            let renderTarget = try renderingContext.context.makeRenderTarget(reusableTextureDescriptor: MTITextureDescriptor(pixelFormat: pixelFormat == .invalid ? renderingContext.context.workingPixelFormat : pixelFormat, width: dimensions.width, height: dimensions.height, mipmapped: false, usage: [.shaderRead,.shaderWrite], resourceOptions: .storageModePrivate))
             let outputCIImage = try filter(inputCIImages)
             let renderDestination = CIRenderDestination(mtlTexture: renderTarget.texture!, commandBuffer: renderingContext.commandBuffer)
             renderDestination.isFlipped = true

@@ -312,7 +312,7 @@
     //Workaround for #64. See https://github.com/MetalPetal/MetalPetal/issues/64
     if (![renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily2_v1]) {
         NSError *error;
-        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
+        MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:textureDescriptor.newMTITextureDescriptor error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -458,7 +458,7 @@
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
     NSError *error;
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:self.textureDescriptor error:&error];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:self.textureDescriptor error:&error];
     if (error) {
         if (inOutError) {
             *inOutError = error;

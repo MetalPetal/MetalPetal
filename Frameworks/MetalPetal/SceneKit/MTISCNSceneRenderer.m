@@ -79,7 +79,7 @@ __attribute__((objc_subclassing_restricted))
         pixelFormat = _pixelFormat;
     }
     
-    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:[MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate] error:error];
+    MTIImagePromiseRenderTarget *renderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:[MTITextureDescriptor texture2DDescriptorWithPixelFormat:pixelFormat width:_dimensions.width height:_dimensions.height mipmapped:NO usage:MTLTextureUsageRenderTarget|MTLTextureUsageShaderRead resourceOptions:MTLResourceStorageModePrivate] error:error];
     if (!renderTarget) {
         return nil;
     }
@@ -143,7 +143,7 @@ __attribute__((objc_subclassing_restricted))
             }
         } else {
             multisampleTextureDescriptor.storageMode = MTLStorageModePrivate;
-            multisampleRenderTarget = [renderingContext.context newRenderTargetWithResuableTextureDescriptor:multisampleTextureDescriptor.newMTITextureDescriptor error:error];
+            multisampleRenderTarget = [renderingContext.context newRenderTargetWithReusableTextureDescriptor:multisampleTextureDescriptor.newMTITextureDescriptor error:error];
             if (!multisampleRenderTarget) {
                 return nil;
             }

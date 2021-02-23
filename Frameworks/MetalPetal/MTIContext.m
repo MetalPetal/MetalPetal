@@ -441,7 +441,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     return self;
 }
 
-- (instancetype)initWithResuableTexture:(MTIReusableTexture *)texture {
+- (instancetype)initWithReusableTexture:(MTIReusableTexture *)texture {
     if (self = [super init]) {
         _nonreusableTexture = nil;
         _reusableTexture = texture;
@@ -479,12 +479,12 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
     return [[MTIImagePromiseRenderTarget alloc] initWithTexture:texture];
 }
 
-- (MTIImagePromiseRenderTarget *)newRenderTargetWithResuableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
+- (MTIImagePromiseRenderTarget *)newRenderTargetWithReusableTextureDescriptor:(MTITextureDescriptor *)textureDescriptor error:(NSError * __autoreleasing *)error {
     MTIReusableTexture *texture = [self.texturePool newTextureWithDescriptor:textureDescriptor error:error];
     if (!texture) {
         return nil;
     }
-    return [[MTIImagePromiseRenderTarget alloc] initWithResuableTexture:texture];
+    return [[MTIImagePromiseRenderTarget alloc] initWithReusableTexture:texture];
 }
 
 #pragma mark - Lock
