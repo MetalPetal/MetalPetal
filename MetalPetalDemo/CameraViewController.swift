@@ -88,28 +88,28 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
         let url = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(folderName)/\(UUID().uuidString).mp4")
         self.currentVideoURL = url
         
-        var configuration = MovieRecorder.Configuration()
-        configuration.isAudioEnabled = false
-        let recorder = MovieRecorder(url: url, configuration: configuration, delegate: self)
+        let configuration = MovieRecorder.Configuration(hasAudio: false)
+        let recorder = try? MovieRecorder(url: url, configuration: configuration)
         self.recorder = recorder
-        recorder.prepareToRecord()
         
         self.isRecording = true
     }
     
     @IBAction func recordButtonTouchUp(_ sender: Any) {
-        self.recorder?.finishRecording()
+        self.isRecording = false
+        self.recorder?.stopRecording(completion: { error in
+            if let error = error {
+                print(error)
+            } else if let url = self.currentVideoURL {
+                self.showPlayerViewController(url: url)
+            }
+        })
     }
     
     @IBAction func filterSwitchValueChanged(_ sender: UISwitch) {
         self.isFilterEnabled = sender.isOn
     }
 
-    private func recordingStopped() {
-        self.recorder = nil
-        self.isRecording = false
-    }
-    
     private func showPlayerViewController(url: URL) {
         let playerViewController = AVPlayerViewController()
         let player = AVPlayer(url: url)
@@ -144,35 +144,14 @@ class CameraViewController: UIViewController, AVCaptureVideoDataOutputSampleBuff
                         print("\(error)")
                     }
                 }
-                self.recorder?.append(sampleBuffer: outputSampleBuffer)
+                do {
+                    try self.recorder?.appendSampleBuffer(outputSampleBuffer)
+                } catch {
+                    print(error)
+                }
             }
             self.renderView.image = outputImage
         }
     }
 }
 
-extension CameraViewController: MovieRecorderDelegate {
-    
-    func movieRecorderDidFinishPreparing(_ recorder: MovieRecorder) {
-        
-    }
-    
-    func movieRecorderDidCancelRecording(_ recorder: MovieRecorder) {
-        recordingStopped()
-    }
-    
-    func movieRecorder(_ recorder: MovieRecorder, didFailWithError error: Error) {
-        recordingStopped()
-    }
-    
-    func movieRecorderDidFinishRecording(_ recorder: MovieRecorder) {
-        recordingStopped()
-        if let url = self.currentVideoURL {
-            showPlayerViewController(url: url)
-        }
-    }
-    
-    func movieRecorder(_ recorder: MovieRecorder, didUpdateWithTotalDuration totalDuration: TimeInterval) {
-        print(totalDuration)
-    }
-}
