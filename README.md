@@ -431,9 +431,11 @@ exporter.export(progress: { progress in
 })
 ```
 
+Please refer to the `VideoProcessorViewController.swift` in the demo project for more information.
+
 ### Process Live Video (with VideoIO)
 
-_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for this example._
+_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for this example._ 
 
 ```Swift
 import VideoIO
@@ -463,6 +465,8 @@ func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBu
 }
 
 ```
+
+Please refer to the `CameraViewController.swift` in the demo project for more about previewing and recording filtered live video.
 
 ## Quick Look Debug Support
 
