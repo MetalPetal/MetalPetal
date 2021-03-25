@@ -186,13 +186,11 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage loadingOptions:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
-    MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:kCGImagePropertyOrientationUp options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:kCGImagePropertyOrientationUp options:options isOpaque:isOpaque] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation loadingOptions:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
-    MTIAlphaType preferredAlphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIPreferredAlphaTypeForCGImage(cgImage);
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:orientation options:options alphaType:preferredAlphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:orientation options:options isOpaque:isOpaque] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithCIImage:(CIImage *)ciImage {
@@ -271,17 +269,13 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     @MTI_DEFER {
         CGImageRelease(cgImage);
     };
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options alphaType:MTIPreferredAlphaTypeForImageWithProperties(properties)] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options isOpaque:NO] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
-- (instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
     MTIImageProperties *properties = [[MTIImageProperties alloc] initWithImageAtURL:URL];
     if (!properties) {
         return nil;
-    }
-    MTIAlphaType preferredAlphaType = MTIPreferredAlphaTypeForImageWithProperties(properties);
-    if (preferredAlphaType == MTIAlphaTypePremultiplied) {
-        NSAssert(alphaType != MTIAlphaTypeNonPremultiplied, @"The bitmap info indicates the alpha type is `.premultiplied`.");
     }
     CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)URL, nil);
     if (!imageSource || CGImageSourceGetCount(imageSource) == 0) {
@@ -295,7 +289,7 @@ static MTIAlphaType MTIPreferredAlphaTypeForCGImage(CGImageRef cgImage) {
     @MTI_DEFER {
         CGImageRelease(cgImage);
     };
-    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options alphaType:alphaType] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
+    return [self initWithPromise:[[MTICGImagePromise alloc] initWithCGImage:cgImage orientation:properties.orientation options:options isOpaque:isOpaque] samplerDescriptor:MTISamplerDescriptor.defaultSamplerDescriptor cachePolicy:MTIImageCachePolicyPersistent];
 }
 
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size {

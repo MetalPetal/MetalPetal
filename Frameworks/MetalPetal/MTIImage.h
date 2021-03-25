@@ -105,8 +105,7 @@ __attribute__((objc_subclassing_restricted))
 
 - (nullable instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(nullable MTICGImageLoadingOptions *)options NS_REFINED_FOR_SWIFT;
 
-- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(nullable MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType NS_REFINED_FOR_SWIFT;
-
+- (nullable instancetype)initWithContentsOfURL:(NSURL *)URL loadingOptions:(nullable MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque NS_REFINED_FOR_SWIFT;
 
 //MTIAlphaTypeNonPremultiplied
 - (instancetype)initWithColor:(MTIColor)color sRGB:(BOOL)sRGB size:(CGSize)size;

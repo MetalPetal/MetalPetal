@@ -18,12 +18,13 @@ extension MTIImage {
         self.init(__cgImage: cgImage, orientation: orientation, loadingOptions: options, isOpaque: isOpaque)
     }
     
+    public convenience init?(contentsOf url: URL, options: MTICGImageLoadingOptions = .default, isOpaque: Bool = false) {
+        self.init(__contentsOf: url, loadingOptions: options, isOpaque: isOpaque)
+    }
+    
+    @available(*, deprecated, message: "Use init?(contentsOf:options:isOpaque:) instead.")
     public convenience init?(contentsOf url: URL, options: MTICGImageLoadingOptions = .default, alphaType: MTIAlphaType? = nil) {
-        if let alphaType = alphaType {
-            self.init(__contentsOf: url, loadingOptions: options, alphaType: alphaType)
-        } else {
-            self.init(__contentsOf: url, loadingOptions: options)
-        }
+        self.init(__contentsOf: url, loadingOptions: options, isOpaque: alphaType == .alphaIsOne ? true : false)
     }
     
     public convenience init(cgImage: CGImage, options: [MTKTextureLoader.Option: Any], isOpaque: Bool = false) {

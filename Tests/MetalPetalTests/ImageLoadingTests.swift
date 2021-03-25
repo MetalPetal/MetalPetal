@@ -274,7 +274,7 @@ final class CGImageLoadingTests: XCTestCase {
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
                                     .appendingPathComponent("f\(orientation).png")
-                                 , options: .default, alphaType: .alphaIsOne)
+                                 , options: .default, isOpaque: true)
             guard let inputImage = image else {
                 XCTFail()
                 return
@@ -296,7 +296,7 @@ final class CGImageLoadingTests: XCTestCase {
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
                                     .appendingPathComponent("fgray\(orientation).png")
-                                 , options: .default, alphaType: .alphaIsOne)
+                                 , options: .default, isOpaque: true)
             guard let inputImage = image else {
                 XCTFail()
                 return
@@ -318,7 +318,7 @@ final class CGImageLoadingTests: XCTestCase {
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
                                     .appendingPathComponent("fgray\(orientation).png")
-                                 , options: MTICGImageLoadingOptions(colorSpace: nil, flipsVertically: true), alphaType: .alphaIsOne)
+                                 , options: MTICGImageLoadingOptions(colorSpace: nil, flipsVertically: true), isOpaque: true)
             guard let inputImage = image else {
                 XCTFail()
                 return

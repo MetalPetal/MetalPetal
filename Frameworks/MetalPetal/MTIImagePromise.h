@@ -104,7 +104,7 @@ __attribute__((objc_subclassing_restricted))
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(nullable MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType;
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(nullable MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque;
 
 @end
 

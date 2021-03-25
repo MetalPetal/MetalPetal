@@ -204,13 +204,13 @@
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
 
-- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(MTICGImageLoadingOptions *)options alphaType:(MTIAlphaType)alphaType {
+- (instancetype)initWithCGImage:(CGImageRef)cgImage orientation:(CGImagePropertyOrientation)orientation options:(MTICGImageLoadingOptions *)options isOpaque:(BOOL)isOpaque {
     if (self = [super init]) {
         _properties = [[MTIImageProperties alloc] initWithCGImage:cgImage orientation:orientation];
         _image = CGImageRetain(cgImage);
         _dimensions = (MTITextureDimensions){_properties.displayWidth, _properties.displayHeight, 1};
         _options = [options copy] ?: MTICGImageLoadingOptions.defaultOptions;
-        _alphaType = alphaType;
+        _alphaType = isOpaque ? MTIAlphaTypeAlphaIsOne : MTIAlphaTypePremultiplied; // kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst
     }
     return self;
 }
