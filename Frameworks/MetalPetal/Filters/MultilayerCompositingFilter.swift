@@ -60,7 +60,7 @@ public class MultilayerCompositingFilter: MTIFilter {
         
         public var rotation: Float = 0
         
-        public var opacity: Float = 0
+        public var opacity: Float = 1
         
         public var tintColor: MTIColor = .clear
         
@@ -91,6 +91,64 @@ public class MultilayerCompositingFilter: MTIFilter {
             hasher.combine(opacity)
             hasher.combine(tintColor)
             hasher.combine(blendMode)
+        }
+        
+        private func mutating(_ block: (inout Layer) -> Void) -> Layer {
+            var layer = self
+            block(&layer)
+            return layer
+        }
+        
+        public static func content(_ image: MTIImage) -> Layer {
+            Layer(content: image)
+        }
+        
+        public static func content(_ image: MTIImage, modifier: (inout Layer) -> Void) -> Layer {
+            Layer(content: image).mutating(modifier)
+        }
+        
+        public func opacity(_ value: Float) -> Layer {
+            self.mutating({ $0.opacity = value })
+        }
+        
+        public func contentRegion(_ contentRegion: CGRect) -> Layer {
+            self.mutating({ $0.contentRegion = contentRegion })
+        }
+        
+        public func contentFlipOptions(_ contentFlipOptions: MTILayer.FlipOptions) -> Layer {
+            self.mutating({ $0.contentFlipOptions = contentFlipOptions })
+        }
+        
+        public func compositingMask(_ mask: MTIMask?) -> Layer {
+            self.mutating({ $0.compositingMask = compositingMask })
+        }
+        
+        public func frame(_ rect: CGRect, layoutUint: MTILayer.LayoutUnit) -> Layer {
+            self.mutating({
+                $0.size = rect.size
+                $0.position = CGPoint(x: rect.midX, y: rect.midY)
+                $0.layoutUnit = layoutUnit
+            })
+        }
+        
+        public func frame(center: CGPoint, size: CGSize, layoutUint: MTILayer.LayoutUnit) -> Layer {
+            self.mutating({
+                $0.size = size
+                $0.position = center
+                $0.layoutUnit = layoutUnit
+            })
+        }
+        
+        public func rotation(_ rotation: Float) -> Layer {
+            self.mutating({ $0.rotation = rotation })
+        }
+        
+        public func tintColor(_ color: MTIColor?) -> Layer {
+            self.mutating({ $0.tintColor = color ?? .clear })
+        }
+        
+        public func blendMode(_ blendMode: MTIBlendMode) -> Layer {
+            self.mutating({ $0.blendMode = blendMode })
         }
     }
     
@@ -145,6 +203,7 @@ public class MultilayerCompositingFilter: MTIFilter {
 }
 
 extension MultilayerCompositingFilter {
+    @available(*, deprecated, message: "Use MultilayerCompositingFilter.Layer(content:).frame(...).opacity(...)... instead.")
     public static func makeLayer(content: MTIImage, configurator: (_ layer: inout Layer) -> Void) -> Layer {
         var layer = Layer(content: content)
         configurator(&layer)

@@ -393,11 +393,9 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-            layer.position = CGPoint(x: 0.5, y: 0.5)
-            layer.size = CGSize(width: 1, height: 1)
-            layer.opacity = 1
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -420,11 +418,9 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-            layer.position = CGPoint(x: 0.5, y: 0.5)
-            layer.size = CGSize(width: 1, height: 1)
-            layer.opacity = 0.5
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(0.5)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -448,11 +444,9 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 4
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-            layer.position = CGPoint(x: 0.5, y: 0.5)
-            layer.size = CGSize(width: 1, height: 1)
-            layer.opacity = 0.5
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(0.5)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -475,12 +469,10 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-            layer.position = CGPoint(x: 0.5, y: 0.5)
-            layer.size = CGSize(width: 1, height: 1)
-            layer.opacity = 1
-            layer.tintColor = MTIColor(red: 1, green: 1, blue: 0, alpha: 1)
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)
+                            .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 1))]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -504,12 +496,10 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         
         try autoreleasepool {
-            filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-                layer.position = CGPoint(x: 0.5, y: 0.5)
-                layer.size = CGSize(width: 1, height: 1)
-                layer.opacity = 1
-                layer.tintColor = MTIColor(red: 1, green: 1, blue: 0, alpha: 0.5)
-            })]
+            filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                                .opacity(1)
+                                .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 0.5))]
             let outputImage = try XCTUnwrap(filter.outputImage)
             let outputCGImage = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -523,12 +513,10 @@ final class RenderTests: XCTestCase {
         }
         
         try autoreleasepool {
-            filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-                layer.position = CGPoint(x: 0.5, y: 0.5)
-                layer.size = CGSize(width: 1, height: 1)
-                layer.opacity = 1
-                layer.tintColor = MTIColor(red: 1, green: 1, blue: 0, alpha: 0)
-            })]
+            filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                                .opacity(1)
+                                .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 0))]
             let outputImage = try XCTUnwrap(filter.outputImage)
             let outputCGImage = try context.makeCGImage(from: outputImage)
             PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -558,12 +546,10 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: overlayImage, configurator: { layer in
-            layer.position = CGPoint(x: 1, y: 1)
-            layer.size = CGSize(width: 2, height: 2)
-            layer.rotation = .pi/2
-            layer.opacity = 1
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: overlayImage)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 2), layoutUint: .pixel)
+                            .rotation(.pi/2)
+                            .opacity(1)]
         guard let outputImage = filter.outputImage else {
             XCTFail()
             return
@@ -596,11 +582,9 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage.white, configurator: { layer in
-            layer.position = CGPoint(x: 1.6/2, y: 0.5)
-            layer.size = CGSize(width: 1.6, height: 1)
-            layer.opacity = 1
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
+                            .frame(CGRect(x: 0, y: 0, width: 1.6, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
         guard let outputImage = filter.outputImage else {
             XCTFail()
             return
@@ -921,12 +905,10 @@ final class RenderTests: XCTestCase {
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1)), configurator: { layer in
-            layer.position = CGPoint(x: 0.5, y: 0.5)
-            layer.size = CGSize(width: 1, height: 1)
-            layer.opacity = 1
-            layer.blendMode = blendMode
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)
+                            .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -963,12 +945,10 @@ final class RenderTests: XCTestCase {
         ]), options: [.SRGB: false], isOpaque: true)
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: overlay, configurator: { layer in
-            layer.position = CGPoint(x: 1, y: 0.5)
-            layer.size = CGSize(width: 2, height: 1)
-            layer.opacity = 1
-            layer.blendMode = blendMode
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUint: .pixel)
+                            .opacity(1)
+                            .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
@@ -994,12 +974,10 @@ final class RenderTests: XCTestCase {
         ]), options: [.SRGB: false], isOpaque: true)
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
-        filter.layers = [MultilayerCompositingFilter.makeLayer(content: overlay, configurator: { layer in
-            layer.position = CGPoint(x: 1, y: 0.5)
-            layer.size = CGSize(width: 2, height: 1)
-            layer.opacity = 1
-            layer.blendMode = blendMode
-        })]
+        filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUint: .pixel)
+                            .opacity(1)
+                            .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         do {
             let _ = try context.makeCGImage(from: outputImage)
