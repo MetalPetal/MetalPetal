@@ -82,4 +82,5 @@ fragment float4 bouncingBallFragment(BouncingBallVertex vertexIn [[ stage_in ]],
     } else {
         discard_fragment();
     }
+    return vertexIn.color;
 }
