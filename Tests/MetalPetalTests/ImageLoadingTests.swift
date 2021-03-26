@@ -244,6 +244,38 @@ final class CGImageLoadingTests: XCTestCase {
         }
     }
     
+    func testCGImageLoading_premultiplied() throws {
+        let context = try makeContext()
+        
+        let cgContext = CGContext(data: nil, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue)
+        let color: [CGFloat] = [1, 0, 0, 0.5]
+        try cgContext?.setFillColor(XCTUnwrap(CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: color)))
+        cgContext?.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        let inputCGImage = try XCTUnwrap(cgContext?.makeImage())
+        let image = MTIImage(cgImage: inputCGImage, options: .default, isOpaque: false)
+        XCTAssert(image.alphaType == .premultiplied)
+        
+        let cgImage = try context.makeCGImage(from: image) //output is premultiplied
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            XCTAssert(pixel.r == 128 && pixel.g == 0 && pixel.b == 0 && pixel.a == 128)
+        }
+    }
+    
+    func testCGImageLoading_semiTransparentPNG() throws {
+        let context = try makeContext()
+        let imageSource = CGImageSourceCreateWithURL(URL(fileURLWithPath: #file)
+                                                        .deletingLastPathComponent().deletingLastPathComponent()
+                                                        .appendingPathComponent("Fixture")
+                                                        .appendingPathComponent("semi-transparent-red.png") as CFURL, nil)
+        let inputCGImage = try XCTUnwrap(CGImageSourceCreateImageAtIndex(XCTUnwrap(imageSource), 0, nil))
+        let image = MTIImage(cgImage: inputCGImage, options: .default, isOpaque: false)
+        XCTAssert(image.alphaType == .premultiplied)
+        
+        let cgImage = try context.makeCGImage(from: image) //output is premultiplied
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            XCTAssert(pixel.r == 128 && pixel.g == 0 && pixel.b == 0 && pixel.a == 128)
+        }
+    }
     
     func testCGImageLoading_sRGB() throws {
         let context = try makeContext()
