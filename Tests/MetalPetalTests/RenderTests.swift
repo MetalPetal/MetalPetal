@@ -571,6 +571,98 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testMultilayerCompositing_outputOpaqueImage() throws {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
+        filter.outputAlphaType = .alphaIsOne
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .alphaIsOne)
+        
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coord) in
+            XCTAssert(pixel.r == 255 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
+    func testMultilayerCompositing_outputNonPremultipliedAlpha() throws {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,255,192])
+    }
+    
+    func testMultilayerCompositing_outputPremultipliedAlpha() throws {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
+        filter.outputAlphaType = .premultiplied
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .premultiplied)
+        
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,192,192])
+    }
+    
+    func testMultilayerCompositing_outputPremultipliedAlpha_emptyLayers() throws {
+        let kernel = MTIMultilayerCompositeKernel()
+        let outputImage = kernel.apply(toBackgroundImage: MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)),
+                     layers: [],
+                     rasterSampleCount: 1,
+                     outputAlphaType: .premultiplied,
+                     outputTextureDimensions: .init(width: 1, height: 1, depth: 1),
+                     outputPixelFormat: .unspecified).withCachePolicy(.persistent)
+        XCTAssert(outputImage.alphaType == .premultiplied)
+        
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,128,128])
+    }
+    
+    func testMultilayerCompositing_outputPremultipliedAlpha_msaa() throws {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
+        filter.rasterSampleCount = 4
+        filter.outputAlphaType = .premultiplied
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .premultiplied)
+        
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,192,192])
+    }
+    
     @available(iOS 11.0, macOS 10.13, *)
     func testMSAA_multilayerCompositing() throws {
         let context = try makeContext()
@@ -1501,5 +1593,29 @@ final class RenderTests: XCTestCase {
                 }
             }
         }
+    }
+}
+
+extension RenderTests {
+    private func fetchFirstPixel(from texture: MTLTexture, context: MTIContext) throws -> [UInt8] {
+        let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: 1, height: 1, mipmapped: false)
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        textureDescriptor.storageMode = .managed
+        #endif
+        let cpuTexture = try XCTUnwrap(context.device.makeTexture(descriptor: textureDescriptor))
+        let commandBuffer = try XCTUnwrap(context.commandQueue.makeCommandBuffer())
+        let blitEncoder = try XCTUnwrap(commandBuffer.makeBlitCommandEncoder())
+        blitEncoder.copy(from: texture, sourceSlice: 0, sourceLevel: 0, sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0), sourceSize: MTLSize(width: 1, height: 1, depth: 1), to: cpuTexture, destinationSlice: 0, destinationLevel: 0, destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+        #if os(macOS) || targetEnvironment(macCatalyst)
+        blitEncoder.synchronize(resource: cpuTexture)
+        #endif
+        blitEncoder.endEncoding()
+        commandBuffer.commit()
+        commandBuffer.waitUntilCompleted()
+        var pixels = [UInt8](repeating: 0, count: 4)
+        pixels.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) -> Void in
+            cpuTexture.getBytes(ptr.baseAddress!, bytesPerRow: 4, from: MTLRegion(origin: MTLOrigin(x: 0, y: 0, z: 0), size: MTLSize(width: 1, height: 1, depth: 1)), mipmapLevel: 0)
+        }
+        return pixels
     }
 }

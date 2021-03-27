@@ -3155,6 +3155,32 @@ namespace metalpetal {
         return premultiply(textureColor);
     }
     
+    fragment float4 alphaToOne(VertexOut vertexIn [[ stage_in ]],
+                               texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                               sampler colorSampler [[ sampler(0) ]]) {
+        float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+        textureColor.a = 1;
+        return textureColor;
+    }
+    
+    #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
+    
+    fragment float4 alphaToOneInPlace(float4 currentColor [[color(0)]]) {
+        float4 textureColor = currentColor;
+        textureColor.a = 1;
+        return textureColor;
+    }
+    
+    fragment float4 premultiplyAlphaInPlace(float4 currentColor [[color(0)]]) {
+        return premultiply(currentColor);
+    }
+    
+    fragment float4 unpremultiplyAlphaInPlace(float4 currentColor [[color(0)]]) {
+        return unpremultiply(currentColor);
+    }
+    
+    #endif
+    
     fragment float4 convertSRGBToLinearRGB(VertexOut vertexIn [[ stage_in ]],
                                  texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                  sampler colorSampler [[ sampler(0) ]]) {

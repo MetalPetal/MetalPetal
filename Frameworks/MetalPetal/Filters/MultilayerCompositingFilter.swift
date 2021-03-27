@@ -153,12 +153,8 @@ public class MultilayerCompositingFilter: MTIFilter {
     }
     
     public var outputPixelFormat: MTLPixelFormat {
-        get {
-            return internalFilter.outputPixelFormat
-        }
-        set {
-            internalFilter.outputPixelFormat = newValue
-        }
+        get { internalFilter.outputPixelFormat }
+        set { internalFilter.outputPixelFormat = newValue }
     }
     
     public var outputImage: MTIImage? {
@@ -166,12 +162,13 @@ public class MultilayerCompositingFilter: MTIFilter {
     }
     
     public var inputBackgroundImage: MTIImage? {
-        get {
-            return internalFilter.inputBackgroundImage
-        }
-        set {
-            internalFilter.inputBackgroundImage = newValue
-        }
+        get { internalFilter.inputBackgroundImage }
+        set { internalFilter.inputBackgroundImage = newValue }
+    }
+    
+    public var outputAlphaType: MTIAlphaType {
+        get { internalFilter.outputAlphaType }
+        set { internalFilter.outputAlphaType = newValue }
     }
     
     private var _layers: [Layer] = []
@@ -187,12 +184,8 @@ public class MultilayerCompositingFilter: MTIFilter {
     }
     
     public var rasterSampleCount: Int {
-        set {
-            internalFilter.rasterSampleCount = UInt(newValue)
-        }
-        get {
-            return Int(internalFilter.rasterSampleCount)
-        }
+        set { internalFilter.rasterSampleCount = UInt(newValue) }
+        get { Int(internalFilter.rasterSampleCount) }
     }
     
     private var internalFilter = MTIMultilayerCompositingFilter()

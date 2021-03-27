@@ -86,6 +86,9 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaToColorAttachmentOneRenderPipeline;
 
+@property (nonatomic,copy,readonly) MTIRenderPipeline *premultiplyAlphaInPlaceRenderPipeline;
+@property (nonatomic,copy,readonly) MTIRenderPipeline *alphaToOneInPlaceRenderPipeline;
+
 @end
 
 @implementation MTIMultilayerCompositeKernelState
@@ -171,6 +174,38 @@ __attribute__((objc_subclassing_restricted))
         }
         
         BOOL useProgrammableBlending = context.defaultLibrarySupportsProgrammableBlending && context.isProgrammableBlendingSupported;
+        
+        if (useProgrammableBlending) {
+            _premultiplyAlphaInPlaceRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"premultiplyAlphaInPlace" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            _alphaToOneInPlaceRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"alphaToOneInPlace" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+        } else {
+            _premultiplyAlphaInPlaceRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"premultiplyAlpha" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+            _alphaToOneInPlaceRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"alphaToOne" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
+            if (error) {
+                if (inOutError) {
+                    *inOutError = error;
+                }
+                return nil;
+            }
+        }
         
         NSMutableDictionary *pipelines = [NSMutableDictionary dictionary];
         for (MTIBlendMode mode in MTIBlendModes.allModes) {
@@ -263,6 +298,7 @@ __attribute__((objc_subclassing_restricted))
 @implementation MTIMultilayerCompositingRecipe
 @synthesize dimensions = _dimensions;
 @synthesize dependencies = _dependencies;
+@synthesize alphaType = _alphaType;
 
 - (MTIVertices *)verticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion flipOptions:(MTILayerFlipOptions)flipOptions {
     CGFloat l = CGRectGetMinX(rect);
@@ -489,6 +525,27 @@ __attribute__((objc_subclassing_restricted))
         [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
+    
+    MTIRenderPipeline *outputAlphaTypeRenderPipeline = nil;
+    switch (_alphaType) {
+        case MTIAlphaTypeNonPremultiplied:
+            break;
+        case MTIAlphaTypeAlphaIsOne: {
+            outputAlphaTypeRenderPipeline = kernelState.alphaToOneInPlaceRenderPipeline;
+        } break;
+        case MTIAlphaTypePremultiplied: {
+            outputAlphaTypeRenderPipeline = kernelState.premultiplyAlphaInPlaceRenderPipeline;
+        } break;
+        default:
+            NSAssert(NO, @"Unknown output alpha type.");
+            break;
+    }
+    
+    if (outputAlphaTypeRenderPipeline != nil) {
+        [commandEncoder setRenderPipelineState:outputAlphaTypeRenderPipeline.state];
+        [MTIVertices.fullViewportSquareVertices encodeDrawCallWithCommandEncoder:commandEncoder context:outputAlphaTypeRenderPipeline];
+    }
+    
     //end encoding
     [commandEncoder endEncoding];
     
@@ -544,8 +601,7 @@ __attribute__((objc_subclassing_restricted))
     
     //render background
     MTIVertices *vertices = [self verticesForRect:CGRectMake(-1, -1, 2, 2) contentRegion:CGRectMake(0, 0, 1, 1) flipOptions:MTILayerFlipOptionsDonotFlip];
-    __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
-    
+    __auto_type __block commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     if (!commandEncoder) {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
@@ -566,20 +622,19 @@ __attribute__((objc_subclassing_restricted))
     [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:self.backgroundImage] atIndex:0];
     [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
-    //render layers
-    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
-        
-        if (_rasterSampleCount > 1) {
+    __auto_type rasterSampleCount = _rasterSampleCount;
+    void (^prepareCommandEncoderForNextDraw)(void) = ^(void) {
+        if (rasterSampleCount > 1) {
             //end current commend encoder then create a new one.
             [commandEncoder endEncoding];
             renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
             commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
         } else {
             #if TARGET_OS_IOS || TARGET_OS_SIMULATOR || TARGET_OS_MACCATALYST || TARGET_OS_TV
-            //we are on simulator/ios/macCatalyst, no texture barrier available, end current commend encoder then create a new one.
-            [commandEncoder endEncoding];
-            renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
-            commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
+                //we are on simulator/ios/macCatalyst, no texture barrier available, end current commend encoder then create a new one.
+                [commandEncoder endEncoding];
+                renderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+                commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
             #else
                 //we are on macOS, use textureBarrier.
                 #if TARGET_OS_OSX
@@ -588,6 +643,17 @@ __attribute__((objc_subclassing_restricted))
                     #error Unsupported OS
                 #endif
             #endif
+        }
+    };
+    
+    //render layers
+    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
+        prepareCommandEncoderForNextDraw();
+        if (!commandEncoder) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+            }
+            return nil;
         }
         
         MTILayer *layer = self.layers[index];
@@ -651,6 +717,36 @@ __attribute__((objc_subclassing_restricted))
         [vertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
+    MTIRenderPipeline *outputAlphaTypeRenderPipeline = nil;
+    switch (_alphaType) {
+        case MTIAlphaTypeNonPremultiplied:
+            break;
+        case MTIAlphaTypeAlphaIsOne: {
+            outputAlphaTypeRenderPipeline = kernelState.alphaToOneInPlaceRenderPipeline;
+        } break;
+        case MTIAlphaTypePremultiplied: {
+            outputAlphaTypeRenderPipeline = kernelState.premultiplyAlphaInPlaceRenderPipeline;
+        } break;
+        default:
+            NSAssert(NO, @"Unknown output alpha type.");
+            break;
+    }
+    
+    if (outputAlphaTypeRenderPipeline != nil) {
+        prepareCommandEncoderForNextDraw();
+        if (!commandEncoder) {
+            if (inOutError) {
+                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateCommandEncoder, nil);
+            }
+            return nil;
+        }
+        
+        [commandEncoder setRenderPipelineState:outputAlphaTypeRenderPipeline.state];
+        [commandEncoder setFragmentTexture:renderTarget.texture atIndex:0];
+        [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:_backgroundImage] atIndex:0];
+        [MTIVertices.fullViewportSquareVertices encodeDrawCallWithCommandEncoder:commandEncoder context:outputAlphaTypeRenderPipeline];
+    }
+    
     //end encoding
     [commandEncoder endEncoding];
     
@@ -661,21 +757,20 @@ __attribute__((objc_subclassing_restricted))
     return self;
 }
 
-- (MTIAlphaType)alphaType {
-    return MTIAlphaTypeNonPremultiplied;
-}
-
 - (instancetype)initWithKernel:(MTIMultilayerCompositeKernel *)kernel
                backgroundImage:(MTIImage *)backgroundImage
                         layers:(NSArray<MTILayer *> *)layers
              rasterSampleCount:(NSUInteger)rasterSampleCount
+               outputAlphaType:(MTIAlphaType)outputAlphaType
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
              outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
         NSParameterAssert(rasterSampleCount >= 1);
         NSParameterAssert(backgroundImage);
         NSParameterAssert(kernel);
+        NSParameterAssert(outputAlphaType != MTIAlphaTypeUnknown);
         _backgroundImage = backgroundImage;
+        _alphaType = outputAlphaType;
         _kernel = kernel;
         _layers = layers;
         _dimensions = outputTextureDimensions;
@@ -713,7 +808,7 @@ __attribute__((objc_subclassing_restricted))
         MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity blendMode:layer.blendMode];
         [newLayers addObject:newLayer];
     }
-    return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:_kernel backgroundImage:backgroundImage layers:newLayers rasterSampleCount:_rasterSampleCount  outputTextureDimensions:_dimensions outputPixelFormat:_outputPixelFormat];
+    return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:_kernel backgroundImage:backgroundImage layers:newLayers rasterSampleCount:_rasterSampleCount outputAlphaType:_alphaType outputTextureDimensions:_dimensions outputPixelFormat:_outputPixelFormat];
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
@@ -732,11 +827,17 @@ __attribute__((objc_subclassing_restricted))
     return [[MTIMultilayerCompositeKernelState alloc] initWithContext:context colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:configuration.rasterSampleCount error:error];
 }
 
-- (MTIImage *)applyToBackgroundImage:(MTIImage *)image layers:(NSArray<MTILayer *> *)layers rasterSampleCount:(NSUInteger)rasterSampleCount outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
+- (MTIImage *)applyToBackgroundImage:(MTIImage *)image
+                              layers:(NSArray<MTILayer *> *)layers
+                   rasterSampleCount:(NSUInteger)rasterSampleCount
+                     outputAlphaType:(MTIAlphaType)outputAlphaType
+             outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
+                   outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     MTIMultilayerCompositingRecipe *receipt = [[MTIMultilayerCompositingRecipe alloc] initWithKernel:self
                                                                                      backgroundImage:image
                                                                                               layers:layers
                                                                                    rasterSampleCount:rasterSampleCount
+                                                                                     outputAlphaType:outputAlphaType
                                                                              outputTextureDimensions:outputTextureDimensions
                                                                                    outputPixelFormat:outputPixelFormat];
     return [[MTIImage alloc] initWithPromise:receipt];
@@ -760,6 +861,7 @@ void MTIMultilayerCompositingRenderGraphNodeOptimize(MTIRenderGraphNode *node) {
                                                                                                  backgroundImage:lastPromise.backgroundImage
                                                                                                           layers:layers
                                                                                                rasterSampleCount:MAX(recipe.rasterSampleCount,lastPromise.rasterSampleCount)
+                                                                                                 outputAlphaType:recipe.alphaType
                                                                                          outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(lastPromise.backgroundImage.size)
                                                                                                outputPixelFormat:recipe.outputPixelFormat];
                 NSMutableArray *inputs = [NSMutableArray arrayWithArray:lastNode.inputs];
