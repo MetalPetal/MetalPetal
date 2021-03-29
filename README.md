@@ -24,6 +24,7 @@ An image processing framework based on Metal.
         - [MTIFilter](#mtifilter)
         - [MTIKernel](#mtikernel)
     - [Alpha Type Handling](#alpha-type-handling)
+        - [Alpha Handling of Built-in Filters](#alpha-handling-of-built-in-filters)
     - [Optimizations](#optimizations)
     - [Concurrency Considerations](#concurrency-considerations)
     - [Advantages over Core Image](#advantages-over-core-image)
@@ -117,8 +118,6 @@ With unpremultiplied alpha, the RGB components represent the color of the pixel,
 
 With premultiplied alpha, the RGB components represent the color of the pixel, adjusted for its opacity by multiplication.
 
-Most of the filters in MetalPetal accept unpremultiplied alpha and opaque images and output unpremultiplied alpha images. Some filters, such as  `MTIMultilayerCompositingFilter` accepts both unpremultiplied/premultiplied alpha images.
-
 MetalPetal handles alpha type explicitly. You are responsible for providing the correct alpha type during image creation.
 
 There are three alpha types in MetalPetal.
@@ -135,13 +134,25 @@ You can call `unpremultiplyingAlpha()` or `premultiplyingAlpha()` on a `MTIImage
 
 For performance reasons, alpha type validation only happens in debug build.
 
+#### Alpha Handling of Built-in Filters
+
+- Most of the filters in MetalPetal accept unpremultiplied alpha and opaque images and output unpremultiplied alpha images.
+
+- Filters with `outputAlphaType` property accpet inputs of all alpha types. And you can use `outputAlphaType` to specify the alpha type of the output image.
+    
+    e.g. `MTIBlendFilter`, `MTIMultilayerCompositingFilter`
+    
+- Filters that do not actually modify colors have passthrough alpha handling rule, that means the alpha types of the output images are the same with the input images.
+
+    e.g. `MTITransformFilter`, `MTICropFilter`, `MTIPixellateFilter`, `MTIBulgeDistortionFilter`
+
 For more about alpha types and alpha compositing, please refer to [this amazing interactive article](https://ciechanow.ski/alpha-compositing/) by Bartosz Ciechanowski.
 
 ### Optimizations
 
 MetalPetal does a lot of optimizations for you under the hood.
 
-It automatically caches functions, kernel states, samplers, etc.
+It automatically caches functions, kernel states, sampler states, etc.
 
 Before rendering, MetalPetal can look into your image render graph and figure out the minimal number of intermedinate textures needed to do the rendering, saving memory, energy and time.
 
