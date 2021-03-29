@@ -87,8 +87,21 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                                             ) {
             float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
             float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+            if (blend_filter_backdrop_has_premultiplied_alpha) {
+                uCb = unpremultiply(uCb);
+            }
+            if (blend_filter_source_has_premultiplied_alpha) {
+                uCf = unpremultiply(uCf);
+            }
             float4 blendedColor = \(blendFunctionName)(uCb, uCf);
-            return mix(uCb,blendedColor,intensity);
+            float4 output = mix(uCb,blendedColor,intensity);
+            if (blend_filter_outputs_premultiplied_alpha) {
+                return premultiply(output);
+            } else if (blend_filter_outputs_opaque_image) {
+                return float4(output.rgb, 1.0);
+            } else {
+                return output;
+            }
         }
 
         
@@ -109,7 +122,12 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         using namespace metalpetal;
         
         namespace metalpetal {
-        
+            
+        constant bool blend_filter_backdrop_has_premultiplied_alpha [[function_constant(0)]];
+        constant bool blend_filter_source_has_premultiplied_alpha [[function_constant(1)]];
+        constant bool blend_filter_outputs_premultiplied_alpha [[function_constant(2)]];
+        constant bool blend_filter_outputs_opaque_image [[function_constant(3)]];
+
         """
         
         for mode in blendModes {

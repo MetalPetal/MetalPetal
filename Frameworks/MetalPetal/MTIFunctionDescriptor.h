@@ -29,6 +29,8 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)initWithName:(NSString *)name constantValues:(nullable MTLFunctionConstantValues *)constantValues libraryURL:(nullable NSURL *)URL NS_AVAILABLE(10_12, 10_0) NS_DESIGNATED_INITIALIZER;
 
+- (MTIFunctionDescriptor *)functionDescriptorWithConstantValues:(nullable MTLFunctionConstantValues *)constantValues;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -50,6 +50,10 @@
     return self;
 }
 
+- (MTIFunctionDescriptor *)functionDescriptorWithConstantValues:(MTLFunctionConstantValues *)constantValues {
+    return [[MTIFunctionDescriptor alloc] initWithName:_name constantValues:constantValues libraryURL:_libraryURL];
+}
+
 - (BOOL)isEqual:(id)object {
     if (object == self) {
         return YES;

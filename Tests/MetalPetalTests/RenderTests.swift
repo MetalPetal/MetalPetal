@@ -595,6 +595,7 @@ final class RenderTests: XCTestCase {
                             .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
                             .opacity(1)]
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .nonPremultiplied)
         
         let context = try makeContext()
         let task = try context.startTask(toRender: outputImage, completion: nil)
@@ -611,6 +612,57 @@ final class RenderTests: XCTestCase {
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
                             .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
                             .opacity(1)]
+        filter.outputAlphaType = .premultiplied
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .premultiplied)
+        
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,192,192])
+    }
+    
+    
+    func testBlend_outputOpaqueImage() throws {
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .opacity(1)]
+        filter.outputAlphaType = .alphaIsOne
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .alphaIsOne)
+        
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coord) in
+            XCTAssert(pixel.r == 255 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
+    func testBlend_outputNonPremultipliedAlpha() throws {
+        let filter = MTIBlendFilter(blendMode: .normal)
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.inputImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
+        XCTAssert(outputImage.alphaType == .nonPremultiplied)
+
+        let context = try makeContext()
+        let task = try context.startTask(toRender: outputImage, completion: nil)
+        task.waitUntilCompleted()
+        let buffer = try XCTUnwrap(context.renderedBuffer(for: outputImage))
+        let texture = buffer.value(forKeyPath: "promise.resolution.renderTarget.texture") as! MTLTexture
+        let pixels = try fetchFirstPixel(from: texture, context: context)
+        XCTAssert(pixels == [0,0,255,192])
+    }
+    
+    func testBlend_outputPremultipliedAlpha() throws {
+        let filter = MTIBlendFilter(blendMode: .normal)
+        filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        filter.inputImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.outputAlphaType = .premultiplied
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
         XCTAssert(outputImage.alphaType == .premultiplied)

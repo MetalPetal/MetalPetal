@@ -9,17 +9,69 @@
 #import "MTIFunctionDescriptor.h"
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
+#import "MTIHasher.h"
 
-@interface MTIBlendFilter ()
+@interface MTIBlendFilterKernelKey : NSObject <NSCopying> {
+    MTIBlendMode _mode;
+    MTIAlphaType _backdropAlphaType;
+    MTIAlphaType _sourceAlphaType;
+    MTIAlphaType _outputAlphaType;
+}
+@end
 
-@property (nonatomic,strong,readonly) MTIRenderPipelineKernel *kernel;
+@implementation MTIBlendFilterKernelKey
+
+- (instancetype)initWithMode:(MTIBlendMode)mode
+           backdropAlphaType:(MTIAlphaType)backdropAlphaType
+             sourceAlphaType:(MTIAlphaType)sourceAlphaType
+             outputAlphaType:(MTIAlphaType)outputAlphaType {
+    if (self = [super init]) {
+        _mode = mode;
+        _backdropAlphaType = backdropAlphaType;
+        _sourceAlphaType = sourceAlphaType;
+        _outputAlphaType = outputAlphaType;
+    }
+    return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    return self;
+}
+
+- (BOOL)isEqual:(id)object {
+    if ([object isKindOfClass:[MTIBlendFilterKernelKey class]]) {
+        MTIBlendFilterKernelKey *other = object;
+        return
+        [other->_mode isEqualToString:_mode] &&
+        other->_backdropAlphaType == _backdropAlphaType &&
+        other->_sourceAlphaType == _sourceAlphaType &&
+        other->_outputAlphaType == _outputAlphaType;
+    }
+    return NO;
+}
+
+- (NSUInteger)hash {
+    MTIHasher hasher = MTIHasherMake(0);
+    MTIHasherCombine(&hasher, _mode.hash);
+    MTIHasherCombine(&hasher, (uint64_t)_backdropAlphaType);
+    MTIHasherCombine(&hasher, (uint64_t)_sourceAlphaType);
+    MTIHasherCombine(&hasher, (uint64_t)_outputAlphaType);
+    return MTIHasherFinalize(&hasher);
+}
 
 @end
 
 @implementation MTIBlendFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
 
-+ (MTIRenderPipelineKernel *)kernelWithBlendMode:(MTIBlendMode)mode {
++ (MTIRenderPipelineKernel *)kernelWithBlendMode:(MTIBlendMode)mode
+                               backdropAlphaType:(MTIAlphaType)backdropAlphaType
+                                 sourceAlphaType:(MTIAlphaType)sourceAlphaType
+                                 outputAlphaType:(MTIAlphaType)outputAlphaType {
+    MTIBlendFilterKernelKey *key = [[MTIBlendFilterKernelKey alloc] initWithMode:mode
+                                                               backdropAlphaType:backdropAlphaType
+                                                                 sourceAlphaType:sourceAlphaType
+                                                                 outputAlphaType:outputAlphaType];
     static NSMutableDictionary *kernels;
     static NSLock *kernelsLock;
     static dispatch_once_t onceToken;
@@ -29,11 +81,25 @@
     });
     
     [kernelsLock lock];
-    MTIRenderPipelineKernel *kernel = kernels[mode];
+    MTIRenderPipelineKernel *kernel = kernels[key];
     if (!kernel) {
+        MTLFunctionConstantValues *constantValues = [[MTLFunctionConstantValues alloc] init];
+        bool sourceHasPremultipliedAlpha = sourceAlphaType == MTIAlphaTypePremultiplied;
+        bool backdropHasPremultipliedAlpha = backdropAlphaType == MTIAlphaTypePremultiplied;
+        bool outputsPremultipliedAlpha = outputAlphaType == MTIAlphaTypePremultiplied;
+        bool outputsOpaqueImage = outputAlphaType == MTIAlphaTypeAlphaIsOne;
+        [constantValues setConstantValue:&sourceHasPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_source_has_premultiplied_alpha"];
+        [constantValues setConstantValue:&backdropHasPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_backdrop_has_premultiplied_alpha"];
+        [constantValues setConstantValue:&outputsPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_outputs_premultiplied_alpha"];
+        [constantValues setConstantValue:&outputsOpaqueImage type:MTLDataTypeBool withName:@"metalpetal::blend_filter_outputs_opaque_image"];
+        MTIFunctionDescriptor *fragmentFunctionDescriptor = [[MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForBlendFilter functionDescriptorWithConstantValues:constantValues];
+        MTIAlphaTypeHandlingRule *rule = [[MTIAlphaTypeHandlingRule alloc] initWithAcceptableAlphaTypes:@[@(MTIAlphaTypePremultiplied), @(MTIAlphaTypeNonPremultiplied),@(MTIAlphaTypeAlphaIsOne)] outputAlphaType:outputAlphaType];
         kernel = [[MTIRenderPipelineKernel alloc] initWithVertexFunctionDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName]
-                                                        fragmentFunctionDescriptor:[MTIBlendModes functionDescriptorsForBlendMode:mode].fragmentFunctionDescriptorForBlendFilter];
-        kernels[mode] = kernel;
+                                                        fragmentFunctionDescriptor:fragmentFunctionDescriptor
+                                                                  vertexDescriptor:nil
+                                                              colorAttachmentCount:1
+                                                             alphaTypeHandlingRule:rule];
+        kernels[key] = kernel;
     }
     [kernelsLock unlock];
     
@@ -44,8 +110,8 @@
     if (self = [super init]) {
         NSParameterAssert([MTIBlendModes.allModes containsObject:mode]);
         _blendMode = [mode copy];
-        _kernel = [MTIBlendFilter kernelWithBlendMode:mode];
         _intensity = 1.0;
+        _outputAlphaType = MTIAlphaTypeNonPremultiplied;
     }
     return self;
 }
@@ -54,10 +120,14 @@
     if (!_inputBackgroundImage || !_inputImage) {
         return nil;
     }
-    return [self.kernel applyToInputImages:@[_inputBackgroundImage, _inputImage]
-                                parameters:@{@"intensity": @(_intensity)}
-                   outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
-                         outputPixelFormat:_outputPixelFormat];
+    MTIRenderPipelineKernel *kernel = [MTIBlendFilter kernelWithBlendMode:_blendMode
+                                                        backdropAlphaType:_inputBackgroundImage.alphaType
+                                                          sourceAlphaType:_inputImage.alphaType
+                                                          outputAlphaType:_outputAlphaType];
+    return [kernel applyToInputImages:@[_inputBackgroundImage, _inputImage]
+                           parameters:@{@"intensity": @(_intensity)}
+              outputTextureDimensions:MTITextureDimensionsMake2DFromCGSize(_inputBackgroundImage.size)
+                    outputPixelFormat:_outputPixelFormat];
 }
 
 @end
