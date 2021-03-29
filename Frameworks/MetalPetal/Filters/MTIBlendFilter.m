@@ -11,12 +11,12 @@
 #import "MTIRenderPipelineKernel.h"
 #import "MTIHasher.h"
 
-@interface MTIBlendFilterKernelKey : NSObject <NSCopying> {
-    MTIBlendMode _mode;
-    MTIAlphaType _backdropAlphaType;
-    MTIAlphaType _sourceAlphaType;
-    MTIAlphaType _outputAlphaType;
-}
+@interface MTIBlendFilterKernelKey : NSObject <NSCopying>
+@property (nonatomic, copy, readonly) MTIBlendMode mode;
+@property (nonatomic, readonly) BOOL sourceHasPremultipliedAlpha;
+@property (nonatomic, readonly) BOOL backdropHasPremultipliedAlpha;
+@property (nonatomic, readonly) BOOL outputsPremultipliedAlpha;
+@property (nonatomic, readonly) BOOL outputsOpaqueImage;
 @end
 
 @implementation MTIBlendFilterKernelKey
@@ -27,9 +27,10 @@
              outputAlphaType:(MTIAlphaType)outputAlphaType {
     if (self = [super init]) {
         _mode = mode;
-        _backdropAlphaType = backdropAlphaType;
-        _sourceAlphaType = sourceAlphaType;
-        _outputAlphaType = outputAlphaType;
+        _sourceHasPremultipliedAlpha = sourceAlphaType == MTIAlphaTypePremultiplied;
+        _backdropHasPremultipliedAlpha = backdropAlphaType == MTIAlphaTypePremultiplied;
+        _outputsPremultipliedAlpha = outputAlphaType == MTIAlphaTypePremultiplied;
+        _outputsOpaqueImage = outputAlphaType == MTIAlphaTypeAlphaIsOne;
     }
     return self;
 }
@@ -43,9 +44,10 @@
         MTIBlendFilterKernelKey *other = object;
         return
         [other->_mode isEqualToString:_mode] &&
-        other->_backdropAlphaType == _backdropAlphaType &&
-        other->_sourceAlphaType == _sourceAlphaType &&
-        other->_outputAlphaType == _outputAlphaType;
+        other->_outputsOpaqueImage == _outputsOpaqueImage &&
+        other->_outputsPremultipliedAlpha == _outputsPremultipliedAlpha &&
+        other->_backdropHasPremultipliedAlpha == _backdropHasPremultipliedAlpha &&
+        other->_sourceHasPremultipliedAlpha == _sourceHasPremultipliedAlpha;
     }
     return NO;
 }
@@ -53,9 +55,10 @@
 - (NSUInteger)hash {
     MTIHasher hasher = MTIHasherMake(0);
     MTIHasherCombine(&hasher, _mode.hash);
-    MTIHasherCombine(&hasher, (uint64_t)_backdropAlphaType);
-    MTIHasherCombine(&hasher, (uint64_t)_sourceAlphaType);
-    MTIHasherCombine(&hasher, (uint64_t)_outputAlphaType);
+    MTIHasherCombine(&hasher, (uint64_t)_sourceHasPremultipliedAlpha);
+    MTIHasherCombine(&hasher, (uint64_t)_backdropHasPremultipliedAlpha);
+    MTIHasherCombine(&hasher, (uint64_t)_outputsPremultipliedAlpha);
+    MTIHasherCombine(&hasher, (uint64_t)_outputsOpaqueImage);
     return MTIHasherFinalize(&hasher);
 }
 
@@ -84,10 +87,10 @@
     MTIRenderPipelineKernel *kernel = kernels[key];
     if (!kernel) {
         MTLFunctionConstantValues *constantValues = [[MTLFunctionConstantValues alloc] init];
-        bool sourceHasPremultipliedAlpha = sourceAlphaType == MTIAlphaTypePremultiplied;
-        bool backdropHasPremultipliedAlpha = backdropAlphaType == MTIAlphaTypePremultiplied;
-        bool outputsPremultipliedAlpha = outputAlphaType == MTIAlphaTypePremultiplied;
-        bool outputsOpaqueImage = outputAlphaType == MTIAlphaTypeAlphaIsOne;
+        bool sourceHasPremultipliedAlpha = key.sourceHasPremultipliedAlpha;
+        bool backdropHasPremultipliedAlpha = key.backdropHasPremultipliedAlpha;
+        bool outputsPremultipliedAlpha = key.outputsPremultipliedAlpha;
+        bool outputsOpaqueImage = key.outputsOpaqueImage;
         [constantValues setConstantValue:&sourceHasPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_source_has_premultiplied_alpha"];
         [constantValues setConstantValue:&backdropHasPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_backdrop_has_premultiplied_alpha"];
         [constantValues setConstantValue:&outputsPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::blend_filter_outputs_premultiplied_alpha"];
