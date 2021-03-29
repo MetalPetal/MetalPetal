@@ -32,6 +32,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic,strong,nullable) MTIImage *inputImage;
 
+/// Specifies the intensity (in the range [0, 1]) of the operation.
 @property (nonatomic) float intensity;
 
 /// Specifies the alpha type of output image. If `.alphaIsOne` is assigned, the alpha channel of the output image will be set to 1. The default value for this property is `.nonPremultiplied`.

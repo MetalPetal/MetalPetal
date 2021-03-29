@@ -20,6 +20,7 @@ typedef struct MTICLAHESize MTICLAHESize;
 
 FOUNDATION_EXPORT MTICLAHESize MTICLAHESizeMake(NSUInteger width, NSUInteger height) NS_SWIFT_UNAVAILABLE("Use MTICLAHESize.init instead.");
 
+/// Performs Contrast Limited Adaptive Histogram Equalization. https://github.com/YuAo/Accelerated-CLAHE
 __attribute__((objc_subclassing_restricted))
 @interface MTICLAHEFilter : NSObject <MTIUnaryFilter>
 

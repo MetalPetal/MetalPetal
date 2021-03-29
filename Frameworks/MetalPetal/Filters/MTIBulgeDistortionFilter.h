@@ -17,12 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((objc_subclassing_restricted))
 @interface MTIBulgeDistortionFilter : MTIUnaryImageRenderingFilter
 
-@property (nonatomic) simd_float2 center; //in pixels
+/// Specifies the center of the distortion in pixels.
+@property (nonatomic) simd_float2 center;
 
-@property (nonatomic) float radius; //in pixels
+/// Specifies the radius of the distortion in pixels.
+@property (nonatomic) float radius;
 
+/// Specifies the scale of the distortion, 0 being no-change.
 @property (nonatomic) float scale;
-
 
 @end
 

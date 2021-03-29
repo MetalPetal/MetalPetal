@@ -14,6 +14,7 @@
 __attribute__((objc_subclassing_restricted))
 @interface MTIPixellateFilter : MTIUnaryImageRenderingFilter
 
+/// Specifies the scale of the operation, i.e. the size for the pixels in the resulting image.
 @property (nonatomic) CGSize scale;
 
 @end

@@ -15,8 +15,10 @@
 __attribute__((objc_subclassing_restricted))
 @interface MTIDotScreenFilter : MTIUnaryImageRenderingFilter
 
+/// Specifies the angle of the effect.
 @property (nonatomic) float angle;
 
+/// Specifies the scale of the operation, i.e. the size for the pixels in the resulting image.
 @property (nonatomic) float scale;
 
 @property (nonatomic) simd_float3 grayColorTransform;

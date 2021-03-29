@@ -52,6 +52,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, strong, nullable, readonly) MTIColorLookupTableInfo *inputColorLookupTableInfo;
 
+/// Specifies the intensity (in the range [0, 1]) of the operation.
 @property (nonatomic) float intensity;
 
 + (nullable MTIImage *)create3DColorLookupTableFrom2DColorLookupTable:(MTIImage *)image pixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(make3DColorLookupTable(from:pixelFormat:));
