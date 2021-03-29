@@ -178,6 +178,9 @@ public final class MTICoreImageUnaryFilter: MTIUnaryFilter {
     
     public var outputImageSize: CGSize?
     
+    /// Specifies the alpha type of the output image.
+    public var outputAlphaType: MTIAlphaType = .nonPremultiplied
+    
     public var outputImage: MTIImage? {
         guard let inputImage = self.inputImage, let filter = filter?.copy() as? CIFilter else {
             return self.inputImage
@@ -195,6 +198,6 @@ public final class MTICoreImageUnaryFilter: MTIUnaryFilter {
                 dimensions = inputImage.dimensions
             }
         }
-        return MTICoreImageKernel.image(byProcessing: inputImage, using: filter, colorSpace: colorSpace, outputDimensions: dimensions, outputPixelFormat: outputPixelFormat, outputAlphaType: .nonPremultiplied)
+        return MTICoreImageKernel.image(byProcessing: inputImage, using: filter, colorSpace: colorSpace, outputDimensions: dimensions, outputPixelFormat: outputPixelFormat, outputAlphaType: outputAlphaType)
     }
 }

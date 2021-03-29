@@ -140,7 +140,7 @@ For performance reasons, alpha type validation only happens in debug build.
 
 - Filters with `outputAlphaType` property accpet inputs of all alpha types. And you can use `outputAlphaType` to specify the alpha type of the output image.
     
-    e.g. `MTIBlendFilter`, `MTIMultilayerCompositingFilter`
+    e.g. `MTIBlendFilter`, `MTIMultilayerCompositingFilter`, `MTICoreImageUnaryFilter`
     
 - Filters that do not actually modify colors have passthrough alpha handling rule, that means the alpha types of the output images are the same with the input images.
 
