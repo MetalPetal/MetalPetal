@@ -259,7 +259,7 @@ When you use APIs that accpet `MTKTextureLoaderOption`, MetalPetal, by default, 
     - Color
     - Luminosity
     - ColorLookup512x512
-    - Custom
+    - [Custom Blend Mode](https://github.com/MetalPetal/MetalPetal/issues/70#issuecomment-792430483)
 
 - Blend with Mask
 
