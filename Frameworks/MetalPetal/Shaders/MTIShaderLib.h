@@ -41,13 +41,19 @@ typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputPara
 
 struct MTIMultilayerCompositingLayerShadingParameters {
     float opacity;
-    bool contentHasPremultipliedAlpha;
-    bool hasCompositingMask;
+    int maskComponent;
     int compositingMaskComponent;
-    bool usesOneMinusMaskValue;
     vector_float4 tintColor;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
+
+struct MTIMultilayerCompositingLayerVertex {
+    vector_float4 position;
+    vector_float2 textureCoordinate;
+    vector_float2 positionInLayer;
+};
+typedef struct MTIMultilayerCompositingLayerVertex MTIMultilayerCompositingLayerVertex;
+
 
 #if __METAL_MACOS__ || __METAL_IOS__
 
@@ -59,6 +65,12 @@ namespace metalpetal {
         float4 position [[ position ]];
         float2 textureCoordinate;
     } VertexOut;
+
+    typedef struct {
+        float4 position [[ position ]];
+        float2 textureCoordinate;
+        float2 positionInLayer;
+    } MTIMultilayerCompositingLayerVertexOut;
     
     // GLSL mod func for metal
     template <typename T, typename _E = typename enable_if<is_floating_point<typename make_scalar<T>::type>::value>::type>

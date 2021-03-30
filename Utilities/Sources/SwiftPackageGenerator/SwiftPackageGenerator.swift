@@ -93,14 +93,15 @@ public struct SwiftPackageGenerator: ParsableCommand {
     public func collectBuiltinMetalLibrarySource(shadersDirectory: URL) throws -> String {
         var librarySource = ""
         let sourceFileDirectory = shadersDirectory
-        let headerURL = sourceFileDirectory.appendingPathComponent("MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
+        librarySource += try String(contentsOf: sourceFileDirectory.appendingPathComponent("MTIShaderLib.h"))
+        librarySource += try String(contentsOf: sourceFileDirectory.appendingPathComponent("MTIShaderFunctionConstants.h"))
         let fileManager = FileManager()
         for source in try fileManager.contentsOfDirectory(at: sourceFileDirectory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
             if source.pathExtension == "metal" {
                 librarySource += "\n"
                 librarySource += try String(contentsOf: source)
                     .replacingOccurrences(of: "#include \"MTIShaderLib.h\"", with: "\n")
+                    .replacingOccurrences(of: "#include \"MTIShaderFunctionConstants.h\"", with: "\n")
                     .replacingOccurrences(of: "#include <TargetConditionals.h>", with: "\n")
             }
         }

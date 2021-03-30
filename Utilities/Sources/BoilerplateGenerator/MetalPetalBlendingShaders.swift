@@ -17,24 +17,36 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         #if __HAVE_COLOR_ARGUMENTS__ && !TARGET_OS_SIMULATOR
             
         fragment float4 \(shaderFunctionName)_programmableBlending(
-                                                            VertexOut vertexIn [[ stage_in ]],
+                                                            MTIMultilayerCompositingLayerVertexOut vertexIn [[ stage_in ]],
                                                             float4 currentColor [[color(0)]],
-                                                            float4 maskColor [[color(1)]],
+                                                            float4 compositingMaskColor [[color(1)]],
                                                             constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                             texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                            sampler colorSampler [[ sampler(0) ]]
+                                                            sampler colorSampler [[ sampler(0) ]],
+                                                            texture2d<float, access::sample> maskTexture [[ texture(1) ]],
+                                                            sampler maskSampler [[ sampler(1) ]]
                                                         ) {
-            float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
-            if (parameters.contentHasPremultipliedAlpha) {
+            float2 textureCoordinate = vertexIn.textureCoordinate;
+            #if MTI_CUSTOM_BLEND_HAS_TEXTURE_COORDINATES_MODIFIER
+            textureCoordinate = modify_source_texture_coordinates(currentColor, vertexIn.textureCoordinate, uint2(colorTexture.get_width(), colorTexture.get_height()));
+            #endif
+            float4 textureColor = colorTexture.sample(colorSampler, textureCoordinate);
+
+            if (multilayer_composite_content_premultiplied) {
                 textureColor = unpremultiply(textureColor);
             }
-            if (parameters.tintColor.a != 0) {
+            if (multilayer_composite_has_mask) {
+                float4 maskColor = maskTexture.sample(maskSampler, vertexIn.positionInLayer);
+                float maskValue = maskColor[parameters.maskComponent];
+                textureColor.a *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+            }
+            if (multilayer_composite_has_compositing_mask) {
+                float maskValue = compositingMaskColor[parameters.compositingMaskComponent];
+                textureColor.a *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
+            }
+            if (multilayer_composite_has_tint_color) {
                 textureColor.rgb = parameters.tintColor.rgb;
                 textureColor.a *= parameters.tintColor.a;
-            }
-            if (parameters.hasCompositingMask) {
-                float maskValue = maskColor[parameters.compositingMaskComponent];
-                textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
             }
             textureColor.a *= parameters.opacity;
             return \(blendFunctionName)(currentColor,textureColor);
@@ -43,9 +55,11 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         #endif
 
         fragment float4 \(shaderFunctionName)(
-                                            VertexOut vertexIn [[ stage_in ]],
+                                            MTIMultilayerCompositingLayerVertexOut vertexIn [[ stage_in ]],
                                             texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                            texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                            texture2d<float, access::sample> compositingMaskTexture [[ texture(2) ]],
+                                            texture2d<float, access::sample> maskTexture [[ texture(3) ]],
+                                            sampler maskSampler [[ sampler(3) ]],
                                             constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                             texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                             sampler colorSampler [[ sampler(0) ]],
@@ -54,18 +68,27 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
             float2 location = vertexIn.position.xy / viewportSize;
             float4 backgroundColor = backgroundTexture.sample(s, location);
-            float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
-            if (parameters.contentHasPremultipliedAlpha) {
+            float2 textureCoordinate = vertexIn.textureCoordinate;
+            #if MTI_CUSTOM_BLEND_HAS_TEXTURE_COORDINATES_MODIFIER
+            textureCoordinate = modify_source_texture_coordinates(backgroundColor, vertexIn.textureCoordinate, uint2(colorTexture.get_width(), colorTexture.get_height()));
+            #endif
+            float4 textureColor = colorTexture.sample(colorSampler, textureCoordinate);
+            if (multilayer_composite_content_premultiplied) {
                 textureColor = unpremultiply(textureColor);
             }
-            if (parameters.tintColor.a != 0) {
+            if (multilayer_composite_has_mask) {
+                float4 maskColor = maskTexture.sample(maskSampler, vertexIn.positionInLayer);
+                float maskValue = maskColor[parameters.maskComponent];
+                textureColor.a *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+            }
+            if (multilayer_composite_has_compositing_mask) {
+                float4 maskColor = compositingMaskTexture.sample(s, location);
+                float maskValue = maskColor[parameters.compositingMaskComponent];
+                textureColor.a *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
+            }
+            if (multilayer_composite_has_tint_color) {
                 textureColor.rgb = parameters.tintColor.rgb;
                 textureColor.a *= parameters.tintColor.a;
-            }
-            if (parameters.hasCompositingMask) {
-                float4 maskColor = maskTexture.sample(s, location);
-                float maskValue = maskColor[parameters.compositingMaskComponent];
-                textureColor.a *= parameters.usesOneMinusMaskValue ? (1.0 - maskValue) : maskValue;
             }
             textureColor.a *= parameters.opacity;
             return \(blendFunctionName)(backgroundColor,textureColor);
@@ -85,8 +108,13 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                                             sampler overlaySampler [[ sampler(1) ]],
                                             constant float &intensity [[buffer(0)]]
                                             ) {
-            float4 uCf = overlayTexture.sample(overlaySampler, vertexIn.textureCoordinate);
             float4 uCb = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+            float2 textureCoordinate = vertexIn.textureCoordinate;
+            #if MTI_CUSTOM_BLEND_HAS_TEXTURE_COORDINATES_MODIFIER
+            textureCoordinate = modify_source_texture_coordinates(uCb, vertexIn.textureCoordinate, uint2(overlayTexture.get_width(), overlayTexture.get_height()));
+            #endif
+            float4 uCf = overlayTexture.sample(overlaySampler, textureCoordinate);
+            
             if (blend_filter_backdrop_has_premultiplied_alpha) {
                 uCb = unpremultiply(uCb);
             }
@@ -117,17 +145,13 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         
         #include <metal_stdlib>
         #include "MTIShaderLib.h"
+        #include "MTIShaderFunctionConstants.h"
 
         using namespace metal;
         using namespace metalpetal;
         
         namespace metalpetal {
-            
-        constant bool blend_filter_backdrop_has_premultiplied_alpha [[function_constant(0)]];
-        constant bool blend_filter_source_has_premultiplied_alpha [[function_constant(1)]];
-        constant bool blend_filter_outputs_premultiplied_alpha [[function_constant(2)]];
-        constant bool blend_filter_outputs_opaque_image [[function_constant(3)]];
-
+        
         """
         
         for mode in blendModes {
@@ -152,6 +176,7 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         #include <metal_stdlib>
         #include <TargetConditionals.h>
         #include "MTIShaderLib.h"
+        #include "MTIShaderFunctionConstants.h"
 
         #ifndef TARGET_OS_SIMULATOR
             #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
@@ -162,16 +187,17 @@ public struct MetalPetalBlendingShadersCodeGenerator {
         
         namespace metalpetal {
 
-        vertex VertexOut multilayerCompositeVertexShader(
-                                                const device VertexIn * vertices [[ buffer(0) ]],
+        vertex MTIMultilayerCompositingLayerVertexOut multilayerCompositeVertexShader(
+                                                const device MTIMultilayerCompositingLayerVertex * vertices [[ buffer(0) ]],
                                                 constant float4x4 & transformMatrix [[ buffer(1) ]],
                                                 constant float4x4 & orthographicMatrix [[ buffer(2) ]],
                                                 uint vid [[ vertex_id ]]
                                                 ) {
-            VertexOut outVertex;
-            VertexIn inVertex = vertices[vid];
+            MTIMultilayerCompositingLayerVertexOut outVertex;
+            MTIMultilayerCompositingLayerVertex inVertex = vertices[vid];
             outVertex.position = inVertex.position * transformMatrix * orthographicMatrix;
             outVertex.textureCoordinate = inVertex.textureCoordinate;
+            outVertex.positionInLayer = inVertex.positionInLayer;
             return outVertex;
         }
 

@@ -64,10 +64,26 @@
 }
 
 - (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity tintColor:(MTIColor)tintColor blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content
+                   contentRegion:contentRegion
+              contentFlipOptions:contentFlipOptions
+                            mask:nil
+                 compositingMask:compositingMask
+                      layoutUnit:layoutUnit
+                        position:position
+                            size:size
+                        rotation:rotation
+                         opacity:opacity
+                       tintColor:tintColor
+                       blendMode:blendMode];
+}
+
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions mask:(MTIMask *)mask compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity tintColor:(MTIColor)tintColor blendMode:(MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
         _contentRegion = contentRegion;
         _contentFlipOptions = contentFlipOptions;
+        _mask = mask;
         _compositingMask = compositingMask;
         _layoutUnit = layoutUnit;
         _position = position;
