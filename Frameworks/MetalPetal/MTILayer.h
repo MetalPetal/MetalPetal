@@ -39,6 +39,10 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) MTILayerFlipOptions contentFlipOptions;
 
+/// A mask that applies to the `content` of the layer. This mask is resized and aligned with the layer.
+@property (nonatomic, strong, readonly, nullable) MTIMask *mask;
+
+/// A mask that applies to the `content` of the layer. This mask is resized and aligned with the background.
 @property (nonatomic, strong, readonly, nullable) MTIMask *compositingMask;
 
 @property (nonatomic, readonly) MTILayerLayoutUnit layoutUnit;
@@ -99,9 +103,23 @@ __attribute__((objc_subclassing_restricted))
                         opacity:(float)opacity
                       blendMode:(MTIBlendMode)blendMode;
 
+
 - (instancetype)initWithContent:(MTIImage *)content
                   contentRegion:(CGRect)contentRegion
              contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions
+                compositingMask:(nullable MTIMask *)compositingMask
+                     layoutUnit:(MTILayerLayoutUnit)layoutUnit
+                       position:(CGPoint)position
+                           size:(CGSize)size
+                       rotation:(float)rotation
+                        opacity:(float)opacity
+                      tintColor:(MTIColor)tintColor
+                      blendMode:(MTIBlendMode)blendMode;
+
+- (instancetype)initWithContent:(MTIImage *)content
+                  contentRegion:(CGRect)contentRegion
+             contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions
+                           mask:(nullable MTIMask *)mask
                 compositingMask:(nullable MTIMask *)compositingMask
                      layoutUnit:(MTILayerLayoutUnit)layoutUnit
                        position:(CGPoint)position

@@ -85,6 +85,7 @@
 #import "MTIVertex.h"
 #import "MTIWeakToStrongObjectsMapTable.h"
 #import "MTISCNSceneRenderer.h"
+#import "MTIShaderFunctionConstants.h"
 #import "MTIShaderLib.h"
 #import "MTISKSceneRenderer.h"
 #import "MTIImageView.h"

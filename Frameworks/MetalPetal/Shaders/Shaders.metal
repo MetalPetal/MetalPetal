@@ -7,6 +7,7 @@
 #include <metal_stdlib>
 #include <TargetConditionals.h>
 #include "MTIShaderLib.h"
+#include "MTIShaderFunctionConstants.h"
 
 #ifndef TARGET_OS_SIMULATOR
     #error TARGET_OS_SIMULATOR not defined. Check <TargetConditionals.h>
@@ -190,14 +191,21 @@ namespace metalpetal {
     fragment float4 multilayerCompositeColorLookup512x512Blend_programmableBlending(
                                                        VertexOut vertexIn [[ stage_in ]],
                                                        float4 currentColor [[color(0)]],
-                                                       float4 maskColor [[color(1)]],
+                                                       float4 compositingMaskColor [[color(1)]],
                                                        constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                        texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                                       sampler colorSampler [[ sampler(0) ]]
-                                                       ) {
+                                                       sampler colorSampler [[ sampler(0) ]],
+                                                       texture2d<float, access::sample> maskTexture [[ texture(1) ]],
+                                                       sampler maskSampler [[ sampler(1) ]]) {
         float intensity = 1.0;
-        if (parameters.hasCompositingMask) {
-            intensity *= maskColor[parameters.compositingMaskComponent];
+        if (multilayer_composite_has_mask) {
+            float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
+            float maskValue = maskColor[parameters.maskComponent];
+            intensity *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+        }
+        if (multilayer_composite_has_compositing_mask) {
+            float maskValue = compositingMaskColor[parameters.compositingMaskComponent];
+            intensity *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
         }
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(currentColor,64,intensity,colorTexture,colorSampler);
@@ -208,7 +216,9 @@ namespace metalpetal {
     fragment float4 multilayerCompositeColorLookup512x512Blend(
                                                                VertexOut vertexIn [[ stage_in ]],
                                                                texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
-                                                               texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                                               texture2d<float, access::sample> compositingMaskTexture [[ texture(2) ]],
+                                                               texture2d<float, access::sample> maskTexture [[ texture(3) ]],
+                                                               sampler maskSampler [[ sampler(3) ]],
                                                                constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                                texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                                                sampler colorSampler [[ sampler(0) ]],
@@ -218,15 +228,20 @@ namespace metalpetal {
         float2 location = vertexIn.position.xy / viewportSize;
         float4 backgroundColor = backgroundTexture.sample(s, location);
         float intensity = 1.0;
-        if (parameters.hasCompositingMask) {
-            float4 maskColor = maskTexture.sample(s, location);
+        if (multilayer_composite_has_mask) {
+            float4 maskColor = maskTexture.sample(maskSampler, vertexIn.textureCoordinate);
+            float maskValue = maskColor[parameters.maskComponent];
+            intensity *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+        }
+        if (multilayer_composite_has_compositing_mask) {
+            float4 maskColor = compositingMaskTexture.sample(s, location);
             float maskValue = maskColor[parameters.compositingMaskComponent];
-            intensity *= maskValue;
+            intensity *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
         }
         intensity *= parameters.opacity;
         return colorLookup2DSquareLUT(backgroundColor,64,intensity,colorTexture,colorSampler);
     }
-        
+    
     fragment float4 colorLookup2DHorizontalStrip(
                                          VertexOut vertexIn [[stage_in]],
                                          texture2d<float, access::sample> sourceTexture [[texture(0)]],
