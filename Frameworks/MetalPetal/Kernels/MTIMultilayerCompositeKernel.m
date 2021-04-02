@@ -166,9 +166,6 @@ __attribute__((objc_subclassing_restricted))
 
 + (MTIRenderPipeline *)renderPipelineWithFragmentFunctionName:(NSString *)fragmentFunctionName colorAttachmentDescriptor:(MTLRenderPipelineColorAttachmentDescriptor *)colorAttachmentDescriptor rasterSampleCount:(NSUInteger)rasterSampleCount context:(MTIContext *)context error:(NSError * __autoreleasing *)inOutError {
     MTLRenderPipelineDescriptor *renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    
-    BOOL useProgrammableBlending = context.defaultLibrarySupportsProgrammableBlending && context.isProgrammableBlendingSupported;
-
     NSError *error;
     id<MTLFunction> vertextFunction = [context functionWithDescriptor:[[MTIFunctionDescriptor alloc] initWithName:MTIFilterPassthroughVertexFunctionName] error:&error];
     if (error) {
@@ -190,9 +187,6 @@ __attribute__((objc_subclassing_restricted))
     renderPipelineDescriptor.fragmentFunction = fragmentFunction;
     
     renderPipelineDescriptor.colorAttachments[0] = colorAttachmentDescriptor;
-    if (useProgrammableBlending) {
-        renderPipelineDescriptor.colorAttachments[1] = colorAttachmentDescriptor;
-    }
     renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
     
@@ -541,7 +535,7 @@ __attribute__((objc_subclassing_restricted))
         [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.content] atIndex:0];
         
         if (layer.compositingMask) {
-            NSParameterAssert(layer.mask.content.alphaType != MTIAlphaTypeUnknown);
+            NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
             [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:1];
             [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:1];
         }
