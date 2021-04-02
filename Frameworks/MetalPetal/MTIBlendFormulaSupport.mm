@@ -47,9 +47,18 @@ struct MTICLAHELUTGeneratorInputParameters {
 typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputParameters;
 
 struct MTIMultilayerCompositingLayerShadingParameters {
+    vector_float2 canvasSize;
+    
     float opacity;
+    
     int maskComponent;
+    bool maskHasPremultipliedAlpha;
+    bool maskUsesOneMinusValue;
+    
     int compositingMaskComponent;
+    bool compositingMaskHasPremultipliedAlpha;
+    bool compositingMaskUsesOneMinusValue;
+    
     vector_float4 tintColor;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
@@ -701,10 +710,8 @@ namespace metalpetal {
     
     constant bool multilayer_composite_content_premultiplied [[function_constant(1028)]];
     constant bool multilayer_composite_has_mask [[function_constant(1029)]];
-    constant bool multilayer_composite_mask_inverted [[function_constant(1030)]];
-    constant bool multilayer_composite_has_compositing_mask [[function_constant(1031)]];
-    constant bool multilayer_composite_compositing_mask_inverted [[function_constant(1032)]];
-    constant bool multilayer_composite_has_tint_color [[function_constant(1033)]];
+    constant bool multilayer_composite_has_compositing_mask [[function_constant(1030)]];
+    constant bool multilayer_composite_has_tint_color [[function_constant(1031)]];
 }
 
 #endif
@@ -756,12 +763,13 @@ fragment float4 customBlend(VertexOut vertexIn [[ stage_in ]],
 fragment float4 multilayerCompositeCustomBlend_programmableBlending(
                                                     MTIMultilayerCompositingLayerVertexOut vertexIn [[ stage_in ]],
                                                     float4 currentColor [[color(0)]],
-                                                    float4 compositingMaskColor [[color(1)]],
                                                     constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                                     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
                                                     sampler colorSampler [[ sampler(0) ]],
-                                                    texture2d<float, access::sample> maskTexture [[ texture(1) ]],
-                                                    sampler maskSampler [[ sampler(1) ]]
+                                                    texture2d<float, access::sample> compositingMaskTexture [[ texture(1) ]],
+                                                    sampler compositingMaskSampler [[ sampler(1) ]],
+                                                    texture2d<float, access::sample> maskTexture [[ texture(2) ]],
+                                                    sampler maskSampler [[ sampler(2) ]]
                                                 ) {
     float2 textureCoordinate = vertexIn.textureCoordinate;
     #if MTI_CUSTOM_BLEND_HAS_TEXTURE_COORDINATES_MODIFIER
@@ -774,12 +782,16 @@ fragment float4 multilayerCompositeCustomBlend_programmableBlending(
     }
     if (multilayer_composite_has_mask) {
         float4 maskColor = maskTexture.sample(maskSampler, vertexIn.positionInLayer);
+        maskColor = parameters.maskHasPremultipliedAlpha ? unpremultiply(maskColor) : maskColor;
         float maskValue = maskColor[parameters.maskComponent];
-        textureColor.a *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+        textureColor.a *= parameters.maskUsesOneMinusValue ? (1.0 - maskValue) : maskValue;
     }
     if (multilayer_composite_has_compositing_mask) {
-        float maskValue = compositingMaskColor[parameters.compositingMaskComponent];
-        textureColor.a *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
+        float2 location = vertexIn.position.xy / parameters.canvasSize;
+        float4 maskColor = compositingMaskTexture.sample(compositingMaskSampler, location);
+        maskColor = parameters.compositingMaskHasPremultipliedAlpha ? unpremultiply(maskColor) : maskColor;
+        float maskValue = maskColor[parameters.compositingMaskComponent];
+        textureColor.a *= parameters.compositingMaskUsesOneMinusValue ? (1.0 - maskValue) : maskValue;
     }
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
@@ -795,15 +807,15 @@ fragment float4 multilayerCompositeCustomBlend(
                                     MTIMultilayerCompositingLayerVertexOut vertexIn [[ stage_in ]],
                                     texture2d<float, access::sample> backgroundTexture [[ texture(1) ]],
                                     texture2d<float, access::sample> compositingMaskTexture [[ texture(2) ]],
+                                    sampler compositingMaskSampler [[ sampler(2) ]],
                                     texture2d<float, access::sample> maskTexture [[ texture(3) ]],
                                     sampler maskSampler [[ sampler(3) ]],
                                     constant MTIMultilayerCompositingLayerShadingParameters & parameters [[buffer(0)]],
                                     texture2d<float, access::sample> colorTexture [[ texture(0) ]],
-                                    sampler colorSampler [[ sampler(0) ]],
-                                    constant float2 & viewportSize [[buffer(1)]]
+                                    sampler colorSampler [[ sampler(0) ]]
                                 ) {
     constexpr sampler s(coord::normalized, address::clamp_to_zero, filter::linear);
-    float2 location = vertexIn.position.xy / viewportSize;
+    float2 location = vertexIn.position.xy / parameters.canvasSize;
     float4 backgroundColor = backgroundTexture.sample(s, location);
     float2 textureCoordinate = vertexIn.textureCoordinate;
     #if MTI_CUSTOM_BLEND_HAS_TEXTURE_COORDINATES_MODIFIER
@@ -815,13 +827,15 @@ fragment float4 multilayerCompositeCustomBlend(
     }
     if (multilayer_composite_has_mask) {
         float4 maskColor = maskTexture.sample(maskSampler, vertexIn.positionInLayer);
+        maskColor = parameters.maskHasPremultipliedAlpha ? unpremultiply(maskColor) : maskColor;
         float maskValue = maskColor[parameters.maskComponent];
-        textureColor.a *= multilayer_composite_mask_inverted ? (1.0 - maskValue) : maskValue;
+        textureColor.a *= parameters.maskUsesOneMinusValue ? (1.0 - maskValue) : maskValue;
     }
     if (multilayer_composite_has_compositing_mask) {
-        float4 maskColor = compositingMaskTexture.sample(s, location);
+        float4 maskColor = compositingMaskTexture.sample(compositingMaskSampler, location);
+        maskColor = parameters.compositingMaskHasPremultipliedAlpha ? unpremultiply(maskColor) : maskColor;
         float maskValue = maskColor[parameters.compositingMaskComponent];
-        textureColor.a *= multilayer_composite_compositing_mask_inverted ? (1.0 - maskValue) : maskValue;
+        textureColor.a *= parameters.compositingMaskUsesOneMinusValue ? (1.0 - maskValue) : maskValue;
     }
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;

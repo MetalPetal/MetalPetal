@@ -40,9 +40,18 @@ struct MTICLAHELUTGeneratorInputParameters {
 typedef struct MTICLAHELUTGeneratorInputParameters MTICLAHELUTGeneratorInputParameters;
 
 struct MTIMultilayerCompositingLayerShadingParameters {
+    vector_float2 canvasSize;
+    
     float opacity;
+    
     int maskComponent;
+    bool maskHasPremultipliedAlpha;
+    bool maskUsesOneMinusValue;
+    
     int compositingMaskComponent;
+    bool compositingMaskHasPremultipliedAlpha;
+    bool compositingMaskUsesOneMinusValue;
+    
     vector_float4 tintColor;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;

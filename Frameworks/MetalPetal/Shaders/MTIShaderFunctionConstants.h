@@ -20,10 +20,8 @@ namespace metalpetal {
     
     constant bool multilayer_composite_content_premultiplied [[function_constant(1028)]];
     constant bool multilayer_composite_has_mask [[function_constant(1029)]];
-    constant bool multilayer_composite_mask_inverted [[function_constant(1030)]];
-    constant bool multilayer_composite_has_compositing_mask [[function_constant(1031)]];
-    constant bool multilayer_composite_compositing_mask_inverted [[function_constant(1032)]];
-    constant bool multilayer_composite_has_tint_color [[function_constant(1033)]];
+    constant bool multilayer_composite_has_compositing_mask [[function_constant(1030)]];
+    constant bool multilayer_composite_has_tint_color [[function_constant(1031)]];
 }
 
 #endif
