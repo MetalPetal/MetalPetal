@@ -76,13 +76,8 @@ __attribute__((objc_subclassing_restricted))
 
 @interface MTILayerRenderPipelineKey : NSObject <NSCopying> {
     BOOL _contentHasPremultipliedAlpha;
-    
     BOOL _hasContentMask;
-    BOOL _contentMaskOneMinusValueMode;
-    
     BOOL _hasCompositingMask;
-    BOOL _compositingMaskOneMinusValueMode;
-    
     BOOL _hasTintColor;
 }
 @property (nonatomic, copy, readonly) MTIBlendMode blendMode;
@@ -95,9 +90,7 @@ __attribute__((objc_subclassing_restricted))
         _blendMode = layer.blendMode;
         _contentHasPremultipliedAlpha = layer.content.alphaType == MTIAlphaTypePremultiplied;
         _hasContentMask = layer.mask != nil;
-        _contentMaskOneMinusValueMode = layer.mask.mode == MTIMaskModeOneMinusMaskValue;
         _hasCompositingMask = layer.compositingMask != nil;
-        _compositingMaskOneMinusValueMode = layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue;
         _hasTintColor = layer.tintColor.alpha > 0;
     }
     return self;
@@ -114,9 +107,7 @@ __attribute__((objc_subclassing_restricted))
         [other->_blendMode isEqualToString:_blendMode] &&
         other->_contentHasPremultipliedAlpha == _contentHasPremultipliedAlpha &&
         other->_hasContentMask == _hasContentMask &&
-        other->_contentMaskOneMinusValueMode == _contentMaskOneMinusValueMode &&
         other->_hasCompositingMask == _hasCompositingMask &&
-        other->_compositingMaskOneMinusValueMode == _compositingMaskOneMinusValueMode &&
         other->_hasTintColor == _hasTintColor;
     }
     return NO;
@@ -127,9 +118,7 @@ __attribute__((objc_subclassing_restricted))
     MTIHasherCombine(&hasher, _blendMode.hash);
     MTIHasherCombine(&hasher, (uint64_t)_contentHasPremultipliedAlpha);
     MTIHasherCombine(&hasher, (uint64_t)_hasContentMask);
-    MTIHasherCombine(&hasher, (uint64_t)_contentMaskOneMinusValueMode);
     MTIHasherCombine(&hasher, (uint64_t)_hasCompositingMask);
-    MTIHasherCombine(&hasher, (uint64_t)_compositingMaskOneMinusValueMode);
     MTIHasherCombine(&hasher, (uint64_t)_hasTintColor);
     return MTIHasherFinalize(&hasher);
 }
@@ -147,9 +136,7 @@ __attribute__((objc_subclassing_restricted))
     MTLFunctionConstantValues *constants = [[MTLFunctionConstantValues alloc] init];
     [constants setConstantValue:&_contentHasPremultipliedAlpha type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_content_premultiplied"];
     [constants setConstantValue:&_hasContentMask type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_mask"];
-    [constants setConstantValue:&_contentMaskOneMinusValueMode type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_mask_inverted"];
     [constants setConstantValue:&_hasCompositingMask type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_compositing_mask"];
-    [constants setConstantValue:&_compositingMaskOneMinusValueMode type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_compositing_mask_inverted"];
     [constants setConstantValue:&_hasTintColor type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_tint_color"];
     return [fragmentFunctionDescriptorForBlending functionDescriptorWithConstantValues:constants];
 }
@@ -165,12 +152,7 @@ __attribute__((objc_subclassing_restricted))
 @property (nonatomic,copy,readonly) MTLRenderPipelineColorAttachmentDescriptor *colorAttachmentDescriptor;
 
 @property (nonatomic,copy,readonly) MTIRenderPipeline *passthroughRenderPipeline;
-
 @property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaRenderPipeline;
-
-@property (nonatomic,copy,readonly) MTIRenderPipeline *passthroughToColorAttachmentOneRenderPipeline;
-
-@property (nonatomic,copy,readonly) MTIRenderPipeline *unpremultiplyAlphaToColorAttachmentOneRenderPipeline;
 
 @property (nonatomic,copy,readonly) MTIRenderPipeline *premultiplyAlphaInPlaceRenderPipeline;
 @property (nonatomic,copy,readonly) MTIRenderPipeline *alphaToOneInPlaceRenderPipeline;
@@ -245,22 +227,6 @@ __attribute__((objc_subclassing_restricted))
         }
         
         _unpremultiplyAlphaRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:MTIFilterUnpremultiplyAlphaFragmentFunctionName colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        
-        _passthroughToColorAttachmentOneRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"passthroughToColorAttachmentOne" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
-        }
-        
-        _unpremultiplyAlphaToColorAttachmentOneRenderPipeline = [MTIMultilayerCompositeKernelState renderPipelineWithFragmentFunctionName:@"unpremultiplyAlphaToColorAttachmentOne" colorAttachmentDescriptor:colorAttachmentDescriptor rasterSampleCount:rasterSampleCount context:context error:&error];
         if (error) {
             if (inOutError) {
                 *inOutError = error;
@@ -349,9 +315,6 @@ __attribute__((objc_subclassing_restricted))
         renderPipelineDescriptor.fragmentFunction = fragmentFunction;
         
         renderPipelineDescriptor.colorAttachments[0] = _colorAttachmentDescriptor;
-        if (useProgrammableBlending) {
-            renderPipelineDescriptor.colorAttachments[1] = _colorAttachmentDescriptor;
-        }
         renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatInvalid;
         renderPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatInvalid;
         
@@ -513,47 +476,6 @@ __attribute__((objc_subclassing_restricted))
         renderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     }
     
-    //Set up color attachment 1 for compositing mask
-    if (_rasterSampleCount > 1) {
-        MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-        tempTextureDescriptor.textureType = MTLTextureType2DMultisample;
-        tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
-            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-        } else {
-            NSAssert(NO, @"");
-        }
-        tempTextureDescriptor.sampleCount = _rasterSampleCount;
-        id<MTLTexture> compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
-        if (!compositingMaskTexture) {
-            if (inOutError) {
-                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
-            }
-            return nil;
-        }
-        renderPassDescriptor.colorAttachments[1].texture = compositingMaskTexture;
-        renderPassDescriptor.colorAttachments[1].loadAction = MTLLoadActionDontCare;
-        renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
-    } else {
-        MTLTextureDescriptor *tempTextureDescriptor = [textureDescriptor newMTLTextureDescriptor];
-        if (@available(macCatalyst 14.0, macOS 11.0, *)) {
-            tempTextureDescriptor.storageMode = MTLStorageModeMemoryless;
-        } else {
-            NSAssert(NO, @"");
-        }
-        tempTextureDescriptor.usage = MTLTextureUsageRenderTarget;
-        id<MTLTexture> compositingMaskTexture = [renderingContext.context.device newTextureWithDescriptor:tempTextureDescriptor];
-        if (!compositingMaskTexture) {
-            if (inOutError) {
-                *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
-            }
-            return nil;
-        }
-        renderPassDescriptor.colorAttachments[1].texture = compositingMaskTexture;
-        renderPassDescriptor.colorAttachments[1].loadAction = MTLLoadActionDontCare;
-        renderPassDescriptor.colorAttachments[1].storeAction = MTLStoreActionDontCare;
-    }
-    
     //render background
     __auto_type commandEncoder = [renderingContext.commandBuffer renderCommandEncoderWithDescriptor:renderPassDescriptor];
     
@@ -583,23 +505,6 @@ __attribute__((objc_subclassing_restricted))
     //render layers
     for (NSUInteger index = 0; index < self.layers.count; index += 1) {
         MTILayer *layer = self.layers[index];
-        
-        if (layer.compositingMask) {
-            NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
-            
-            MTIRenderPipeline *renderPipeline;
-            if (layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied) {
-                renderPipeline = [kernelState unpremultiplyAlphaToColorAttachmentOneRenderPipeline];
-            } else {
-                renderPipeline = [kernelState passthroughToColorAttachmentOneRenderPipeline];
-            }
-            [commandEncoder setRenderPipelineState:renderPipeline.state];
-            
-            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:0];
-            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:0];
-            
-            [MTIVertices.fullViewportSquareVertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
-        }
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         
@@ -635,19 +540,28 @@ __attribute__((objc_subclassing_restricted))
         [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
         [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.content] atIndex:0];
         
+        if (layer.compositingMask) {
+            NSParameterAssert(layer.mask.content.alphaType != MTIAlphaTypeUnknown);
+            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:1];
+            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:1];
+        }
+        
         if (layer.mask) {
             NSParameterAssert(layer.mask.content.alphaType != MTIAlphaTypeUnknown);
-            //Configuration not supported currently.
-            NSParameterAssert(!(layer.mask.content.alphaType == MTIAlphaTypePremultiplied && layer.mask.component != MTIColorComponentAlpha));
-            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.mask.content] atIndex:1];
-            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.mask.content] atIndex:1];
+            [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.mask.content] atIndex:2];
+            [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.mask.content] atIndex:2];
         }
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;
+        parameters.canvasSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
         parameters.opacity = layer.opacity;
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
+        parameters.compositingMaskUsesOneMinusValue = layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue;
+        parameters.compositingMaskHasPremultipliedAlpha = layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.maskComponent = (int)layer.mask.component;
+        parameters.maskUsesOneMinusValue = layer.mask.mode == MTIMaskModeOneMinusMaskValue;
+        parameters.maskHasPremultipliedAlpha = layer.mask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
@@ -787,16 +701,12 @@ __attribute__((objc_subclassing_restricted))
         
         if (layer.compositingMask) {
             NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
-            //Configuration not supported on macOS currently.
-            NSParameterAssert(!(layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied && layer.compositingMask.component != MTIColorComponentAlpha));
             [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.compositingMask.content] atIndex:2];
             [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.compositingMask.content] atIndex:2];
         }
         
         if (layer.mask) {
             NSParameterAssert(layer.mask.content.alphaType != MTIAlphaTypeUnknown);
-            //Configuration not supported currently.
-            NSParameterAssert(!(layer.mask.content.alphaType == MTIAlphaTypePremultiplied && layer.mask.component != MTIColorComponentAlpha));
             [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.mask.content] atIndex:3];
             [commandEncoder setFragmentSamplerState:[renderingContext resolvedSamplerStateForImage:layer.mask.content] atIndex:3];
         }
@@ -838,15 +748,17 @@ __attribute__((objc_subclassing_restricted))
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;
+        parameters.canvasSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
         parameters.opacity = layer.opacity;
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
+        parameters.compositingMaskUsesOneMinusValue = layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue;
+        parameters.compositingMaskHasPremultipliedAlpha = layer.compositingMask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.maskComponent = (int)layer.mask.component;
+        parameters.maskUsesOneMinusValue = layer.mask.mode == MTIMaskModeOneMinusMaskValue;
+        parameters.maskHasPremultipliedAlpha = layer.mask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        simd_float2 viewportSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
-        [commandEncoder setFragmentBytes:&viewportSize length:sizeof(simd_float2) atIndex:1];
-
         [geometry encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     }
     
