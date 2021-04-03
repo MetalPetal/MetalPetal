@@ -20,7 +20,7 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     
     private let player = AVPlayer()
     private var asset: AVAsset?
-    private var videoComposition: VideoComposition<BlockBasedVideoCompositor>?
+    private var videoComposition: MTIVideoComposition?
     private let context = try! MTIContext(device: MTLCreateSystemDefaultDevice()!)
     private let halftoneFilter = MTIColorHalftoneFilter()
     private let roundCornerFilter = MTIRoundCornerFilter()
@@ -45,7 +45,7 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
     private func update(asset: AVAsset) {
         self.roundCornerFilter.radius = SIMD4<Float>(repeating: Float(min(asset.presentationVideoSize!.width,asset.presentationVideoSize!.height))/2)
         
-        let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) { [weak self] request in
+        let composition = MTIVideoComposition(asset: asset, context: context, queue: .main) { [weak self] request in
             guard let `self` = self else {
                 return request.anySourceImage
             }
@@ -53,9 +53,8 @@ class VideoProcessorViewController: UIViewController, UIImagePickerControllerDel
             self.halftoneFilter.scale = Float(scale)
             return FilterGraph.makeImage { output in
                 request.anySourceImage => self.halftoneFilter => self.roundCornerFilter => output
-                }!
+            }!
         }
-        let composition = VideoComposition(propertiesOf: asset, compositionRequestHandler: handler.handle(request:))
         
         let playerItem = AVPlayerItem(asset: asset)
         playerItem.videoComposition = composition.makeAVVideoComposition()
