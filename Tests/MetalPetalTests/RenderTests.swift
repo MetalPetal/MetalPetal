@@ -394,7 +394,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
@@ -419,7 +419,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(0.5)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
@@ -433,7 +433,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    
     func testMultilayerCompositing_alphaMSAA() throws {
         let context = try makeContext()
         
@@ -445,7 +444,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 4
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(0.5)]
         let outputImage = try XCTUnwrap(filter.outputImage)
         let outputCGImage = try context.makeCGImage(from: outputImage)
@@ -470,7 +469,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)
                             .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 1))]
         let outputImage = try XCTUnwrap(filter.outputImage)
@@ -485,6 +484,160 @@ final class RenderTests: XCTestCase {
         }
     }
     
+    func testColorLookupFilter() throws {
+        let clut = try XCTUnwrap(IdentityCLUTImageGenerator.generateIdentityCLUTImage(with: CLUTImageDescriptor(dimension: 16, layout: CLUTImageLayout(horizontalTileCount: 1, verticalTileCount: 16))))
+        let invertFilter = MTIColorInvertFilter()
+        invertFilter.inputImage = MTIImage(cgImage: clut, isOpaque: true)
+        let clutImage = try XCTUnwrap(invertFilter.outputImage)
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [64, 128],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let lookupFilter = MTIColorLookupFilter()
+        lookupFilter.inputImage = image
+        lookupFilter.inputColorLookupTable = clutImage
+        let context = try makeContext()
+        let outputCGImage = try context.makeCGImage(from: XCTUnwrap(lookupFilter.outputImage))
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 191 && pixel.g == 191 && pixel.b == 191 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 127 && pixel.g == 127 && pixel.b == 127 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testMultilayerCompositing_clut512x512() throws {
+        let clut = try XCTUnwrap(IdentityCLUTImageGenerator.generateIdentityCLUTImage(with: CLUTImageDescriptor(dimension: 64, layout: CLUTImageLayout(horizontalTileCount: 8, verticalTileCount: 8))))
+        let invertFilter = MTIColorInvertFilter()
+        invertFilter.inputImage = MTIImage(cgImage: clut, isOpaque: true)
+        let clutImage = try XCTUnwrap(invertFilter.outputImage)
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [64, 64],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.Layer(content: clutImage)
+                            .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
+                            .opacity(1)
+                            .blendMode(.colorLookup512x512)]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        
+        let context = try makeContext()
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: outputCGImage) { (pixel, coord) in
+            if coord.x == 0 && coord.y == 0 {
+                XCTAssert(pixel.r == 191 && pixel.g == 191 && pixel.b == 191 && pixel.a == 255)
+            }
+            if coord.x == 1 && coord.y == 0 {
+                XCTAssert(pixel.r == 64 && pixel.g == 64 && pixel.b == 64 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testMultilayerCompositing_mask() throws {
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [128, 128],
+            [128, 128],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let mask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [255, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let layerContent = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.Layer(content: layerContent)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUnit: .pixel)
+                            .opacity(1)
+                            .blendMode(.normal)
+                            .mask(MTIMask(content: mask))]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        
+        let context = try makeContext()
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+            [0, 128],
+            [128, 128]
+        ]))
+    }
+    
+    func testMultilayerCompositing_compositingMask() throws {
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [128, 128],
+            [128, 128],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let compositingMask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 255],
+            [0, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let layerContent = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.Layer(content: layerContent)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUnit: .pixel)
+                            .opacity(1)
+                            .blendMode(.normal)
+                            .compositingMask(MTIMask(content: compositingMask))]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        
+        let context = try makeContext()
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+            [128, 0],
+            [128, 128]
+        ]))
+    }
+    
+    func testMultilayerCompositing_clut512x512_mask() throws {
+        let clut = try XCTUnwrap(IdentityCLUTImageGenerator.generateIdentityCLUTImage(with: CLUTImageDescriptor(dimension: 64, layout: CLUTImageLayout(horizontalTileCount: 8, verticalTileCount: 8))))
+        let invertFilter = MTIColorInvertFilter()
+        invertFilter.inputImage = MTIImage(cgImage: clut, isOpaque: true)
+        let clutImage = try XCTUnwrap(invertFilter.outputImage)
+        
+        let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [64, 64],
+            [64, 64],
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let mask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [255, 0]
+        ]), options: [.SRGB: false], isOpaque: true)
+        
+        let filter = MultilayerCompositingFilter()
+        filter.inputBackgroundImage = image
+        filter.rasterSampleCount = 1
+        filter.layers = [MultilayerCompositingFilter.Layer(content: clutImage)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUnit: .pixel)
+                            .opacity(1)
+                            .blendMode(.colorLookup512x512)
+                            .mask(MTIMask(content: mask))]
+        let outputImage = try XCTUnwrap(filter.outputImage)
+        
+        let context = try makeContext()
+        let outputCGImage = try context.makeCGImage(from: outputImage)
+        XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
+            [191, 64],
+            [64, 64]
+        ]))
+    }
+    
     func testMultilayerCompositing_tintWithAlpha() throws {
         let context = try makeContext()
         
@@ -497,7 +650,7 @@ final class RenderTests: XCTestCase {
         
         try autoreleasepool {
             filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                                 .opacity(1)
                                 .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 0.5))]
             let outputImage = try XCTUnwrap(filter.outputImage)
@@ -514,7 +667,7 @@ final class RenderTests: XCTestCase {
         
         try autoreleasepool {
             filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUint: .pixel)
+                                .frame(center: CGPoint(x: 0.5, y: 0.5), size: CGSize(width: 1, height: 1), layoutUnit: .pixel)
                                 .opacity(1)
                                 .tintColor(MTIColor(red: 1, green: 1, blue: 0, alpha: 0))]
             let outputImage = try XCTUnwrap(filter.outputImage)
@@ -547,7 +700,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
         filter.layers = [MultilayerCompositingFilter.Layer(content: overlayImage)
-                            .frame(CGRect(x: 0, y: 0, width: 2, height: 2), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 2), layoutUnit: .pixel)
                             .rotation(.pi/2)
                             .opacity(1)]
         guard let outputImage = filter.outputImage else {
@@ -575,7 +728,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         filter.outputAlphaType = .alphaIsOne
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
@@ -592,7 +745,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
         XCTAssert(outputImage.alphaType == .nonPremultiplied)
@@ -610,7 +763,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         filter.outputAlphaType = .premultiplied
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
@@ -630,7 +783,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         filter.outputAlphaType = .alphaIsOne
         let outputImage = try XCTUnwrap(filter.outputImage?.withCachePolicy(.persistent))
@@ -699,7 +852,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
         filter.layers = [MultilayerCompositingFilter.Layer(content:  MTIImage(color: MTIColor(red: 1, green: 0, blue: 0, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         filter.rasterSampleCount = 4
         filter.outputAlphaType = .premultiplied
@@ -727,7 +880,7 @@ final class RenderTests: XCTestCase {
         filter.inputBackgroundImage = image
         filter.rasterSampleCount = 1
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage.white)
-                            .frame(CGRect(x: 0, y: 0, width: 1.6, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1.6, height: 1), layoutUnit: .pixel)
                             .opacity(1)]
         guard let outputImage = filter.outputImage else {
             XCTFail()
@@ -1050,7 +1203,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [MultilayerCompositingFilter.Layer(content: MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1)))
-                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 1, height: 1), layoutUnit: .pixel)
                             .opacity(1)
                             .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
@@ -1090,7 +1243,7 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
-                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUnit: .pixel)
                             .opacity(1)
                             .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
@@ -1119,16 +1272,11 @@ final class RenderTests: XCTestCase {
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
-                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUint: .pixel)
+                            .frame(CGRect(x: 0, y: 0, width: 2, height: 1), layoutUnit: .pixel)
                             .opacity(1)
                             .blendMode(blendMode)]
         let outputImage = try XCTUnwrap(filter.outputImage)
-        do {
-            let _ = try context.makeCGImage(from: outputImage)
-            XCTFail()
-        } catch {
-            XCTAssert(error is MTIError && (error as! MTIError).code == .failedToFetchBlendRenderPipelineForMultilayerCompositing)
-        }
+        XCTAssertThrowsError(try context.makeCGImage(from: outputImage))
     }
     
     func testCustomBlending() throws {

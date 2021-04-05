@@ -50,6 +50,8 @@ public class MultilayerCompositingFilter: MTIFilter {
         
         public var contentFlipOptions: MTILayer.FlipOptions = []
         
+        public var mask: MTIMask? = nil
+        
         public var compositingMask: MTIMask? = nil
         
         public var layoutUnit: MTILayer.LayoutUnit
@@ -81,6 +83,7 @@ public class MultilayerCompositingFilter: MTIFilter {
             hasher.combine(contentRegion.size.width)
             hasher.combine(contentRegion.size.height)
             hasher.combine(contentFlipOptions)
+            hasher.combine(mask)
             hasher.combine(compositingMask)
             hasher.combine(layoutUnit)
             hasher.combine(position.x)
@@ -119,11 +122,15 @@ public class MultilayerCompositingFilter: MTIFilter {
             self.mutating({ $0.contentFlipOptions = contentFlipOptions })
         }
         
-        public func compositingMask(_ mask: MTIMask?) -> Layer {
-            self.mutating({ $0.compositingMask = compositingMask })
+        public func mask(_ mask: MTIMask?) -> Layer {
+            self.mutating({ $0.mask = mask })
         }
         
-        public func frame(_ rect: CGRect, layoutUint: MTILayer.LayoutUnit) -> Layer {
+        public func compositingMask(_ mask: MTIMask?) -> Layer {
+            self.mutating({ $0.compositingMask = mask })
+        }
+        
+        public func frame(_ rect: CGRect, layoutUnit: MTILayer.LayoutUnit) -> Layer {
             self.mutating({
                 $0.size = rect.size
                 $0.position = CGPoint(x: rect.midX, y: rect.midY)
@@ -131,7 +138,7 @@ public class MultilayerCompositingFilter: MTIFilter {
             })
         }
         
-        public func frame(center: CGPoint, size: CGSize, layoutUint: MTILayer.LayoutUnit) -> Layer {
+        public func frame(center: CGPoint, size: CGSize, layoutUnit: MTILayer.LayoutUnit) -> Layer {
             self.mutating({
                 $0.size = size
                 $0.position = center
@@ -206,7 +213,7 @@ extension MultilayerCompositingFilter {
 
 extension MultilayerCompositingFilter.Layer {
     fileprivate func bridgeToObjectiveC() -> MTILayer {
-        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, tintColor: self.tintColor, blendMode: self.blendMode)
+        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, mask: self.mask, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, tintColor: self.tintColor, blendMode: self.blendMode)
     }
 }
 
