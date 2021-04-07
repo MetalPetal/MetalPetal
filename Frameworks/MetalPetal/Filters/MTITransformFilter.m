@@ -35,45 +35,23 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
     return matrix;
 }
 
-@implementation MTITransformFilter
-@synthesize outputPixelFormat = _outputPixelFormat;
-@synthesize inputImage = _inputImage;
-
-- (instancetype)init {
-    if (self = [super init]) {
-        _rasterSampleCount = 1;
-        _transform = CATransform3DIdentity;
-        _fieldOfView = 0.0;
-    }
-    return self;
-}
-
-- (MTITransformFilterViewport)defaultViewport {
-    if (!self.inputImage) {
-        MTITransformFilterViewport viewport = {0};
-        return viewport;
-    }
-    CGSize inputImageSize = self.inputImage.size;
+MTITransformFilterViewport MTITransformFilterDefaultViewportForImage(MTIImage *image) {
+    CGSize inputImageSize = image.size;
     CGRect imageRect = CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height);
     return imageRect;
 }
 
-- (MTITransformFilterViewport)minimumEnclosingViewport {
-    if (!self.inputImage) {
-        MTITransformFilterViewport viewport = {0};
-        return viewport;
-    }
-
-    CGRect imageRect = self.defaultViewport;
+MTITransformFilterViewport MTITransformFilterMinimumEnclosingViewportForImageWithTransform(MTIImage *image, CATransform3D transform, float fieldOfView) {
+    CGRect imageRect = MTITransformFilterDefaultViewportForImage(image);
     
     simd_float4 tl = simd_make_float4(CGRectGetMinX(imageRect), CGRectGetMinY(imageRect), 0, 1);
     simd_float4 tr = simd_make_float4(CGRectGetMaxX(imageRect), CGRectGetMinY(imageRect), 0, 1);
     simd_float4 bl = simd_make_float4(CGRectGetMinX(imageRect), CGRectGetMaxY(imageRect), 0, 1);
     simd_float4 br = simd_make_float4(CGRectGetMaxX(imageRect), CGRectGetMaxY(imageRect), 0, 1);
     simd_float4 points[4] = {tl, tr, bl, br};
-
-    simd_float4x4 matrix = transformMatrix(self.inputImage.size, imageRect, self.fieldOfView, self.transform);
-
+    
+    simd_float4x4 matrix = transformMatrix(image.size, imageRect, fieldOfView, transform);
+    
     for (NSUInteger i = 0; i < 4; i += 1) {
         points[i] = simd_mul(points[i], matrix);
         points[i] /= points[i].w;
@@ -93,17 +71,12 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
     return CGRectMake(minX, minY, maxX-minX, maxY-minY);
 }
 
-- (MTIImage *)outputImage {
-    if (!self.inputImage) {
-        return nil;
-    }
-    
-    CGSize inputImageSize = self.inputImage.size;
+MTIImage * MTITransformFilterApplyTransformToImage(MTIImage *image, CATransform3D transform, float fieldOfView, NSUInteger rasterSampleCount, MTITransformFilterViewport viewport, MTLPixelFormat outputPixelFormat) {
+    CGSize inputImageSize = image.size;
     CGRect imageRect = CGRectMake(-0.5*inputImageSize.width, -inputImageSize.height*0.5, inputImageSize.width, inputImageSize.height);
     
-    MTITransformFilterViewport viewport = self.viewport;
     if (viewport.size.width * viewport.size.height == 0) {
-        viewport = self.defaultViewport;
+        viewport = MTITransformFilterDefaultViewportForImage(image);
     }
     
     simd_float4 tl = simd_make_float4(CGRectGetMinX(imageRect), CGRectGetMinY(imageRect), 0, 1);
@@ -111,7 +84,7 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
     simd_float4 bl = simd_make_float4(CGRectGetMinX(imageRect), CGRectGetMaxY(imageRect), 0, 1);
     simd_float4 br = simd_make_float4(CGRectGetMaxX(imageRect), CGRectGetMaxY(imageRect), 0, 1);
     
-    simd_float4x4 matrix = transformMatrix(inputImageSize, viewport, self.fieldOfView, self.transform);
+    simd_float4x4 matrix = transformMatrix(inputImageSize, viewport, fieldOfView, transform);
     
     tl = simd_mul(tl, matrix);
     tr = simd_mul(tr, matrix);
@@ -125,11 +98,49 @@ static simd_float4x4 transformMatrix(CGSize imageSize, CGRect viewport, float fi
         { .position = {br.x, br.y, 0, br.w} , .textureCoordinate = { 1, 0 } }
     } count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
     
-    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(viewport.size) pixelFormat:self.outputPixelFormat loadAction:MTLLoadActionClear];
-    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:geomerty images:@[self.inputImage] parameters:@{}];
+    MTIRenderPassOutputDescriptor *outputDescriptor = [[MTIRenderPassOutputDescriptor alloc] initWithDimensions:MTITextureDimensionsMake2DFromCGSize(viewport.size) pixelFormat:outputPixelFormat loadAction:MTLLoadActionClear];
+    MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:MTIRenderPipelineKernel.passthroughRenderPipelineKernel geometry:geomerty images:@[image] parameters:@{}];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
-                                            rasterSampleCount:_rasterSampleCount
+                                            rasterSampleCount:rasterSampleCount
                                             outputDescriptors:@[outputDescriptor]].firstObject;
+}
+
+@implementation MTITransformFilter
+@synthesize outputPixelFormat = _outputPixelFormat;
+@synthesize inputImage = _inputImage;
+
+- (instancetype)init {
+    if (self = [super init]) {
+        _rasterSampleCount = 1;
+        _transform = CATransform3DIdentity;
+        _fieldOfView = 0.0;
+    }
+    return self;
+}
+
+- (MTITransformFilterViewport)defaultViewport {
+    NSParameterAssert(self.inputImage != nil);
+    if (!self.inputImage) {
+        MTITransformFilterViewport viewport = {0};
+        return viewport;
+    }
+    return MTITransformFilterDefaultViewportForImage(_inputImage);
+}
+
+- (MTITransformFilterViewport)minimumEnclosingViewport {
+    NSParameterAssert(self.inputImage != nil);
+    if (!self.inputImage) {
+        MTITransformFilterViewport viewport = {0};
+        return viewport;
+    }
+    return MTITransformFilterMinimumEnclosingViewportForImageWithTransform(_inputImage, _transform, _fieldOfView);
+}
+
+- (MTIImage *)outputImage {
+    if (!self.inputImage) {
+        return nil;
+    }
+    return MTITransformFilterApplyTransformToImage(_inputImage, _transform, _fieldOfView, _rasterSampleCount, _viewport, _outputPixelFormat);
 }
 
 @end

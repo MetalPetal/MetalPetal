@@ -25,18 +25,32 @@ extension MTIImage {
     }
 }
 
-public protocol MTIAsyncVideoCompositionRequest {
+public protocol MTIVideoCompositionRequest {
     func sourceFrame(byTrackID trackID: CMPersistentTrackID) -> CVPixelBuffer?
+    
     var renderContext: AVVideoCompositionRenderContext { get }
+    
     var compositionTime: CMTime { get }
+    
+    /// Whether the track transform is applied to the source frame.
+    var isTrackTransformApplied: Bool { get }
+}
+
+public protocol MTIMutableVideoCompositionRequest: MTIVideoCompositionRequest {
     func finish(_ result: Result<CVPixelBuffer, Error>)
 }
 
-public protocol MTITrackedAsyncVideoCompositionRequest: MTIAsyncVideoCompositionRequest {
+public protocol MTITrackedVideoCompositionRequest: MTIVideoCompositionRequest {
+    /// Whether the request is cancelled. The implementation must be thread-safe.
     var isCancelled: Bool { get }
 }
 
-extension AVAsynchronousVideoCompositionRequest: MTIAsyncVideoCompositionRequest {
+extension AVAsynchronousVideoCompositionRequest: MTIMutableVideoCompositionRequest {
+    
+    public var isTrackTransformApplied: Bool {
+        return false
+    }
+    
     public func finish(_ result: Result<CVPixelBuffer, Error>) {
         switch result {
         case .failure(let error):
@@ -89,24 +103,20 @@ public class MTIAsyncVideoCompositionRequestHandler {
         self.queue = queue
     }
     
-    private let transformFilter = MTITransformFilter()
-    
-    private func makeTransformedSourceImage(from request: MTIAsyncVideoCompositionRequest, track: AVAssetTrack) -> MTIImage? {
+    private static func makeTransformedSourceImage(from request: MTIMutableVideoCompositionRequest, track: AVAssetTrack) -> MTIImage? {
         guard let pixelBuffer = request.sourceFrame(byTrackID: track.trackID) else {
             return nil
         }
         assert(request.renderContext.renderTransform.isIdentity == true)
         let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
-        if track.preferredTransform.isIdentity {
+        if request.isTrackTransformApplied || track.preferredTransform.isIdentity {
             return image
         }
-        transformFilter.inputImage = image
-        var transform = track.preferredTransform
-        transform.tx = 0
-        transform.ty = 0
-        transformFilter.transform = CATransform3DMakeAffineTransform(transform.inverted())
-        transformFilter.viewport = transformFilter.minimumEnclosingViewport
-        return transformFilter.outputImage
+        var trackTransform = track.preferredTransform
+        trackTransform.tx = 0
+        trackTransform.ty = 0
+        let transform = CATransform3DMakeAffineTransform(trackTransform.inverted())
+        return MTITransformFilterApplyTransformToImage(image, transform, 0, 1, MTITransformFilter.minimumEnclosingViewport(for: image, transform: transform, fieldOfView: 0), .unspecified)
     }
     
     private func enqueue(_ operation: @escaping () -> Void) {
@@ -117,11 +127,11 @@ public class MTIAsyncVideoCompositionRequestHandler {
         }
     }
     
-    public func handle(request: MTIAsyncVideoCompositionRequest) {
-        if (request as? MTITrackedAsyncVideoCompositionRequest)?.isCancelled == true { return }
+    public func handle(request: MTIMutableVideoCompositionRequest) {
+        if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
         
         let sourceFrames = self.tracks.reduce(into: [CMPersistentTrackID: MTIImage]()) { (frames, track) in
-            if let image = self.makeTransformedSourceImage(from: request, track: track) {
+            if let image = MTIAsyncVideoCompositionRequestHandler.makeTransformedSourceImage(from: request, track: track) {
                 frames[track.trackID] = image
             }
         }
@@ -135,12 +145,12 @@ public class MTIAsyncVideoCompositionRequestHandler {
         }
         self.enqueue {
             do {
-                if (request as? MTITrackedAsyncVideoCompositionRequest)?.isCancelled == true { return }
+                if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
                 
                 let mtiRequest = Request(sourceImages: sourceFrames, compositionTime: request.compositionTime, renderSize: request.renderContext.size)
                 let image = try self.filter(mtiRequest)
                 
-                if (request as? MTITrackedAsyncVideoCompositionRequest)?.isCancelled == true { return }
+                if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
                 
                 try self.context.render(image, to: pixelBuffer)
                 
@@ -161,7 +171,7 @@ public class MTIVideoComposition {
     
     private class Compositor: NSObject, AVVideoCompositing {
         
-        class VideoCompositionRequest: Hashable, MTITrackedAsyncVideoCompositionRequest {
+        class VideoCompositionRequest: Hashable, MTIMutableVideoCompositionRequest, MTITrackedVideoCompositionRequest {
             
             private let internalRequest: AVAsynchronousVideoCompositionRequest
             private var completionHandler: (() -> Void)?
@@ -191,6 +201,8 @@ public class MTIVideoComposition {
             var renderContext: AVVideoCompositionRenderContext { internalRequest.renderContext }
             
             var compositionTime: CMTime { internalRequest.compositionTime }
+            
+            var isTrackTransformApplied: Bool { return false }
             
             func finish(_ result: Result<CVPixelBuffer, Swift.Error>) {
                 stateLock.lock()
