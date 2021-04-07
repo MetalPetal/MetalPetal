@@ -41,7 +41,7 @@ An image processing framework based on Metal.
     - [Render a `MTIImage`](#render-a-mtiimage)
     - [Display a `MTIImage`](#display-a-mtiimage)
     - [Connect Filters (Swift)](#connect-filters-swift)
-    - [Process Video Files (with VideoIO)](#process-video-files-with-videoio)
+    - [Process Video Files](#process-video-files)
     - [Process Live Video (with VideoIO)](#process-live-video-with-videoio)
 - [Quick Look Debug Support](#quick-look-debug-support)
 - [Best Practices](#best-practices)
@@ -404,23 +404,19 @@ let image = try? FilterGraph.makeImage { output in
 
 - One and only one filter's output can be connected to `output`.
 
-### Process Video Files (with VideoIO)
-
-_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for the following examples._
+### Process Video Files
 
 Working with `AVPlayer`:
 
 ```Swift
-import VideoIO
-
 let context = try MTIContext(device: device)
 let asset = AVAsset(url: videoURL)
-let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video)) {   request in
+let composition = MTIVideoComposition(asset: asset, context: context, queue: DispatchQueue.main, filter: { request in
     return FilterGraph.makeImage { output in
         request.anySourceImage => filterA => filterB => output
     }!
 }
-let composition = VideoComposition(propertiesOf: asset, compositionRequestHandler: handler.handle(request:))
+
 let playerItem = AVPlayerItem(asset: asset)
 playerItem.videoComposition = composition.makeAVVideoComposition()
 player.replaceCurrentItem(with: playerItem)
@@ -428,6 +424,8 @@ player.play()
 ```
 
 Export a video:
+
+_[VideoIO](https://github.com/MetalPetal/VideoIO) is required for the following examples._
 
 ```Swift
 import VideoIO
@@ -441,8 +439,6 @@ exporter.export(progress: { progress in
     
 })
 ```
-
-Please refer to the `VideoProcessorViewController.swift` in the demo project for more information.
 
 ### Process Live Video (with VideoIO)
 
