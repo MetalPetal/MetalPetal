@@ -1,0 +1,802 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2AF4F087EEBBECD071A474BA /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F118E951611EE75B4F2801 /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework */; };
+		9D492985261E19E80011E8AF /* MetalPetalExamplesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D492972261E19E70011E8AF /* MetalPetalExamplesApp.swift */; };
+		9D492986261E19E80011E8AF /* MetalPetalExamplesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D492972261E19E70011E8AF /* MetalPetalExamplesApp.swift */; };
+		9D492989261E19E80011E8AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D492974261E19E80011E8AF /* Assets.xcassets */; };
+		9D49298A261E19E80011E8AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D492974261E19E80011E8AF /* Assets.xcassets */; };
+		9D4929C3261E1B580011E8AF /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929A3261E1B580011E8AF /* P1040808.jpg */; };
+		9D4929C4261E1B580011E8AF /* P1040808.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929A3261E1B580011E8AF /* P1040808.jpg */; };
+		9D4929C5261E1B580011E8AF /* BouncingBallsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A4261E1B580011E8AF /* BouncingBallsView.swift */; };
+		9D4929C6261E1B580011E8AF /* BouncingBallsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A4261E1B580011E8AF /* BouncingBallsView.swift */; };
+		9D4929C7261E1B580011E8AF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A6261E1B580011E8AF /* Shaders.metal */; };
+		9D4929C8261E1B580011E8AF /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A6261E1B580011E8AF /* Shaders.metal */; };
+		9D4929C9261E1B580011E8AF /* SimpleImageFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A7261E1B580011E8AF /* SimpleImageFilterView.swift */; };
+		9D4929CA261E1B580011E8AF /* SimpleImageFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A7261E1B580011E8AF /* SimpleImageFilterView.swift */; };
+		9D4929CB261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A8261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift */; };
+		9D4929CC261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A8261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift */; };
+		9D4929CD261E1B580011E8AF /* SceneKitSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A9261E1B580011E8AF /* SceneKitSupportView.swift */; };
+		9D4929CE261E1B580011E8AF /* SceneKitSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929A9261E1B580011E8AF /* SceneKitSupportView.swift */; };
+		9D4929CF261E1B580011E8AF /* P1_depth.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929AA261E1B580011E8AF /* P1_depth.jpg */; };
+		9D4929D0261E1B580011E8AF /* P1_depth.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929AA261E1B580011E8AF /* P1_depth.jpg */; };
+		9D4929D1261E1B580011E8AF /* P1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929AB261E1B580011E8AF /* P1.jpg */; };
+		9D4929D2261E1B580011E8AF /* P1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929AB261E1B580011E8AF /* P1.jpg */; };
+		9D4929D3261E1B580011E8AF /* BlendModesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AC261E1B580011E8AF /* BlendModesView.swift */; };
+		9D4929D4261E1B580011E8AF /* BlendModesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AC261E1B580011E8AF /* BlendModesView.swift */; };
+		9D4929D5261E1B580011E8AF /* MediaPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AE261E1B580011E8AF /* MediaPicker.swift */; };
+		9D4929D6261E1B580011E8AF /* MediaPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AE261E1B580011E8AF /* MediaPicker.swift */; };
+		9D4929D7261E1B580011E8AF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AF261E1B580011E8AF /* Error.swift */; };
+		9D4929D8261E1B580011E8AF /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929AF261E1B580011E8AF /* Error.swift */; };
+		9D4929D9261E1B580011E8AF /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B0261E1B580011E8AF /* NoteView.swift */; };
+		9D4929DA261E1B580011E8AF /* NoteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B0261E1B580011E8AF /* NoteView.swift */; };
+		9D4929DB261E1B580011E8AF /* StateObjectSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B1261E1B580011E8AF /* StateObjectSupport.swift */; };
+		9D4929DC261E1B580011E8AF /* StateObjectSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B1261E1B580011E8AF /* StateObjectSupport.swift */; };
+		9D4929DD261E1B580011E8AF /* VisualEffectBlur-Mac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B2261E1B580011E8AF /* VisualEffectBlur-Mac.swift */; };
+		9D4929DE261E1B580011E8AF /* VisualEffectBlur-Mac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B2261E1B580011E8AF /* VisualEffectBlur-Mac.swift */; };
+		9D4929DF261E1B580011E8AF /* DemoImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B3261E1B580011E8AF /* DemoImages.swift */; };
+		9D4929E0261E1B580011E8AF /* DemoImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B3261E1B580011E8AF /* DemoImages.swift */; };
+		9D4929E1261E1B580011E8AF /* VisualEffectBlur-iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B4261E1B580011E8AF /* VisualEffectBlur-iOS.swift */; };
+		9D4929E2261E1B580011E8AF /* VisualEffectBlur-iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B4261E1B580011E8AF /* VisualEffectBlur-iOS.swift */; };
+		9D4929E3261E1B580011E8AF /* UIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B5261E1B580011E8AF /* UIExtensions.swift */; };
+		9D4929E4261E1B580011E8AF /* UIExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B5261E1B580011E8AF /* UIExtensions.swift */; };
+		9D4929E5261E1B580011E8AF /* VideoProcessorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B6261E1B580011E8AF /* VideoProcessorView.swift */; };
+		9D4929E6261E1B580011E8AF /* VideoProcessorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B6261E1B580011E8AF /* VideoProcessorView.swift */; };
+		9D4929E7261E1B580011E8AF /* GaussianBlurFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B7261E1B580011E8AF /* GaussianBlurFilterView.swift */; };
+		9D4929E8261E1B580011E8AF /* GaussianBlurFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B7261E1B580011E8AF /* GaussianBlurFilterView.swift */; };
+		9D4929E9261E1B580011E8AF /* CLAHEFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B8261E1B580011E8AF /* CLAHEFilterView.swift */; };
+		9D4929EA261E1B580011E8AF /* CLAHEFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B8261E1B580011E8AF /* CLAHEFilterView.swift */; };
+		9D4929EB261E1B580011E8AF /* SketchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B9261E1B580011E8AF /* SketchBoardView.swift */; };
+		9D4929EC261E1B580011E8AF /* SketchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929B9261E1B580011E8AF /* SketchBoardView.swift */; };
+		9D4929ED261E1B580011E8AF /* ImageFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BA261E1B580011E8AF /* ImageFilterView.swift */; };
+		9D4929EE261E1B580011E8AF /* ImageFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BA261E1B580011E8AF /* ImageFilterView.swift */; };
+		9D4929EF261E1B580011E8AF /* BokehEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BB261E1B580011E8AF /* BokehEffectView.swift */; };
+		9D4929F0261E1B580011E8AF /* BokehEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BB261E1B580011E8AF /* BokehEffectView.swift */; };
+		9D4929F1261E1B580011E8AF /* MultilayerCompositingFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BD261E1B580011E8AF /* MultilayerCompositingFilterView.swift */; };
+		9D4929F2261E1B580011E8AF /* MultilayerCompositingFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BD261E1B580011E8AF /* MultilayerCompositingFilterView.swift */; };
+		9D4929F3261E1B580011E8AF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BE261E1B580011E8AF /* HomeView.swift */; };
+		9D4929F4261E1B580011E8AF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BE261E1B580011E8AF /* HomeView.swift */; };
+		9D4929F5261E1B580011E8AF /* CameraFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BF261E1B580011E8AF /* CameraFilterView.swift */; };
+		9D4929F6261E1B580011E8AF /* CameraFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929BF261E1B580011E8AF /* CameraFilterView.swift */; };
+		9D4929F7261E1B580011E8AF /* MetalKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929C0261E1B580011E8AF /* MetalKitView.swift */; };
+		9D4929F8261E1B580011E8AF /* MetalKitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4929C0261E1B580011E8AF /* MetalKitView.swift */; };
+		9D4929F9261E1B580011E8AF /* ColorLookupTable.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929C1261E1B580011E8AF /* ColorLookupTable.png */; };
+		9D4929FA261E1B580011E8AF /* ColorLookupTable.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929C1261E1B580011E8AF /* ColorLookupTable.png */; };
+		9D4929FB261E1B580011E8AF /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929C2261E1B580011E8AF /* art.scnassets */; };
+		9D4929FC261E1B580011E8AF /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929C2261E1B580011E8AF /* art.scnassets */; };
+		9D492A0C261E1D320011E8AF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9D492A0B261E1D320011E8AF /* VideoIO */; };
+		9D492A10261E1D420011E8AF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9D492A0F261E1D420011E8AF /* VideoIO */; };
+		DC1829C9C2ED99B005622C45 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33BF35C8DC0C16F75B3F1984 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		06FD16DA7001A42C3776E095 /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (iOS).debug.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS).debug.xcconfig"; sourceTree = "<group>"; };
+		32F118E951611EE75B4F2801 /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		33BF35C8DC0C16F75B3F1984 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D492972261E19E70011E8AF /* MetalPetalExamplesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalPetalExamplesApp.swift; sourceTree = "<group>"; };
+		9D492974261E19E80011E8AF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9D492979261E19E80011E8AF /* MetalPetalExamples.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPetalExamples.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D49297C261E19E80011E8AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D492981261E19E80011E8AF /* MetalPetalExamples.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPetalExamples.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D492983261E19E80011E8AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D492984261E19E80011E8AF /* macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = macOS.entitlements; sourceTree = "<group>"; };
+		9D4929A3261E1B580011E8AF /* P1040808.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1040808.jpg; sourceTree = "<group>"; };
+		9D4929A4261E1B580011E8AF /* BouncingBallsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BouncingBallsView.swift; sourceTree = "<group>"; };
+		9D4929A5261E1B580011E8AF /* ShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		9D4929A6261E1B580011E8AF /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		9D4929A7261E1B580011E8AF /* SimpleImageFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SimpleImageFilterView.swift; sourceTree = "<group>"; };
+		9D4929A8261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PixelBufferPoolBackedImageRenderer.swift; sourceTree = "<group>"; };
+		9D4929A9261E1B580011E8AF /* SceneKitSupportView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneKitSupportView.swift; sourceTree = "<group>"; };
+		9D4929AA261E1B580011E8AF /* P1_depth.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1_depth.jpg; sourceTree = "<group>"; };
+		9D4929AB261E1B580011E8AF /* P1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = P1.jpg; sourceTree = "<group>"; };
+		9D4929AC261E1B580011E8AF /* BlendModesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlendModesView.swift; sourceTree = "<group>"; };
+		9D4929AE261E1B580011E8AF /* MediaPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaPicker.swift; sourceTree = "<group>"; };
+		9D4929AF261E1B580011E8AF /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		9D4929B0261E1B580011E8AF /* NoteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoteView.swift; sourceTree = "<group>"; };
+		9D4929B1261E1B580011E8AF /* StateObjectSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateObjectSupport.swift; sourceTree = "<group>"; };
+		9D4929B2261E1B580011E8AF /* VisualEffectBlur-Mac.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VisualEffectBlur-Mac.swift"; sourceTree = "<group>"; };
+		9D4929B3261E1B580011E8AF /* DemoImages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DemoImages.swift; sourceTree = "<group>"; };
+		9D4929B4261E1B580011E8AF /* VisualEffectBlur-iOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "VisualEffectBlur-iOS.swift"; sourceTree = "<group>"; };
+		9D4929B5261E1B580011E8AF /* UIExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIExtensions.swift; sourceTree = "<group>"; };
+		9D4929B6261E1B580011E8AF /* VideoProcessorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoProcessorView.swift; sourceTree = "<group>"; };
+		9D4929B7261E1B580011E8AF /* GaussianBlurFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GaussianBlurFilterView.swift; sourceTree = "<group>"; };
+		9D4929B8261E1B580011E8AF /* CLAHEFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLAHEFilterView.swift; sourceTree = "<group>"; };
+		9D4929B9261E1B580011E8AF /* SketchBoardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SketchBoardView.swift; sourceTree = "<group>"; };
+		9D4929BA261E1B580011E8AF /* ImageFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageFilterView.swift; sourceTree = "<group>"; };
+		9D4929BB261E1B580011E8AF /* BokehEffectView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BokehEffectView.swift; sourceTree = "<group>"; };
+		9D4929BC261E1B580011E8AF /* MetalPetalExamples-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MetalPetalExamples-Bridging-Header.h"; sourceTree = "<group>"; };
+		9D4929BD261E1B580011E8AF /* MultilayerCompositingFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultilayerCompositingFilterView.swift; sourceTree = "<group>"; };
+		9D4929BE261E1B580011E8AF /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		9D4929BF261E1B580011E8AF /* CameraFilterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraFilterView.swift; sourceTree = "<group>"; };
+		9D4929C0261E1B580011E8AF /* MetalKitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalKitView.swift; sourceTree = "<group>"; };
+		9D4929C1261E1B580011E8AF /* ColorLookupTable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ColorLookupTable.png; sourceTree = "<group>"; };
+		9D4929C2261E1B580011E8AF /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		9E1DD1CD19A8033D4E0152B9 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig"; sourceTree = "<group>"; };
+		B378FBB57E99C90A34544BF4 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig"; sourceTree = "<group>"; };
+		C56F5F1EE4A42DDCD7B0159C /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9D492976261E19E80011E8AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D492A0C261E1D320011E8AF /* VideoIO in Frameworks */,
+				DC1829C9C2ED99B005622C45 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D49297E261E19E80011E8AF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D492A10261E1D420011E8AF /* VideoIO in Frameworks */,
+				2AF4F087EEBBECD071A474BA /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4D37F1B66F9F6B8D6F99813C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				33BF35C8DC0C16F75B3F1984 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework */,
+				32F118E951611EE75B4F2801 /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		69883E59A7CC7DCAD117F9C0 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				06FD16DA7001A42C3776E095 /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).debug.xcconfig */,
+				C56F5F1EE4A42DDCD7B0159C /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig */,
+				B378FBB57E99C90A34544BF4 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig */,
+				9E1DD1CD19A8033D4E0152B9 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		9D49296C261E19E70011E8AF = {
+			isa = PBXGroup;
+			children = (
+				9D492996261E1A140011E8AF /* MetalPetalExamples */,
+				9D49297A261E19E80011E8AF /* Products */,
+				69883E59A7CC7DCAD117F9C0 /* Pods */,
+				4D37F1B66F9F6B8D6F99813C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		9D492971261E19E70011E8AF /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				9D492972261E19E70011E8AF /* MetalPetalExamplesApp.swift */,
+				9D4929BE261E1B580011E8AF /* HomeView.swift */,
+				9D4929A7261E1B580011E8AF /* SimpleImageFilterView.swift */,
+				9D4929BA261E1B580011E8AF /* ImageFilterView.swift */,
+				9D4929BF261E1B580011E8AF /* CameraFilterView.swift */,
+				9D4929B6261E1B580011E8AF /* VideoProcessorView.swift */,
+				9D4929AC261E1B580011E8AF /* BlendModesView.swift */,
+				9D4929BB261E1B580011E8AF /* BokehEffectView.swift */,
+				9D4929B8261E1B580011E8AF /* CLAHEFilterView.swift */,
+				9D4929B7261E1B580011E8AF /* GaussianBlurFilterView.swift */,
+				9D4929BD261E1B580011E8AF /* MultilayerCompositingFilterView.swift */,
+				9D4929B9261E1B580011E8AF /* SketchBoardView.swift */,
+				9D4929A9261E1B580011E8AF /* SceneKitSupportView.swift */,
+				9D4929A4261E1B580011E8AF /* BouncingBallsView.swift */,
+				9D4929C0261E1B580011E8AF /* MetalKitView.swift */,
+				9D4929A8261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift */,
+				9D4929A5261E1B580011E8AF /* ShaderTypes.h */,
+				9D4929A6261E1B580011E8AF /* Shaders.metal */,
+				9D4929BC261E1B580011E8AF /* MetalPetalExamples-Bridging-Header.h */,
+				9D4929AD261E1B580011E8AF /* Supporting Types */,
+				9D4929FF261E1BD00011E8AF /* Resources */,
+				9D492974261E19E80011E8AF /* Assets.xcassets */,
+				9D4929C2261E1B580011E8AF /* art.scnassets */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		9D49297A261E19E80011E8AF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9D492979261E19E80011E8AF /* MetalPetalExamples.app */,
+				9D492981261E19E80011E8AF /* MetalPetalExamples.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9D49297B261E19E80011E8AF /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				9D49297C261E19E80011E8AF /* Info.plist */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		9D492982261E19E80011E8AF /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				9D492983261E19E80011E8AF /* Info.plist */,
+				9D492984261E19E80011E8AF /* macOS.entitlements */,
+			);
+			path = macOS;
+			sourceTree = "<group>";
+		};
+		9D492996261E1A140011E8AF /* MetalPetalExamples */ = {
+			isa = PBXGroup;
+			children = (
+				9D492971261E19E70011E8AF /* Shared */,
+				9D49297B261E19E80011E8AF /* iOS */,
+				9D492982261E19E80011E8AF /* macOS */,
+			);
+			path = MetalPetalExamples;
+			sourceTree = "<group>";
+		};
+		9D4929AD261E1B580011E8AF /* Supporting Types */ = {
+			isa = PBXGroup;
+			children = (
+				9D4929AF261E1B580011E8AF /* Error.swift */,
+				9D4929AE261E1B580011E8AF /* MediaPicker.swift */,
+				9D4929B0261E1B580011E8AF /* NoteView.swift */,
+				9D4929B1261E1B580011E8AF /* StateObjectSupport.swift */,
+				9D4929B3261E1B580011E8AF /* DemoImages.swift */,
+				9D4929B5261E1B580011E8AF /* UIExtensions.swift */,
+				9D4929B2261E1B580011E8AF /* VisualEffectBlur-Mac.swift */,
+				9D4929B4261E1B580011E8AF /* VisualEffectBlur-iOS.swift */,
+			);
+			path = "Supporting Types";
+			sourceTree = "<group>";
+		};
+		9D4929FF261E1BD00011E8AF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9D4929C1261E1B580011E8AF /* ColorLookupTable.png */,
+				9D4929AA261E1B580011E8AF /* P1_depth.jpg */,
+				9D4929AB261E1B580011E8AF /* P1.jpg */,
+				9D4929A3261E1B580011E8AF /* P1040808.jpg */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9D492978261E19E80011E8AF /* MetalPetalExamples (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D49298D261E19E80011E8AF /* Build configuration list for PBXNativeTarget "MetalPetalExamples (iOS)" */;
+			buildPhases = (
+				EC0C6A29EA15354170BE1734 /* [CP] Check Pods Manifest.lock */,
+				9D492975261E19E80011E8AF /* Sources */,
+				9D492976261E19E80011E8AF /* Frameworks */,
+				9D492977261E19E80011E8AF /* Resources */,
+				733827B47A102D9F7DD82811 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MetalPetalExamples (iOS)";
+			packageProductDependencies = (
+				9D492A0B261E1D320011E8AF /* VideoIO */,
+			);
+			productName = "MetalPetalExamples (iOS)";
+			productReference = 9D492979261E19E80011E8AF /* MetalPetalExamples.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9D492980261E19E80011E8AF /* MetalPetalExamples (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D492990261E19E80011E8AF /* Build configuration list for PBXNativeTarget "MetalPetalExamples (macOS)" */;
+			buildPhases = (
+				C7EF740E4EFACC88E36C3AA0 /* [CP] Check Pods Manifest.lock */,
+				9D49297D261E19E80011E8AF /* Sources */,
+				9D49297E261E19E80011E8AF /* Frameworks */,
+				9D49297F261E19E80011E8AF /* Resources */,
+				B6D8FC13DA05EB290D6CA644 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "MetalPetalExamples (macOS)";
+			packageProductDependencies = (
+				9D492A0F261E1D420011E8AF /* VideoIO */,
+			);
+			productName = "MetalPetalExamples (macOS)";
+			productReference = 9D492981261E19E80011E8AF /* MetalPetalExamples.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9D49296D261E19E70011E8AF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1240;
+				LastUpgradeCheck = 1240;
+				TargetAttributes = {
+					9D492978261E19E80011E8AF = {
+						CreatedOnToolsVersion = 12.4;
+					};
+					9D492980261E19E80011E8AF = {
+						CreatedOnToolsVersion = 12.4;
+					};
+				};
+			};
+			buildConfigurationList = 9D492970261E19E70011E8AF /* Build configuration list for PBXProject "MetalPetalExamples" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9D49296C261E19E70011E8AF;
+			packageReferences = (
+				9D492A0A261E1D320011E8AF /* XCRemoteSwiftPackageReference "VideoIO" */,
+			);
+			productRefGroup = 9D49297A261E19E80011E8AF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9D492978261E19E80011E8AF /* MetalPetalExamples (iOS) */,
+				9D492980261E19E80011E8AF /* MetalPetalExamples (macOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9D492977261E19E80011E8AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D4929CF261E1B580011E8AF /* P1_depth.jpg in Resources */,
+				9D4929FB261E1B580011E8AF /* art.scnassets in Resources */,
+				9D4929C3261E1B580011E8AF /* P1040808.jpg in Resources */,
+				9D4929F9261E1B580011E8AF /* ColorLookupTable.png in Resources */,
+				9D4929D1261E1B580011E8AF /* P1.jpg in Resources */,
+				9D492989261E19E80011E8AF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D49297F261E19E80011E8AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D4929D0261E1B580011E8AF /* P1_depth.jpg in Resources */,
+				9D4929FC261E1B580011E8AF /* art.scnassets in Resources */,
+				9D4929C4261E1B580011E8AF /* P1040808.jpg in Resources */,
+				9D4929FA261E1B580011E8AF /* ColorLookupTable.png in Resources */,
+				9D4929D2261E1B580011E8AF /* P1.jpg in Resources */,
+				9D49298A261E19E80011E8AF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		733827B47A102D9F7DD82811 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS)-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS)-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS)-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B6D8FC13DA05EB290D6CA644 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS)-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS)-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS)-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C7EF740E4EFACC88E36C3AA0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MetalPetalExamples-MetalPetalExamples (macOS)-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EC0C6A29EA15354170BE1734 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MetalPetalExamples-MetalPetalExamples (iOS)-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9D492975261E19E80011E8AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D4929ED261E1B580011E8AF /* ImageFilterView.swift in Sources */,
+				9D4929C9261E1B580011E8AF /* SimpleImageFilterView.swift in Sources */,
+				9D4929DD261E1B580011E8AF /* VisualEffectBlur-Mac.swift in Sources */,
+				9D4929F5261E1B580011E8AF /* CameraFilterView.swift in Sources */,
+				9D4929D3261E1B580011E8AF /* BlendModesView.swift in Sources */,
+				9D4929E3261E1B580011E8AF /* UIExtensions.swift in Sources */,
+				9D4929F1261E1B580011E8AF /* MultilayerCompositingFilterView.swift in Sources */,
+				9D4929D5261E1B580011E8AF /* MediaPicker.swift in Sources */,
+				9D4929E5261E1B580011E8AF /* VideoProcessorView.swift in Sources */,
+				9D4929C7261E1B580011E8AF /* Shaders.metal in Sources */,
+				9D4929CD261E1B580011E8AF /* SceneKitSupportView.swift in Sources */,
+				9D4929CB261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift in Sources */,
+				9D4929D9261E1B580011E8AF /* NoteView.swift in Sources */,
+				9D4929C5261E1B580011E8AF /* BouncingBallsView.swift in Sources */,
+				9D4929DB261E1B580011E8AF /* StateObjectSupport.swift in Sources */,
+				9D4929E9261E1B580011E8AF /* CLAHEFilterView.swift in Sources */,
+				9D4929EF261E1B580011E8AF /* BokehEffectView.swift in Sources */,
+				9D4929D7261E1B580011E8AF /* Error.swift in Sources */,
+				9D4929EB261E1B580011E8AF /* SketchBoardView.swift in Sources */,
+				9D4929DF261E1B580011E8AF /* DemoImages.swift in Sources */,
+				9D4929F7261E1B580011E8AF /* MetalKitView.swift in Sources */,
+				9D4929E7261E1B580011E8AF /* GaussianBlurFilterView.swift in Sources */,
+				9D492985261E19E80011E8AF /* MetalPetalExamplesApp.swift in Sources */,
+				9D4929F3261E1B580011E8AF /* HomeView.swift in Sources */,
+				9D4929E1261E1B580011E8AF /* VisualEffectBlur-iOS.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D49297D261E19E80011E8AF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9D4929EE261E1B580011E8AF /* ImageFilterView.swift in Sources */,
+				9D4929CA261E1B580011E8AF /* SimpleImageFilterView.swift in Sources */,
+				9D4929DE261E1B580011E8AF /* VisualEffectBlur-Mac.swift in Sources */,
+				9D4929F6261E1B580011E8AF /* CameraFilterView.swift in Sources */,
+				9D4929D4261E1B580011E8AF /* BlendModesView.swift in Sources */,
+				9D4929E4261E1B580011E8AF /* UIExtensions.swift in Sources */,
+				9D4929F2261E1B580011E8AF /* MultilayerCompositingFilterView.swift in Sources */,
+				9D4929D6261E1B580011E8AF /* MediaPicker.swift in Sources */,
+				9D4929E6261E1B580011E8AF /* VideoProcessorView.swift in Sources */,
+				9D4929C8261E1B580011E8AF /* Shaders.metal in Sources */,
+				9D4929CE261E1B580011E8AF /* SceneKitSupportView.swift in Sources */,
+				9D4929CC261E1B580011E8AF /* PixelBufferPoolBackedImageRenderer.swift in Sources */,
+				9D4929DA261E1B580011E8AF /* NoteView.swift in Sources */,
+				9D4929C6261E1B580011E8AF /* BouncingBallsView.swift in Sources */,
+				9D4929DC261E1B580011E8AF /* StateObjectSupport.swift in Sources */,
+				9D4929EA261E1B580011E8AF /* CLAHEFilterView.swift in Sources */,
+				9D4929F0261E1B580011E8AF /* BokehEffectView.swift in Sources */,
+				9D4929D8261E1B580011E8AF /* Error.swift in Sources */,
+				9D4929EC261E1B580011E8AF /* SketchBoardView.swift in Sources */,
+				9D4929E0261E1B580011E8AF /* DemoImages.swift in Sources */,
+				9D4929F8261E1B580011E8AF /* MetalKitView.swift in Sources */,
+				9D4929E8261E1B580011E8AF /* GaussianBlurFilterView.swift in Sources */,
+				9D492986261E19E80011E8AF /* MetalPetalExamplesApp.swift in Sources */,
+				9D4929F4261E1B580011E8AF /* HomeView.swift in Sources */,
+				9D4929E2261E1B580011E8AF /* VisualEffectBlur-iOS.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9D49298B261E19E80011E8AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				MTL_HEADER_SEARCH_PATHS = Frameworks/MetalPetal/Shaders;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalExamples/Shared/MetalPetalExamples-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		9D49298C261E19E80011E8AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				MTL_HEADER_SEARCH_PATHS = Frameworks/MetalPetal/Shaders;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "MetalPetalExamples/Shared/MetalPetalExamples-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		9D49298E261E19E80011E8AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 06FD16DA7001A42C3776E095 /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YWAZZNBUPH;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = MetalPetalExamples/iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.metalpetal.MetalPetalExamples;
+				PRODUCT_NAME = MetalPetalExamples;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9D49298F261E19E80011E8AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C56F5F1EE4A42DDCD7B0159C /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = YWAZZNBUPH;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = MetalPetalExamples/iOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.metalpetal.MetalPetalExamples;
+				PRODUCT_NAME = MetalPetalExamples;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9D492991261E19E80011E8AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B378FBB57E99C90A34544BF4 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MetalPetalExamples/macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YWAZZNBUPH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = MetalPetalExamples/macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.metalpetal.MetalPetalExamples;
+				PRODUCT_NAME = MetalPetalExamples;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		9D492992261E19E80011E8AF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9E1DD1CD19A8033D4E0152B9 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MetalPetalExamples/macOS/macOS.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = YWAZZNBUPH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = MetalPetalExamples/macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.metalpetal.MetalPetalExamples;
+				PRODUCT_NAME = MetalPetalExamples;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9D492970261E19E70011E8AF /* Build configuration list for PBXProject "MetalPetalExamples" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D49298B261E19E80011E8AF /* Debug */,
+				9D49298C261E19E80011E8AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D49298D261E19E80011E8AF /* Build configuration list for PBXNativeTarget "MetalPetalExamples (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D49298E261E19E80011E8AF /* Debug */,
+				9D49298F261E19E80011E8AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9D492990261E19E80011E8AF /* Build configuration list for PBXNativeTarget "MetalPetalExamples (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9D492991261E19E80011E8AF /* Debug */,
+				9D492992261E19E80011E8AF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9D492A0A261E1D320011E8AF /* XCRemoteSwiftPackageReference "VideoIO" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/MetalPetal/VideoIO";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9D492A0B261E1D320011E8AF /* VideoIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D492A0A261E1D320011E8AF /* XCRemoteSwiftPackageReference "VideoIO" */;
+			productName = VideoIO;
+		};
+		9D492A0F261E1D420011E8AF /* VideoIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9D492A0A261E1D320011E8AF /* XCRemoteSwiftPackageReference "VideoIO" */;
+			productName = VideoIO;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 9D49296D261E19E70011E8AF /* Project object */;
+}

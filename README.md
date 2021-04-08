@@ -473,7 +473,7 @@ func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBu
 
 ```
 
-Please refer to the `CameraViewController.swift` in the demo project for more about previewing and recording filtered live video.
+Please refer to the `CameraFilterView.swift` in the example project for more about previewing and recording filtered live video.
 
 ## Quick Look Debug Support
 
@@ -783,6 +783,6 @@ Thank you for considering contributing to MetalPetal. Please read our [Contribut
 
 MetalPetal is MIT-licensed. [LICENSE](LICENSE)
 
-The files in the `/MetalPetalDemo` directory are licensed under a separate license. [LICENSE.md](MetalPetalDemo/LICENSE.md)
+The files in the `/MetalPetalExamples` directory are licensed under a separate license. [LICENSE.md](MetalPetalExamples/LICENSE.md)
 
 Documentation is licensed CC-BY-4.0.
