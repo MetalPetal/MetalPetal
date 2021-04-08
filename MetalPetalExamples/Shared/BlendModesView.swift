@@ -41,19 +41,15 @@ struct BlendModesView: View {
                                 Text(mode.rawValue).tag(mode)
                             }
                         })
-                        .pickerStyle(MenuPickerStyle())
-                        .scaledToFit()
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 10)
-                                        .foregroundColor(Color.secondarySystemBackground))
-                        .largeControlSize()
-                        .animation(.none)
+                        .blendModesPickerStyle()
                         
                         VStack(alignment: .leading) {
                             Text("Intensity \(intensity, specifier: "%.2f")")
                             Slider(value: $intensity, in: 0...1)
-                        }.padding().background(RoundedRectangle(cornerRadius: 10)
-                                            .foregroundColor(Color.secondarySystemBackground))
+                        }
+                        .padding()
+                        .background(RoundedRectangle(cornerRadius: 10)
+                                        .foregroundColor(Color.secondarySystemBackground))
                     }.padding()
                 }
             case .failure(let error):
@@ -82,6 +78,24 @@ struct BlendModesView: View {
         return blendMode.rawValue
         #else
         return "Blend Mode"
+        #endif
+    }
+}
+
+fileprivate extension Picker {
+    func blendModesPickerStyle() -> some View {
+        #if os(iOS)
+        return self.pickerStyle(WheelPickerStyle())
+            .background(RoundedRectangle(cornerRadius: 10)
+                            .foregroundColor(Color.secondarySystemBackground))
+
+        #elseif os(macOS)
+        return self.pickerStyle(MenuPickerStyle())
+                .scaledToFit()
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 10)
+                                .foregroundColor(Color.secondarySystemBackground))
+                .largeControlSize()
         #endif
     }
 }
