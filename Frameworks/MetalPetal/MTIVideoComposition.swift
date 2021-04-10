@@ -93,8 +93,8 @@ public class MTIAsyncVideoCompositionRequestHandler {
         self.queue = queue
     }
     
-    /// Initialize a new `MTIAsyncVideoCompositionRequestHandler` object that can handle `AVAsynchronousVideoCompositionRequest` on the specified `queue` using `filter`.
-    /// If the `queue` is nil.
+    /// Initialize a new `MTIAsyncVideoCompositionRequestHandler` object that can handle `MTIMutableVideoCompositionRequest` on the specified `queue` using `filter`.
+    /// If the `queue` is nil, the `filter` block runs directly on the queue where `handle(request:)` is called.
     public init(context: MTIContext, tracks: [AVAssetTrack], on queue: DispatchQueue?, filter: @escaping (Request) throws -> MTIImage) {
         assert(tracks.count > 0)
         self.tracks = tracks
@@ -329,26 +329,22 @@ public class MTIVideoComposition {
         return self.videoComposition.copy() as! AVVideoComposition
     }
     
+    /// Creates a new instance of `MTIVideoComposition` with values and instructions suitable for presenting the video tracks of the specified asset according to its temporal and geometric properties and those of its tracks.
+    ///
+    /// The returned `MTIVideoComposition` will have instructions that respect the spatial properties and timeRanges of the specified asset's video tracks. The client can set sourceTrackIDForFrameTiming to kCMPersistentTrackID_Invalid and frameDuration to an appropriate value in order to specify the maximum output frame rate independent of the source track timing.
+    ///
+    /// It will also have the following values for its properties:
+    ///
+    /// - If the asset has exactly one video track, the original timing of the source video track will be used. If the asset has more than one video track, and the nominal frame rate of any of video tracks is known, the reciprocal of the greatest known nominalFrameRate will be used as the value of frameDuration. Otherwise, a default framerate of 30fps is used.
+    /// - If the specified asset is an instance of AVComposition, the renderSize will be set to the naturalSize of the AVComposition; otherwise the renderSize will be set to a value that encompasses all of the asset's video tracks.
+    /// - A renderScale of 1.0.
     public init(asset: AVAsset, context: MTIContext, queue: DispatchQueue?, filter: @escaping (MTIAsyncVideoCompositionRequestHandler.Request) throws -> MTIImage) {
         self.asset = asset.copy() as! AVAsset
         self.videoComposition = AVMutableVideoComposition(propertiesOf: self.asset)
-        if let presentationVideoSize = self.asset.presentationVideoSize {
-            self.renderSize = presentationVideoSize
-        }
         self.videoComposition.customVideoCompositorClass = Compositor.self
         let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video), on: queue, filter: filter)
         self.videoComposition.instructions = [Compositor.Instruction(handler: { request in
             handler.handle(request: request)
         }, timeRange: CMTimeRange(start: .zero, duration: CMTime(value: CMTimeValue.max, timescale: 48000)))]
-    }
-}
-
-extension AVAsset {
-    fileprivate var presentationVideoSize: CGSize? {
-        if let videoTrack = self.tracks(withMediaType: AVMediaType.video).first {
-            let size = videoTrack.naturalSize.applying(videoTrack.preferredTransform)
-            return CGSize(width: abs(size.width), height: abs(size.height))
-        }
-        return nil
     }
 }
