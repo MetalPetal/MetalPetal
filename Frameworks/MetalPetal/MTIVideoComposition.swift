@@ -341,6 +341,20 @@ public class MTIVideoComposition {
     public init(asset: AVAsset, context: MTIContext, queue: DispatchQueue?, filter: @escaping (MTIAsyncVideoCompositionRequestHandler.Request) throws -> MTIImage) {
         self.asset = asset.copy() as! AVAsset
         self.videoComposition = AVMutableVideoComposition(propertiesOf: self.asset)
+        
+        /// AVMutableVideoComposition's renderSize property is buggy with some assets. We calculate the renderSize here based on the documentation of `AVMutableVideoComposition(propertiesOf:)`
+        if let composition = self.asset as? AVComposition {
+            self.videoComposition.renderSize = composition.naturalSize
+        } else {
+            var renderSize: CGSize = .zero
+            for videoTrack in self.asset.tracks(withMediaType: .video) {
+                let size = videoTrack.naturalSize.applying(videoTrack.preferredTransform)
+                renderSize.width = max(renderSize.width, abs(size.width))
+                renderSize.height = max(renderSize.height, abs(size.height))
+            }
+            self.videoComposition.renderSize = renderSize
+        }
+        
         self.videoComposition.customVideoCompositorClass = Compositor.self
         let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video), on: queue, filter: filter)
         self.videoComposition.instructions = [Compositor.Instruction(handler: { request in
