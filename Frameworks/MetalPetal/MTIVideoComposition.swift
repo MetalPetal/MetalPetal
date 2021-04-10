@@ -329,36 +329,34 @@ public class MTIVideoComposition {
         return self.videoComposition.copy() as! AVVideoComposition
     }
     
-    /// Creates a new instance of `MTIVideoComposition` with values and instructions suitable for presenting the video tracks of the specified asset according to its temporal and geometric properties and those of its tracks.
+    /// Creates a new instance of `MTIVideoComposition` with values and instructions suitable for presenting and processing the video tracks of the specified asset according to its temporal and geometric properties and those of its tracks.
     ///
-    /// The returned `MTIVideoComposition` will have instructions that respect the spatial properties and timeRanges of the specified asset's video tracks. The client can set sourceTrackIDForFrameTiming to kCMPersistentTrackID_Invalid and frameDuration to an appropriate value in order to specify the maximum output frame rate independent of the source track timing.
+    /// For best performance, ensure that the duration and tracks properties of the asset are already loaded before invoking this method.
     ///
-    /// It will also have the following values for its properties:
-    ///
+    /// The created `MTIVideoComposition` will have the following values for its properties:
     /// - If the asset has exactly one video track, the original timing of the source video track will be used. If the asset has more than one video track, and the nominal frame rate of any of video tracks is known, the reciprocal of the greatest known nominalFrameRate will be used as the value of frameDuration. Otherwise, a default framerate of 30fps is used.
     /// - If the specified asset is an instance of AVComposition, the renderSize will be set to the naturalSize of the AVComposition; otherwise the renderSize will be set to a value that encompasses all of the asset's video tracks.
     /// - A renderScale of 1.0.
-    public init(asset: AVAsset, context: MTIContext, queue: DispatchQueue?, filter: @escaping (MTIAsyncVideoCompositionRequestHandler.Request) throws -> MTIImage) {
-        self.asset = asset.copy() as! AVAsset
-        self.videoComposition = AVMutableVideoComposition(propertiesOf: self.asset)
+    public init(asset inputAsset: AVAsset, context: MTIContext, queue: DispatchQueue?, filter: @escaping (MTIAsyncVideoCompositionRequestHandler.Request) throws -> MTIImage) {
+        asset = inputAsset.copy() as! AVAsset
+        videoComposition = AVMutableVideoComposition(propertiesOf: asset)
+        let videoTracks = asset.tracks(withMediaType: .video)
         
-        /// AVMutableVideoComposition's renderSize property is buggy with some assets. We calculate the renderSize here based on the documentation of `AVMutableVideoComposition(propertiesOf:)`
-        if let composition = self.asset as? AVComposition {
-            self.videoComposition.renderSize = composition.naturalSize
+        /// AVMutableVideoComposition's renderSize property is buggy with some assets. Calculate the renderSize here based on the documentation of `AVMutableVideoComposition(propertiesOf:)`
+        if let composition = asset as? AVComposition {
+            videoComposition.renderSize = composition.naturalSize
         } else {
             var renderSize: CGSize = .zero
-            for videoTrack in self.asset.tracks(withMediaType: .video) {
+            for videoTrack in videoTracks {
                 let size = videoTrack.naturalSize.applying(videoTrack.preferredTransform)
                 renderSize.width = max(renderSize.width, abs(size.width))
                 renderSize.height = max(renderSize.height, abs(size.height))
             }
-            self.videoComposition.renderSize = renderSize
+            videoComposition.renderSize = renderSize
         }
         
-        self.videoComposition.customVideoCompositorClass = Compositor.self
-        let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: asset.tracks(withMediaType: .video), on: queue, filter: filter)
-        self.videoComposition.instructions = [Compositor.Instruction(handler: { request in
-            handler.handle(request: request)
-        }, timeRange: CMTimeRange(start: .zero, duration: CMTime(value: CMTimeValue.max, timescale: 48000)))]
+        videoComposition.customVideoCompositorClass = Compositor.self
+        let handler = MTIAsyncVideoCompositionRequestHandler(context: context, tracks: videoTracks, on: queue, filter: filter)
+        videoComposition.instructions = [Compositor.Instruction(handler: handler.handle(request:), timeRange: CMTimeRange(start: .zero, duration: CMTime(value: CMTimeValue.max, timescale: 48000)))]
     }
 }
