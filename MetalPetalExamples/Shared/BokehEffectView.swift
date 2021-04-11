@@ -40,7 +40,7 @@ struct BokehEffectView: View {
             hasher.combine(id)
         }
         
-        static var all: [BokehShape] = [
+        static let all: [BokehShape] = [
             .hexagon,
             .custom("Heart", DemoImages.makeSymbolAlphaMaskImage(named: "suit.heart.fill", aspectFitIn: CGSize(width: 64, height: 64))),
             .custom("Star", DemoImages.makeSymbolAlphaMaskImage(named: "star.fill", aspectFitIn: CGSize(width: 64, height: 64))),
