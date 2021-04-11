@@ -18,9 +18,15 @@ import AppKit
 
 struct DemoImages {
     
+    private static let namedCGImageCache = NSCache<NSString, CGImage>()
+    
     static func cgImage(named name: String) -> CGImage! {
+        if let image = namedCGImageCache.object(forKey: name as NSString) {
+            return image
+        }
         let url = Bundle.main.url(forResource: name, withExtension: nil)!
         if let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil), let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) {
+            namedCGImageCache.setObject(image, forKey: name as NSString)
             return image
         }
         return nil
