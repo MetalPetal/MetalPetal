@@ -157,18 +157,17 @@ namespace metalpetal {
         if (rgb_color_space_conversion_input_has_premultiplied_alpha) {
             textureColor = unpremultiply(textureColor);
         }
-        float4 linearColor = textureColor;
         switch (rgb_color_space_conversion_input_color_space) {
             case 0:
                 //linear
                 break;
             case 1:
                 //sRGB
-                linearColor.rgb = sRGBToLinear(textureColor.rgb);
+                textureColor.rgb = sRGBToLinear(textureColor.rgb);
                 break;
             case 2:
                 //ITUR709
-                linearColor.rgb = ITUR709ToLinear(textureColor.rgb);
+                textureColor.rgb = ITUR709ToLinear(textureColor.rgb);
                 break;
         }
         switch (rgb_color_space_conversion_output_color_space) {
@@ -177,11 +176,11 @@ namespace metalpetal {
                 break;
             case 1:
                 //sRGB
-                textureColor.rgb = linearToSRGB(linearColor.rgb);
+                textureColor.rgb = linearToSRGB(textureColor.rgb);
                 break;
             case 2:
                 //ITUR709
-                textureColor.rgb = linearToITUR709(linearColor.rgb);
+                textureColor.rgb = linearToITUR709(textureColor.rgb);
                 break;
         }
         if (rgb_color_space_conversion_outputs_premultiplied_alpha) {

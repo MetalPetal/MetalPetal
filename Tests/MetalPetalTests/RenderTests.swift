@@ -40,7 +40,7 @@ final class RenderTests: XCTestCase {
         let filter = MTIBlendWithMaskFilter()
         filter.inputBackgroundImage = backgroundImage
         filter.inputImage = image
-        filter.inputMask = MTIMask(content: MTIImage(cgImage: try ImageGenerator.makeCheckboardImage(), options: [.SRGB: false], isOpaque: true), component: .red, mode: .normal)
+        filter.inputMask = MTIMask(content: MTIImage(cgImage: try ImageGenerator.makeCheckboardImage(), isOpaque: true), component: .red, mode: .normal)
         let output = filter.outputImage
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: output!)
@@ -159,7 +159,7 @@ final class RenderTests: XCTestCase {
         let inputImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 1],
             [1, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MTICoreImageUnaryFilter()
         filter.filter = ciFilter
@@ -185,7 +185,7 @@ final class RenderTests: XCTestCase {
         let inputImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 1],
             [1, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let scaledDimensions = MTITextureDimensions(cgSize: CGSize(width: inputImage.size.width * 2, height: inputImage.size.height * 2))
         let outputImage = kernel.apply(toInputImages: [inputImage], parameters: [:], outputTextureDimensions: scaledDimensions, outputPixelFormat: .unspecified)
         let context = try makeContext()
@@ -255,7 +255,7 @@ final class RenderTests: XCTestCase {
             [0, 0, 255],
             [0, 255, 255],
             [0, 255, 255],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let context = try makeContext()
         let renderResult = try context.makeCGImage(from: image)
@@ -372,7 +372,7 @@ final class RenderTests: XCTestCase {
                 XCTFail()
                 return
             }
-            let image = MTIImage(cgImage: cgImage, options: [.SRGB: false], isOpaque: true)
+            let image = MTIImage(cgImage: cgImage, isOpaque: true)
             let outputCGImage = try context.makeCGImage(from: image.oriented(o))
             XCTAssert(PixelEnumerator.monochromeImageEqual(image: outputCGImage, target: [
                 [0, 0, 0],
@@ -388,7 +388,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -413,7 +413,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -438,7 +438,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -463,7 +463,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -492,7 +492,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 128],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let lookupFilter = MTIColorLookupFilter()
         lookupFilter.inputImage = image
@@ -517,7 +517,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -544,15 +544,15 @@ final class RenderTests: XCTestCase {
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [128, 128],
             [128, 128],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let mask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [255, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let layerContent = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -576,16 +576,16 @@ final class RenderTests: XCTestCase {
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [128, 128],
             [128, 128],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let compositingMask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 255],
             [0, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let layerContent = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -614,11 +614,11 @@ final class RenderTests: XCTestCase {
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 64],
             [64, 64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let mask = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [255, 0]
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -643,7 +643,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -689,12 +689,12 @@ final class RenderTests: XCTestCase {
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let overlayImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 255],
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -874,7 +874,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 0],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -975,7 +975,7 @@ final class RenderTests: XCTestCase {
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [255, 255],
             [0, 255],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter1 = MTIColorInvertFilter()
         filter1.inputImage = image
@@ -1198,7 +1198,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
@@ -1236,10 +1236,10 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let overlay = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 32],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
@@ -1265,10 +1265,10 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64, 64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let overlay = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 32],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let filter = MultilayerCompositingFilter()
         filter.inputBackgroundImage = image
         filter.layers = [MultilayerCompositingFilter.Layer(content: overlay)
@@ -1294,7 +1294,7 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let overlay = MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1))
         let blendFilter = MTIBlendFilter(blendMode: blendMode)
         blendFilter.inputBackgroundImage = image
@@ -1340,10 +1340,10 @@ final class RenderTests: XCTestCase {
         
         let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [64],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let overlay = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
             [0, 32],
-        ]), options: [.SRGB: false], isOpaque: true)
+        ]), isOpaque: true)
         let blendFilter = MTIBlendFilter(blendMode: blendMode)
         blendFilter.inputBackgroundImage = image
         blendFilter.inputImage = overlay
@@ -1386,7 +1386,7 @@ final class RenderTests: XCTestCase {
             
             let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
                 [64],
-            ]), options: [.SRGB: false], isOpaque: true)
+            ]), isOpaque: true)
             let overlay = MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1))
             let blendFilter = MTIBlendFilter(blendMode: blendMode)
             blendFilter.inputBackgroundImage = image
@@ -1413,7 +1413,7 @@ final class RenderTests: XCTestCase {
             
             let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
                 [64],
-            ]), options: [.SRGB: false], isOpaque: true)
+            ]), isOpaque: true)
             let overlay = MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1))
             let blendFilter = MTIBlendFilter(blendMode: blendMode)
             blendFilter.inputBackgroundImage = image
@@ -1441,7 +1441,7 @@ final class RenderTests: XCTestCase {
             
             let image = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
                 [64],
-            ]), options: [.SRGB: false], isOpaque: true)
+            ]), isOpaque: true)
             let overlay = MTIImage(color: MTIColor(red: 64/255.0, green: 0, blue: 0, alpha: 0), sRGB: false, size: CGSize(width: 1, height: 1))
             let blendFilter = MTIBlendFilter(blendMode: blendMode)
             blendFilter.inputBackgroundImage = image
@@ -1791,6 +1791,103 @@ final class RenderTests: XCTestCase {
                     XCTAssert(pixels[i + 2] == 0) //r
                     XCTAssert(pixels[i + 3] == 255) //a
                 }
+            }
+        }
+    }
+    
+    func testLinearToSRGB() throws {
+        let inputValue: Float = 128.0/255.0
+        let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = inputValue
+                let value = UInt8(round(
+                    ((c < 0.0031308) ? (12.92 * c) : (1.055 * pow(c, 1.0/2.4) - 0.055)) * 255.0
+                ))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testLinearToSRGB_outputPremultipliedAlpha() throws {
+        let inputValue: Float = 128.0/255.0
+        let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .premultiplied, pixelFormat: .unspecified)
+        XCTAssert(outputImage.alphaType == .premultiplied)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = inputValue
+                let value = UInt8(round(
+                    ((c < 0.0031308) ? (12.92 * c) : (1.055 * pow(c, 1.0/2.4) - 0.055)) * 255.0 * 0.5
+                ))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 128)
+            }
+        }
+    }
+    
+    func testLinearToSRGB_inputPremultipliedAlpha() throws {
+        let image = MTIImage(bitmapData: Data([64,64,64,128]), width: 1, height: 1, bytesPerRow: 4, pixelFormat: .bgra8Unorm, alphaType: .premultiplied)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        XCTAssert(outputImage.alphaType == .nonPremultiplied)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = 128.0/255.0
+                let value = UInt8(round(
+                    ((c < 0.0031308) ? (12.92 * c) : (1.055 * pow(c, 1.0/2.4) - 0.055)) * 255.0 * 0.5 // * 0.5 because cgImage has premultiplied alpha
+                ))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 128)
+            }
+        }
+    }
+    
+    func testSRGBToLinear() throws {
+        let inputValue: Float = 128.0/255.0
+        let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .sRGB, to: .linear, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = inputValue
+                let value = UInt8(round((c <= 0.04045) ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4) * 255.0))
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testLinearToLinear() throws {
+        let inputValue: Float = 128.0/255.0
+        let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .linear, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = inputValue
+                let value = UInt8(c * 255.0)
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testSRGBToSRGB() throws {
+        let inputValue: Float = 128.0/255.0
+        let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .sRGB, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                let c = inputValue
+                let value = UInt8(c * 255.0)
+                XCTAssert(pixel.r == value && pixel.g == value && pixel.b == value && pixel.a == 255)
             }
         }
     }
