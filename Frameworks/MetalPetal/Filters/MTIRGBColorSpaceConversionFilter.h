@@ -41,4 +41,27 @@ __attribute__((objc_subclassing_restricted))
 
 @end
 
+typedef NS_ENUM(NSInteger, MTIRGBColorSpace) {
+    MTIRGBColorSpaceLinear = 0,
+    MTIRGBColorSpaceSRGB NS_SWIFT_NAME(sRGB) = 1,
+    MTIRGBColorSpaceITUR709 NS_SWIFT_NAME(itur709) = 2,
+};
+
+__attribute__((objc_subclassing_restricted))
+@interface MTIRGBColorSpaceConversionFilter : NSObject <MTIUnaryFilter>
+
+@property (nonatomic) MTIRGBColorSpace inputColorSpace;
+@property (nonatomic) MTIRGBColorSpace outputColorSpace;
+
+@property (nonatomic) MTIAlphaType outputAlphaType;
+
++ (MTIImage *)imageByConvertingImage:(MTIImage *)image
+                      fromColorSpace:(MTIRGBColorSpace)inputColorSpace
+                        toColorSpace:(MTIRGBColorSpace)outputColorSpace
+                     outputAlphaType:(MTIAlphaType)outputAlphaType
+                   outputPixelFormat:(MTLPixelFormat)pixelFormat
+NS_SWIFT_NAME(convert(_:from:to:alphaType:pixelFormat:));
+
+@end
+
 NS_ASSUME_NONNULL_END

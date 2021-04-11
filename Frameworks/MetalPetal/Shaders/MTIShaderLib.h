@@ -107,15 +107,28 @@ namespace metalpetal {
     
     template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
     METAL_FUNC T ITUR709ToLinear(T c) {
-#if __METAL_IOS__
+        #if __METAL_IOS__
         return powr(c, 1.961);
-#else
+        #else
         return c < 0.081 ? 0.222 * c : powr(0.91 * c + 0.09, 2.222);
-#endif
+        #endif
     }
     
     METAL_FUNC float3 ITUR709ToLinear(float3 c) {
         return float3(ITUR709ToLinear(c.r), ITUR709ToLinear(c.g), ITUR709ToLinear(c.b));
+    }
+
+    template <typename T, typename _E = typename enable_if<is_floating_point<T>::value>::type>
+    METAL_FUNC T linearToITUR709(T c) {
+        #if __METAL_IOS__
+        return powr(c, 1.0/1.961);
+        #else
+        return c < 0.018 ? (4.5 * c) : (1.099 * powr(c, 1.0/2.222) - 0.099);
+        #endif
+    }
+    
+    METAL_FUNC float3 linearToITUR709(float3 c) {
+        return float3(linearToITUR709(c.r), linearToITUR709(c.g), linearToITUR709(c.b));
     }
     
     METAL_FUNC float4 unpremultiply(float4 s) {

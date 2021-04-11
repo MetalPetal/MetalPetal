@@ -149,7 +149,49 @@ namespace metalpetal {
         textureColor.rgb = linearToSRGB(textureColor.rgb);
         return textureColor;
     }
-
+    
+    fragment float4 rgbColorSpaceConvert(VertexOut vertexIn [[ stage_in ]],
+                                         texture2d<float, access::sample> colorTexture [[ texture(0) ]],
+                                         sampler colorSampler [[ sampler(0) ]]) {
+        float4 textureColor = colorTexture.sample(colorSampler, vertexIn.textureCoordinate);
+        if (rgb_color_space_conversion_input_has_premultiplied_alpha) {
+            textureColor = unpremultiply(textureColor);
+        }
+        float4 linearColor = textureColor;
+        switch (rgb_color_space_conversion_input_color_space) {
+            case 0:
+                //linear
+                break;
+            case 1:
+                //sRGB
+                linearColor.rgb = sRGBToLinear(textureColor.rgb);
+                break;
+            case 2:
+                //ITUR709
+                linearColor.rgb = ITUR709ToLinear(textureColor.rgb);
+                break;
+        }
+        switch (rgb_color_space_conversion_output_color_space) {
+            case 0:
+                //linear
+                break;
+            case 1:
+                //sRGB
+                textureColor.rgb = linearToSRGB(linearColor.rgb);
+                break;
+            case 2:
+                //ITUR709
+                textureColor.rgb = linearToITUR709(linearColor.rgb);
+                break;
+        }
+        if (rgb_color_space_conversion_outputs_premultiplied_alpha) {
+            textureColor = premultiply(textureColor);
+        } else if (rgb_color_space_conversion_outputs_opaque_image) {
+            textureColor.a = 1.0;
+        }
+        return textureColor;
+    }
+    
     fragment float4 colorMatrixProjection(
                                      VertexOut vertexIn [[ stage_in ]],
                                      texture2d<float, access::sample> colorTexture [[ texture(0) ]],
