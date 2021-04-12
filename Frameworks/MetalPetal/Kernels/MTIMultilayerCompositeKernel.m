@@ -85,7 +85,7 @@ __attribute__((objc_subclassing_restricted))
 
 @implementation MTILayerRenderPipelineKey
 
-- (instancetype)initLayer:(MTILayer *)layer {
+- (instancetype)initWithLayer:(MTILayer *)layer {
     if (self = [super init]) {
         _blendMode = layer.blendMode;
         _contentHasPremultipliedAlpha = layer.content.alphaType == MTIAlphaTypePremultiplied;
@@ -103,8 +103,7 @@ __attribute__((objc_subclassing_restricted))
 - (BOOL)isEqual:(id)object {
     if ([object isKindOfClass:[MTILayerRenderPipelineKey class]]) {
         MTILayerRenderPipelineKey *other = object;
-        return
-        [other->_blendMode isEqualToString:_blendMode] &&
+        return [other->_blendMode isEqualToString:_blendMode] &&
         other->_contentHasPremultipliedAlpha == _contentHasPremultipliedAlpha &&
         other->_hasContentMask == _hasContentMask &&
         other->_hasCompositingMask == _hasCompositingMask &&
@@ -266,7 +265,7 @@ __attribute__((objc_subclassing_restricted))
 }
 
 - (MTIRenderPipeline *)renderPipelineForLayer:(MTILayer *)layer error:(NSError * __autoreleasing *)inOutError {
-    MTILayerRenderPipelineKey *key = [[MTILayerRenderPipelineKey alloc] initLayer:layer];
+    MTILayerRenderPipelineKey *key = [[MTILayerRenderPipelineKey alloc] initWithLayer:layer];
     [self.layerPipelineCacheLock lock];
     @MTI_DEFER {
         [self.layerPipelineCacheLock unlock];
@@ -333,34 +332,6 @@ __attribute__((objc_subclassing_restricted))
 
 @end
 
-@interface MTIMultilayerCompositingLayerVertices : NSObject<MTIGeometry> {
-    MTIMultilayerCompositingLayerVertex _vertices[4];
-}
-@end
-
-@implementation MTIMultilayerCompositingLayerVertices
-
-- (instancetype)initWithVertices:(MTIMultilayerCompositingLayerVertex [4])vertices {
-    if (self = [super init]) {
-        _vertices[0] = vertices[0];
-        _vertices[1] = vertices[1];
-        _vertices[2] = vertices[2];
-        _vertices[3] = vertices[3];
-    }
-    return self;
-}
-
-- (nonnull id)copyWithZone:(nullable NSZone *)zone {
-    return self;
-}
-
-- (void)encodeDrawCallWithCommandEncoder:(nonnull id<MTLRenderCommandEncoder>)commandEncoder context:(nonnull id<MTIGeometryRenderingContext>)context {
-    [commandEncoder setVertexBytes:_vertices length:sizeof(_vertices) atIndex:0];
-    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
-}
-
-@end
-
 __attribute__((objc_subclassing_restricted))
 @interface MTIMultilayerCompositingRecipe : NSObject <MTIImagePromise>
 
@@ -381,7 +352,7 @@ __attribute__((objc_subclassing_restricted))
 @synthesize dependencies = _dependencies;
 @synthesize alphaType = _alphaType;
 
-- (id<MTIGeometry>)verticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion flipOptions:(MTILayerFlipOptions)flipOptions {
+- (void)drawVerticesForRect:(CGRect)rect contentRegion:(CGRect)contentRegion flipOptions:(MTILayerFlipOptions)flipOptions commandEncoder:(id<MTLRenderCommandEncoder>)commandEncoder {
     CGFloat l = CGRectGetMinX(rect);
     CGFloat r = CGRectGetMaxX(rect);
     CGFloat t = CGRectGetMinY(rect);
@@ -402,12 +373,16 @@ __attribute__((objc_subclassing_restricted))
         contentL = contentR;
         contentR = temp;
     }
-    return [[MTIMultilayerCompositingLayerVertices alloc] initWithVertices:(MTIMultilayerCompositingLayerVertex [4]){
+    
+    MTIMultilayerCompositingLayerVertex vertices[4] = {
         { .position = {l, t, 0, 1} , .textureCoordinate = { contentL, contentT }, .positionInLayer = { 0, 1 } },
         { .position = {r, t, 0, 1} , .textureCoordinate = { contentR, contentT }, .positionInLayer = { 1, 1 } },
         { .position = {l, b, 0, 1} , .textureCoordinate = { contentL, contentB }, .positionInLayer = { 0, 0 } },
         { .position = {r, b, 0, 1} , .textureCoordinate = { contentR, contentB }, .positionInLayer = { 1, 0 } }
-    }];
+    };
+ 
+    [commandEncoder setVertexBytes:vertices length:sizeof(vertices) atIndex:0];
+    [commandEncoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:4];
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError *__autoreleasing  _Nullable *)error {
@@ -497,17 +472,12 @@ __attribute__((objc_subclassing_restricted))
     [MTIVertices.fullViewportSquareVertices encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
     
     //render layers
-    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
-        MTILayer *layer = self.layers[index];
-        
+    CGSize backgroundImageSize = self.backgroundImage.size;
+    for (MTILayer *layer in self.layers) {
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         
-        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
-        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
-        
-        id<MTIGeometry> geometry = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
-                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
-                                          flipOptions:layer.contentFlipOptions];
+        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:backgroundImageSize];
+        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:backgroundImageSize];
         
         MTIRenderPipeline *renderPipeline = [kernelState renderPipelineForLayer:layer error:&error];
         if (error) {
@@ -522,13 +492,13 @@ __attribute__((objc_subclassing_restricted))
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
-        transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, -(layerPixelPosition.y - self.backgroundImage.size.height/2.0), 0);
+        transform = CATransform3DTranslate(transform, layerPixelPosition.x - backgroundImageSize.width/2.0, -(layerPixelPosition.y - backgroundImageSize.height/2.0), 0);
         transform = CATransform3DRotate(transform, -layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
         //orthographicMatrix
-        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-backgroundImageSize.width/2.0, backgroundImageSize.width/2.0, -backgroundImageSize.height/2.0, backgroundImageSize.height/2.0, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
@@ -548,7 +518,7 @@ __attribute__((objc_subclassing_restricted))
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;
-        parameters.canvasSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
+        parameters.canvasSize = simd_make_float2(backgroundImageSize.width, backgroundImageSize.height);
         parameters.opacity = layer.opacity;
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.compositingMaskUsesOneMinusValue = layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue;
@@ -559,7 +529,10 @@ __attribute__((objc_subclassing_restricted))
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        [geometry encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
+        [self drawVerticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
+                    contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
+                      flipOptions:layer.contentFlipOptions
+                   commandEncoder:commandEncoder];
     }
     
     MTIRenderPipeline *outputAlphaTypeRenderPipeline = nil;
@@ -682,7 +655,8 @@ __attribute__((objc_subclassing_restricted))
     };
     
     //render layers
-    for (NSUInteger index = 0; index < self.layers.count; index += 1) {
+    CGSize backgroundImageSize = self.backgroundImage.size;
+    for (MTILayer *layer in self.layers) {
         prepareCommandEncoderForNextDraw();
         if (!commandEncoder) {
             if (inOutError) {
@@ -690,8 +664,6 @@ __attribute__((objc_subclassing_restricted))
             }
             return nil;
         }
-        
-        MTILayer *layer = self.layers[index];
         
         if (layer.compositingMask) {
             NSParameterAssert(layer.compositingMask.content.alphaType != MTIAlphaTypeUnknown);
@@ -707,12 +679,8 @@ __attribute__((objc_subclassing_restricted))
         
         NSParameterAssert(layer.content.alphaType != MTIAlphaTypeUnknown);
         
-        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:self.backgroundImage.size];
-        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:self.backgroundImage.size];
-        
-        id<MTIGeometry> geometry = [self verticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
-                                        contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
-                                          flipOptions:layer.contentFlipOptions];
+        CGSize layerPixelSize = [layer sizeInPixelForBackgroundSize:backgroundImageSize];
+        CGPoint layerPixelPosition = [layer positionInPixelForBackgroundSize:backgroundImageSize];
         
         MTIRenderPipeline *renderPipeline = [kernelState renderPipelineForLayer:layer error:&error];
         if (error) {
@@ -726,13 +694,13 @@ __attribute__((objc_subclassing_restricted))
         
         //transformMatrix
         CATransform3D transform = CATransform3DIdentity;
-        transform = CATransform3DTranslate(transform, layerPixelPosition.x - self.backgroundImage.size.width/2.0, -(layerPixelPosition.y - self.backgroundImage.size.height/2.0), 0);
+        transform = CATransform3DTranslate(transform, layerPixelPosition.x - backgroundImageSize.width/2.0, -(layerPixelPosition.y - backgroundImageSize.height/2.0), 0);
         transform = CATransform3DRotate(transform, -layer.rotation, 0, 0, 1);
         simd_float4x4 transformMatrix = MTIMakeTransformMatrixFromCATransform3D(transform);
         [commandEncoder setVertexBytes:&transformMatrix length:sizeof(transformMatrix) atIndex:1];
         
         //orthographicMatrix
-        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-self.backgroundImage.size.width/2.0, self.backgroundImage.size.width/2.0, -self.backgroundImage.size.height/2.0, self.backgroundImage.size.height/2.0, -1, 1);
+        simd_float4x4 orthographicMatrix = MTIMakeOrthographicMatrix(-backgroundImageSize.width/2.0, backgroundImageSize.width/2.0, -backgroundImageSize.height/2.0, backgroundImageSize.height/2.0, -1, 1);
         [commandEncoder setVertexBytes:&orthographicMatrix length:sizeof(orthographicMatrix) atIndex:2];
         
         [commandEncoder setFragmentTexture:[renderingContext resolvedTextureForImage:layer.content] atIndex:0];
@@ -742,7 +710,7 @@ __attribute__((objc_subclassing_restricted))
         
         //parameters
         MTIMultilayerCompositingLayerShadingParameters parameters;
-        parameters.canvasSize = simd_make_float2(self.backgroundImage.size.width, self.backgroundImage.size.height);
+        parameters.canvasSize = simd_make_float2(backgroundImageSize.width, backgroundImageSize.height);
         parameters.opacity = layer.opacity;
         parameters.compositingMaskComponent = (int)layer.compositingMask.component;
         parameters.compositingMaskUsesOneMinusValue = layer.compositingMask.mode == MTIMaskModeOneMinusMaskValue;
@@ -753,7 +721,10 @@ __attribute__((objc_subclassing_restricted))
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
-        [geometry encodeDrawCallWithCommandEncoder:commandEncoder context:renderPipeline];
+        [self drawVerticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
+                    contentRegion:CGRectMake(layer.contentRegion.origin.x/layer.content.size.width, layer.contentRegion.origin.y/layer.content.size.height, layer.contentRegion.size.width/layer.content.size.width, layer.contentRegion.size.height/layer.content.size.height)
+                      flipOptions:layer.contentFlipOptions
+                   commandEncoder:commandEncoder];
     }
     
     MTIRenderPipeline *outputAlphaTypeRenderPipeline = nil;
