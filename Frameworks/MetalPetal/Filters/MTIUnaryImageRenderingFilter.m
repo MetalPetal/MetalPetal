@@ -11,6 +11,7 @@
 #import "MTIImage.h"
 #import "MTIRenderPassOutputDescriptor.h"
 #import "MTIVertex.h"
+#import "MTILock.h"
 
 @implementation MTIUnaryImageRenderingFilter
 @synthesize outputPixelFormat = _outputPixelFormat;
@@ -18,11 +19,11 @@
 
 + (MTIRenderPipelineKernel *)kernel {
     static NSMutableDictionary *kernels;
-    static NSLock *kernelsLock;
+    static id<NSLocking> kernelsLock;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernels = [NSMutableDictionary dictionary];
-        kernelsLock = [[NSLock alloc] init];
+        kernelsLock = MTILockCreate();
     });
     
     MTIFunctionDescriptor *fragmentFunctionDescriptor = [self fragmentFunctionDescriptor];

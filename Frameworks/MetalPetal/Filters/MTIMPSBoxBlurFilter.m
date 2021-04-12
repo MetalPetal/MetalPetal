@@ -8,6 +8,7 @@
 #import "MTIMPSBoxBlurFilter.h"
 #import "MTIMPSKernel.h"
 #import "MTIImage.h"
+#import "MTILock.h"
 #import <MetalPerformanceShaders/MetalPerformanceShaders.h>
 
 @implementation MTIMPSBoxBlurFilter
@@ -16,15 +17,16 @@
 
 + (MTIMPSKernel *)kernelWithSize:(simd_int2)size {
     static NSMutableDictionary *kernels;
-    static NSLock *kernelsLock;
+    static id<NSLocking> kernelsLock;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernels = [NSMutableDictionary dictionary];
-        kernelsLock = [[NSLock alloc] init];
+        kernelsLock = MTILockCreate();
     });
-    
-    [kernelsLock lock];
+
     id<NSCopying> key = @[@(size.x),@(size.y)];
+
+    [kernelsLock lock];
     MTIMPSKernel *kernel = kernels[key];
     if (!kernel) {
         kernel = [[MTIMPSKernel alloc] initWithMPSKernelBuilder:^MPSKernel * _Nonnull(id<MTLDevice>  _Nonnull device) {

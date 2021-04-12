@@ -10,6 +10,7 @@
 #import "MTIImage.h"
 #import "MTIRenderPipelineKernel.h"
 #import "MTIHasher.h"
+#import "MTILock.h"
 
 @interface MTIBlendFilterKernelKey : NSObject <NSCopying>
 @property (nonatomic, copy, readonly) MTIBlendMode mode;
@@ -76,11 +77,11 @@
                                                                  sourceAlphaType:sourceAlphaType
                                                                  outputAlphaType:outputAlphaType];
     static NSMutableDictionary *kernels;
-    static NSLock *kernelsLock;
+    static id<NSLocking> kernelsLock;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         kernels = [NSMutableDictionary dictionary];
-        kernelsLock = [[NSLock alloc] init];
+        kernelsLock = MTILockCreate();
     });
     
     [kernelsLock lock];
