@@ -27,12 +27,4 @@ __attribute__((objc_subclassing_restricted))
 
 @end
 
-/// Unpremultiply alpha and convert to linear RGB
-__attribute__((objc_subclassing_restricted))
-@interface MTIUnpremultiplyAlphaWithSRGBToLinearRGBFilter : MTIUnaryImageRenderingFilter
-
-+ (MTIImage *)imageByProcessingImage:(MTIImage *)image;
-
-@end
-
 NS_ASSUME_NONNULL_END
