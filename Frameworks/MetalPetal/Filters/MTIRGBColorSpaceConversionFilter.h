@@ -59,8 +59,7 @@ __attribute__((objc_subclassing_restricted))
                       fromColorSpace:(MTIRGBColorSpace)inputColorSpace
                         toColorSpace:(MTIRGBColorSpace)outputColorSpace
                      outputAlphaType:(MTIAlphaType)outputAlphaType
-                   outputPixelFormat:(MTLPixelFormat)pixelFormat
-NS_SWIFT_NAME(convert(_:from:to:alphaType:pixelFormat:));
+                   outputPixelFormat:(MTLPixelFormat)pixelFormat NS_REFINED_FOR_SWIFT;
 
 @end
 
