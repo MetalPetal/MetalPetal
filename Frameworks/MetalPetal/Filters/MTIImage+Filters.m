@@ -21,11 +21,11 @@
 }
 
 - (MTIImage *)imageByPremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat {
-    return [[MTIPremultiplyAlphaFilter imageByProcessingImage:[self imageWithCachePolicy:MTIImageCachePolicyTransient] withInputParameters:@{} outputPixelFormat:pixelFormat] imageWithCachePolicy:self.cachePolicy];
+    return [[MTIPremultiplyAlphaFilter imageByProcessingImage:[self imageWithCachePolicy:MTIImageCachePolicyTransient] outputPixelFormat:pixelFormat] imageWithCachePolicy:self.cachePolicy];
 }
 
 - (MTIImage *)imageByUnpremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat {
-    return [[MTIUnpremultiplyAlphaFilter imageByProcessingImage:[self imageWithCachePolicy:MTIImageCachePolicyTransient] withInputParameters:@{} outputPixelFormat:pixelFormat] imageWithCachePolicy:self.cachePolicy];
+    return [[MTIUnpremultiplyAlphaFilter imageByProcessingImage:[self imageWithCachePolicy:MTIImageCachePolicyTransient] outputPixelFormat:pixelFormat] imageWithCachePolicy:self.cachePolicy];
 }
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation {

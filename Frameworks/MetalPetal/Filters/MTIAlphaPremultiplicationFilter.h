@@ -6,24 +6,34 @@
 //
 
 #if __has_include(<MetalPetal/MetalPetal.h>)
-#import <MetalPetal/MTIUnaryImageRenderingFilter.h>
+#import <MetalPetal/MTIFilter.h>
 #else
-#import "MTIUnaryImageRenderingFilter.h"
+#import "MTIFilter.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MTIRenderPipelineKernel;
+
 __attribute__((objc_subclassing_restricted))
-@interface MTIUnpremultiplyAlphaFilter : MTIUnaryImageRenderingFilter
+@interface MTIUnpremultiplyAlphaFilter : NSObject <MTIUnaryFilter>
+
+@property (nonatomic, class, strong, readonly) MTIRenderPipelineKernel *kernel;
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image;
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image outputPixelFormat:(MTLPixelFormat)pixelFormat;
 
 @end
 
 __attribute__((objc_subclassing_restricted))
-@interface MTIPremultiplyAlphaFilter : MTIUnaryImageRenderingFilter
+@interface MTIPremultiplyAlphaFilter : NSObject <MTIUnaryFilter>
+
+@property (nonatomic, class, strong, readonly) MTIRenderPipelineKernel *kernel;
 
 + (MTIImage *)imageByProcessingImage:(MTIImage *)image;
+
++ (MTIImage *)imageByProcessingImage:(MTIImage *)image outputPixelFormat:(MTLPixelFormat)pixelFormat;
 
 @end
 

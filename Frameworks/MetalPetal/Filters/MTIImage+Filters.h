@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (MTIImage *)imageByPremultiplyingAlpha;
 
-- (MTIImage *)imageByUnpremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(unpremultiplyingAlpha(pixelFormat:));
+- (MTIImage *)imageByUnpremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(unpremultiplyingAlpha(outputPixelFormat:));
 
-- (MTIImage *)imageByPremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(premultiplyingAlpha(pixelFormat:));
+- (MTIImage *)imageByPremultiplyingAlphaWithPixelFormat:(MTLPixelFormat)pixelFormat NS_SWIFT_NAME(premultiplyingAlpha(outputPixelFormat:));
 
 - (MTIImage *)imageByApplyingCGOrientation:(CGImagePropertyOrientation)orientation NS_SWIFT_NAME(oriented(_:));
 
