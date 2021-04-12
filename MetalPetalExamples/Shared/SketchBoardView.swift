@@ -252,7 +252,10 @@ struct SketchBoardView: View {
     }
     
     struct BrushColorButton: View {
+        
         static let preferredSize: CGFloat = 36
+        static let dynamicBrushIcon: CGImage = RGUVB1GradientImage.makeCGImage(size: CGSize(width: BrushColorButton.preferredSize * 2, height: BrushColorButton.preferredSize * 2))
+        
         private let value: Binding<BrushColor>
         private let color: BrushColor
         private let isSelected: Bool
@@ -274,7 +277,7 @@ struct SketchBoardView: View {
                                                    blue: Double(c.b),
                                                    opacity: Double(c.a)))
                 case .dynamic:
-                    Image(cgImage: RGUVB1GradientImage.makeCGImage(size: CGSize(width: BrushColorButton.preferredSize * 2, height: BrushColorButton.preferredSize * 2))).resizable()
+                    Image(cgImage: BrushColorButton.dynamicBrushIcon).resizable()
                 case .eraser:
                     Image(systemName: "square.tophalf.fill").resizable().padding(10).background(Color(.sRGB, white: 1, opacity: 1))
                 }
