@@ -25,6 +25,11 @@ An image processing framework based on Metal.
         - [MTIKernel](#mtikernel)
     - [Alpha Type Handling](#alpha-type-handling)
         - [Alpha Handling of Built-in Filters](#alpha-handling-of-built-in-filters)
+    - [Color Spaces](#color-spaces)
+    - [Color Spaces for `CVPixelBuffer`s](#color-spaces-for-cvpixelbuffers)
+    - [Color Spaces for Inputs](#color-spaces-for-inputs)
+    - [Color Spaces for Outputs](#color-spaces-for-outputs)
+    - [Color Space Conversions](#color-space-conversions)
     - [Optimizations](#optimizations)
     - [Concurrency Considerations](#concurrency-considerations)
     - [Advantages over Core Image](#advantages-over-core-image)
@@ -147,6 +152,41 @@ For performance reasons, alpha type validation only happens in debug build.
     e.g. `MTITransformFilter`, `MTICropFilter`, `MTIPixellateFilter`, `MTIBulgeDistortionFilter`
 
 For more about alpha types and alpha compositing, please refer to [this amazing interactive article](https://ciechanow.ski/alpha-compositing/) by Bartosz Ciechanowski.
+
+### Color Spaces
+
+### Color Spaces for `CVPixelBuffer`s
+
+MetalPetal uses `CVMetalTextureCache` or `IOSurface` to directly map `CVPixelBuffer`s to Metal textures. So you cannot specify a color space for loading or rendering to a `CVPixelBuffer`. However you can specify whether to use a sRGB texture for the mapping.
+
+In Metal, if the pixel format name has the `_sRGB` suffix, then sRGB gamma compression and decompression are applied during the reading and writing of color values in the pixel. That means a texture with the `_sRGB` pixel format assumes the color values it stores are sRGB gamma corrected, when the color values are read in a shader, sRGB to linear RGB conversions are performed. When the color values are written in a shader, linear RGB to sRGB conversions are performed.
+
+### Color Spaces for Inputs
+
+Specifing a color space for an input means that MetalPetal should convert the source color values to the specified color space during the creation of the texture.
+
+- When loading from `URL` or `CGImage`, you can specify which color space you'd like the texture data to be in, using `MTICGImageLoadingOptions`. If you do not specify any color space when loading a image, the device RGB color space is used.
+
+- When loading from `CIImage`, you can specify which color space you'd like the texture data to be in, using `MTICIImageRenderingOptions`. If you do not specify any color space when loading the `CIImage`, the device RGB color space is used.
+
+### Color Spaces for Outputs
+
+When specifing a color space for an output, the color space serves more like a tag which is used to communicate with the rest of the system on how to represent the color values in the output. There is no actual color space conversion performed. 
+
+MetalPetal assumes that the output color values are in device RGB color space when no output color space is specified.
+
+- You can specify the color space of an output `CGImage` using `MTIContext.makeCGImage...` or `MTIContext.startTaskTo...` methods with a `colorSpace` parameter.
+
+- You can specify the color space of an output `CIImage` using `MTICIImageCreationOptions`.
+
+### Color Space Conversions
+
+You can use `MTIRGBColorSpaceConversionFilter` to perform color space conversions. Color space conversion functions are also available in `MTIShaderLib.h`.
+
+- `metalpetal::sRGBToLinear` (sRGB IEC61966-2.1)
+- `metalpetal::linearToSRGB`
+- `metalpetal::linearToITUR709`
+- `metalpetal::ITUR709ToLinear`
 
 ### Optimizations
 
