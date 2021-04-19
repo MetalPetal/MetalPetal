@@ -709,15 +709,15 @@ Color spaces are vital for image processing. Different softwares and frameworks 
 
 Before continuing on how MetalPetal handles color spaces, you may want to know what a color space is and how it affects the representation of color values. There are many articles on the web explaining color spaces, to get started, the suggestion is [Color Spaces - by Bartosz Ciechanowski](https://ciechanow.ski/color-spaces/).
 
-Metal textures do not store any color space information with them. Most of the color space handling in MetalPetal happens during the input (`MTIImage.init(...)`) and the output (`MTIContext.render...`) of image data.
+Metal textures do not store any color space information with them. Most of the color space handling in MetalPetal happens during the input (`MTIImage(...)`) and the output (`MTIContext.render...`) of image data.
 
 ### Color Spaces for Inputs
 
 Specifing a color space for an input means that MetalPetal should convert the source color values to the specified color space during the creation of the texture.
 
-- When loading from `URL` or `CGImage`, you can specify which color space you'd like the texture data to be in, using `MTICGImageLoadingOptions`. If you do not specify any color space when loading a image, the device RGB color space is used.
+- When loading from `URL` or `CGImage`, you can specify which color space you'd like the texture data to be in, using `MTICGImageLoadingOptions`. If you do not specify any option when loading a image, the device RGB color space is used (`MTICGImageLoadingOptions.default`). A `nil` color space disables color matching, this is an equivalent of using the color space of the input image. If the model of the specified color space is not RGB, the device RGB color space is used as a fallback.
 
-- When loading from `CIImage`, you can specify which color space you'd like the texture data to be in, using `MTICIImageRenderingOptions`. If you do not specify any color space when loading the `CIImage`, the device RGB color space is used.
+- When loading from `CIImage`, you can specify which color space you'd like the texture data to be in, using `MTICIImageRenderingOptions`. If you do not specify any option when loading a `CIImage`, the device RGB color space is used (`MTICIImageRenderingOptions.default`). A `nil` color space disables color matching.
 
 ### Color Spaces for Outputs
 
@@ -727,7 +727,7 @@ When specifing a color space for an output, the color space serves more like a t
 
 - You can specify the color space of an output `CIImage` using `MTICIImageCreationOptions`.
 
-MetalPetal assumes that the output color values are in device RGB color space when no output color space is specified.
+MetalPetal assumes that the output color values are in device RGB color space when no output color space or `nil` color space is specified.
 
 ### Color Spaces for `CVPixelBuffer`s
 

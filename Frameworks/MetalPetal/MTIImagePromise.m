@@ -249,15 +249,11 @@
     };
     
     CGColorSpaceRef colorSpace = nil;
-    if (_options.colorSpace) {
-        colorSpace = CGColorSpaceRetain(_options.colorSpace);
+    CGColorSpaceRef specifiedColorSpace = _options.colorSpace ?: CGImageGetColorSpace(_image);
+    if (CGColorSpaceGetModel(specifiedColorSpace) == kCGColorSpaceModelRGB) {
+        colorSpace = CGColorSpaceRetain(specifiedColorSpace);
     } else {
-        CGColorSpaceRef imageColorSpace = CGImageGetColorSpace(_image);
-        if (CGColorSpaceGetModel(imageColorSpace) == kCGColorSpaceModelRGB) {
-            colorSpace = CGColorSpaceRetain(imageColorSpace);
-        } else {
-            colorSpace = CGColorSpaceCreateDeviceRGB();
-        }
+        colorSpace = CGColorSpaceCreateDeviceRGB();
     }
     
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
