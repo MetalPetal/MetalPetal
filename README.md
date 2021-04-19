@@ -727,7 +727,7 @@ When specifing a color space for an output, the color space serves more like a t
 
 - You can specify the color space of an output `CIImage` using `MTICIImageCreationOptions`.
 
-MetalPetal assumes that the output color values are in device RGB color space when no output color space or `nil` color space is specified.
+MetalPetal assumes that the output color values are in device RGB color space when no output color space is specified.
 
 ### Color Spaces for `CVPixelBuffer`s
 
