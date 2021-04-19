@@ -97,7 +97,7 @@ struct SceneKitSupportView: View {
         func snapshot(at time: TimeInterval, viewport: CGRect, convertsToSRGB: Bool) -> MTIImage {
             let sceneImage = sceneRenderer.snapshot(atTime: time, viewport: viewport, pixelFormat: .rgba8Unorm, isOpaque: false)
             if convertsToSRGB {
-                return filter(MTIRGBColorSpaceConversionFilter.convert(sceneImage, from: .linear, to: .sRGB, alphaType: .nonPremultiplied))
+                return filter(MTIRGBColorSpaceConversionFilter.convert(sceneImage, from: .linearSRGB, to: .sRGB, alphaType: .nonPremultiplied))
             } else {
                 return filter(sceneImage.unpremultiplyingAlpha())
             }
