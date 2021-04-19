@@ -144,7 +144,9 @@
     static MTICGImageLoadingOptions *options;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        options = [[MTICGImageLoadingOptions alloc] init];
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        options = [[MTICGImageLoadingOptions alloc] initWithColorSpace:colorSpace];
+        CGColorSpaceRelease(colorSpace);
     });
     return options;
 }
@@ -158,10 +160,6 @@
     return textureDescriptor;
 }
 
-- (instancetype)init {
-    return [self initWithColorSpace:nil flipsVertically:NO storageMode:MTICGImageLoadingOptions.defaultTextureDescriptor.storageMode cpuCacheMode:MTICGImageLoadingOptions.defaultTextureDescriptor.cpuCacheMode];
-}
-
 - (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace {
     return [self initWithColorSpace:colorSpace flipsVertically:NO storageMode:MTICGImageLoadingOptions.defaultTextureDescriptor.storageMode cpuCacheMode:MTICGImageLoadingOptions.defaultTextureDescriptor.cpuCacheMode];
 }
@@ -172,7 +170,7 @@
 
 - (instancetype)initWithColorSpace:(CGColorSpaceRef)colorSpace flipsVertically:(BOOL)flipsVertically storageMode:(MTLStorageMode)storageMode cpuCacheMode:(MTLCPUCacheMode)cpuCacheMode {
     if (self = [super init]) {
-        _colorSpace = colorSpace ? CGColorSpaceRetain(colorSpace) : CGColorSpaceCreateDeviceRGB();
+        _colorSpace = CGColorSpaceRetain(colorSpace);
         _flipsVertically = flipsVertically;
         _storageMode = storageMode;
         _cpuCacheMode = cpuCacheMode;
@@ -250,14 +248,27 @@
         CVPixelBufferRelease(pixelBuffer);
     };
     
+    CGColorSpaceRef colorSpace = nil;
+    if (_options.colorSpace) {
+        colorSpace = CGColorSpaceRetain(_options.colorSpace);
+    } else {
+        CGColorSpaceRef imageColorSpace = CGImageGetColorSpace(_image);
+        if (CGColorSpaceGetModel(imageColorSpace) == kCGColorSpaceModelRGB) {
+            colorSpace = CGColorSpaceRetain(imageColorSpace);
+        } else {
+            colorSpace = CGColorSpaceCreateDeviceRGB();
+        }
+    }
+    
     CVPixelBufferLockBaseAddress(pixelBuffer, 0);
     CGContextRef cgContext = CGBitmapContextCreate(CVPixelBufferGetBaseAddress(pixelBuffer),
                                                    displayWidth,
                                                    displayHeight,
                                                    8,
                                                    CVPixelBufferGetBytesPerRow(pixelBuffer),
-                                                   _options.colorSpace,
+                                                   colorSpace,
                                                    kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    CGColorSpaceRelease(colorSpace);
     if (!cgContext) {
         CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
         if (inOutError) {

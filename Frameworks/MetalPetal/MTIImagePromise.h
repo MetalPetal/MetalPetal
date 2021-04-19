@@ -72,7 +72,7 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((objc_subclassing_restricted))
 @interface MTICGImageLoadingOptions : NSObject <NSCopying>
 
-@property (nonatomic, readonly) CGColorSpaceRef colorSpace;
+@property (nonatomic, readonly, nullable) CGColorSpaceRef colorSpace;
 
 @property (nonatomic, readonly) BOOL flipsVertically;
 
@@ -81,7 +81,9 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, class, readonly) MTICGImageLoadingOptions *defaultOptions;
 
-- (instancetype)init;
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithColorSpace:(nullable CGColorSpaceRef)colorSpace;
 
