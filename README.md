@@ -26,9 +26,9 @@ An image processing framework based on Metal.
     - [Alpha Type Handling](#alpha-type-handling)
         - [Alpha Handling of Built-in Filters](#alpha-handling-of-built-in-filters)
     - [Color Spaces](#color-spaces)
-        - [Color Spaces for `CVPixelBuffer`s](#color-spaces-for-cvpixelbuffers)
         - [Color Spaces for Inputs](#color-spaces-for-inputs)
         - [Color Spaces for Outputs](#color-spaces-for-outputs)
+        - [Color Spaces for `CVPixelBuffer`s](#color-spaces-for-cvpixelbuffers)
         - [Color Space Conversions](#color-space-conversions)
     - [Optimizations](#optimizations)
     - [Concurrency Considerations](#concurrency-considerations)
@@ -173,11 +173,11 @@ Specifing a color space for an input means that MetalPetal should convert the so
 
 When specifing a color space for an output, the color space serves more like a tag which is used to communicate with the rest of the system on how to represent the color values in the output. There is no actual color space conversion performed. 
 
-MetalPetal assumes that the output color values are in device RGB color space when no output color space is specified.
-
 - You can specify the color space of an output `CGImage` using `MTIContext.makeCGImage...` or `MTIContext.startTaskTo...` methods with a `colorSpace` parameter.
 
 - You can specify the color space of an output `CIImage` using `MTICIImageCreationOptions`.
+
+MetalPetal assumes that the output color values are in device RGB color space when no output color space is specified.
 
 #### Color Spaces for `CVPixelBuffer`s
 
