@@ -76,7 +76,7 @@ static const void * const MTICIImageMTIImageAssociationKey = &MTICIImageMTIImage
     [renderingContext.commandBuffer commit];
     [renderingContext.commandBuffer waitUntilScheduled];
     
-    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{kCIImageColorSpace: (id)options.colorSpace ?: [NSNull null]}];
+    CIImage *ciImage = [CIImage imageWithMTLTexture:resolution.texture options:@{kCIImageColorSpace: (id)options.colorSpace ?: (id)CFBridgingRelease(CGColorSpaceCreateDeviceRGB())}];
     if (options.isFlipped) {
         ciImage = [ciImage imageByApplyingOrientation:4];
     }

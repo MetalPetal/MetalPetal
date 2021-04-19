@@ -1798,7 +1798,7 @@ final class RenderTests: XCTestCase {
     func testLinearToSRGB() throws {
         let inputValue: Float = 128.0/255.0
         let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linearSRGB, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
@@ -1815,7 +1815,7 @@ final class RenderTests: XCTestCase {
     func testLinearToSRGB_outputPremultipliedAlpha() throws {
         let inputValue: Float = 128.0/255.0
         let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 0.5), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .premultiplied, pixelFormat: .unspecified)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linearSRGB, to: .sRGB, alphaType: .premultiplied, pixelFormat: .unspecified)
         XCTAssert(outputImage.alphaType == .premultiplied)
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: outputImage)
@@ -1832,7 +1832,7 @@ final class RenderTests: XCTestCase {
     
     func testLinearToSRGB_inputPremultipliedAlpha() throws {
         let image = MTIImage(bitmapData: Data([64,64,64,128]), width: 1, height: 1, bytesPerRow: 4, pixelFormat: .bgra8Unorm, alphaType: .premultiplied)
-        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linearSRGB, to: .sRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
         XCTAssert(outputImage.alphaType == .nonPremultiplied)
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: outputImage)
@@ -1850,7 +1850,7 @@ final class RenderTests: XCTestCase {
     func testSRGBToLinear() throws {
         let inputValue: Float = 128.0/255.0
         let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .sRGB, to: .linear, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .sRGB, to: .linearSRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
@@ -1865,7 +1865,7 @@ final class RenderTests: XCTestCase {
     func testLinearToLinear() throws {
         let inputValue: Float = 128.0/255.0
         let image = MTIImage(color: MTIColor(red: inputValue, green: inputValue, blue: inputValue, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linear, to: .linear, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
+        let outputImage = MTIRGBColorSpaceConversionFilter.convert(image, from: .linearSRGB, to: .linearSRGB, alphaType: .nonPremultiplied, pixelFormat: .unspecified)
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
