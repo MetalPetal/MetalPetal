@@ -121,7 +121,7 @@ MetalPetal does a lot of optimizations for you under the hood.
 
 It automatically caches functions, kernel states, sampler states, etc.
 
-It utilizes Metal features like programmable blending, memoryless render targets, resource heaps, metal performance shaders, to make the render fast and effeicent. On macOS, MetalPetal can also take advantage of the TBDR architecture of Apple Silicon.
+It utilizes Metal features like programmable blending, memoryless render targets, resource heaps, metal performance shaders, to make the render fast and effeicent. On macOS, MetalPetal can also take advantage of the TBDR architecture of Apple silicon.
 
 Before rendering, MetalPetal can look into your image render graph and figure out the minimal number of intermedinate textures needed to do the rendering, saving memory, energy and time.
 
