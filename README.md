@@ -155,11 +155,11 @@ For more about alpha types and alpha compositing, please refer to [this amazing 
 
 ### Color Spaces
 
-#### Color Spaces for `CVPixelBuffer`s
+Color spaces are vital for image processing. Different softwares and frameworks have different ways of handling color spaces. For example, Photoshop has a default sRGB IEC61966-2.1 working color space, while Core Image, by default, uses linear sRGB working color space.
 
-MetalPetal uses `CVMetalTextureCache` or `IOSurface` to directly map `CVPixelBuffer`s to Metal textures. So you cannot specify a color space for loading or rendering to a `CVPixelBuffer`. However you can specify whether to use a sRGB texture for the mapping.
+Before continuing on how MetalPetal handles color spaces, you may want to know what a color space is and how it affects the representation of color values. There are many articles on the web explaining color spaces, to get started, the suggestion is [Color Spaces - by Bartosz Ciechanowski](https://ciechanow.ski/color-spaces/).
 
-In Metal, if the pixel format name has the `_sRGB` suffix, then sRGB gamma compression and decompression are applied during the reading and writing of color values in the pixel. That means a texture with the `_sRGB` pixel format assumes the color values it stores are sRGB gamma corrected, when the color values are read in a shader, sRGB to linear RGB conversions are performed. When the color values are written in a shader, linear RGB to sRGB conversions are performed.
+Metal textures do not store any color space information with them. Most of the color space handling in MetalPetal happens during the input (`MTIImage.init(...)`) and the output (`MTIContext.render...`) of image data.
 
 #### Color Spaces for Inputs
 
@@ -179,14 +179,20 @@ MetalPetal assumes that the output color values are in device RGB color space wh
 
 - You can specify the color space of an output `CIImage` using `MTICIImageCreationOptions`.
 
+#### Color Spaces for `CVPixelBuffer`s
+
+MetalPetal uses `CVMetalTextureCache` and `IOSurface` to directly map `CVPixelBuffer`s to Metal textures. So you cannot specify a color space for loading or rendering to a `CVPixelBuffer`. However you can specify whether to use a sRGB texture for the mapping.
+
+In Metal, if the pixel format name has the `_sRGB` suffix, then sRGB gamma compression and decompression are applied during the reading and writing of color values in the pixel. That means a texture with the `_sRGB` pixel format assumes the color values it stores are sRGB gamma corrected, when the color values are read in a shader, sRGB to linear RGB conversions are performed. When the color values are written in a shader, linear RGB to sRGB conversions are performed.
+
 #### Color Space Conversions
 
 You can use `MTIRGBColorSpaceConversionFilter` to perform color space conversions. Color space conversion functions are also available in `MTIShaderLib.h`.
 
-- `metalpetal::sRGBToLinear` (sRGB IEC61966-2.1)
-- `metalpetal::linearToSRGB`
-- `metalpetal::linearToITUR709`
-- `metalpetal::ITUR709ToLinear`
+- `metalpetal::sRGBToLinear` (sRGB IEC61966-2.1 to linear sRGB)
+- `metalpetal::linearToSRGB` (linear sRGB to sRGB IEC61966-2.1)
+- `metalpetal::linearToITUR709` (linear sRGB to ITU-R 709)
+- `metalpetal::ITUR709ToLinear` (ITU-R 709 to linear sRGB)
 
 ### Optimizations
 
