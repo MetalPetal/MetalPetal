@@ -42,7 +42,7 @@ __attribute__((objc_subclassing_restricted))
 @end
 
 typedef NS_ENUM(NSInteger, MTIRGBColorSpace) {
-    MTIRGBColorSpaceLinear = 0,
+    MTIRGBColorSpaceLinearSRGB = 0,
     MTIRGBColorSpaceSRGB NS_SWIFT_NAME(sRGB) = 1,
     MTIRGBColorSpaceITUR709 NS_SWIFT_NAME(itur709) = 2,
 };

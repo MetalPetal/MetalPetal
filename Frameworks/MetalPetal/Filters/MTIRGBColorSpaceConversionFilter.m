@@ -108,8 +108,8 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _inputColorSpace = MTIRGBColorSpaceLinear;
-        _outputColorSpace = MTIRGBColorSpaceLinear;
+        _inputColorSpace = MTIRGBColorSpaceLinearSRGB;
+        _outputColorSpace = MTIRGBColorSpaceLinearSRGB;
         _outputAlphaType = MTIAlphaTypeNonPremultiplied;
     }
     return self;
