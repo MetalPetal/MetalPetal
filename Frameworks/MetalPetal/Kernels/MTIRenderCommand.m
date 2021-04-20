@@ -19,6 +19,7 @@
         NSParameterAssert(geometry);
         NSParameterAssert({
             /* Alpha Type Assert */
+            // https://github.com/MetalPetal/MetalPetal#alpha-types
             BOOL canAcceptAlphaType = YES;
             for (MTIImage *image in images) {
                 if (![kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
