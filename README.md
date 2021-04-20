@@ -43,7 +43,7 @@ An image processing framework based on Metal.
     - [Multiple Draw Calls in One Render Pass](#multiple-draw-calls-in-one-render-pass)
     - [Custom Vertex Data](#custom-vertex-data)
     - [Custom Processing Module](#custom-processing-module)
-- [Alpha Type Handling](#alpha-type-handling)
+- [Alpha Types](#alpha-types)
     - [Alpha Handling of Built-in Filters](#alpha-handling-of-built-in-filters)
 - [Color Spaces](#color-spaces)
     - [Color Spaces for Inputs](#color-spaces-for-inputs)
@@ -665,7 +665,7 @@ import MetalPetalObjectiveC.Extension
 
 See the implementation of `MTIComputePipelineKernel`, `MTICLAHELUTRecipe` or `MTIImage` for example.
 
-## Alpha Type Handling
+## Alpha Types
 
 If an alpha channel is used in an image, there are two common representations that are available: unpremultiplied (straight/unassociated) alpha, and premultiplied (associated) alpha.
 
@@ -695,7 +695,7 @@ For performance reasons, alpha type validation only happens in debug build.
 
 - Filters with `outputAlphaType` property accept inputs of all alpha types. And you can use `outputAlphaType` to specify the alpha type of the output image.
     
-    e.g. `MTIBlendFilter`, `MTIMultilayerCompositingFilter`, `MTICoreImageUnaryFilter`
+    e.g. `MTIBlendFilter`, `MTIMultilayerCompositingFilter`, `MTICoreImageUnaryFilter`, `MTIRGBColorSpaceConversionFilter`
     
 - Filters that do not actually modify colors have passthrough alpha handling rule, that means the alpha types of the output images are the same with the input images.
 
@@ -707,9 +707,9 @@ For more about alpha types and alpha compositing, please refer to [this amazing 
 
 Color spaces are vital for image processing. The numeric values of the red, green, and blue components have no meaning without a color space.
 
-Different softwares and frameworks have different ways of handling color spaces. For example, Photoshop has a default sRGB IEC61966-2.1 working color space, while Core Image, by default, uses linear sRGB working color space.
-
 Before continuing on how MetalPetal handles color spaces, you may want to know what a color space is and how it affects the representation of color values. There are many articles on the web explaining color spaces, to get started, the suggestion is [Color Spaces - by Bartosz Ciechanowski](https://ciechanow.ski/color-spaces/).
+
+Different softwares and frameworks have different ways of handling color spaces. For example, Photoshop has a default sRGB IEC61966-2.1 working color space, while Core Image, by default, uses linear sRGB working color space.
 
 Metal textures do not store any color space information with them. Most of the color space handling in MetalPetal happens during the input (`MTIImage(...)`) and the output (`MTIContext.render...`) of image data.
 
