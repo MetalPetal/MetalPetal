@@ -27,20 +27,6 @@
     return kernel;
 }
 
-- (MTIVertices *)verticesForRect:(CGRect)rect radius:(float)radius {
-    CGFloat l = (CGRectGetMinX(rect) / self.inputImage.size.width) * 2 - 1;
-    CGFloat r = (CGRectGetMaxX(rect) / self.inputImage.size.width) * 2 - 1;
-    CGFloat t = (CGRectGetMinY(rect) / self.inputImage.size.height) * 2 - 1;
-    CGFloat b = (CGRectGetMaxY(rect) / self.inputImage.size.height) * 2 - 1;
-    MTIVertex vertices[] = {
-        MTIVertexMake(l, t, 0, 1, 0, radius),
-        MTIVertexMake(r, t, 0, 1, radius, radius),
-        MTIVertexMake(l, b, 0, 1, 0, 0),
-        MTIVertexMake(r, b, 0, 1, radius, 0)
-    };
-    return [[MTIVertices alloc] initWithVertices:vertices count:4 primitiveType:MTLPrimitiveTypeTriangleStrip];
-}
-
 - (MTIImage *)outputImage {
     if (!self.inputImage) {
         return nil;
