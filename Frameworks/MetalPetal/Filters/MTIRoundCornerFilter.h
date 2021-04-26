@@ -8,8 +8,10 @@
 #import <simd/simd.h>
 #if __has_include(<MetalPetal/MetalPetal.h>)
 #import <MetalPetal/MTIFilter.h>
+#import <MetalPetal/MTICorner.h>
 #else
 #import "MTIFilter.h"
+#import "MTICorner.h"
 #endif
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,7 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((objc_subclassing_restricted))
 @interface MTIRoundCornerFilter : NSObject <MTIUnaryFilter>
 
-@property (nonatomic) simd_float4 radius; //lt rt rb lb
+@property (nonatomic) MTICornerRadius cornerRadius;
+@property (nonatomic) MTICornerCurve cornerCurve;
+
+@property (nonatomic) simd_float4 radius __attribute__((deprecated("Use `cornerRadius` and `cornerCurve` instead.")));
 
 @end
 

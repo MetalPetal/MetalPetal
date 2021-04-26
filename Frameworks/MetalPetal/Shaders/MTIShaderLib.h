@@ -688,6 +688,87 @@ namespace metalpetal {
         
         return finalColor;
     }
+    
+    METAL_FUNC float circularCornerSDF(float2 p) {
+        float2 uv = saturate(p);
+        if (uv.x == 0 && uv.y == 0) {
+            return 1;
+        }
+        float d = length(uv);
+        float w = max(fwidth(d), 1e-4);
+        return saturate((w * .5 + (1. - d)) / w);
+    }
+
+    METAL_FUNC float continuousCornerSDF(float2 p) {
+        float2 uv = saturate(p);
+        if (uv.x == 0 && uv.y == 0) {
+            return 1;
+        }
+        uv = max(abs(uv) * 1.199 - float2(0.199), 0.0);
+        float d = pow(uv.x, 2.68) + pow(uv.y, 2.68);
+        float w = max(fwidth(d), 1e-4);
+        return saturate((w * .5 + (1. - d)) / w);
+    }
+    
+    METAL_FUNC float circularCornerMask(float2 canvasSize, float2 normalizedTextureCoordinate, float4 radius) {
+        float2 textureCoordinate = normalizedTextureCoordinate * canvasSize;
+        //lt rt rb lb
+        float2 rt = float2(canvasSize.x - radius[1], radius[1]);
+        float2 rb = float2(canvasSize.x - radius[2], canvasSize.y - radius[2]);
+        float2 lb = float2(radius[3], canvasSize.y - radius[3]);
+        float4 f = float4(1,1,1,1);
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[0],
+                              1.0 - textureCoordinate.y / radius[0]);
+            f[0] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
+                              1.0 - textureCoordinate.y / radius[1]);
+            f[1] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
+                              (textureCoordinate.y - rb.y) / radius[2]);
+            f[2] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[3],
+                              (textureCoordinate.y - lb.y) / radius[3]);
+            f[3] = circularCornerSDF(p);
+        }
+        return min(min(min(f[0], f[1]),f[2]),f[3]);
+    }
+    
+    METAL_FUNC float continuousCornerMask(float2 canvasSize, float2 normalizedTextureCoordinate, float4 radius) {
+        float2 textureCoordinate = normalizedTextureCoordinate * canvasSize;
+        //lt rt rb lb
+        float2 rt = float2(canvasSize.x - radius[1], radius[1]);
+        float2 rb = float2(canvasSize.x - radius[2], canvasSize.y - radius[2]);
+        float2 lb = float2(radius[3], canvasSize.y - radius[3]);
+        float4 f = float4(1,1,1,1);
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[0],
+                              1.0 - textureCoordinate.y / radius[0]);
+            f[0] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
+                              1.0 - textureCoordinate.y / radius[1]);
+            f[1] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
+                              (textureCoordinate.y - rb.y) / radius[2]);
+            f[2] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[3],
+                              (textureCoordinate.y - lb.y) / radius[3]);
+            f[3] = continuousCornerSDF(p);
+        }
+        return min(min(min(f[0], f[1]),f[2]),f[3]);
+    }
 }
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
