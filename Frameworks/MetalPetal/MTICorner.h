@@ -18,7 +18,10 @@ struct MTICornerRadius {
 typedef struct MTICornerRadius MTICornerRadius;
 
 typedef NS_ENUM(NSInteger, MTICornerCurve) {
+    /// A circular corner curve.
     MTICornerCurveCircular = 0,
+    
+    /// A continuous corner curve. This option mimics the behavior of `kCACornerCurveContinuous`.
     MTICornerCurveContinuous = 1
 };
 
@@ -40,6 +43,7 @@ FOUNDATION_STATIC_INLINE __attribute__((__overloadable__)) NS_SWIFT_NAME(MTICorn
     return radius;
 }
 
+/// Expansion scale factor applied to the rounded corner bounding box size when specific corner curve is used.
 FOUNDATION_STATIC_INLINE NS_SWIFT_NAME(getter:MTICornerCurve.expansionFactor(self:)) float MTICornerCurveExpansionFactor(MTICornerCurve curve) {
     switch (curve) {
         case MTICornerCurveCircular:
