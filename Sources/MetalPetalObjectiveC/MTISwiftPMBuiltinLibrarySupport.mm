@@ -693,6 +693,87 @@ namespace metalpetal {
         
         return finalColor;
     }
+    
+    METAL_FUNC float circularCornerSDF(float2 p) {
+        float2 uv = saturate(p);
+        if (uv.x == 0 && uv.y == 0) {
+            return 1;
+        }
+        float d = length(uv);
+        float w = max(fwidth(d), 1e-4);
+        return saturate((w * .5 + (1. - d)) / w);
+    }
+
+    METAL_FUNC float continuousCornerSDF(float2 p) {
+        float2 uv = saturate(p);
+        if (uv.x == 0 && uv.y == 0) {
+            return 1;
+        }
+        uv = max(abs(uv) * 1.199 - float2(0.199), 0.0);
+        float d = pow(uv.x, 2.68) + pow(uv.y, 2.68);
+        float w = max(fwidth(d), 1e-4);
+        return saturate((w * .5 + (1. - d)) / w);
+    }
+    
+    METAL_FUNC float circularCornerMask(float2 canvasSize, float2 normalizedTextureCoordinate, float4 radius) {
+        float2 textureCoordinate = normalizedTextureCoordinate * canvasSize;
+        //lt rt rb lb
+        float2 rt = float2(canvasSize.x - radius[1], radius[1]);
+        float2 rb = float2(canvasSize.x - radius[2], canvasSize.y - radius[2]);
+        float2 lb = float2(radius[3], canvasSize.y - radius[3]);
+        float4 f = float4(1,1,1,1);
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[0],
+                              1.0 - textureCoordinate.y / radius[0]);
+            f[0] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
+                              1.0 - textureCoordinate.y / radius[1]);
+            f[1] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
+                              (textureCoordinate.y - rb.y) / radius[2]);
+            f[2] = circularCornerSDF(p);
+        }
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[3],
+                              (textureCoordinate.y - lb.y) / radius[3]);
+            f[3] = circularCornerSDF(p);
+        }
+        return min(min(min(f[0], f[1]),f[2]),f[3]);
+    }
+    
+    METAL_FUNC float continuousCornerMask(float2 canvasSize, float2 normalizedTextureCoordinate, float4 radius) {
+        float2 textureCoordinate = normalizedTextureCoordinate * canvasSize;
+        //lt rt rb lb
+        float2 rt = float2(canvasSize.x - radius[1], radius[1]);
+        float2 rb = float2(canvasSize.x - radius[2], canvasSize.y - radius[2]);
+        float2 lb = float2(radius[3], canvasSize.y - radius[3]);
+        float4 f = float4(1,1,1,1);
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[0],
+                              1.0 - textureCoordinate.y / radius[0]);
+            f[0] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
+                              1.0 - textureCoordinate.y / radius[1]);
+            f[1] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
+                              (textureCoordinate.y - rb.y) / radius[2]);
+            f[2] = continuousCornerSDF(p);
+        }
+        {
+            float2 p = float2(1.0 - textureCoordinate.x / radius[3],
+                              (textureCoordinate.y - lb.y) / radius[3]);
+            f[3] = continuousCornerSDF(p);
+        }
+        return min(min(min(f[0], f[1]),f[2]),f[3]);
+    }
 }
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
@@ -5059,48 +5140,22 @@ namespace metalpetal {
     
     #endif
     */
-    
-    fragment float4 roundCorner(VertexOut vertexIn [[stage_in]],
+
+    fragment float4 circularCorner(VertexOut vertexIn [[stage_in]],
                                 constant float4 & radius [[buffer(0)]],
                                 texture2d<float, access::sample> sourceTexture [[texture(0)]],
                                 sampler sourceSampler [[sampler(0)]]) {
-        float2 textureCoordinate = vertexIn.textureCoordinate * float2(sourceTexture.get_width(), sourceTexture.get_height());
-        //lt rt rb lb
-        float2 lt = float2(radius[0], radius[0]);
-        float2 rt = float2(sourceTexture.get_width() - radius[1], radius[1]);
-        float2 rb = float2(sourceTexture.get_width() - radius[2], sourceTexture.get_height() - radius[2]);
-        float2 lb = float2(radius[3], sourceTexture.get_height() - radius[3]);
-        
-        float r;
-        float2 center;
-        if (textureCoordinate.x < lt.x && textureCoordinate.y < lt.y) {
-            center = lt;
-            r = radius[0];
-        } else if (textureCoordinate.x > rt.x && textureCoordinate.y < rt.y) {
-            center = rt;
-            r = radius[1];
-        } else if (textureCoordinate.x > rb.x && textureCoordinate.y > rb.y) {
-            center = rb;
-            r = radius[2];
-        } else if (textureCoordinate.x < lb.x && textureCoordinate.y > lb.y) {
-            center = lb;
-            r = radius[3];
-        } else {
-            return sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-        }
-        
-        //4xAA
-        float2 samplePoint1 = textureCoordinate + float2(-0.25, -0.25);
-        float2 samplePoint2 = textureCoordinate + float2(0.25, 0.25);
-        float2 samplePoint3 = textureCoordinate + float2(0.25, -0.25);
-        float2 samplePoint4 = textureCoordinate + float2(-0.25, 0.25);
-        float4 inRadius = float4(bool4(distance(samplePoint1, center) < r,
-                                       distance(samplePoint2, center) < r,
-                                       distance(samplePoint3, center) < r,
-                                       distance(samplePoint4, center) < r));
-        float f = dot(inRadius, 0.25);
         float4 result = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
-        result.a *= f;
+        result.a *= circularCornerMask(float2(sourceTexture.get_width(), sourceTexture.get_height()), vertexIn.textureCoordinate, radius);
+        return result;
+    }
+    
+    fragment float4 continuousCorner(VertexOut vertexIn [[stage_in]],
+                                           constant float4 & radius [[buffer(0)]],
+                                           texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                           sampler sourceSampler [[sampler(0)]]) {
+        float4 result = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+        result.a *= continuousCornerMask(float2(sourceTexture.get_width(), sourceTexture.get_height()), vertexIn.textureCoordinate, radius);
         return result;
     }
 }

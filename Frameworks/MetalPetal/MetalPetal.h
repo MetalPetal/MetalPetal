@@ -52,6 +52,7 @@
 #import "MTIContext+Rendering.h"
 #import "MTIContext.h"
 #import "MTICoreImageRendering.h"
+#import "MTICorner.h"
 #import "MTIDrawableRendering.h"
 #import "MTIError.h"
 #import "MTIFunctionArgumentsEncoder.h"
