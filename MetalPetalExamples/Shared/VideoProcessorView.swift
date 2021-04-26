@@ -47,7 +47,8 @@ struct VideoProcessorView: View {
         let watermarkFilter = MultilayerCompositingFilter()
         let whiteSquare = MTIImage.white.resized(to: CGSize(width: presentationSize.width/10, height: presentationSize.width/10))!
         let roundCornerFilter = MTIRoundCornerFilter()
-        roundCornerFilter.radius = SIMD4<Float>(repeating: Float(whiteSquare.size.width/6))
+        roundCornerFilter.cornerRadius = MTICornerRadius(all: Float(whiteSquare.size.width/4))
+        roundCornerFilter.cornerCurve = .continuous
         roundCornerFilter.inputImage = whiteSquare
         let watermarkImage = roundCornerFilter.outputImage!.withCachePolicy(.persistent)
         let mask = DemoImages.makeSymbolImage(named: "seal.fill", aspectFitIn: whiteSquare.size, padding: whiteSquare.size.width/10)
