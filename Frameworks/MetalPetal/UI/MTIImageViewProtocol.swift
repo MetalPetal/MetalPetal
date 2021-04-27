@@ -11,7 +11,7 @@ import Metal
 import MetalPetalObjectiveC.Core
 #endif
 
-public protocol MTIImageViewProtocol: class {
+public protocol MTIImageViewProtocol: AnyObject {
     
     var automaticallyCreatesContext: Bool { get set }
     
