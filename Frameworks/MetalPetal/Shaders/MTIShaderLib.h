@@ -689,24 +689,33 @@ namespace metalpetal {
         return finalColor;
     }
     
-    METAL_FUNC float circularCornerSDF(float2 p) {
+    METAL_FUNC float _circularCornerSDF(float2 p, float dp) {
         float2 uv = saturate(p);
-        if (uv.x == 0 && uv.y == 0) {
+        if (uv.x == 0 || uv.y == 0) {
             return 1;
         }
         float d = length(uv);
-        float w = max(fwidth(d), 1e-4);
+        float dx = abs(length(uv + float2(dp, 0)) - d);
+        float dy = abs(length(uv + float2(0, dp)) - d);
+        float w = max(dx + dy, 1e-4);
         return saturate((w * .5 + (1. - d)) / w);
     }
 
-    METAL_FUNC float continuousCornerSDF(float2 p) {
+    METAL_FUNC float _continuousCornerDistance(float2 p) {
+        float2 uv = max(abs(p) * 1.199 - float2(0.199), 0.0);
+        return pow(uv.x, 2.68) + pow(uv.y, 2.68);
+    }
+
+    METAL_FUNC float _continuousCornerSDF(float2 p, float dp) {
         float2 uv = saturate(p);
-        if (uv.x == 0 && uv.y == 0) {
+        if (uv.x == 0 || uv.y == 0) {
             return 1;
         }
-        uv = max(abs(uv) * 1.199 - float2(0.199), 0.0);
-        float d = pow(uv.x, 2.68) + pow(uv.y, 2.68);
-        float w = max(fwidth(d), 1e-4);
+        float d = _continuousCornerDistance(uv);
+        // Anti-aliasing. Manually calculate dfdx/dfdy here to avoid asymmetric corners, because `fwdith` always calculates in one direction (x + 1, y + 1)
+        float dx = abs(_continuousCornerDistance(uv + float2(dp, 0)) - d);
+        float dy = abs(_continuousCornerDistance(uv + float2(0, dp)) - d);
+        float w = max(dx + dy, 1e-4);
         return saturate((w * .5 + (1. - d)) / w);
     }
     
@@ -720,22 +729,22 @@ namespace metalpetal {
         {
             float2 p = float2(1.0 - textureCoordinate.x / radius[0],
                               1.0 - textureCoordinate.y / radius[0]);
-            f[0] = circularCornerSDF(p);
+            f[0] = _circularCornerSDF(p, 1/radius[0]);
         }
         {
             float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
                               1.0 - textureCoordinate.y / radius[1]);
-            f[1] = circularCornerSDF(p);
+            f[1] = _circularCornerSDF(p, 1/radius[1]);
         }
         {
             float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
                               (textureCoordinate.y - rb.y) / radius[2]);
-            f[2] = circularCornerSDF(p);
+            f[2] = _circularCornerSDF(p, 1/radius[2]);
         }
         {
             float2 p = float2(1.0 - textureCoordinate.x / radius[3],
                               (textureCoordinate.y - lb.y) / radius[3]);
-            f[3] = circularCornerSDF(p);
+            f[3] = _circularCornerSDF(p, 1/radius[3]);
         }
         return min(min(min(f[0], f[1]),f[2]),f[3]);
     }
@@ -750,22 +759,22 @@ namespace metalpetal {
         {
             float2 p = float2(1.0 - textureCoordinate.x / radius[0],
                               1.0 - textureCoordinate.y / radius[0]);
-            f[0] = continuousCornerSDF(p);
+            f[0] = _continuousCornerSDF(p, 1/radius[0]);
         }
         {
             float2 p = float2((textureCoordinate.x - rt.x) / radius[1],
                               1.0 - textureCoordinate.y / radius[1]);
-            f[1] = continuousCornerSDF(p);
+            f[1] = _continuousCornerSDF(p, 1/radius[1]);
         }
         {
             float2 p = float2((textureCoordinate.x - rb.x) / radius[2],
                               (textureCoordinate.y - rb.y) / radius[2]);
-            f[2] = continuousCornerSDF(p);
+            f[2] = _continuousCornerSDF(p, 1/radius[2]);
         }
         {
             float2 p = float2(1.0 - textureCoordinate.x / radius[3],
                               (textureCoordinate.y - lb.y) / radius[3]);
-            f[3] = continuousCornerSDF(p);
+            f[3] = _continuousCornerSDF(p, 1/radius[3]);
         }
         return min(min(min(f[0], f[1]),f[2]),f[3]);
     }

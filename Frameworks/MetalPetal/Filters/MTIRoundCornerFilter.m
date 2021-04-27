@@ -61,6 +61,7 @@
             kernel = MTIRoundCornerFilter.continuousCornerKernel;
             break;
         default:
+            NSAssert(NO, @"Unsupported MTICornerCurve value.");
             kernel = MTIRoundCornerFilter.circularCornerKernel;
             break;
     }

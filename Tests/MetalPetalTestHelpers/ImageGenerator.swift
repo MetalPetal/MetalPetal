@@ -9,15 +9,15 @@ import Foundation
 import CoreGraphics
 
 extension CGColor {
-    static var mti_white: CGColor {
+    public static var mti_white: CGColor {
         var components: [CGFloat] = [1, 1, 1, 1]
         return CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &components)!
     }
-    static var mti_black: CGColor {
+    public static var mti_black: CGColor {
         var components: [CGFloat] = [0, 0, 0, 1]
         return CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &components)!
     }
-    static var mti_r0g128b255: CGColor {
+    public static var mti_r0g128b255: CGColor {
         var components: [CGFloat] = [0, 128/255.0, 1, 1]
         return CGColor(colorSpace: CGColorSpaceCreateDeviceRGB(), components: &components)!
     }

@@ -1891,9 +1891,66 @@ final class RenderTests: XCTestCase {
             }
         }
     }
+    
+    @available(iOS 13.0, tvOS 13.0, *)
+    func testRoundCornerFilter_circular() throws {
+        try runRoundCornerTest(size: 32, curve: .circular, allowedDifference: 64)
+    }
+    
+    @available(iOS 13.0, tvOS 13.0, *)
+    func testRoundCornerFilter_continuous() throws {
+        try runRoundCornerTest(size: 32, curve: .continuous, allowedDifference: 64)
+    }
 }
 
 extension RenderTests {
+    
+    @available(iOS 13.0, tvOS 13.0, *)
+    private func runRoundCornerTest(size: Int, curve: MTICornerCurve, allowedDifference: Int) throws {
+        let objectSize: Int = size
+        let cgContext = try XCTUnwrap(CGContext(data: nil, width: objectSize, height: objectSize, bitsPerComponent: 8, bytesPerRow: 0, space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue | CGImageAlphaInfo.premultipliedFirst.rawValue))
+        cgContext.setFillColor(CGColor.mti_white)
+        cgContext.fill(CGRect(x: 0, y: 0, width: objectSize, height: objectSize))
+        let whiteImage = try XCTUnwrap(cgContext.makeImage())
+        let inputImage = MTIImage(cgImage: whiteImage, isOpaque: true)
+        let context = try makeContext()
+        for i in 0...objectSize/2 {
+            let filter = MTIRoundCornerFilter()
+            filter.inputImage = inputImage
+            filter.cornerRadius = MTICornerRadius(all: Float(i))
+            filter.cornerCurve = curve
+            let output = try XCTUnwrap(filter.outputImage)
+            cgContext.clear(CGRect(x: 0, y: 0, width: objectSize, height: objectSize))
+            cgContext.draw((try context.makeCGImage(from: output)), in: CGRect(x: 0, y: 0, width: objectSize, height: objectSize))
+            let outputCGImage = try XCTUnwrap(cgContext.makeImage())
+            
+            let layer = CALayer()
+            layer.frame = CGRect(x: 0, y: 0, width: objectSize, height: objectSize)
+            layer.cornerRadius = CGFloat(i)
+            switch curve {
+            case .circular:
+                layer.cornerCurve = .circular
+            case .continuous:
+                layer.cornerCurve = .continuous
+            @unknown default:
+                XCTFail()
+            }
+            layer.backgroundColor = CGColor.mti_white
+            cgContext.clear(CGRect(x: 0, y: 0, width: objectSize, height: objectSize))
+            layer.render(in: cgContext)
+            let outputLayerImage = try XCTUnwrap(cgContext.makeImage())
+            
+            XCTAssert(outputCGImage.bytesPerRow == outputLayerImage.bytesPerRow)
+            
+            let outputImageData = try [UInt8](UnsafeBufferPointer<UInt8>(start: CFDataGetBytePtr(XCTUnwrap(outputCGImage.dataProvider?.data))!, count: outputCGImage.bytesPerRow * outputCGImage.height))
+            let outputLayerData = try [UInt8](UnsafeBufferPointer<UInt8>(start: CFDataGetBytePtr(XCTUnwrap(outputLayerImage.dataProvider?.data))!, count: outputLayerImage.bytesPerRow * outputLayerImage.height))
+            for (index, value) in outputImageData.enumerated() {
+                let diff = abs(Int(value) - Int(outputLayerData[index]))
+                XCTAssert(diff < allowedDifference)
+            }
+        }
+    }
+    
     private func fetchFirstPixel(from texture: MTLTexture, context: MTIContext) throws -> [UInt8] {
         let textureDescriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm, width: 1, height: 1, mipmapped: false)
         #if os(macOS) || targetEnvironment(macCatalyst)
