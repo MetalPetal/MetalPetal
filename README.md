@@ -238,6 +238,8 @@ A `MTIContext` contains a lot of states and caches. There's a thread-safe mechan
 
 - Dot Screen
 
+- Round Corner (Circular/Continuous Curve)
+
 - [All Core Image Filters](#working-with-core-image)
 
 ## Example Code
