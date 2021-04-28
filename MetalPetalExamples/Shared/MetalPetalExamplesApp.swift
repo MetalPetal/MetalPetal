@@ -23,6 +23,8 @@ struct MetalPetalExamplesApp: App {
     var body: some Scene {
         WindowGroup {
             HomeView()
-        }
+        }.commands(content: {
+            SidebarCommands()
+        })
     }
 }

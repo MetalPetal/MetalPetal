@@ -58,6 +58,9 @@ struct MTIMultilayerCompositingLayerShadingParameters {
     bool compositingMaskUsesOneMinusValue;
     
     vector_float4 tintColor;
+    vector_float4 cornerRadius;
+    
+    vector_float2 layerSize;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 
@@ -812,6 +815,7 @@ namespace metalpetal {
     constant bool multilayer_composite_has_mask [[function_constant(1029)]];
     constant bool multilayer_composite_has_compositing_mask [[function_constant(1030)]];
     constant bool multilayer_composite_has_tint_color [[function_constant(1031)]];
+    constant short multilayer_composite_corner_curve_type [[function_constant(1037)]];
 
     constant bool rgb_color_space_conversion_input_has_premultiplied_alpha [[function_constant(1032)]];
     constant short rgb_color_space_conversion_input_color_space [[function_constant(1033)]];
@@ -2220,6 +2224,16 @@ fragment float4 multilayerCompositeNormalBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return normalBlend(currentColor,textureColor);
 }
@@ -2263,6 +2277,16 @@ fragment float4 multilayerCompositeNormalBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return normalBlend(backgroundColor,textureColor);
@@ -2308,6 +2332,16 @@ fragment float4 multilayerCompositeDarkenBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return darkenBlend(currentColor,textureColor);
 }
@@ -2351,6 +2385,16 @@ fragment float4 multilayerCompositeDarkenBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return darkenBlend(backgroundColor,textureColor);
@@ -2396,6 +2440,16 @@ fragment float4 multilayerCompositeMultiplyBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return multiplyBlend(currentColor,textureColor);
 }
@@ -2439,6 +2493,16 @@ fragment float4 multilayerCompositeMultiplyBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return multiplyBlend(backgroundColor,textureColor);
@@ -2484,6 +2548,16 @@ fragment float4 multilayerCompositeColorBurnBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return colorBurnBlend(currentColor,textureColor);
 }
@@ -2527,6 +2601,16 @@ fragment float4 multilayerCompositeColorBurnBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return colorBurnBlend(backgroundColor,textureColor);
@@ -2572,6 +2656,16 @@ fragment float4 multilayerCompositeLinearBurnBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return linearBurnBlend(currentColor,textureColor);
 }
@@ -2615,6 +2709,16 @@ fragment float4 multilayerCompositeLinearBurnBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return linearBurnBlend(backgroundColor,textureColor);
@@ -2660,6 +2764,16 @@ fragment float4 multilayerCompositeDarkerColorBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return darkerColorBlend(currentColor,textureColor);
 }
@@ -2703,6 +2817,16 @@ fragment float4 multilayerCompositeDarkerColorBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return darkerColorBlend(backgroundColor,textureColor);
@@ -2748,6 +2872,16 @@ fragment float4 multilayerCompositeLightenBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return lightenBlend(currentColor,textureColor);
 }
@@ -2791,6 +2925,16 @@ fragment float4 multilayerCompositeLightenBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return lightenBlend(backgroundColor,textureColor);
@@ -2836,6 +2980,16 @@ fragment float4 multilayerCompositeScreenBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return screenBlend(currentColor,textureColor);
 }
@@ -2879,6 +3033,16 @@ fragment float4 multilayerCompositeScreenBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return screenBlend(backgroundColor,textureColor);
@@ -2924,6 +3088,16 @@ fragment float4 multilayerCompositeColorDodgeBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return colorDodgeBlend(currentColor,textureColor);
 }
@@ -2967,6 +3141,16 @@ fragment float4 multilayerCompositeColorDodgeBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return colorDodgeBlend(backgroundColor,textureColor);
@@ -3012,6 +3196,16 @@ fragment float4 multilayerCompositeAddBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return addBlend(currentColor,textureColor);
 }
@@ -3055,6 +3249,16 @@ fragment float4 multilayerCompositeAddBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return addBlend(backgroundColor,textureColor);
@@ -3100,6 +3304,16 @@ fragment float4 multilayerCompositeLighterColorBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return lighterColorBlend(currentColor,textureColor);
 }
@@ -3143,6 +3357,16 @@ fragment float4 multilayerCompositeLighterColorBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return lighterColorBlend(backgroundColor,textureColor);
@@ -3188,6 +3412,16 @@ fragment float4 multilayerCompositeOverlayBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return overlayBlend(currentColor,textureColor);
 }
@@ -3231,6 +3465,16 @@ fragment float4 multilayerCompositeOverlayBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return overlayBlend(backgroundColor,textureColor);
@@ -3276,6 +3520,16 @@ fragment float4 multilayerCompositeSoftLightBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return softLightBlend(currentColor,textureColor);
 }
@@ -3319,6 +3573,16 @@ fragment float4 multilayerCompositeSoftLightBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return softLightBlend(backgroundColor,textureColor);
@@ -3364,6 +3628,16 @@ fragment float4 multilayerCompositeHardLightBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return hardLightBlend(currentColor,textureColor);
 }
@@ -3407,6 +3681,16 @@ fragment float4 multilayerCompositeHardLightBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return hardLightBlend(backgroundColor,textureColor);
@@ -3452,6 +3736,16 @@ fragment float4 multilayerCompositeVividLightBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return vividLightBlend(currentColor,textureColor);
 }
@@ -3495,6 +3789,16 @@ fragment float4 multilayerCompositeVividLightBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return vividLightBlend(backgroundColor,textureColor);
@@ -3540,6 +3844,16 @@ fragment float4 multilayerCompositeLinearLightBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return linearLightBlend(currentColor,textureColor);
 }
@@ -3583,6 +3897,16 @@ fragment float4 multilayerCompositeLinearLightBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return linearLightBlend(backgroundColor,textureColor);
@@ -3628,6 +3952,16 @@ fragment float4 multilayerCompositePinLightBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return pinLightBlend(currentColor,textureColor);
 }
@@ -3671,6 +4005,16 @@ fragment float4 multilayerCompositePinLightBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return pinLightBlend(backgroundColor,textureColor);
@@ -3716,6 +4060,16 @@ fragment float4 multilayerCompositeHardMixBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return hardMixBlend(currentColor,textureColor);
 }
@@ -3759,6 +4113,16 @@ fragment float4 multilayerCompositeHardMixBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return hardMixBlend(backgroundColor,textureColor);
@@ -3804,6 +4168,16 @@ fragment float4 multilayerCompositeDifferenceBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return differenceBlend(currentColor,textureColor);
 }
@@ -3847,6 +4221,16 @@ fragment float4 multilayerCompositeDifferenceBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return differenceBlend(backgroundColor,textureColor);
@@ -3892,6 +4276,16 @@ fragment float4 multilayerCompositeExclusionBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return exclusionBlend(currentColor,textureColor);
 }
@@ -3935,6 +4329,16 @@ fragment float4 multilayerCompositeExclusionBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return exclusionBlend(backgroundColor,textureColor);
@@ -3980,6 +4384,16 @@ fragment float4 multilayerCompositeSubtractBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return subtractBlend(currentColor,textureColor);
 }
@@ -4023,6 +4437,16 @@ fragment float4 multilayerCompositeSubtractBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return subtractBlend(backgroundColor,textureColor);
@@ -4068,6 +4492,16 @@ fragment float4 multilayerCompositeDivideBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return divideBlend(currentColor,textureColor);
 }
@@ -4111,6 +4545,16 @@ fragment float4 multilayerCompositeDivideBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return divideBlend(backgroundColor,textureColor);
@@ -4156,6 +4600,16 @@ fragment float4 multilayerCompositeHueBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return hueBlend(currentColor,textureColor);
 }
@@ -4199,6 +4653,16 @@ fragment float4 multilayerCompositeHueBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return hueBlend(backgroundColor,textureColor);
@@ -4244,6 +4708,16 @@ fragment float4 multilayerCompositeSaturationBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return saturationBlend(currentColor,textureColor);
 }
@@ -4287,6 +4761,16 @@ fragment float4 multilayerCompositeSaturationBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return saturationBlend(backgroundColor,textureColor);
@@ -4332,6 +4816,16 @@ fragment float4 multilayerCompositeColorBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return colorBlend(currentColor,textureColor);
 }
@@ -4375,6 +4869,16 @@ fragment float4 multilayerCompositeColorBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return colorBlend(backgroundColor,textureColor);
@@ -4420,6 +4924,16 @@ fragment float4 multilayerCompositeLuminosityBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return luminosityBlend(currentColor,textureColor);
 }
@@ -4463,6 +4977,16 @@ fragment float4 multilayerCompositeLuminosityBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return luminosityBlend(backgroundColor,textureColor);

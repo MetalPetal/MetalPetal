@@ -34,13 +34,17 @@ FOUNDATION_STATIC_INLINE __attribute__((__overloadable__)) NS_SWIFT_UNAVAILABLE(
     return radius;
 }
 
-FOUNDATION_STATIC_INLINE __attribute__((__overloadable__)) NS_SWIFT_NAME(MTICornerRadius.init(all:)) MTICornerRadius MTICornerRadiusMake(float r) {
+FOUNDATION_STATIC_INLINE __attribute__((__overloadable__)) NS_SWIFT_NAME(MTICornerRadius.init(_:)) MTICornerRadius MTICornerRadiusMake(float r) {
     MTICornerRadius radius;
     radius.topLeft = r;
     radius.topRight = r;
     radius.bottomRight = r;
     radius.bottomLeft = r;
     return radius;
+}
+
+FOUNDATION_STATIC_INLINE NS_SWIFT_NAME(getter:MTICornerRadius.isZero(self:)) BOOL MTICornerRadiusIsZero(MTICornerRadius r) {
+    return r.topLeft == 0 && r.topRight == 0 && r.bottomLeft == 0 && r.bottomRight == 0;
 }
 
 /// Expansion scale factor applied to the rounded corner bounding box size when specific corner curve is used.
@@ -53,6 +57,11 @@ FOUNDATION_STATIC_INLINE NS_SWIFT_NAME(getter:MTICornerCurve.expansionFactor(sel
         default:
             return 1;
     }
+}
+
+FOUNDATION_STATIC_INLINE simd_float4 _MTICornerRadiusGetShadingParameterValue(MTICornerRadius r, MTICornerCurve curve) {
+    simd_float4 radius = simd_make_float4(r.topLeft, r.topRight, r.bottomRight, r.bottomLeft);
+    return radius * MTICornerCurveExpansionFactor(curve);
 }
 
 NS_ASSUME_NONNULL_END

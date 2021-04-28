@@ -1917,7 +1917,7 @@ extension RenderTests {
         for i in 0...objectSize/2 {
             let filter = MTIRoundCornerFilter()
             filter.inputImage = inputImage
-            filter.cornerRadius = MTICornerRadius(all: Float(i))
+            filter.cornerRadius = MTICornerRadius(Float(i))
             filter.cornerCurve = curve
             let output = try XCTUnwrap(filter.outputImage)
             cgContext.clear(CGRect(x: 0, y: 0, width: objectSize, height: objectSize))

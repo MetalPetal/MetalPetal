@@ -46,8 +46,7 @@
     if (!self.inputImage) {
         return nil;
     }
-    simd_float4 radius = simd_make_float4(_cornerRadius.topLeft, _cornerRadius.topRight, _cornerRadius.bottomRight, _cornerRadius.bottomLeft);
-    radius = radius * MTICornerCurveExpansionFactor(_cornerCurve);
+    simd_float4 radius = _MTICornerRadiusGetShadingParameterValue(_cornerRadius, _cornerCurve);
     if (simd_equal(radius, simd_make_float4(0))) {
         return self.inputImage;
     }

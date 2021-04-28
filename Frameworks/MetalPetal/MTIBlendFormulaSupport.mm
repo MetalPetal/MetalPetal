@@ -60,6 +60,9 @@ struct MTIMultilayerCompositingLayerShadingParameters {
     bool compositingMaskUsesOneMinusValue;
     
     vector_float4 tintColor;
+    vector_float4 cornerRadius;
+    
+    vector_float2 layerSize;
 };
 typedef struct MTIMultilayerCompositingLayerShadingParameters MTIMultilayerCompositingLayerShadingParameters;
 
@@ -815,6 +818,7 @@ namespace metalpetal {
     constant bool multilayer_composite_has_mask [[function_constant(1029)]];
     constant bool multilayer_composite_has_compositing_mask [[function_constant(1030)]];
     constant bool multilayer_composite_has_tint_color [[function_constant(1031)]];
+    constant short multilayer_composite_corner_curve_type [[function_constant(1037)]];
 
     constant bool rgb_color_space_conversion_input_has_premultiplied_alpha [[function_constant(1032)]];
     constant short rgb_color_space_conversion_input_color_space [[function_constant(1033)]];
@@ -906,6 +910,16 @@ fragment float4 multilayerCompositeCustomBlend_programmableBlending(
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
     }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
+    }
     textureColor.a *= parameters.opacity;
     return blend(currentColor,textureColor);
 }
@@ -949,6 +963,16 @@ fragment float4 multilayerCompositeCustomBlend(
     if (multilayer_composite_has_tint_color) {
         textureColor.rgb = parameters.tintColor.rgb;
         textureColor.a *= parameters.tintColor.a;
+    }
+    switch (multilayer_composite_corner_curve_type) {
+        case 1:
+            textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        case 2:
+            textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+            break;
+        default:
+            break;
     }
     textureColor.a *= parameters.opacity;
     return blend(backgroundColor,textureColor);

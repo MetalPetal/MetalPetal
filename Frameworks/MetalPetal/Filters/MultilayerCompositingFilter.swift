@@ -64,6 +64,10 @@ public class MultilayerCompositingFilter: MTIFilter {
         
         public var opacity: Float = 1
         
+        public var cornerRadius: MTICornerRadius = MTICornerRadius(0)
+        
+        public var cornerCurve: MTICornerCurve = .circular
+        
         public var tintColor: MTIColor = .clear
         
         public var blendMode: MTIBlendMode = .normal
@@ -92,6 +96,8 @@ public class MultilayerCompositingFilter: MTIFilter {
             hasher.combine(size.height)
             hasher.combine(rotation)
             hasher.combine(opacity)
+            hasher.combine(cornerRadius)
+            hasher.combine(cornerCurve)
             hasher.combine(tintColor)
             hasher.combine(blendMode)
         }
@@ -157,6 +163,25 @@ public class MultilayerCompositingFilter: MTIFilter {
         public func blendMode(_ blendMode: MTIBlendMode) -> Layer {
             self.mutating({ $0.blendMode = blendMode })
         }
+        
+        public func corner(radius: MTICornerRadius, curve: MTICornerCurve) -> Layer {
+            self.mutating({
+                $0.cornerRadius = radius
+                $0.cornerCurve = curve
+            })
+        }
+        
+        public func cornerRadius(_ radius: MTICornerRadius) -> Layer {
+            self.mutating({ $0.cornerRadius = radius })
+        }
+        
+        public func cornerRadius(_ radius: Float) -> Layer {
+            self.mutating({ $0.cornerRadius = MTICornerRadius(radius) })
+        }
+        
+        public func cornerCurve(_ curve: MTICornerCurve) -> Layer {
+            self.mutating({ $0.cornerCurve = curve })
+        }
     }
     
     public var outputPixelFormat: MTLPixelFormat {
@@ -213,7 +238,7 @@ extension MultilayerCompositingFilter {
 
 extension MultilayerCompositingFilter.Layer {
     fileprivate func bridgeToObjectiveC() -> MTILayer {
-        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, mask: self.mask, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, tintColor: self.tintColor, blendMode: self.blendMode)
+        return MTILayer(content: self.content, contentRegion: self.contentRegion, contentFlipOptions: self.contentFlipOptions, mask: self.mask, compositingMask: self.compositingMask, layoutUnit: self.layoutUnit, position: self.position, size: self.size, rotation: self.rotation, opacity: self.opacity, cornerRadius: self.cornerRadius, cornerCurve: self.cornerCurve, tintColor: self.tintColor, blendMode: self.blendMode)
     }
 }
 

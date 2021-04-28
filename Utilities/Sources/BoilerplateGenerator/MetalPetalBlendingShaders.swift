@@ -53,6 +53,16 @@ public struct MetalPetalBlendingShadersCodeGenerator {
                 textureColor.rgb = parameters.tintColor.rgb;
                 textureColor.a *= parameters.tintColor.a;
             }
+            switch (multilayer_composite_corner_curve_type) {
+                case 1:
+                    textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+                    break;
+                case 2:
+                    textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+                    break;
+                default:
+                    break;
+            }
             textureColor.a *= parameters.opacity;
             return \(blendFunctionName)(currentColor,textureColor);
         }
@@ -96,6 +106,16 @@ public struct MetalPetalBlendingShadersCodeGenerator {
             if (multilayer_composite_has_tint_color) {
                 textureColor.rgb = parameters.tintColor.rgb;
                 textureColor.a *= parameters.tintColor.a;
+            }
+            switch (multilayer_composite_corner_curve_type) {
+                case 1:
+                    textureColor.a *= circularCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+                    break;
+                case 2:
+                    textureColor.a *= continuousCornerMask(parameters.layerSize, vertexIn.positionInLayer, parameters.cornerRadius);
+                    break;
+                default:
+                    break;
             }
             textureColor.a *= parameters.opacity;
             return \(blendFunctionName)(backgroundColor,textureColor);

@@ -79,6 +79,7 @@ __attribute__((objc_subclassing_restricted))
     BOOL _hasContentMask;
     BOOL _hasCompositingMask;
     BOOL _hasTintColor;
+    short _cornerCurveType; // none: 0, circular: 1, continuous: 2
 }
 @property (nonatomic, copy, readonly) MTIBlendMode blendMode;
 @end
@@ -92,6 +93,20 @@ __attribute__((objc_subclassing_restricted))
         _hasContentMask = layer.mask != nil;
         _hasCompositingMask = layer.compositingMask != nil;
         _hasTintColor = layer.tintColor.alpha > 0;
+        switch (layer.cornerCurve) {
+            case MTICornerCurveCircular:
+                _cornerCurveType = 1;
+                break;
+            case MTICornerCurveContinuous:
+                _cornerCurveType = 2;
+                break;
+            default:
+                _cornerCurveType = 0;
+                break;
+        }
+        if (MTICornerRadiusIsZero(layer.cornerRadius)) {
+            _cornerCurveType = 0;
+        }
     }
     return self;
 }
@@ -107,7 +122,8 @@ __attribute__((objc_subclassing_restricted))
         other->_contentHasPremultipliedAlpha == _contentHasPremultipliedAlpha &&
         other->_hasContentMask == _hasContentMask &&
         other->_hasCompositingMask == _hasCompositingMask &&
-        other->_hasTintColor == _hasTintColor;
+        other->_hasTintColor == _hasTintColor &&
+        other->_cornerCurveType == _cornerCurveType;
     }
     return NO;
 }
@@ -119,6 +135,7 @@ __attribute__((objc_subclassing_restricted))
     MTIHasherCombine(&hasher, (uint64_t)_hasContentMask);
     MTIHasherCombine(&hasher, (uint64_t)_hasCompositingMask);
     MTIHasherCombine(&hasher, (uint64_t)_hasTintColor);
+    MTIHasherCombine(&hasher, (uint64_t)_cornerCurveType);
     return MTIHasherFinalize(&hasher);
 }
 
@@ -137,6 +154,7 @@ __attribute__((objc_subclassing_restricted))
     [constants setConstantValue:&_hasContentMask type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_mask"];
     [constants setConstantValue:&_hasCompositingMask type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_compositing_mask"];
     [constants setConstantValue:&_hasTintColor type:MTLDataTypeBool withName:@"metalpetal::multilayer_composite_has_tint_color"];
+    [constants setConstantValue:&_cornerCurveType type:MTLDataTypeShort withName:@"metalpetal::multilayer_composite_corner_curve_type"];
     return [fragmentFunctionDescriptorForBlending functionDescriptorWithConstantValues:constants];
 }
 
@@ -527,6 +545,8 @@ __attribute__((objc_subclassing_restricted))
         parameters.maskUsesOneMinusValue = layer.mask.mode == MTIMaskModeOneMinusMaskValue;
         parameters.maskHasPremultipliedAlpha = layer.mask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
+        parameters.layerSize = simd_make_float2(layerPixelSize.width, layerPixelSize.height);
+        parameters.cornerRadius = _MTICornerRadiusGetShadingParameterValue(layer.cornerRadius, layer.cornerCurve);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [self drawVerticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
@@ -719,6 +739,8 @@ __attribute__((objc_subclassing_restricted))
         parameters.maskUsesOneMinusValue = layer.mask.mode == MTIMaskModeOneMinusMaskValue;
         parameters.maskHasPremultipliedAlpha = layer.mask.content.alphaType == MTIAlphaTypePremultiplied;
         parameters.tintColor = MTIColorToFloat4(layer.tintColor);
+        parameters.layerSize = simd_make_float2(layerPixelSize.width, layerPixelSize.height);
+        parameters.cornerRadius = _MTICornerRadiusGetShadingParameterValue(layer.cornerRadius, layer.cornerCurve);
         [commandEncoder setFragmentBytes:&parameters length:sizeof(parameters) atIndex:0];
         
         [self drawVerticesForRect:CGRectMake(-layerPixelSize.width/2.0, -layerPixelSize.height/2.0, layerPixelSize.width, layerPixelSize.height)
@@ -825,7 +847,7 @@ __attribute__((objc_subclassing_restricted))
             pointer += 1;
             newMask = [[MTIMask alloc] initWithContent:newMaskContent component:mask.component mode:mask.mode];
         }
-        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions mask:newMask compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity tintColor:layer.tintColor blendMode:layer.blendMode];
+        MTILayer *newLayer = [[MTILayer alloc] initWithContent:newContent contentRegion:layer.contentRegion contentFlipOptions:layer.contentFlipOptions mask:newMask compositingMask:newCompositingMask layoutUnit:layer.layoutUnit position:layer.position size:layer.size rotation:layer.rotation opacity:layer.opacity cornerRadius:layer.cornerRadius cornerCurve:layer.cornerCurve tintColor:layer.tintColor blendMode:layer.blendMode];
         [newLayers addObject:newLayer];
     }
     return [[MTIMultilayerCompositingRecipe alloc] initWithKernel:_kernel backgroundImage:backgroundImage layers:newLayers rasterSampleCount:_rasterSampleCount outputAlphaType:_alphaType outputTextureDimensions:_dimensions outputPixelFormat:_outputPixelFormat];

@@ -23,19 +23,6 @@
                        blendMode:blendMode];
 }
 
-- (instancetype)initWithContent:(MTIImage *)content contentIsFlipped:(BOOL)contentIsFlipped contentRegion:(CGRect)contentRegion compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
-    return [self initWithContent:content
-                   contentRegion:contentRegion
-              contentFlipOptions:contentIsFlipped ? MTILayerFlipOptionsFlipVertically : MTILayerFlipOptionsDonotFlip
-                 compositingMask:compositingMask
-                      layoutUnit:layoutUnit
-                        position:position
-                            size:size
-                        rotation:rotation
-                         opacity:opacity
-                       blendMode:blendMode];
-}
-
 - (instancetype)initWithContent:(MTIImage *)content layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity blendMode:(MTIBlendMode)blendMode {
     return [self initWithContent:content
                    contentRegion:content.extent
@@ -78,7 +65,11 @@
                        blendMode:blendMode];
 }
 
-- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions mask:(MTIMask *)mask compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity tintColor:(MTIColor)tintColor blendMode:(MTIBlendMode)blendMode {
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions mask:(nullable MTIMask *)mask compositingMask:(nullable MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity tintColor:(MTIColor)tintColor blendMode:(MTIBlendMode)blendMode {
+    return [self initWithContent:content contentRegion:contentRegion contentFlipOptions:contentFlipOptions mask:mask compositingMask:compositingMask layoutUnit:layoutUnit position:position size:size rotation:rotation opacity:opacity cornerRadius:MTICornerRadiusMake(0) cornerCurve:MTICornerCurveCircular tintColor:tintColor blendMode:blendMode];
+}
+
+- (instancetype)initWithContent:(MTIImage *)content contentRegion:(CGRect)contentRegion contentFlipOptions:(MTILayerFlipOptions)contentFlipOptions mask:(MTIMask *)mask compositingMask:(MTIMask *)compositingMask layoutUnit:(MTILayerLayoutUnit)layoutUnit position:(CGPoint)position size:(CGSize)size rotation:(float)rotation opacity:(float)opacity cornerRadius:(MTICornerRadius)cornerRadius cornerCurve:(MTICornerCurve)cornerCurve tintColor:(MTIColor)tintColor blendMode:(nonnull MTIBlendMode)blendMode {
     if (self = [super init]) {
         _content = content;
         _contentRegion = contentRegion;
@@ -90,6 +81,8 @@
         _size = size;
         _rotation = rotation;
         _opacity = opacity;
+        _cornerRadius = cornerRadius;
+        _cornerCurve = cornerCurve;
         _tintColor = tintColor;
         _blendMode = blendMode;
     }
