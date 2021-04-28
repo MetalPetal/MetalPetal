@@ -27,6 +27,13 @@ extension MTIVertex : Equatable {
     }
 }
 
+extension MTIVertex: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(position)
+        hasher.combine(textureCoordinate)
+    }
+}
+
 extension MTIVertices {
     public convenience init(vertices: [MTIVertex], primitiveType: MTLPrimitiveType) {
         self.init(__vertices: vertices, count: UInt(vertices.count), primitiveType: primitiveType)
