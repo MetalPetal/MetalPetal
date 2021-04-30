@@ -1912,7 +1912,7 @@ final class RenderTests: XCTestCase {
         
         let multilayerCompositingFilter = MultilayerCompositingFilter()
         multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
-        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(16), curve: .circular)]
+        multilayerCompositingFilter.layers = [MultilayerCompositingFilter.Layer(content: image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(16), curve: .circular)]
         let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
         
         let context = try makeContext()
@@ -1932,7 +1932,7 @@ final class RenderTests: XCTestCase {
         
         let multilayerCompositingFilter = MultilayerCompositingFilter()
         multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
-        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(8), curve: .continuous)]
+        multilayerCompositingFilter.layers = [MultilayerCompositingFilter.Layer(content: image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(8), curve: .continuous)]
         let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
         
         let context = try makeContext()
@@ -1946,7 +1946,7 @@ final class RenderTests: XCTestCase {
         let image = try XCTUnwrap(MTIImage.white.resized(to: CGSize(width: 32, height: 32)))
         let multilayerCompositingFilter = MultilayerCompositingFilter()
         multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
-        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(0), curve: .continuous)]
+        multilayerCompositingFilter.layers = [MultilayerCompositingFilter.Layer(content: image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(0), curve: .continuous)]
         let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
         let context = try makeContext()
         let roundCornerFilterOutput = try context.makeCGImage(from: image)
