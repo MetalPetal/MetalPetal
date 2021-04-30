@@ -1901,6 +1901,58 @@ final class RenderTests: XCTestCase {
     func testRoundCornerFilter_continuous() throws {
         try runRoundCornerTest(size: 32, curve: .continuous, allowedDifference: 64)
     }
+    
+    func testMultilayerCompositing_roundCorner_circular() throws {
+        let image = try XCTUnwrap(MTIImage.white.resized(to: CGSize(width: 32, height: 32)))
+        let roundCornerFilter = MTIRoundCornerFilter()
+        roundCornerFilter.cornerRadius = MTICornerRadius(16)
+        roundCornerFilter.cornerCurve = .circular
+        roundCornerFilter.inputImage = image
+        let roundImage = try XCTUnwrap(roundCornerFilter.outputImage)
+        
+        let multilayerCompositingFilter = MultilayerCompositingFilter()
+        multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
+        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(16), curve: .circular)]
+        let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
+        
+        let context = try makeContext()
+        let roundCornerFilterOutput = try context.makeCGImage(from: roundImage)
+        let multilayerCompositingFilterOutput = try context.makeCGImage(from: XCTUnwrap(compositedImage.cropped(to: CGRect(x: 32, y: 32, width: 32, height: 32))))
+        
+        XCTAssert(roundCornerFilterOutput.dataProvider?.data == multilayerCompositingFilterOutput.dataProvider?.data)
+    }
+    
+    func testMultilayerCompositing_roundCorner_continuous() throws {
+        let image = try XCTUnwrap(MTIImage.white.resized(to: CGSize(width: 32, height: 32)))
+        let roundCornerFilter = MTIRoundCornerFilter()
+        roundCornerFilter.cornerRadius = MTICornerRadius(8)
+        roundCornerFilter.cornerCurve = .continuous
+        roundCornerFilter.inputImage = image
+        let roundImage = try XCTUnwrap(roundCornerFilter.outputImage)
+        
+        let multilayerCompositingFilter = MultilayerCompositingFilter()
+        multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
+        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(8), curve: .continuous)]
+        let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
+        
+        let context = try makeContext()
+        let roundCornerFilterOutput = try context.makeCGImage(from: roundImage)
+        let multilayerCompositingFilterOutput = try context.makeCGImage(from: XCTUnwrap(compositedImage.cropped(to: CGRect(x: 32, y: 32, width: 32, height: 32))))
+        
+        XCTAssert(roundCornerFilterOutput.dataProvider?.data == multilayerCompositingFilterOutput.dataProvider?.data)
+    }
+    
+    func testMultilayerCompositing_roundCorner_none() throws {
+        let image = try XCTUnwrap(MTIImage.white.resized(to: CGSize(width: 32, height: 32)))
+        let multilayerCompositingFilter = MultilayerCompositingFilter()
+        multilayerCompositingFilter.inputBackgroundImage = MTIImage(color: .clear, sRGB: false, size: CGSize(width: 64, height: 64))
+        multilayerCompositingFilter.layers = [.content(image).frame(CGRect(x: 32, y: 32, width: 32, height: 32), layoutUnit: .pixel).corner(radius: MTICornerRadius(0), curve: .continuous)]
+        let compositedImage = try XCTUnwrap(multilayerCompositingFilter.outputImage)
+        let context = try makeContext()
+        let roundCornerFilterOutput = try context.makeCGImage(from: image)
+        let multilayerCompositingFilterOutput = try context.makeCGImage(from: XCTUnwrap(compositedImage.cropped(to: CGRect(x: 32, y: 32, width: 32, height: 32))))
+        XCTAssert(roundCornerFilterOutput.dataProvider?.data == multilayerCompositingFilterOutput.dataProvider?.data)
+    }
 }
 
 extension RenderTests {
