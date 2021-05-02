@@ -499,7 +499,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
 
 #pragma mark - Cache
 
-static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Context is peformaning a render-releated operation without aquiring the renderingLock.";
+static NSString * const MTIContextRenderingLockNotLockedErrorDescription = @"Context is performing a render-releated operation without aquiring the renderingLock.";
 
 - (id<MTLLibrary>)libraryWithURL:(NSURL *)URL error:(NSError * __autoreleasing *)error {
     NSAssert([self.renderingLock tryLock] == NO, MTIContextRenderingLockNotLockedErrorDescription);
