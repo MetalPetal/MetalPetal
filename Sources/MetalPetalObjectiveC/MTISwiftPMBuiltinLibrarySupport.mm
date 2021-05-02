@@ -11,8 +11,8 @@ static const char *MTIBuiltinLibrarySource = R"mtirawstring(
 //
 //
 
-#ifndef MTIShader_h
-#define MTIShader_h
+#ifndef MTIShaderLib_h
+#define MTIShaderLib_h
 
 #if __METAL_MACOS__ || __METAL_IOS__
 
@@ -22,7 +22,7 @@ using namespace metal;
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
 
-#import <simd/simd.h>
+#include <simd/simd.h>
 
 struct MTIVertex {
     vector_float4 position;
@@ -790,7 +790,7 @@ namespace metalpetal {
 
 #endif /* __METAL_MACOS__ || __METAL_IOS__ */
 
-#endif /* MTIShader_h */
+#endif /* MTIShaderLib_h */
 //
 //  MTIFunctionConstants.h
 //  Pods
