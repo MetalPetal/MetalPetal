@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, MTIVectorScalarType) {
 } NS_SWIFT_NAME(MTIVector.ScalarType);
 
 __attribute__((objc_subclassing_restricted))
-@interface MTIVector : NSObject <NSCopying, NSSecureCoding>
+@interface MTIVector : NSObject <NSCopying>
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;

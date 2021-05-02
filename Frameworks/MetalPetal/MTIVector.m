@@ -109,33 +109,6 @@
     return [[MTIVector alloc] initWithUIntValues:values count:count];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder {
-    NSData *data = [coder decodeObjectOfClass:[NSData class] forKey:@"data"];
-    NSNumber *scalarTypeValue = [coder decodeObjectOfClass:[NSNumber class] forKey:@"scalarType"];
-    if (data == nil || scalarTypeValue == nil) {
-        return nil;
-    }
-    switch ([scalarTypeValue integerValue]) {
-        case MTIVectorScalarTypeFloat:
-            return [self initWithFloatValues:data.bytes count:data.length/sizeof(float)];
-        case MTIVectorScalarTypeInt:
-            return [self initWithIntValues:data.bytes count:data.length/sizeof(int)];
-        case MTIVectorScalarTypeUInt:
-            return [self initWithUIntValues:data.bytes count:data.length/sizeof(uint)];
-        default:
-            return nil;
-    }
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder {
-    [coder encodeObject:_data forKey:@"data"];
-    [coder encodeObject:@(_scalarType) forKey:@"scalarType"];
-}
-
-+ (BOOL)supportsSecureCoding {
-    return YES;
-}
-
 - (NSUInteger)hash {
     return _data.hash;
 }
