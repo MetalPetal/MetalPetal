@@ -7,14 +7,6 @@
 
 #import "MTIColor.h"
 
-MTIColor MTIColorMake(float red, float green, float blue, float alpha) {
-    return (MTIColor){red,green,blue,alpha};
-}
-
-simd_float4 MTIColorToFloat4(MTIColor color) {
-    return simd_make_float4(color.red, color.green, color.blue, color.alpha);
-}
-
 MTIColor const MTIColorWhite = (MTIColor){.red = 1, .green = 1, .blue = 1, .alpha = 1};
 MTIColor const MTIColorBlack = (MTIColor){.red = 0, .green = 0, .blue = 0, .alpha = 1};
 MTIColor const MTIColorClear = (MTIColor){.red = 0, .green = 0, .blue = 0, .alpha = 0};

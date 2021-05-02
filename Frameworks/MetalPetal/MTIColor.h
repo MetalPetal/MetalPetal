@@ -23,9 +23,13 @@ struct MTIColor {
 };
 typedef struct MTIColor MTIColor;
 
-FOUNDATION_EXPORT MTIColor MTIColorMake(float red, float green, float blue, float alpha) NS_SWIFT_UNAVAILABLE("Use MTIColor.init instead.");
+NS_INLINE NS_SWIFT_UNAVAILABLE("Use MTIColor.init instead.") MTIColor MTIColorMake(float red, float green, float blue, float alpha) {
+    return (MTIColor){ red, green, blue, alpha };
+}
 
-FOUNDATION_EXPORT simd_float4 MTIColorToFloat4(MTIColor color) NS_SWIFT_NAME(MTIColor.toFloat4(self:));
+NS_INLINE NS_SWIFT_NAME(MTIColor.toFloat4(self:)) simd_float4 MTIColorToFloat4(MTIColor color) {
+    return simd_make_float4(color.red, color.green, color.blue, color.alpha);
+}
 
 FOUNDATION_EXPORT MTIColor const MTIColorWhite NS_SWIFT_NAME(MTIColor.white);
 FOUNDATION_EXPORT MTIColor const MTIColorBlack NS_SWIFT_NAME(MTIColor.black);

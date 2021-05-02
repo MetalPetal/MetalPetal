@@ -50,9 +50,6 @@ NSString * MTIImagePromiseDebugIdentifierForObject(id object) {
     const CGFloat sourceBackgroundColorValues[] = {0.93, 0.94, 0.95, 1.0};
     const CGFloat sourceBorderColorValues[] = {0.74, 0.76, 0.78, 1.0};
 
-//    const CGFloat processorBackgroundColorValues[] = {0.95, 0.87, 0.71, 1.0};
-//    const CGFloat processorBorderColorValues[] = {0.84, 0.76, 0.58, 1.0};
-
     const CGFloat processorBackgroundColorValues[] = {1.0, 0.8, 0.0, 1.0};
     const CGFloat processorBorderColorValues[] = {1.0, 0.66, 0.0, 1.0};
     
