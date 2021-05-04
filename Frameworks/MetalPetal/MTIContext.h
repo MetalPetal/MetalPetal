@@ -47,23 +47,14 @@ __attribute__((objc_subclassing_restricted))
 /// The built-in metal library URL.
 @property (nonatomic, copy) NSURL *defaultLibraryURL;
 
-/// The texture loader to use.
-@property (nonatomic) Class<MTITextureLoader> textureLoaderClass;
+/// The texture loader to use. When this property is nil, the context uses `MTIDefaultTextureLoader`.
+@property (nonatomic, nullable) Class<MTITextureLoader> textureLoaderClass;
 
-/// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture).
-@property (nonatomic) Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass;
+/// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture). When this property is nil, the context uses `MTICVMetalIOSurfaceBridge` for iOS 11+/macOS 10.11+ and `MTICVMetalTextureCache` for operating systems before iOS 11/macOS 10.11.
+@property (nonatomic, nullable) Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass;
 
-/// The texture pool class to use.
-@property (nonatomic) Class<MTITexturePool> texturePoolClass;
-
-/// The default value for this property is MTIDefaultTextureLoader.class
-@property (nonatomic, class) Class<MTITextureLoader> defaultTextureLoaderClass;
-
-/// On iOS 11/macOS 10.11 or later, the default value is MTICVMetalIOSurfaceBridge.class. Before iOS 11/macOS 10.11, the defualt value is MTICVMetalTextureCache.class.
-@property (nonatomic, class) Class<MTICVMetalTextureBridging> defaultCoreVideoMetalTextureBridgeClass;
-
-/// The default value for this property is MTIDeviceTexturePool.class
-@property (nonatomic, class) Class<MTITexturePool> defaultTexturePoolClass;
+/// The texture pool class to use. When this property is nil, the context uses `MTIHeapTexturePool` if possible, and falls back to `MTIDeviceTexturePool`.
+@property (nonatomic, nullable) Class<MTITexturePool> texturePoolClass;
 
 @end
 

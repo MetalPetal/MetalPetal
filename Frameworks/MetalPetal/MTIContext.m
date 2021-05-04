@@ -83,9 +83,9 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
         _defaultLibraryURL = MTIDefaultBuiltinLibraryURLForBundle(MTIDefaultBuiltinLibraryBundle());
         #endif
         
-        _textureLoaderClass = MTIContextOptions.defaultTextureLoaderClass;
-        _coreVideoMetalTextureBridgeClass = MTIContextOptions.defaultCoreVideoMetalTextureBridgeClass;
-        _texturePoolClass = MTIContextOptions.defaultTexturePoolClass;
+        _textureLoaderClass = nil;
+        _coreVideoMetalTextureBridgeClass = nil;
+        _texturePoolClass = nil;
     }
     return self;
 }
@@ -95,6 +95,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
     options.enablesRenderGraphOptimization = _enablesRenderGraphOptimization;
+    options.enablesYCbCrPixelFormatSupport = _enablesYCbCrPixelFormatSupport;
     options.automaticallyReclaimsResources = _automaticallyReclaimsResources;
     options.label = _label;
     options.defaultLibraryURL = _defaultLibraryURL;
@@ -102,40 +103,6 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
     options.coreVideoMetalTextureBridgeClass = _coreVideoMetalTextureBridgeClass;
     options.texturePoolClass = _texturePoolClass;
     return options;
-}
-
-static Class _defaultTextureLoaderClass = nil;
-
-+ (void)setDefaultTextureLoaderClass:(Class<MTITextureLoader>)defaultTextureLoaderClass {
-    _defaultTextureLoaderClass = defaultTextureLoaderClass;
-}
-
-+ (Class<MTITextureLoader>)defaultTextureLoaderClass {
-    return _defaultTextureLoaderClass ?: MTIDefaultTextureLoader.class;
-}
-
-static Class _defaultCoreVideoMetalTextureBridgeClass = nil;
-
-+ (void)setDefaultCoreVideoMetalTextureBridgeClass:(Class<MTICVMetalTextureBridging>)defaultCoreVideoMetalTextureBridgeClass {
-    _defaultCoreVideoMetalTextureBridgeClass = defaultCoreVideoMetalTextureBridgeClass;
-}
-
-+ (Class<MTICVMetalTextureBridging>)defaultCoreVideoMetalTextureBridgeClass {
-    if (@available(iOS 11_0, macOS 10_11, *)) {
-        return _defaultCoreVideoMetalTextureBridgeClass ?: MTICVMetalIOSurfaceBridge.class;
-    } else {
-        return _defaultCoreVideoMetalTextureBridgeClass ?: MTICVMetalTextureCache.class;
-    }
-}
-
-static Class _defaultTexturePoolClass = nil;
-
-+ (void)setDefaultTexturePoolClass:(Class<MTITexturePool>)defaultTexturePoolClass {
-    _defaultTexturePoolClass = defaultTexturePoolClass;
-}
-
-+ (Class<MTITexturePool>)defaultTexturePoolClass {
-    return _defaultTexturePoolClass ?: MTIDeviceTexturePool.class;
 }
 
 @end
@@ -295,10 +262,22 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         _isMemorylessTextureSupported = [MTIContext deviceSupportsMemorylessTexture:device];
         _isProgrammableBlendingSupported = [MTIContext deviceSupportsProgrammableBlending:device];
         
-        _textureLoader = [options.textureLoaderClass newTextureLoaderWithDevice:device];
+        _textureLoader = [(options.textureLoaderClass ?: MTIDefaultTextureLoader.class) newTextureLoaderWithDevice:device];
         NSAssert(_textureLoader != nil, @"Cannot create texture loader.");
         
-        _texturePool = [options.texturePoolClass newTexturePoolWithDevice:device];
+        Class<MTITexturePool> texturePoolClass = options.texturePoolClass;
+        if (texturePoolClass == nil) {
+            if (@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)) {
+                if ([MTIHeapTexturePool isSupportedOnDevice:device]) {
+                    texturePoolClass = MTIHeapTexturePool.class;
+                } else {
+                    texturePoolClass = MTIDeviceTexturePool.class;
+                }
+            } else {
+                texturePoolClass = MTIDeviceTexturePool.class;
+            }
+        }
+        _texturePool = [texturePoolClass newTexturePoolWithDevice:device];
         _libraryCache = [NSMutableDictionary dictionary];
         _libraryCache[options.defaultLibraryURL] = defaultLibrary;
         _functionCache = [NSMutableDictionary dictionary];
@@ -318,8 +297,16 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _renderingLock = MTILockCreate();
         
+        Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass = options.coreVideoMetalTextureBridgeClass;
+        if (coreVideoMetalTextureBridgeClass == nil) {
+            if (@available(iOS 11.0, tvOS 11.0, macOS 10.11, *)) {
+                coreVideoMetalTextureBridgeClass = MTICVMetalIOSurfaceBridge.class;
+            } else {
+                coreVideoMetalTextureBridgeClass = MTICVMetalTextureCache.class;
+            }
+        }
         NSError *coreVideoMetalTextureBridgeError = nil;
-        _coreVideoTextureBridge = [options.coreVideoMetalTextureBridgeClass newCoreVideoMetalTextureBridgeWithDevice:device error:&coreVideoMetalTextureBridgeError];
+        _coreVideoTextureBridge = [coreVideoMetalTextureBridgeClass newCoreVideoMetalTextureBridgeWithDevice:device error:&coreVideoMetalTextureBridgeError];
         if (coreVideoMetalTextureBridgeError) {
             if (inOutError) {
                 *inOutError = coreVideoMetalTextureBridgeError;
