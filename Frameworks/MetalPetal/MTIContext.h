@@ -25,7 +25,7 @@ FOUNDATION_EXPORT NSString * const MTIContextDefaultLabel;
 
 /// Options for creating a MTIContext.
 __attribute__((objc_subclassing_restricted))
-@interface MTIContextOptions : NSObject <NSCopying>
+@interface MTIContextOptions : NSObject
 
 @property (nonatomic, copy, nullable) NSDictionary<CIContextOption,id> *coreImageContextOptions;
 
