@@ -91,6 +91,7 @@ static NSBundle * MTIDefaultBuiltinLibraryBundle(void) {
 }
 
 - (id)copyWithZone:(NSZone *)zone {
+    NSAssert(NO, @"MTIContextOptions no longer supports NSCopying.");
     MTIContextOptions *options = [[MTIContextOptions allocWithZone:zone] init];
     options.coreImageContextOptions = _coreImageContextOptions;
     options.workingPixelFormat = _workingPixelFormat;
