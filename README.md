@@ -821,7 +821,7 @@ Simulator supports fewer features or different implementation limits than an act
 
 If you do a Quick Look on a `MTIImage`, it'll show you the image graph that you constructed to produce that image.
 
-![Quick Look Debug Preview](Assets/quick_look_debug_preview.jpg)
+![Quick Look Debug Preview](https://user-images.githubusercontent.com/1234944/116965587-c6a0a280-ace0-11eb-8918-2f36d1d6114c.jpg)
 
 ## Trivia
 
