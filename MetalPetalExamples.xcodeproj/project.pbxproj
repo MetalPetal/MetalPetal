@@ -72,6 +72,7 @@
 		9D4929FC261E1B580011E8AF /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 9D4929C2261E1B580011E8AF /* art.scnassets */; };
 		9D492A0C261E1D320011E8AF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9D492A0B261E1D320011E8AF /* VideoIO */; };
 		9D492A10261E1D420011E8AF /* VideoIO in Frameworks */ = {isa = PBXBuildFile; productRef = 9D492A0F261E1D420011E8AF /* VideoIO */; };
+		9D4985AB26454E39003B8281 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D4985AA26454E39003B8281 /* AVKit.framework */; };
 		DC1829C9C2ED99B005622C45 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33BF35C8DC0C16F75B3F1984 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework */; };
 /* End PBXBuildFile section */
 
@@ -117,6 +118,7 @@
 		9D4929C0261E1B580011E8AF /* MetalKitView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalKitView.swift; sourceTree = "<group>"; };
 		9D4929C1261E1B580011E8AF /* ColorLookupTable.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ColorLookupTable.png; sourceTree = "<group>"; };
 		9D4929C2261E1B580011E8AF /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		9D4985AA26454E39003B8281 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		9E1DD1CD19A8033D4E0152B9 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS).release.xcconfig"; sourceTree = "<group>"; };
 		B378FBB57E99C90A34544BF4 /* Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (macOS)/Pods-MetalPetalExamples-MetalPetalExamples (macOS).debug.xcconfig"; sourceTree = "<group>"; };
 		C56F5F1EE4A42DDCD7B0159C /* Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig"; path = "Target Support Files/Pods-MetalPetalExamples-MetalPetalExamples (iOS)/Pods-MetalPetalExamples-MetalPetalExamples (iOS).release.xcconfig"; sourceTree = "<group>"; };
@@ -138,6 +140,7 @@
 			files = (
 				9D492A10261E1D420011E8AF /* VideoIO in Frameworks */,
 				2AF4F087EEBBECD071A474BA /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework in Frameworks */,
+				9D4985AB26454E39003B8281 /* AVKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +150,7 @@
 		4D37F1B66F9F6B8D6F99813C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9D4985AA26454E39003B8281 /* AVKit.framework */,
 				33BF35C8DC0C16F75B3F1984 /* Pods_MetalPetalExamples_MetalPetalExamples__iOS_.framework */,
 				32F118E951611EE75B4F2801 /* Pods_MetalPetalExamples_MetalPetalExamples__macOS_.framework */,
 			);
@@ -320,7 +324,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1240;
+				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					9D492978261E19E80011E8AF = {
 						CreatedOnToolsVersion = 12.4;

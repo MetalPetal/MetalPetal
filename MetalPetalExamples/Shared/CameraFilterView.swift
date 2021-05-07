@@ -12,7 +12,7 @@ import VideoIO
 import VideoToolbox
 import AVKit
 
-class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
     
     struct Face {
         var bounds: CGRect
@@ -179,6 +179,7 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
     override init() {
         super.init()
         try? self.camera.enableVideoDataOutput(on: queue, delegate: self)
+        try? self.camera.enableAudioDataOutput(on: queue, delegate: self)
         self.camera.videoDataOutput?.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
     }
     
@@ -197,7 +198,9 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
     func startRecording() throws {
         let sessionID = UUID()
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(sessionID.uuidString).mp4")
-        let recorder = try MovieRecorder(url: url, configuration: MovieRecorder.Configuration(hasAudio: false))
+        // record audio when permission is given
+        let hasAudio = self.camera.audioDataOutput != nil
+        let recorder = try MovieRecorder(url: url, configuration: MovieRecorder.Configuration(hasAudio: hasAudio))
         state.isRecording = true
         queue.async {
             self.recorder = recorder
@@ -225,18 +228,32 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
     }
     
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        do {
-            let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
-            let filterOutputImage = self.filter(image, faces)
-            let outputImage = self.state.isVideoMirrored ? filterOutputImage.oriented(.upMirrored) : filterOutputImage
-            let renderOutput = try self.imageRenderer.render(outputImage, using: renderContext)
-            try self.recorder?.appendSampleBuffer(SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: renderOutput.pixelBuffer)!)
-            DispatchQueue.main.async {
-                self.previewImage = renderOutput.cgImage
+        guard let formatDescription = sampleBuffer.formatDescription else {
+            return
+        }
+        switch formatDescription.mediaType {
+        case .audio:
+            do {
+                try self.recorder?.appendSampleBuffer(sampleBuffer)
+            } catch {
+                print(error)
             }
-        } catch {
-            print(error)
+        case .video:
+            guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            do {
+                let image = MTIImage(cvPixelBuffer: pixelBuffer, alphaType: .alphaIsOne)
+                let filterOutputImage = self.filter(image, faces)
+                let outputImage = self.state.isVideoMirrored ? filterOutputImage.oriented(.upMirrored) : filterOutputImage
+                let renderOutput = try self.imageRenderer.render(outputImage, using: renderContext)
+                try self.recorder?.appendSampleBuffer(SampleBufferUtilities.makeSampleBufferByReplacingImageBuffer(of: sampleBuffer, with: renderOutput.pixelBuffer)!)
+                DispatchQueue.main.async {
+                    self.previewImage = renderOutput.cgImage
+                }
+            } catch {
+                print(error)
+            }
+        default:
+            break
         }
     }
 }

@@ -91,6 +91,14 @@ extension View {
         #endif
     }
     
+    func smallControlSize() -> some View {
+        #if os(macOS)
+        return self.controlSize(.small)
+        #else
+        return self
+        #endif
+    }
+    
     func toolbarMenu<T>(_ menu: T) -> some View where T: View {
         #if os(iOS)
         return self.navigationBarItems(trailing: menu)
@@ -118,3 +126,18 @@ extension View {
         #endif
     }
 }
+
+#if os(iOS)
+
+extension UIApplication {
+    var topMostViewController: UIViewController? {
+        let rootWindow = self.windows.first(where: { $0.isHidden == false })
+        var topMostViewController: UIViewController? = rootWindow?.rootViewController
+        while topMostViewController?.presentedViewController != nil {
+            topMostViewController = topMostViewController?.presentedViewController
+        }
+        return topMostViewController
+    }
+}
+
+#endif
