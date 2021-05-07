@@ -371,7 +371,7 @@ _[VideoIO](https://github.com/MetalPetal/VideoIO) is required for the following 
 ```Swift
 import VideoIO
 
-let configuration = AssetExportSession.Configuration(fileType: .mp4, videoSettings: .h264(videoSize: composition.renderSize), audioSettings: .aac(channels: 2, sampleRate: 44100, bitRate: 128 * 1000))
+var configuration = AssetExportSession.Configuration(fileType: .mp4, videoSettings: .h264(videoSize: composition.renderSize), audioSettings: .aac(channels: 2, sampleRate: 44100, bitRate: 128 * 1000))
 configuration.videoComposition = composition.makeAVVideoComposition()
 self.exporter = try! AssetExportSession(asset: asset, outputURL: outputURL, configuration: configuration)
 exporter.export(progress: { progress in
