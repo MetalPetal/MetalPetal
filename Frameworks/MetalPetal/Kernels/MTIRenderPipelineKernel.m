@@ -272,12 +272,7 @@ __attribute__((objc_subclassing_restricted))
                 }
                 renderPassDescriptor.colorAttachments[index].texture = msaaTarget.texture;
                 renderPassDescriptor.colorAttachments[index].clearColor = outputDescriptor.clearColor;
-                if (outputDescriptor.loadAction == MTLLoadActionLoad) {
-                    NSAssert(NO, @"Cannot use `MTLLoadActionLoad` for memoryless render target. Fallback to `MTLLoadActionClear`.");
-                    renderPassDescriptor.colorAttachments[index].loadAction = MTLLoadActionClear;
-                } else {
-                    renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
-                }
+                renderPassDescriptor.colorAttachments[index].loadAction = outputDescriptor.loadAction;
                 renderPassDescriptor.colorAttachments[index].storeAction = MTLStoreActionMultisampleResolve;
                 renderPassDescriptor.colorAttachments[index].resolveTexture = renderTarget.texture;
                 [msaaTarget releaseTexture];
