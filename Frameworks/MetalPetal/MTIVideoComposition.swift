@@ -73,8 +73,8 @@ public class MTIAsyncVideoCompositionRequestHandler {
         public let compositionTime: CMTime
         public let renderSize: CGSize
         
-        public var anySourceImage: MTIImage {
-            return sourceImages.first!.value
+        public var anySourceImage: MTIImage? {
+            return sourceImages.first?.value
         }
     }
     
