@@ -50,22 +50,25 @@ struct VideoProcessorView: View {
             watermarkMaskTransformFilter.inputImage = watermarkMaskImage
             
             let videoComposition = MTIVideoComposition(asset: asset, context: renderContext, queue: DispatchQueue.main, filter: { request in
+                guard let sourceImage = request.anySourceImage else {
+                    return MTIImage.black
+                }
                 watermarkMaskTransformFilter.transform = CATransform3DMakeRotation(CGFloat(request.compositionTime.seconds), 0, 0, 1)
                 let pixellateScale = mix(SIMD2<Float>(50,50), SIMD2<Float>(1,1), t: min(Float(request.compositionTime.seconds), 1))
                 pixellateFilter.scale.width = CGFloat(pixellateScale.x)
                 pixellateFilter.scale.height = CGFloat(pixellateScale.y)
                 watermarkFilter.layers = [MultilayerCompositingFilter.Layer(content: watermarkImage)
                                             .blendMode(.normal)
-                                            .frame(CGRect(x: request.anySourceImage.size.width - watermarkImage.size.width - 16,
-                                                          y: request.anySourceImage.size.height - watermarkImage.size.height - 16,
+                                            .frame(CGRect(x: sourceImage.size.width - watermarkImage.size.width - 16,
+                                                          y: sourceImage.size.height - watermarkImage.size.height - 16,
                                                           width: watermarkImage.size.width,
                                                           height: watermarkImage.size.height),
                                                    layoutUnit: .pixel)
                                             .mask(MTIMask(content: watermarkMaskTransformFilter.outputImage!, component: .alpha, mode: .oneMinusMaskValue))]
                 
                 return FilterGraph.makeImage(builder: { output in
-                    request.anySourceImage => blendWithMaskFilter.inputPorts.inputImage
-                    request.anySourceImage => grayScaleFilter => dotScreenFilter => blendWithMaskFilter.inputPorts.inputBackgroundImage
+                    sourceImage => blendWithMaskFilter.inputPorts.inputImage
+                    sourceImage => grayScaleFilter => dotScreenFilter => blendWithMaskFilter.inputPorts.inputBackgroundImage
                     blendWithMaskFilter => pixellateFilter => watermarkFilter.inputPorts.inputBackgroundImage
                     watermarkFilter => output
                 })!

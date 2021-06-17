@@ -354,7 +354,7 @@ let context = try MTIContext(device: device)
 let asset = AVAsset(url: videoURL)
 let composition = MTIVideoComposition(asset: asset, context: context, queue: DispatchQueue.main, filter: { request in
     return FilterGraph.makeImage { output in
-        request.anySourceImage => filterA => filterB => output
+        request.anySourceImage! => filterA => filterB => output
     }!
 }
 
