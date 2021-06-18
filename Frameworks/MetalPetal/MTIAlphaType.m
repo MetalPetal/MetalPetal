@@ -96,4 +96,15 @@ NSString * MTIAlphaTypeGetDescription(MTIAlphaType alphaType) {
     return passthroughAlphaTypeHandlingRule;
 }
 
+- (BOOL)_canHandleAlphaTypesInImages:(NSArray<MTIImage *> *)images {
+    /* Alpha Type Assert */
+    // https://github.com/MetalPetal/MetalPetal#alpha-types
+    for (MTIImage *image in images) {
+        if (![self canAcceptAlphaType:image.alphaType]) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
 @end

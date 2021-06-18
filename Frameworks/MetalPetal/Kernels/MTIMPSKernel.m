@@ -92,17 +92,7 @@ __attribute__((objc_subclassing_restricted))
        outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
              outputPixelFormat:(MTLPixelFormat)outputPixelFormat {
     if (self = [super init]) {
-        NSParameterAssert({
-            /* Alpha Type Assert */
-            BOOL canAcceptAlphaType = YES;
-            for (MTIImage *image in inputImages) {
-                if (![kernel.alphaTypeHandlingRule canAcceptAlphaType:image.alphaType]) {
-                    canAcceptAlphaType = NO;
-                    break;
-                }
-            }
-            canAcceptAlphaType;
-        });
+        NSParameterAssert([kernel.alphaTypeHandlingRule _canHandleAlphaTypesInImages:inputImages]);
         _inputImages = inputImages;
         _kernel = kernel;
         _parameters = parameters;

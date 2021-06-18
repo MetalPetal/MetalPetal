@@ -57,6 +57,7 @@ __attribute__((objc_subclassing_restricted))
 /// Accepts all alpha types. The output alpha type is the same as input alpha type.
 @property (nonatomic, copy, class, readonly) MTIAlphaTypeHandlingRule *passthroughAlphaTypeHandlingRule;
 
+- (BOOL)_canHandleAlphaTypesInImages:(NSArray<MTIImage *> *)images;
 
 @end
 
