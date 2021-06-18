@@ -268,6 +268,7 @@ __attribute__((objc_subclassing_restricted))
     NSError *error = nil;
     pixelBuffer = [_pool newPixelBufferWithAllocationThreshold:30 error:&error];
     if (error) {
+        CVPixelBufferRelease(pixelBuffer);
         if (inOutError) {
             *inOutError = error;
         }
@@ -278,6 +279,7 @@ __attribute__((objc_subclassing_restricted))
     textureDescriptor.usage = MTLTextureUsageRenderTarget;
     id<MTICVMetalTexture> cvMetalTexture = [_textureCache newTextureWithCVImageBuffer:pixelBuffer textureDescriptor:textureDescriptor planeIndex:0 error:&error];
     if (error) {
+        CVPixelBufferRelease(pixelBuffer);
         if (inOutError) {
             *inOutError = error;
         }
@@ -333,6 +335,7 @@ __attribute__((objc_subclassing_restricted))
         }
         id<MTLTexture> multisampleTexture = [_device newTextureWithDescriptor:multisampleTextureDescriptor];
         if (!multisampleTexture) {
+            CVPixelBufferRelease(pixelBuffer);
             if (inOutError) {
                 *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
             }

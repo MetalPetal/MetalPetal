@@ -18,6 +18,7 @@
 #import "MTICVMetalTextureCache.h"
 #import "MTIContext+Internal.h"
 #import "MTIPixelFormat.h"
+#import "MTIDefer.h"
 #import <simd/simd.h>
 
 static NSString * const MTIColorConversionVertexFunctionName   = @"colorConversionVertex";
@@ -226,6 +227,9 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
     } else {
         colorSpace = CGColorSpaceCreateDeviceRGB();
     }
+    @MTI_DEFER {
+        CGColorSpaceRelease(colorSpace);
+    };
     if (@available(iOS 11.0, *)) {
         CIRenderDestination *destination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
         destination.colorSpace = colorSpace;
@@ -241,7 +245,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
         image = [image imageByApplyingOrientation:4];
         [renderingContext.context.coreImageContext render:image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:colorSpace];
     }
-    CGColorSpaceRelease(colorSpace);
     return renderTarget;
 }
 
