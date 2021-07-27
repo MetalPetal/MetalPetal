@@ -432,6 +432,13 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)inOutError {
+    if (_renderingAPI == MTICVPixelBufferRenderingAPIMetalPetal && CVPixelBufferGetIOSurface(_pixelBuffer) == NULL) {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"[MTICVPixelBufferPromise] Warning once only: CVPixelBuffer is not backed by IOSurface, fallback to use MTICVPixelBufferRenderingAPICoreImage.");
+        });
+        return [self resolveWithContext_CI:renderingContext error:inOutError];
+    }
     switch (self.renderingAPI) {
         case MTICVPixelBufferRenderingAPIMetalPetal:
             return [self resolveWithContext_MTI:renderingContext error:inOutError];
