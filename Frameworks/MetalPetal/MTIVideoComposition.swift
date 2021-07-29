@@ -78,7 +78,16 @@ public class MTIAsyncVideoCompositionRequestHandler {
         }
     }
     
-    private let tracks: [AVAssetTrack]
+    private struct Track {
+        let id: CMPersistentTrackID
+        let preferredTransform: CGAffineTransform
+        init(track: AVAssetTrack) {
+            self.id = track.trackID
+            self.preferredTransform = track.preferredTransform
+        }
+    }
+    
+    private let tracks: [Track]
     private let context: MTIContext
     private let filter: (Request) throws -> MTIImage
     private let queue: DispatchQueue?
@@ -86,7 +95,7 @@ public class MTIAsyncVideoCompositionRequestHandler {
     @available(*, deprecated, message: "Use init(context:tracks:on:filter:) instead.")
     public init(context: MTIContext, tracks: [AVAssetTrack], queue: DispatchQueue = .main, filter: @escaping (Request) throws -> MTIImage) {
         assert(tracks.count > 0)
-        self.tracks = tracks
+        self.tracks = tracks.map(Track.init(track:))
         self.context = context
         self.filter = filter
         self.queue = queue
@@ -96,14 +105,14 @@ public class MTIAsyncVideoCompositionRequestHandler {
     /// If the `queue` is nil, the `filter` block runs directly on the queue where `handle(request:)` is called.
     public init(context: MTIContext, tracks: [AVAssetTrack], on queue: DispatchQueue?, filter: @escaping (Request) throws -> MTIImage) {
         assert(tracks.count > 0)
-        self.tracks = tracks
+        self.tracks = tracks.map(Track.init(track:))
         self.context = context
         self.filter = filter
         self.queue = queue
     }
     
-    private static func makeTransformedSourceImage(from request: MTIMutableVideoCompositionRequest, track: AVAssetTrack) -> MTIImage? {
-        guard let pixelBuffer = request.sourceFrame(byTrackID: track.trackID) else {
+    private static func makeTransformedSourceImage(from request: MTIMutableVideoCompositionRequest, track: Track) -> MTIImage? {
+        guard let pixelBuffer = request.sourceFrame(byTrackID: track.id) else {
             return nil
         }
         assert(request.renderContext.renderTransform.isIdentity == true)
@@ -131,7 +140,7 @@ public class MTIAsyncVideoCompositionRequestHandler {
         
         let sourceFrames = self.tracks.reduce(into: [CMPersistentTrackID: MTIImage]()) { (frames, track) in
             if let image = MTIAsyncVideoCompositionRequestHandler.makeTransformedSourceImage(from: request, track: track) {
-                frames[track.trackID] = image
+                frames[track.id] = image
             }
         }
         guard let pixelBuffer = request.renderContext.newPixelBuffer() else {
