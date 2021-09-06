@@ -327,6 +327,21 @@ public class MTIVideoComposition {
         set { self.videoComposition.renderScale = newValue }
     }
     
+    public var colorPrimaries: String? {
+        get { self.videoComposition.colorPrimaries }
+        set { self.videoComposition.colorPrimaries = newValue }
+    }
+    
+    public var colorYCbCrMatrix: String? {
+        get { self.videoComposition.colorYCbCrMatrix }
+        set { self.videoComposition.colorYCbCrMatrix = newValue }
+    }
+    
+    public var colorTransferFunction: String? {
+        get { self.videoComposition.colorTransferFunction }
+        set { self.videoComposition.colorTransferFunction = newValue }
+    }
+    
     private let videoComposition: AVMutableVideoComposition
     
     public func makeAVVideoComposition() -> AVVideoComposition {
