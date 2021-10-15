@@ -25,11 +25,18 @@ class PixelBufferPoolBackedImageRenderer {
             pixelBufferPool = try MTICVPixelBufferPool(pixelBufferWidth: Int(image.dimensions.width), pixelBufferHeight: Int(image.dimensions.height), pixelFormatType: kCVPixelFormatType_32BGRA, minimumBufferCount: 30)
             self.pixelBufferPool = pixelBufferPool
         }
-        self.renderSemaphore.wait()
         let pixelBuffer = try pixelBufferPool.makePixelBuffer(allocationThreshold: 30)
-        try context.startTask(toRender: image, to: pixelBuffer, sRGB: false, completion: { task in
+        
+        self.renderSemaphore.wait()
+        do {
+            try context.startTask(toRender: image, to: pixelBuffer, sRGB: false, completion: { task in
+                self.renderSemaphore.signal()
+            })
+        } catch {
             self.renderSemaphore.signal()
-        })
+            throw error
+        }
+        
         var cgImage: CGImage!
         VTCreateCGImageFromCVPixelBuffer(pixelBuffer, options: nil, imageOut: &cgImage)
         return (pixelBuffer, cgImage)
