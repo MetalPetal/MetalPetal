@@ -298,14 +298,7 @@ static void MTIContextEnumerateAllInstances(void (^enumerator)(MTIContext *conte
         
         _renderingLock = MTILockCreate();
         
-        Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass = options.coreVideoMetalTextureBridgeClass;
-        if (coreVideoMetalTextureBridgeClass == nil) {
-            if (@available(iOS 11.0, tvOS 11.0, macOS 10.11, *)) {
-                coreVideoMetalTextureBridgeClass = MTICVMetalIOSurfaceBridge.class;
-            } else {
-                coreVideoMetalTextureBridgeClass = MTICVMetalTextureCache.class;
-            }
-        }
+        Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass = options.coreVideoMetalTextureBridgeClass ?: MTICVMetalIOSurfaceBridge.class;
         NSError *coreVideoMetalTextureBridgeError = nil;
         _coreVideoTextureBridge = [coreVideoMetalTextureBridgeClass newCoreVideoMetalTextureBridgeWithDevice:device error:&coreVideoMetalTextureBridgeError];
         if (coreVideoMetalTextureBridgeError) {

@@ -6,7 +6,7 @@ import PackageDescription
 
 let package = Package(
     name: "MetalPetal",
-    platforms: [.macOS(.v10_13), .iOS(.v10), .tvOS(.v13)],
+    platforms: [.macOS(.v10_13), .iOS(.v11), .tvOS(.v13)],
     products: [
         .library(
             name: "MetalPetal",

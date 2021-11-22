@@ -230,20 +230,15 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
     @MTI_DEFER {
         CGColorSpaceRelease(colorSpace);
     };
-    if (@available(iOS 11.0, *)) {
-        CIRenderDestination *destination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
-        destination.colorSpace = colorSpace;
-        destination.flipped = YES;
-        [renderingContext.context.coreImageContext startTaskToRender:image toDestination:destination error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
+    CIRenderDestination *destination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
+    destination.colorSpace = colorSpace;
+    destination.flipped = YES;
+    [renderingContext.context.coreImageContext startTaskToRender:image toDestination:destination error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
         }
-    } else {
-        image = [image imageByApplyingOrientation:4];
-        [renderingContext.context.coreImageContext render:image toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:image.extent colorSpace:colorSpace];
+        return nil;
     }
     return renderTarget;
 }

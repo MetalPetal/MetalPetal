@@ -117,11 +117,11 @@ __attribute__((objc_subclassing_restricted))
                         size:(CGSize)size
                  scaleFactor:(CGFloat)scaleFactor
                      options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
-                   alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0) NS_SWIFT_NAME(init(named:in:size:scaleFactor:options:alphaType:));
+                   alphaType:(MTIAlphaType)alphaType NS_SWIFT_NAME(init(named:in:size:scaleFactor:options:alphaType:));
 
 - (instancetype)initWithMDLTexture:(MDLTexture *)texture
                            options:(nullable NSDictionary<MTKTextureLoaderOption, id> *)options
-                         alphaType:(MTIAlphaType)alphaType NS_AVAILABLE(10_12, 10_0);
+                         alphaType:(MTIAlphaType)alphaType;
 
 /// A 1x1 white image
 @property (class, readonly) MTIImage *whiteImage;

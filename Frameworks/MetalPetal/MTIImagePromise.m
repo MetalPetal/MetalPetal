@@ -296,18 +296,7 @@
     textureDescriptor.storageMode = _options.storageMode;
     textureDescriptor.cpuCacheMode = _options.cpuCacheMode;
     
-    id<MTLTexture> texture;
-    if (@available(iOS 11.0, macOS 10.11, *)) {
-        texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor iosurface:CVPixelBufferGetIOSurface(pixelBuffer) plane:0];
-    } else {
-        // newTextureWithDescriptor:iosurface:plane: is actually available on iOS 10.
-        // https://github.com/nst/iOS-Runtime-Headers/blob/10.0/PrivateFrameworks/MetalTools.framework/MTLDebugDevice.h#L65
-        #pragma clang diagnostic push
-        #pragma clang diagnostic ignored "-Wunguarded-availability-new"
-        texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor iosurface:CVPixelBufferGetIOSurface(pixelBuffer) plane:0];
-        #pragma clang diagnostic pop
-    }
-    
+    id<MTLTexture> texture = [renderingContext.context.device newTextureWithDescriptor:textureDescriptor iosurface:CVPixelBufferGetIOSurface(pixelBuffer) plane:0];
     if (!texture) {
         if (inOutError) {
             *inOutError = MTIErrorCreate(MTIErrorFailedToCreateTexture, nil);
@@ -446,20 +435,17 @@
     if (_isOpaque) {
         return MTIAlphaTypeAlphaIsOne;
     } else {
-        if (@available(iOS 11.0, *)) {
-            switch (self.options.alphaMode) {
-                case CIRenderDestinationAlphaNone:
-                    return MTIAlphaTypeAlphaIsOne;
-                case CIRenderDestinationAlphaPremultiplied:
-                    return MTIAlphaTypePremultiplied;
-                case CIRenderDestinationAlphaUnpremultiplied:
-                    return MTIAlphaTypeNonPremultiplied;
-                default:
-                    NSAssert(NO, @"Unknown CIRenderDestinationAlphaMode");
-                    break;
-            }
+        switch (self.options.alphaMode) {
+            case CIRenderDestinationAlphaNone:
+                return MTIAlphaTypeAlphaIsOne;
+            case CIRenderDestinationAlphaPremultiplied:
+                return MTIAlphaTypePremultiplied;
+            case CIRenderDestinationAlphaUnpremultiplied:
+                return MTIAlphaTypeNonPremultiplied;
+            default:
+                NSAssert(NO, @"Unknown CIRenderDestinationAlphaMode");
+                return MTIAlphaTypePremultiplied;
         }
-        return MTIAlphaTypePremultiplied;
     }
 }
 
@@ -472,20 +458,16 @@
         }
         return nil;
     }
-    if (@available(iOS 11.0, *)) {
-        CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
-        renderDestination.flipped = self.options.isFlipped;
-        renderDestination.colorSpace = self.options.colorSpace;
-        renderDestination.alphaMode = self.options.alphaMode;
-        [renderingContext.context.coreImageContext startTaskToRender:self.image fromRect:self.bounds toDestination:renderDestination atPoint:CGPointZero error:&error];
-        if (error) {
-            if (inOutError) {
-                *inOutError = error;
-            }
-            return nil;
+    CIRenderDestination *renderDestination = [[CIRenderDestination alloc] initWithMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer];
+    renderDestination.flipped = self.options.isFlipped;
+    renderDestination.colorSpace = self.options.colorSpace;
+    renderDestination.alphaMode = self.options.alphaMode;
+    [renderingContext.context.coreImageContext startTaskToRender:self.image fromRect:self.bounds toDestination:renderDestination atPoint:CGPointZero error:&error];
+    if (error) {
+        if (inOutError) {
+            *inOutError = error;
         }
-    } else {
-        [renderingContext.context.coreImageContext render:(self.options.isFlipped ? [self.image imageByApplyingOrientation:4] : self.image) toMTLTexture:renderTarget.texture commandBuffer:renderingContext.commandBuffer bounds:self.bounds colorSpace:self.options.colorSpace];
+        return nil;
     }
     return renderTarget;
 }

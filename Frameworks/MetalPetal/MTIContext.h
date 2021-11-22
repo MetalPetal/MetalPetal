@@ -50,7 +50,7 @@ __attribute__((objc_subclassing_restricted))
 /// The texture loader to use. When this property is nil, the context uses `MTIDefaultTextureLoader`.
 @property (nonatomic, nullable) Class<MTITextureLoader> textureLoaderClass;
 
-/// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture). When this property is nil, the context uses `MTICVMetalIOSurfaceBridge` for iOS 11+/macOS 10.11+ and `MTICVMetalTextureCache` for operating systems before iOS 11/macOS 10.11.
+/// The core video - metal texture bridge class to use. Possible values are MTICVMetalTextureCache.class (using CVMetalTextureRef), MTICVMetalIOSurfaceBridge.class (using IOSurface to convert CVPixelBuffer to metal texture). When this property is nil, the context uses `MTICVMetalIOSurfaceBridge`.
 @property (nonatomic, nullable) Class<MTICVMetalTextureBridging> coreVideoMetalTextureBridgeClass;
 
 /// The texture pool class to use. When this property is nil, the context uses `MTIHeapTexturePool` if possible, and falls back to `MTIDeviceTexturePool`.
@@ -109,7 +109,7 @@ __attribute__((objc_subclassing_restricted))
 
 - (void)reclaimResources;
 
-@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
+@property (nonatomic, readonly) NSUInteger idleResourceSize;
 
 @property (nonatomic, readonly) NSUInteger idleResourceCount;
 

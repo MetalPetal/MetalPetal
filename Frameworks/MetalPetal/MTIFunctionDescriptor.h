@@ -17,7 +17,7 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, copy, readonly) NSString *name;
 
-@property (nonatomic, copy, readonly, nullable) MTLFunctionConstantValues *constantValues NS_AVAILABLE(10_12, 10_0);
+@property (nonatomic, copy, readonly, nullable) MTLFunctionConstantValues *constantValues;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -25,9 +25,9 @@ __attribute__((objc_subclassing_restricted))
 
 - (instancetype)initWithName:(NSString *)name;
 
-- (instancetype)initWithName:(NSString *)name libraryURL:(nullable NSURL *)URL NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSString *)name libraryURL:(nullable NSURL *)URL;
 
-- (instancetype)initWithName:(NSString *)name constantValues:(nullable MTLFunctionConstantValues *)constantValues libraryURL:(nullable NSURL *)URL NS_AVAILABLE(10_12, 10_0) NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(NSString *)name constantValues:(nullable MTLFunctionConstantValues *)constantValues libraryURL:(nullable NSURL *)URL NS_DESIGNATED_INITIALIZER;
 
 - (MTIFunctionDescriptor *)functionDescriptorWithConstantValues:(nullable MTLFunctionConstantValues *)constantValues;
 

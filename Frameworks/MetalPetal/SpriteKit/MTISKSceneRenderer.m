@@ -15,7 +15,6 @@
 #import "MTIImagePromise.h"
 
 __attribute__((objc_subclassing_restricted))
-NS_CLASS_AVAILABLE(10_13, 11_0)
 @interface MTISKSceneImagePromise: NSObject <MTIImagePromise>
 
 @property (nonatomic,readonly) MTLPixelFormat pixelFormat;
