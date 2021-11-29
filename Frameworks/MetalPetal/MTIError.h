@@ -51,6 +51,8 @@ typedef NS_ERROR_ENUM(MTIErrorDomain, MTIError) {
     //For operations do not support cross device or cross context rendering, we report these errors.
     MTIErrorCrossDeviceRendering = 5006,
     MTIErrorCrossContextRendering = 5007,
+    
+    MTIErrorInvalidTextureDimension = 5008,
         
     //For features not available on iOS simulator.
     MTIErrorFeatureNotAvailableOnSimulator = 6001

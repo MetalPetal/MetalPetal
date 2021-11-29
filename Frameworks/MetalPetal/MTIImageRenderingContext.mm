@@ -234,51 +234,56 @@ MTIContextImageAssociatedValueTableName const MTIContextImagePersistentResolutio
             //All caches miss. Resolve promise.
             NSError *error = nil;
             
-            NSUInteger dependencyCount = promise.dependencies.count;
-            
-            id<MTIImagePromiseResolution> inputResolutions[dependencyCount];
-            memset(inputResolutions, 0, sizeof inputResolutions);
-            
-            id<MTLSamplerState> inputSamplerStates[dependencyCount];
-            memset(inputSamplerStates, 0, sizeof inputSamplerStates);
-            
-            std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLTexture>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> textureMap;
-            
-            std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLSamplerState>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> samplerStateMap;
-            
-            for (NSUInteger index = 0; index < dependencyCount; index += 1) {
-                MTIImage *image = promise.dependencies[index];
-                id<MTIImagePromiseResolution> resolution = [self resolutionForImage:image error:&error];
-                if (error) {
-                    break;
+            if (promise.dimensions.width > 0 && promise.dimensions.height > 0 && promise.dimensions.depth > 0) {
+                
+                NSUInteger dependencyCount = promise.dependencies.count;
+                
+                id<MTIImagePromiseResolution> inputResolutions[dependencyCount];
+                memset(inputResolutions, 0, sizeof inputResolutions);
+                
+                id<MTLSamplerState> inputSamplerStates[dependencyCount];
+                memset(inputSamplerStates, 0, sizeof inputSamplerStates);
+                
+                std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLTexture>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> textureMap;
+                
+                std::unordered_map<__unsafe_unretained MTIImage *, __unsafe_unretained id<MTLSamplerState>, MTIImageRendering::ObjcPointerHash, MTIImageRendering::ObjcPointerIdentityEqual> samplerStateMap;
+                
+                for (NSUInteger index = 0; index < dependencyCount; index += 1) {
+                    MTIImage *image = promise.dependencies[index];
+                    id<MTIImagePromiseResolution> resolution = [self resolutionForImage:image error:&error];
+                    if (error) {
+                        break;
+                    }
+                    NSAssert(resolution != nil, @"");
+                    inputResolutions[index] = resolution;
+                    textureMap[image] = resolution.texture;
+                    
+                    id<MTLSamplerState> samplerState = [self.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
+                    if (error) {
+                        break;
+                    }
+                    NSAssert(samplerState != nil, @"");
+                    inputSamplerStates[index] = samplerState;
+                    samplerStateMap[image] = samplerState;
                 }
-                NSAssert(resolution != nil, @"");
-                inputResolutions[index] = resolution;
-                textureMap[image] = resolution.texture;
                 
-                id<MTLSamplerState> samplerState = [self.context samplerStateWithDescriptor:image.samplerDescriptor error:&error];
-                if (error) {
-                    break;
+                if (!error) {
+                    _currentDependencyResolutionMap = textureMap;
+                    _currentDependencySamplerStateMap = samplerStateMap;
+                    
+                    _currentResolvingPromise = promise;
+                    
+                    renderTarget = [promise resolveWithContext:self error:&error];
+                    //New render target got from promise resolving, texture ref-count is 1. [B]
+                    
+                    _currentResolvingPromise = nil;
                 }
-                NSAssert(samplerState != nil, @"");
-                inputSamplerStates[index] = samplerState;
-                samplerStateMap[image] = samplerState;
-            }
-            
-            if (!error) {
-                _currentDependencyResolutionMap = textureMap;
-                _currentDependencySamplerStateMap = samplerStateMap;
                 
-                _currentResolvingPromise = promise;
-                
-                renderTarget = [promise resolveWithContext:self error:&error];
-                //New render target got from promise resolving, texture ref-count is 1. [B]
-                
-                _currentResolvingPromise = nil;
-            }
-            
-            for (NSUInteger index = 0; index < dependencyCount; index += 1) {
-                [inputResolutions[index] markAsConsumedBy:promise];
+                for (NSUInteger index = 0; index < dependencyCount; index += 1) {
+                    [inputResolutions[index] markAsConsumedBy:promise];
+                }
+            } else {
+                error = MTIErrorCreate(MTIErrorInvalidTextureDimension, nil);
             }
             
             if (error) {
