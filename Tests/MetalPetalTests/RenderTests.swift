@@ -1953,6 +1953,30 @@ final class RenderTests: XCTestCase {
         let multilayerCompositingFilterOutput = try context.makeCGImage(from: XCTUnwrap(compositedImage.cropped(to: CGRect(x: 32, y: 32, width: 32, height: 32))))
         XCTAssert(roundCornerFilterOutput.dataProvider?.data == multilayerCompositingFilterOutput.dataProvider?.data)
     }
+    
+    func testZeroSizeImage_failure() throws {
+        let image = MTIImage(color: .white, sRGB: false, size: .zero)
+        let context = try makeContext()
+        do {
+            try context.startTask(toRender: image, completion: nil)
+            XCTFail()
+        } catch {
+            XCTAssert((error as? MTIError)?.code == .invalidTextureDimension)
+        }
+    }
+    
+    func testZeroSizeImage_filter_failure() throws {
+        let image = MTIImage(color: .white, sRGB: false, size: CGSize(width: 1, height: 1))
+        let intermediate = MTIRenderPipelineKernel.passthrough.apply(toInputImages: [image], parameters: [:], outputTextureDimensions: MTITextureDimensions(width: 1, height: 0, depth: 1), outputPixelFormat: .unspecified)
+        let output = MTIRenderPipelineKernel.passthrough.apply(toInputImages: [intermediate], parameters: [:], outputTextureDimensions: MTITextureDimensions(width: 1, height: 1, depth: 1), outputPixelFormat: .unspecified)
+        let context = try makeContext()
+        do {
+            try context.startTask(toRender: output, completion: nil)
+            XCTFail()
+        } catch {
+            XCTAssert((error as? MTIError)?.code == .invalidTextureDimension)
+        }
+    }
 }
 
 extension RenderTests {
