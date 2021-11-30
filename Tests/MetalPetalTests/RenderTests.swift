@@ -1136,7 +1136,7 @@ final class RenderTests: XCTestCase {
         let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
         let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        let outputImage = renderKernel.apply(to: [image], parameters: ["color": MTIVector(value: SIMD4<Float>(1, 0, 0, 0))], outputDimensions: image.dimensions, outputPixelFormat: .unspecified)
         let context = try makeContext()
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
@@ -1170,7 +1170,7 @@ final class RenderTests: XCTestCase {
         constantValues.setConstantValue(&color, type: .float4, withName: "constColor")
         let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", constantValues: constantValues, libraryURL: libraryURL))
         let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
-        let outputImage = renderKernel.apply(toInputImages: [image], parameters: [:], outputTextureDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        let outputImage = renderKernel.apply(to: [image], parameters: [:], outputDimensions: image.dimensions, outputPixelFormat: .unspecified)
         let context = try makeContext()
         let output = try context.makeCGImage(from: outputImage)
         PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
@@ -1961,8 +1961,8 @@ final class RenderTests: XCTestCase {
     
     func testZeroSizeImage_filter_failure() throws {
         let image = MTIImage(color: .white, sRGB: false, size: CGSize(width: 1, height: 1))
-        let intermediate = MTIRenderPipelineKernel.passthrough.apply(toInputImages: [image], parameters: [:], outputTextureDimensions: MTITextureDimensions(width: 1, height: 0, depth: 1), outputPixelFormat: .unspecified)
-        let output = MTIRenderPipelineKernel.passthrough.apply(toInputImages: [intermediate], parameters: [:], outputTextureDimensions: MTITextureDimensions(width: 1, height: 1, depth: 1), outputPixelFormat: .unspecified)
+        let intermediate = MTIRenderPipelineKernel.passthrough.apply(to: [image], parameters: [:], outputDimensions: MTITextureDimensions(width: 1, height: 0, depth: 1), outputPixelFormat: .unspecified)
+        let output = MTIRenderPipelineKernel.passthrough.apply(to: [intermediate], parameters: [:], outputDimensions: MTITextureDimensions(width: 1, height: 1, depth: 1), outputPixelFormat: .unspecified)
         let context = try makeContext()
         do {
             try context.startTask(toRender: output, completion: nil)

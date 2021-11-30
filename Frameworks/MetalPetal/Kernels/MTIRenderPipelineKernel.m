@@ -515,6 +515,7 @@ __attribute__((objc_subclassing_restricted))
 }
 
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images parameters:(NSDictionary<NSString *,id> *)parameters outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors {
+    NSParameterAssert(outputDescriptors.count == _colorAttachmentCount);
     MTIRenderCommand *command = [[MTIRenderCommand alloc] initWithKernel:self geometry:MTIVertices.fullViewportSquareVertices images:images parameters:parameters];
     return [MTIRenderCommand imagesByPerformingRenderCommands:@[command]
                                             outputDescriptors:outputDescriptors];

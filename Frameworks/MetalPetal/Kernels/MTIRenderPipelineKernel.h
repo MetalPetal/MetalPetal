@@ -81,11 +81,11 @@ __attribute__((objc_subclassing_restricted))
 - (MTIImage *)applyToInputImages:(NSArray<MTIImage *> *)images
                       parameters:(NSDictionary<NSString *,id> *)parameters
          outputTextureDimensions:(MTITextureDimensions)outputTextureDimensions
-               outputPixelFormat:(MTLPixelFormat)outputPixelFormat;
+               outputPixelFormat:(MTLPixelFormat)outputPixelFormat NS_REFINED_FOR_SWIFT;
 
 - (NSArray<MTIImage *> *)applyToInputImages:(NSArray<MTIImage *> *)images
                                  parameters:(NSDictionary<NSString *,id> *)parameters
-                          outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors;
+                          outputDescriptors:(NSArray<MTIRenderPassOutputDescriptor *> *)outputDescriptors NS_REFINED_FOR_SWIFT;
 
 @end
 

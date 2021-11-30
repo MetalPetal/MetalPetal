@@ -515,8 +515,9 @@ final class TextureLoaderImageLoadingTests: XCTestCase {
             let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("f\(orientation).png")
-                                 , options: [.SRGB: false], alphaType: .alphaIsOne)
+                                    .appendingPathComponent("f\(orientation).png"),
+                                 options: [.SRGB: false],
+                                 alphaType: .alphaIsOne)
             guard let inputImage = image else {
                 XCTFail()
                 return
@@ -537,8 +538,9 @@ final class TextureLoaderImageLoadingTests: XCTestCase {
             let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false], alphaType: .alphaIsOne)
+                                    .appendingPathComponent("fgray\(orientation).png"),
+                                 options: [.SRGB: false],
+                                 alphaType: .alphaIsOne)
             guard let inputImage = image else {
                 XCTFail()
                 return
@@ -559,8 +561,9 @@ final class TextureLoaderImageLoadingTests: XCTestCase {
             let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false, .origin: MTKTextureLoader.Origin.flippedVertically], alphaType: .alphaIsOne)
+                                    .appendingPathComponent("fgray\(orientation).png"),
+                                 options: [.SRGB: false, .origin: MTKTextureLoader.Origin.flippedVertically],
+                                 alphaType: .alphaIsOne)
             guard let inputImage = image else {
                 XCTFail()
                 return
@@ -581,8 +584,9 @@ final class TextureLoaderImageLoadingTests: XCTestCase {
             let image = MTIImage(contentsOf: URL(fileURLWithPath: #file)
                                     .deletingLastPathComponent().deletingLastPathComponent()
                                     .appendingPathComponent("Fixture")
-                                    .appendingPathComponent("fgray\(orientation).png")
-                                 , options: [.SRGB: false, .generateMipmaps: true], alphaType: .alphaIsOne)
+                                    .appendingPathComponent("fgray\(orientation).png"),
+                                 options: [.SRGB: false, .generateMipmaps: true],
+                                 alphaType: .alphaIsOne)
             guard let inputImage = image else {
                 XCTFail()
                 return
