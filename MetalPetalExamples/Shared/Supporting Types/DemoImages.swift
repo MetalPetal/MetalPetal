@@ -98,14 +98,14 @@ struct DemoImages {
 struct RGUVGradientImage {
     private static let kernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "rgUVGradient", in: Bundle.main))
     static func makeImage(size: CGSize) -> MTIImage {
-        kernel.apply(toInputImages: [], parameters: [:], outputTextureDimensions: MTITextureDimensions(cgSize: size), outputPixelFormat: .unspecified)
+        kernel.makeImage(dimensions: MTITextureDimensions(cgSize: size))
     }
 }
 
 struct RGUVB1GradientImage {
     private static let kernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "rgUVB1Gradient", in: Bundle.main))
     static func makeImage(size: CGSize) -> MTIImage {
-        kernel.apply(toInputImages: [], parameters: [:], outputTextureDimensions: MTITextureDimensions(cgSize: size), outputPixelFormat: .unspecified)
+        kernel.makeImage(dimensions: MTITextureDimensions(cgSize: size))
     }
     static func makeCGImage(size: CGSize) -> CGImage {
         let context = try! MTIContext(device: MTLCreateSystemDefaultDevice()!)
@@ -116,7 +116,7 @@ struct RGUVB1GradientImage {
 struct RadialGradientImage {
     private static let kernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "radialGradient", in: Bundle.main))
     static func makeImage(size: CGSize) -> MTIImage {
-        kernel.apply(toInputImages: [], parameters: [:], outputTextureDimensions: MTITextureDimensions(cgSize: size), outputPixelFormat: .unspecified)
+        kernel.makeImage(dimensions: MTITextureDimensions(cgSize: size))
     }
 }
 

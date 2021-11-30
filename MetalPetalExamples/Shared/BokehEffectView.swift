@@ -177,11 +177,11 @@ struct BokehEffectView: View {
 struct CustomShapeBokehWithMask {
     private static let powKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "imagePow", in: .main))
     private static func pow(_ image: MTIImage, _ value: Float) -> MTIImage {
-        powKernel.apply(toInputImages: [image], parameters: ["value": value], outputTextureDimensions: image.dimensions, outputPixelFormat: .rgba32Float)
+        powKernel.apply(to: [image], parameters: ["value": value], outputDimensions: image.dimensions, outputPixelFormat: .rgba32Float)
     }
     private static let convolutionKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "imageConvolution", in: .main))
     private static func applyImageConvolution(to image: MTIImage, mask: MTIImage, kernelSize: Int, kernelImage: MTIImage, brightness: Float = 1.0) -> MTIImage {
-        return convolutionKernel.apply(toInputImages: [image, mask, kernelImage], parameters: ["radius": kernelSize/2, "brightness": brightness], outputTextureDimensions: image.dimensions, outputPixelFormat: .rgba32Float)
+        return convolutionKernel.apply(to: [image, mask, kernelImage], parameters: ["radius": kernelSize/2, "brightness": brightness], outputDimensions: image.dimensions, outputPixelFormat: .rgba32Float)
     }
     static func bokeh(image: MTIImage, mask: MTIImage, kernelImage: MTIImage, kernelSize: Int, power: Float, brightness: Float) -> MTIImage {
         let powered = pow(image, power)
