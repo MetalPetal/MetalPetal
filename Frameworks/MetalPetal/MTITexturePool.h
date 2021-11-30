@@ -39,7 +39,7 @@ __attribute__((objc_subclassing_restricted))
 - (void)flush;
 
 /// The size in bytes occupied by idle resources.
-@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
+@property (nonatomic, readonly) NSUInteger idleResourceSize;
 
 /// The count of idle resources.
 @property (nonatomic, readonly) NSUInteger idleResourceCount;
@@ -56,8 +56,6 @@ __attribute__((objc_subclassing_restricted))
 + (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithDevice:(id<MTLDevice>)device NS_DESIGNATED_INITIALIZER;
-
-@property (nonatomic, readonly) NSUInteger idleResourceSize NS_AVAILABLE(10_13, 11_0);
 
 @end
 

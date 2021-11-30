@@ -40,9 +40,7 @@
 }
 
 - (void)setupImageView {
-    if (@available(iOS 11.0, *)) {
-        self.accessibilityIgnoresInvertColors = YES;
-    }
+    self.accessibilityIgnoresInvertColors = YES;
     
     _resizingMode = MTIDrawableRenderingResizingModeAspect;
     _automaticallyCreatesContext = YES;

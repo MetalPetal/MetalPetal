@@ -54,7 +54,6 @@ final class ImageLoadingTests: XCTestCase {
         }
     }
     
-    @available(iOS 11.0, macOS 10.13, *)
     func testCVPixelBufferLoading_ioSurface() throws {
         var buffer: CVPixelBuffer?
         let r = CVPixelBufferCreate(kCFAllocatorDefault, 2, 2, kCVPixelFormatType_32BGRA, [kCVPixelBufferIOSurfacePropertiesKey as String: [:]] as CFDictionary, &buffer)

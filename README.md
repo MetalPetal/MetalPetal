@@ -2,7 +2,7 @@
 
 [![Swift](https://github.com/MetalPetal/MetalPetal/workflows/Swift/badge.svg)](https://github.com/MetalPetal/MetalPetal/actions?query=workflow%3ASwift)
 <br/>
-[![Platforms](https://img.shields.io/badge/Platforms-iOS%2010%2B%20%7C%20tvOS%2013%2B%20%7C%20macOS%2010.13%2B-blue.svg)](#)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS%2011%2B%20%7C%20tvOS%2013%2B%20%7C%20macOS%2010.13%2B-blue.svg)](#)
 [![Version](https://img.shields.io/cocoapods/v/MetalPetal.svg?label=Release)](https://github.com/MetalPetal/MetalPetal/releases)
 <br/>
 [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-%E2%80%8B%20%E2%9C%94-eee)](#)

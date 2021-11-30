@@ -92,12 +92,10 @@ final class ContextOptionsTests: XCTestCase {
         }
         
         do {
-            if #available(iOS 11.0, macOS 10.11, *) {
-                let options = MTIContextOptions()
-                options.coreVideoMetalTextureBridgeClass = MTICVMetalIOSurfaceBridge.self
-                let context = try makeContext(options: options)
-                context.coreVideoTextureBridge.isKind(of: MTICVMetalIOSurfaceBridge.self)
-            }
+            let options = MTIContextOptions()
+            options.coreVideoMetalTextureBridgeClass = MTICVMetalIOSurfaceBridge.self
+            let context = try makeContext(options: options)
+            context.coreVideoTextureBridge.isKind(of: MTICVMetalIOSurfaceBridge.self)
         }
     }
     

@@ -21,15 +21,15 @@ __attribute__((objc_subclassing_restricted))
 
 @property (nonatomic, readonly) MTLPixelFormat destinationPixelFormat;
 
-@property (nonatomic, readonly) CIRenderDestinationAlphaMode alphaMode NS_AVAILABLE(10_13, 11_0);
+@property (nonatomic, readonly) CIRenderDestinationAlphaMode alphaMode;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)new NS_UNAVAILABLE;
 
-- (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat colorSpace:(nullable CGColorSpaceRef)colorSpace flipped:(BOOL)flipped NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat colorSpace:(nullable CGColorSpaceRef)colorSpace flipped:(BOOL)flipped;
 
-- (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat alphaMode:(CIRenderDestinationAlphaMode)alphaMode colorSpace:(nullable CGColorSpaceRef)colorSpace flipped:(BOOL)flipped NS_DESIGNATED_INITIALIZER NS_AVAILABLE(10_13, 11_0);
+- (instancetype)initWithDestinationPixelFormat:(MTLPixelFormat)pixelFormat alphaMode:(CIRenderDestinationAlphaMode)alphaMode colorSpace:(nullable CGColorSpaceRef)colorSpace flipped:(BOOL)flipped NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, strong, class, readonly) MTICIImageRenderingOptions *defaultOptions;
 

@@ -15,7 +15,6 @@ import CoreImage
 #endif
 
 /// `MTICoreImageKernel` provides the ability to use CoreImage filters with MetalPetal with little or no overhead.
-@available(iOS 11.0, macOS 10.13, *)
 public struct MTICoreImageKernel {
     
     public enum Error: Swift.Error {
@@ -161,7 +160,6 @@ public struct MTICoreImageKernel {
 
 
 /// Process a `MTIImage` using a `CIFilter`. If there are multiple filters you'd like to apply, do not create multiple instances, instead you should subclass `CIFilter` and combine the filters to one `CIFilter` (https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/CoreImaging/ci_filer_recipes/ci_filter_recipes.html#//apple_ref/doc/uid/TP30001185-CH4-SW1). This gives `CoreImage` a chance to optimize the render graph thus improves performance.
-@available(iOS 11.0, macOS 10.13, *)
 public final class MTICoreImageUnaryFilter: MTIUnaryFilter {
     
     public init() {

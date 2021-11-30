@@ -159,25 +159,23 @@ __attribute__((objc_subclassing_restricted))
     #if TARGET_OS_TV
         [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
     #else
-    if (@available(iOS 11.0, macOS 10.13, *)) {
         BOOL supportsNonUniformThreadgroupSize = NO;
+        
         #if TARGET_OS_IPHONE
             #if TARGET_OS_MACCATALYST
-            supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFamily:MTLGPUFamilyMacCatalyst1];
+                supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFamily:MTLGPUFamilyMacCatalyst1];
             #else
-            supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily4_v1];
+                supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFeatureSet:MTLFeatureSet_iOS_GPUFamily4_v1];
             #endif
         #else
-        supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFeatureSet:MTLFeatureSet_macOS_GPUFamily1_v3];
+            supportsNonUniformThreadgroupSize = [renderingContext.context.device supportsFeatureSet:MTLFeatureSet_macOS_GPUFamily1_v3];
         #endif
+    
         if (supportsNonUniformThreadgroupSize) {
             [commandEncoder dispatchThreads:threadsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
         } else {
             [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
         }
-    } else {
-        [commandEncoder dispatchThreadgroups:threadgroupsPerGrid threadsPerThreadgroup:threadsPerThreadgroup];
-    }
     #endif
 
     [commandEncoder endEncoding];

@@ -43,11 +43,7 @@
         _device = device;
         _internalLoader = [[MTKTextureLoader alloc] initWithDevice:device];
         NSError *error = nil;
-        if (@available(iOS 11.0, *)) {
-            _cvMetalTextureBridging = [MTICVMetalIOSurfaceBridge newCoreVideoMetalTextureBridgeWithDevice:device error:&error];
-        } else {
-            _cvMetalTextureBridging = [MTICVMetalTextureCache newCoreVideoMetalTextureBridgeWithDevice:device error:&error];
-        }
+        _cvMetalTextureBridging = [MTICVMetalIOSurfaceBridge newCoreVideoMetalTextureBridgeWithDevice:device error:&error];
         _error = error;
     }
     return self;

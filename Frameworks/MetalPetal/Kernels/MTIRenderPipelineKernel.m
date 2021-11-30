@@ -172,11 +172,7 @@ NSUInteger const MTIRenderPipelineMaximumColorAttachmentCount = 8;
     renderPipelineDescriptor.depthAttachmentPixelFormat = configuration.depthAttachmentPixelFormat;
     renderPipelineDescriptor.stencilAttachmentPixelFormat = configuration.stencilAttachmentPixelFormat;
     
-    if (@available(iOS 11.0, macOS 10.13, *)) {
-        renderPipelineDescriptor.rasterSampleCount = configuration.rasterSampleCount;
-    } else {
-        renderPipelineDescriptor.sampleCount = configuration.rasterSampleCount;
-    }
+    renderPipelineDescriptor.rasterSampleCount = configuration.rasterSampleCount;
     
     return [context renderPipelineWithDescriptor:renderPipelineDescriptor error:inOutError];
 }

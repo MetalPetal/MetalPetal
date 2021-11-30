@@ -17,7 +17,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 __attribute__((objc_subclassing_restricted))
-NS_CLASS_AVAILABLE(10_13, 11_0)
 @interface MTISKSceneRenderer : NSObject
 
 @property (nonatomic, strong, nullable) SKScene *scene;
@@ -49,9 +48,9 @@ NS_CLASS_AVAILABLE(10_13, 11_0)
                            time:(NSTimeInterval)time
                        viewport:(CGRect)viewport
                     pixelFormat:(MTLPixelFormat)pixelFormat
-                       isOpaque:(BOOL)isOpaque NS_AVAILABLE(10_13, 11_0);
+                       isOpaque:(BOOL)isOpaque;
 
-- (instancetype)initWithSKScene:(SKScene *)scene NS_AVAILABLE(10_13, 11_0);
+- (instancetype)initWithSKScene:(SKScene *)scene;
 
 @end
 

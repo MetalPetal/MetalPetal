@@ -136,7 +136,6 @@ final class RenderTests: XCTestCase {
         XCTAssert(context.idleResourceCount == 0)
     }
     
-    @available(iOS 11.0, *)
     func testCoreImageFilter() throws {
         let image = MTIImage.black
         let filter = MTICoreImageUnaryFilter()
@@ -151,7 +150,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    @available(iOS 11.0, *)
     func testCoreImageFilter_lanczosScaleTransform() throws {
         let ciFilter = CIFilter(name: "CILanczosScaleTransform")
         ciFilter?.setValue(2, forKey: "inputScale")
@@ -202,7 +200,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    @available(iOS 11.0, *)
     func testCoreImageGenerator() throws {
         let filter: CIFilter = CIFilter(name: "CICheckerboardGenerator")!
         filter.setValue(CIVector(x: 0, y: 0), forKey: "inputCenter")
@@ -868,7 +865,6 @@ final class RenderTests: XCTestCase {
         XCTAssert(pixels == [0,0,192,192])
     }
     
-    @available(iOS 11.0, macOS 10.13, *)
     func testMSAA_multilayerCompositing() throws {
         let context = try makeContext()
         
@@ -922,7 +918,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    @available(iOS 11.0, macOS 10.13, *)
     func testMSAA_renderCommand() throws {
         let context = try makeContext()
         
@@ -1514,7 +1509,6 @@ final class RenderTests: XCTestCase {
         }
     }
     
-    @available(iOS 11.0, macOS 10.13, *)
     func testSKSceneRender() throws {
         let scene = SKScene(size: CGSize(width: 32, height: 32))
         
