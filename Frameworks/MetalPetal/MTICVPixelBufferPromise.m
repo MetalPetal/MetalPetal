@@ -118,8 +118,6 @@ static MTLPixelFormat MTIMTLPixelFormatForCVPixelFormatType(OSType type, BOOL sR
 
 @interface MTICVPixelBufferPromise ()
 
-@property (nonatomic, readonly) CVPixelBufferRef pixelBuffer;
-
 @property (nonatomic, strong, readonly) MTITextureDescriptor *coreImageRendererDefaultTextureDescriptor;
 
 @end

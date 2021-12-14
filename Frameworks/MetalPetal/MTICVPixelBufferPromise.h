@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((objc_subclassing_restricted))
 @interface MTICVPixelBufferPromise : NSObject <MTIImagePromise>
 
+@property (nonatomic, readonly) CVPixelBufferRef pixelBuffer;
+
 @property (nonatomic, readonly) MTICVPixelBufferRenderingAPI renderingAPI;
 
 @property (nonatomic, readonly) BOOL sRGB;
