@@ -64,7 +64,7 @@ struct BouncingBallsView: View {
         }.toolbar(content: {
             Button("Reset") { [frameDataBuffer] in
                 frameDataBuffer.reset()
-            }.roundedRectangleButtonStyle()
+            }
         })
         .inlineNavigationBarTitle("Particles")
     }

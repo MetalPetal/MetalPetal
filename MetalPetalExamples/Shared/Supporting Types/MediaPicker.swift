@@ -98,11 +98,11 @@ struct ImagePicker: View {
     
     #if os(iOS)
     
-    class PickerDelegateHolder {
+    class PickerDelegateHolder: ObservableObject {
         var pickerDelegate: ImagePickerDelegate?
     }
     
-    let pickerDelegateHolder = PickerDelegateHolder()
+    @StateObject private var pickerDelegateHolder = PickerDelegateHolder()
     
     class ImagePickerDelegate: PHPickerViewControllerDelegate {
         private weak var presenter: UIViewController?
