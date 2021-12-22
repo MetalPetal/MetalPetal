@@ -348,12 +348,6 @@
 
 @end
 
-@interface MTITexturePromise ()
-
-@property (nonatomic, strong, readonly) id<MTLTexture> texture;
-
-@end
-
 @implementation MTITexturePromise
 @synthesize dimensions = _dimensions;
 @synthesize alphaType = _alphaType;
@@ -376,14 +370,14 @@
 }
 
 - (MTIImagePromiseRenderTarget *)resolveWithContext:(MTIImageRenderingContext *)renderingContext error:(NSError * __autoreleasing *)error {
-    NSParameterAssert(renderingContext.context.device == self.texture.device);
-    if (renderingContext.context.device != self.texture.device) {
+    NSParameterAssert(renderingContext.context.device == _texture.device);
+    if (renderingContext.context.device != _texture.device) {
         if (error) {
             *error = MTIErrorCreate(MTIErrorCrossDeviceRendering, nil);
         }
         return nil;
     }
-    return [renderingContext.context newRenderTargetWithTexture:self.texture];
+    return [renderingContext.context newRenderTargetWithTexture:_texture];
 }
 
 - (instancetype)promiseByUpdatingDependencies:(NSArray<MTIImage *> *)dependencies {
@@ -392,7 +386,7 @@
 }
 
 - (MTIImagePromiseDebugInfo *)debugInfo {
-    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:self.texture];
+    return [[MTIImagePromiseDebugInfo alloc] initWithPromise:self type:MTIImagePromiseTypeSource content:_texture];
 }
 
 @end
