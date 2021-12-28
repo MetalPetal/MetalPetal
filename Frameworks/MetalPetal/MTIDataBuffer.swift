@@ -19,11 +19,12 @@ extension MTIDataBuffer {
     }
     
     public func unsafeAccess<ReturnType, BufferContentType>(_ block: (UnsafeMutableBufferPointer<BufferContentType>) throws -> ReturnType) rethrows -> ReturnType {
-        var result: (pointer: UnsafeMutableRawPointer, length: UInt)!
+        var buffer: UnsafeMutableBufferPointer<BufferContentType>!
         self.unsafeAccess { (pointer: UnsafeMutableRawPointer, length: UInt) -> Void in
-            result = (pointer, length)
+            precondition(Int(length) % MemoryLayout<BufferContentType>.stride == 0)
+            let count = Int(length) / MemoryLayout<BufferContentType>.stride
+            buffer = UnsafeMutableBufferPointer(start: pointer.bindMemory(to: BufferContentType.self, capacity: count), count: count)
         }
-        precondition(Int(result.length) % MemoryLayout<BufferContentType>.size == 0)
-        return try block(UnsafeMutableBufferPointer<BufferContentType>(start: result.pointer.assumingMemoryBound(to: BufferContentType.self), count: Int(result.length)/MemoryLayout<BufferContentType>.size))
+        return try block(buffer)
     }
 }
