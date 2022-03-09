@@ -100,7 +100,9 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
         var isVideoMirrored: Bool = true
     }
     
-    @Published private var _state: State = State()
+    @Published private var stateChangeCount: Int = 0
+    
+    private var _state: State = State()
     
     private let stateLock = MTILockCreate()
     
@@ -116,6 +118,10 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
             stateLock.lock()
             defer {
                 stateLock.unlock()
+             
+                //ensure that the state update happens on main thread.
+                dispatchPrecondition(condition: .onQueue(.main))
+                stateChangeCount += 1
             }
             _state = newValue
         }
@@ -129,9 +135,12 @@ class CapturePipeline: NSObject, ObservableObject, AVCaptureVideoDataOutputSampl
     
     private let camera: Camera = {
         var configurator = Camera.Configurator()
+        #if os(iOS)
+        let interfaceOrientation = UIApplication.shared.windows.first(where: { $0.windowScene != nil })?.windowScene?.interfaceOrientation
+        #endif
         configurator.videoConnectionConfigurator = { camera, connection in
             #if os(iOS)
-            switch UIApplication.shared.windows.first(where: { $0.windowScene != nil })?.windowScene?.interfaceOrientation {
+            switch interfaceOrientation {
             case .landscapeLeft:
                 connection.videoOrientation = .landscapeLeft
             case .landscapeRight:
