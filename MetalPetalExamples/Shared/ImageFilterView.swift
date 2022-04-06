@@ -18,9 +18,13 @@ struct FilterParameter<Filter> {
     let updater: (Filter, Float) -> Void
 }
 
+extension FilterParameter: Identifiable {
+    var id: String { name }
+}
+
 struct ImageFilterView<Filter>: View where Filter: MTIFilter {
     @State private var inputImage: MTIImage = DemoImages.p1040808
-    @State private var values: [Float]
+    @State private var values: [String: Float]
     @StateObject private var renderContext = try! MTIContext(device: MTLCreateSystemDefaultDevice()!)
         
     private let filter: Filter
@@ -35,17 +39,21 @@ struct ImageFilterView<Filter>: View where Filter: MTIFilter {
         self.filterInputKeyPath = filterInputKeyPath
         self.parameters = parameters
         self.filter = filter
-        var values: [Float] = []
-        for parameter in parameters {
-            values.append(parameter.defaultValue)
-        }
-        self._values = State<[Float]>(initialValue: values)
+        self.values = [:]
+    }
+    
+    private func valueBinding<T>(for parameter: FilterParameter<T>) -> Binding<Float> {
+        Binding<Float>(get: {
+            values[parameter.name, default: parameter.defaultValue]
+        }, set: {
+            values[parameter.name] = $0
+        })
     }
     
     private func filter(_ image: MTIImage?) throws -> CGImage {
         filter[keyPath: filterInputKeyPath] = image
-        for (index, value) in values.enumerated() {
-            parameters[index].updater(filter, value)
+        for parameter in parameters {
+            parameter.updater(filter, values[parameter.name, default: parameter.defaultValue])
         }
         guard let outputImage = filter.outputImage else {
             throw DescriptiveError("Filter outputs nil image.")
@@ -64,13 +72,13 @@ struct ImageFilterView<Filter>: View where Filter: MTIFilter {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                     VStack {
-                        ForEach(0..<parameters.count) { index in
+                        ForEach(parameters) { parameter in
                             VStack(alignment: .leading) {
-                                Text("\(parameters[index].name) \(values[index], specifier: "%.2f")")
-                                if let step = parameters[index].step {
-                                    Slider(value: $values[index], in: parameters[index].sliderRange, step: step, onEditingChanged: { _ in })
+                                Text("\(parameter.name) \(values[parameter.name, default: parameter.defaultValue], specifier: "%.2f")")
+                                if let step = parameter.step {
+                                    Slider(value: valueBinding(for: parameter), in: parameter.sliderRange, step: step, onEditingChanged: { _ in })
                                 } else {
-                                    Slider(value: $values[index], in: parameters[index].sliderRange)
+                                    Slider(value: valueBinding(for: parameter), in: parameter.sliderRange)
                                 }
                             }
                             .padding()
