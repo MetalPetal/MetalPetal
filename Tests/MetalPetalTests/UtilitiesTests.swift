@@ -146,6 +146,7 @@ final class UtilitiesTests: XCTestCase {
         }
     }
     
+    #if !os(tvOS)
     func testDirectSIMDVectorSupport_packedFloat3() throws {
         let kernelSource = """
         #include <metal_stdlib>
@@ -181,6 +182,7 @@ final class UtilitiesTests: XCTestCase {
         }
         try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": MTLPackedFloat3Make(0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
     }
+    #endif
     
     func testDirectSIMDVectorSupport_uchar4() throws {
         var librarySource = Self.mtiShaderLibrarySource

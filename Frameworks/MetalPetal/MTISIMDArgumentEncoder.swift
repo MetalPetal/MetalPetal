@@ -173,12 +173,13 @@ import MetalPetalObjectiveC.Core
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
+#if !os(tvOS)
         case let v as MTLPackedFloat3:
             guard argument.bufferDataType == .float3 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
-
+#endif
         default:
             break
         }

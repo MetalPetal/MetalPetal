@@ -78,12 +78,13 @@ public struct MTISIMDShaderArgumentEncoderGenerator {
         }
         content.append(
                 """
+                #if !os(tvOS)
                         case let v as MTLPackedFloat3:
                             guard argument.bufferDataType == .float3 else {
                                 throw Error.argumentTypeMismatch
                             }
                             encode(v, proxy: proxy)
-                
+                #endif
                 """)
         return ["MTISIMDArgumentEncoder.swift": template.replacingOccurrences(of: "{MTI_SIMD_SHADER_ARGUMENT_ENCODER_GENERATED}", with: content)]
     }
