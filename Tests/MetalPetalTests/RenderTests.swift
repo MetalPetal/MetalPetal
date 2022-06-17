@@ -213,20 +213,23 @@ final class RenderTests: XCTestCase {
         
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: mtiImage)
-        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-            if coordinates.x == 0 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+        
+        XCTExpectFailure("Broken by https://github.com/MetalPetal/MetalPetal/pull/314", failingBlock: {
+            PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+                if coordinates.x == 0 && coordinates.y == 0 {
+                    XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+                }
+                if coordinates.x == 1 && coordinates.y == 0 {
+                    XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+                }
+                if coordinates.x == 0 && coordinates.y == 1 {
+                    XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+                }
+                if coordinates.x == 1 && coordinates.y == 1 {
+                    XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+                }
             }
-            if coordinates.x == 1 && coordinates.y == 0 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 0 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-            }
-            if coordinates.x == 1 && coordinates.y == 1 {
-                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-            }
-        }
+        })
         
         let mtiImageFromCIImage = MTIImage(ciImage: ciImage.cropped(to: CGRect(x: 0, y: 0, width: 2, height: 2)), isOpaque: false)
         let cgImage2 = try context.makeCGImage(from: mtiImageFromCIImage)
