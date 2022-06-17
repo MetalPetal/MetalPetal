@@ -13,6 +13,12 @@ import MetalPetalObjectiveC.Extension
 
 final class UtilitiesTests: XCTestCase {
     
+    static let mtiShaderLibrarySource: String = {
+        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
+        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
+        return try! String(contentsOf: headerURL)
+    }()
+    
     func testLock() throws {
         var counter: Int = 0
         let lock = MTILockCreate()
@@ -59,10 +65,7 @@ final class UtilitiesTests: XCTestCase {
     }
     
     func testDirectSIMDVectorSupport_float4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
+        var librarySource = Self.mtiShaderLibrarySource
         librarySource += """
         
         using namespace metalpetal;
@@ -88,11 +91,36 @@ final class UtilitiesTests: XCTestCase {
         }
     }
     
+    func testDirectSIMDVectorSupport_float3() throws {
+        var librarySource = Self.mtiShaderLibrarySource
+        librarySource += """
+        
+        using namespace metalpetal;
+        
+        fragment float4 testRender(
+                                VertexOut vertexIn [[stage_in]],
+                                texture2d<float, access::sample> sourceTexture [[texture(0)]],
+                                sampler sourceSampler [[sampler(0)]],
+                                constant float3 &color [[buffer(0)]]
+                                ) {
+            float4 textureColor = sourceTexture.sample(sourceSampler, vertexIn.textureCoordinate);
+            textureColor.rgb += color;
+            return textureColor;
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: librarySource, compileOptions: nil)
+        let renderKernel = MTIRenderPipelineKernel(vertexFunctionDescriptor: .passthroughVertex, fragmentFunctionDescriptor: MTIFunctionDescriptor(name: "testRender", libraryURL: libraryURL))
+        let image = MTIImage(color: MTIColor(red: 0, green: 1, blue: 0, alpha: 1), sRGB: false, size: CGSize(width: 1, height: 1))
+        let outputImage = renderKernel.apply(to: [image], parameters: ["color": SIMD3<Float>(1, 0, 0)], outputDimensions: image.dimensions, outputPixelFormat: .unspecified)
+        let context = try makeContext()
+        let output = try context.makeCGImage(from: outputImage)
+        PixelEnumerator.enumeratePixels(in: output) { (pixel, _) in
+            XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 0 && pixel.a == 255)
+        }
+    }
+    
     func testDirectSIMDVectorSupport_float2x2() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
+        var librarySource = Self.mtiShaderLibrarySource
         librarySource += """
         
         using namespace metalpetal;
@@ -118,11 +146,44 @@ final class UtilitiesTests: XCTestCase {
         }
     }
     
+    func testDirectSIMDVectorSupport_packedFloat3() throws {
+        let kernelSource = """
+        #include <metal_stdlib>
+        using namespace metal;
+        
+        kernel void testCompute(
+        texture2d<float, access::read> inTexture [[texture(0)]],
+        texture2d<float, access::write> outTexture [[texture(1)]],
+        constant packed_float3 &color [[buffer(0)]],
+        uint2 gid [[thread_position_in_grid]]
+        ) {
+            if (gid.x >= outTexture.get_width() || gid.y >= outTexture.get_height()) {
+                return;
+            }
+            outTexture.write(inTexture.read(uint2(0,0)), gid);
+        }
+        """
+        let libraryURL = MTILibrarySourceRegistration.shared.registerLibrary(source: kernelSource, compileOptions: nil)
+        let computeKernel = MTIComputePipelineKernel(computeFunctionDescriptor: MTIFunctionDescriptor(name: "testCompute", libraryURL: libraryURL))
+        let context = try makeContext()
+        context.lockForRendering()
+        let state = try context.kernelState(for: computeKernel, configuration: nil) as! MTIComputePipeline
+        context.unlockForRendering()
+        let commandEncoder = context.commandQueue.makeCommandBuffer()?.makeComputeCommandEncoder()
+        defer {
+            commandEncoder?.endEncoding()
+        }
+        do {
+            try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": SIMD3<Float>(0,0,0)], functionType: .kernel, encoder: commandEncoder!)
+        } catch {
+            let encoderError = try XCTUnwrap(error as? MTIError)
+            XCTAssert(encoderError.code == .parameterDataSizeMismatch)
+        }
+        try MTIFunctionArgumentsEncoder.encode(state.reflection.arguments, values: ["color": MTLPackedFloat3Make(0, 0, 0)], functionType: .kernel, encoder: commandEncoder!)
+    }
+    
     func testDirectSIMDVectorSupport_uchar4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
+        var librarySource = Self.mtiShaderLibrarySource
         librarySource += """
         
         using namespace metalpetal;
@@ -226,10 +287,7 @@ final class UtilitiesTests: XCTestCase {
     }
     
     func testDirectSIMDVectorSupport_int32_4() throws {
-        var librarySource = ""
-        let sourceFileDirectory = URL(fileURLWithPath: String(#file)).deletingLastPathComponent().appendingPathComponent("../../Sources/MetalPetalObjectiveC")
-        let headerURL = sourceFileDirectory.appendingPathComponent("include/MTIShaderLib.h")
-        librarySource += try String(contentsOf: headerURL)
+        var librarySource = Self.mtiShaderLibrarySource
         librarySource += """
         
         using namespace metalpetal;

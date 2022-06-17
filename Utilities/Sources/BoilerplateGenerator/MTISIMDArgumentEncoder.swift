@@ -17,6 +17,7 @@ fileprivate let template: String = """
 //
 
 import Foundation
+import Metal
 
 #if SWIFT_PACKAGE
 import MetalPetalObjectiveC.Core
@@ -75,6 +76,15 @@ public struct MTISIMDShaderArgumentEncoderGenerator {
                 """)
             }
         }
+        content.append(
+                """
+                        case let v as MTLPackedFloat3:
+                            guard argument.bufferDataType == .float3 else {
+                                throw Error.argumentTypeMismatch
+                            }
+                            encode(v, proxy: proxy)
+                
+                """)
         return ["MTISIMDArgumentEncoder.swift": template.replacingOccurrences(of: "{MTI_SIMD_SHADER_ARGUMENT_ENCODER_GENERATED}", with: content)]
     }
 }

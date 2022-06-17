@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Metal
 
 #if SWIFT_PACKAGE
 import MetalPetalObjectiveC.Core
@@ -169,6 +170,11 @@ import MetalPetalObjectiveC.Core
             encode(v, proxy: proxy)
         case let v as SIMD4<UInt8>:
             guard argument.bufferDataType == .uchar4 else {
+                throw Error.argumentTypeMismatch
+            }
+            encode(v, proxy: proxy)
+        case let v as MTLPackedFloat3:
+            guard argument.bufferDataType == .float3 else {
                 throw Error.argumentTypeMismatch
             }
             encode(v, proxy: proxy)
