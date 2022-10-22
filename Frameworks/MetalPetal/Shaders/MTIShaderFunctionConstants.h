@@ -8,7 +8,7 @@
 #ifndef MTIShaderFunctionConstants_h
 #define MTIShaderFunctionConstants_h
 
-#if __METAL_MACOS__ || __METAL_IOS__
+#ifdef __METAL_VERSION__
 
 #include <metal_stdlib>
 

@@ -16,13 +16,13 @@ static const char *MTIBlendFormulaSupportShaderTemplate = R"mtirawstring(
 #ifndef MTIShaderLib_h
 #define MTIShaderLib_h
 
-#if __METAL_MACOS__ || __METAL_IOS__
+#ifdef __METAL_VERSION__
 
 #include <metal_stdlib>
 
 using namespace metal;
 
-#endif /* __METAL_MACOS__ || __METAL_IOS__ */
+#endif /* __METAL_VERSION__ */
 
 #include <simd/simd.h>
 
@@ -74,7 +74,7 @@ struct MTIMultilayerCompositingLayerVertex {
 typedef struct MTIMultilayerCompositingLayerVertex MTIMultilayerCompositingLayerVertex;
 
 
-#if __METAL_MACOS__ || __METAL_IOS__
+#ifdef __METAL_VERSION__
 
 namespace metalpetal {
     
@@ -790,7 +790,7 @@ namespace metalpetal {
     }
 }
 
-#endif /* __METAL_MACOS__ || __METAL_IOS__ */
+#endif /* __METAL_VERSION__ */
 
 #endif /* MTIShaderLib_h */
 
@@ -804,7 +804,7 @@ namespace metalpetal {
 #ifndef MTIShaderFunctionConstants_h
 #define MTIShaderFunctionConstants_h
 
-#if __METAL_MACOS__ || __METAL_IOS__
+#ifdef __METAL_VERSION__
 
 #include <metal_stdlib>
 
