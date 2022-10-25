@@ -108,7 +108,7 @@ public struct MTICoreImageKernel {
                 renderDestination.alphaMode = .none
             }
             renderDestination.colorSpace = colorSpace
-            try renderingContext.context.coreImageContext.startTask(toRender: outputCIImage, from: outputCIImage.extent, to: renderDestination, at: CGPoint(x: 0, y: 0))
+            try renderingContext.context.coreImageContext.startTask(toRender: outputCIImage, to: renderDestination)
             return renderTarget
         }
         

@@ -213,23 +213,20 @@ final class RenderTests: XCTestCase {
         
         let context = try makeContext()
         let cgImage = try context.makeCGImage(from: mtiImage)
-        
-        XCTExpectFailure("Broken by https://github.com/MetalPetal/MetalPetal/pull/314", failingBlock: {
-            PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
-                if coordinates.x == 0 && coordinates.y == 0 {
-                    XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-                }
-                if coordinates.x == 1 && coordinates.y == 0 {
-                    XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-                }
-                if coordinates.x == 0 && coordinates.y == 1 {
-                    XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
-                }
-                if coordinates.x == 1 && coordinates.y == 1 {
-                    XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
-                }
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
             }
-        })
+            if coordinates.x == 1 && coordinates.y == 0 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 0 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 255 && pixel.g == 255 && pixel.b == 255 && pixel.a == 255)
+            }
+            if coordinates.x == 1 && coordinates.y == 1 {
+                XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
         
         let mtiImageFromCIImage = MTIImage(ciImage: ciImage.cropped(to: CGRect(x: 0, y: 0, width: 2, height: 2)), isOpaque: false)
         let cgImage2 = try context.makeCGImage(from: mtiImageFromCIImage)
@@ -245,6 +242,25 @@ final class RenderTests: XCTestCase {
             }
             if coordinates.x == 1 && coordinates.y == 1 {
                 XCTAssert(pixel.r == 0 && pixel.g == 0 && pixel.b == 0 && pixel.a == 255)
+            }
+        }
+    }
+    
+    func testCoreImageTransform() throws {
+        let inputImage = MTIImage(cgImage: try ImageGenerator.makeMonochromeImage([
+            [0, 255, 128],
+        ]), isOpaque: true)
+        let mtiImage = MTICoreImageKernel.image(byProcessing: [inputImage], using: { image in
+            return image[0].transformed(by: CGAffineTransform(translationX: -1, y: 0))
+        }, outputDimensions: MTITextureDimensions(cgSize: CGSize(width: 2, height: 1)))
+        let context = try makeContext()
+        let cgImage = try context.makeCGImage(from: mtiImage)
+        PixelEnumerator.enumeratePixels(in: cgImage) { (pixel, coordinates) in
+            if coordinates.x == 0 && coordinates.y == 0 {
+                XCTAssertEqual(pixel, PixelEnumerator.Pixel(b: 255, g: 255, r: 255, a: 255))
+            }
+            if coordinates.x == 1 && coordinates.y == 0 {
+                XCTAssertEqual(pixel, PixelEnumerator.Pixel(b: 128, g: 128, r: 128, a: 255))
             }
         }
     }
