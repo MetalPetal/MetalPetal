@@ -87,7 +87,19 @@ s.subspec 'Static' do |ss|
     ss.macos.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/Contents/Resources' }
     ss.tvos.pod_target_xcconfig = { 'METAL_LIBRARY_OUTPUT_DIR' => '${TARGET_BUILD_DIR}/MetalPetal.bundle/' }
     ss.resource_bundle = { 'MetalPetal' => ['CocoaPodsBundledResourcePlaceholder'] }
-    ss.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1'}
+    ss.pod_target_xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'METALPETAL_DEFAULT_LIBRARY_IN_BUNDLE=1' }
+    ss.script_phase = {
+      # Xcode 14 does not guarantee resource copy happens after compiling sources. This script copies and replaces the resource bundle `after_compile` to ensure the metallib files are included.
+      :name => 'Copy Resource Bundle',
+      :script => <<~SCRIPTCONTENT,
+        set -e
+        set -u
+        set -o pipefail
+        echo "rsync --delete -av --links --filter \"- CVS/\" --filter \"- .svn/\" --filter \"- .git/\" --filter \"- .hg/\" --filter \"- Headers\" --filter \"- PrivateHeaders\" --filter \"- Modules\" \"${TARGET_BUILD_DIR}/MetalPetal.bundle\" \"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/\""
+        rsync --delete -av --links --filter "- CVS/" --filter "- .svn/" --filter "- .git/" --filter "- .hg/" --filter "- Headers" --filter "- PrivateHeaders" --filter "- Modules" "${TARGET_BUILD_DIR}/MetalPetal.bundle" "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/"
+        SCRIPTCONTENT
+      :execution_position => :after_compile
+    }
 end
 
 s.default_subspec = 'Core'
