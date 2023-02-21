@@ -148,19 +148,21 @@ public class MTIAsyncVideoCompositionRequestHandler {
             return
         }
         self.enqueue {
-            do {
-                if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
-                
-                let mtiRequest = Request(sourceImages: sourceFrames, compositionTime: request.compositionTime, renderSize: request.renderContext.size)
-                let image = try self.filter(mtiRequest)
-                
-                if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
-                
-                try self.context.render(image, to: pixelBuffer)
-                
-                request.finish(.success(pixelBuffer))
-            } catch {
-                request.finish(.failure(error))
+            autoreleasepool {
+                do {
+                    if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
+                    
+                    let mtiRequest = Request(sourceImages: sourceFrames, compositionTime: request.compositionTime, renderSize: request.renderContext.size)
+                    let image = try self.filter(mtiRequest)
+                    
+                    if (request as? MTITrackedVideoCompositionRequest)?.isCancelled == true { return }
+                    
+                    try self.context.render(image, to: pixelBuffer)
+                    
+                    request.finish(.success(pixelBuffer))
+                } catch {
+                    request.finish(.failure(error))
+                }
             }
         }
     }
