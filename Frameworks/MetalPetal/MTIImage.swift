@@ -23,7 +23,7 @@ extension MTIImage {
     }
     
     @available(*, deprecated, message: "Use init?(contentsOf:options:isOpaque:) instead.")
-    public convenience init?(contentsOf url: URL, options: MTICGImageLoadingOptions = .default, alphaType: MTIAlphaType? = nil) {
+    @_disfavoredOverload public convenience init?(contentsOf url: URL, options: MTICGImageLoadingOptions = .default, alphaType: MTIAlphaType? = nil) {
         self.init(__contentsOf: url, loadingOptions: options, isOpaque: alphaType == .alphaIsOne ? true : false)
     }
     
