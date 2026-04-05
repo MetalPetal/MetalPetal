@@ -23,6 +23,7 @@
 #import "MTIMPSHistogramFilter.h"
 #import "MTIMPSSobelFilter.h"
 #import "MTIMPSUnsharpMaskFilter.h"
+#import "MTIRegionalGaussianBlurFilter.h"
 #import "MTIMultilayerCompositingFilter.h"
 #import "MTIPixellateFilter.h"
 #import "MTIRGBColorSpaceConversionFilter.h"
