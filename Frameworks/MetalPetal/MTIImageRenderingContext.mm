@@ -60,12 +60,35 @@ public:
     
     NSInteger dependentCountForPromise(id<MTIImagePromise> promise) const {
         NSCAssert(_promiseDenpendentsCountTable.count(promise) > 0, @"Promise: %@ is not in this dependency graph.", promise);
-        return _promiseDenpendentsCountTable.at(promise) -> size();
+        //NSCAssert compiles out under NS_BLOCK_ASSERTIONS, so in a release
+        //build `.at()` was the only thing between a promise that has left
+        //the graph and an uncaught std::out_of_range, which terminates the
+        //process rather than surfacing an error. A promise absent from the
+        //graph has nothing depending on it, so reporting zero lets the
+        //caller release its render target - exactly what this count decides.
+        auto entry = _promiseDenpendentsCountTable.find(promise);
+        if (entry == _promiseDenpendentsCountTable.end() || entry -> second == nullptr) {
+            return 0;
+        }
+        return entry -> second -> size();
     }
     
     void removeDependentForPromise(id<MTIImagePromise> dependent, id<MTIImagePromise> promise) {
-        auto dependents = _promiseDenpendentsCountTable[promise];
+        //find, not operator[]: the subscript DEFAULT-CONSTRUCTS a null
+        //shared_ptr for a missing promise and inserts it, after which the
+        //null guard below is compiled out in release and the null is
+        //dereferenced - and dependentCountForPromise then finds that bogus
+        //entry too. Looking up without inserting keeps the table honest.
+        auto entry = _promiseDenpendentsCountTable.find(promise);
+        NSCAssert(entry != _promiseDenpendentsCountTable.end(), @"Dependents not found.");
+        if (entry == _promiseDenpendentsCountTable.end()) {
+            return;
+        }
+        auto dependents = entry -> second;
         NSCAssert(dependents != nullptr, @"Dependents not found.");
+        if (dependents == nullptr) {
+            return;
+        }
         auto index = dependents -> end();
         for (auto i = dependents -> begin(); i != dependents -> end(); ++i) {
             if (*i == dependent) {
